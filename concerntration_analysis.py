@@ -17,7 +17,8 @@ from tqdm import tqdm
 # --- [默认配置区域] ---
 DEFAULT_FLAG_CROSS_COUNTRY = True
 
-DEFAULT_RAW_TRACES_FILE = "./data/traceroute/RIPE-Atlas-measurement-5051-1764518400-to-1764540000.json"
+# Default to the smaller traceroute source for routine testing.
+DEFAULT_RAW_TRACES_FILE = "./data/traceroute_rundnsroot/root_dns_traces.json"
 DEFAULT_MATCH_OUTPUT_FILE = "./output/result/cable_matching_output.json"
 DEFAULT_PROBE_META_FILE = "./data/probe/20251201.json"
 DEFAULT_OUTPUT_CSV = "./output/result/country_root_cable_dependency_hybrid.csv"

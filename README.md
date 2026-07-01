@@ -51,12 +51,14 @@ The repository is currently missing all runtime data files. The following paths 
 
 ### Required by `concerntration_analysis.py`
 
-- `data/traceroute/RIPE-Atlas-measurement-5051-1764518400-to-1764540000.json`
+- `data/traceroute_rundnsroot/root_dns_traces.json` for routine testing
 - `output/result/cable_matching_output.json` produced by `main_analysis.py`
 - `data/probe/20251201.json`
 - `data/ipinfo/ipinfo_location.mmdb`
 - `data/pfx2as/202512.pfx2as`
 - `data/cable/*.json`
+
+The larger `data/traceroute/ripe_atlas_5051_20251201.json` file is still available for full runs, but routine tests should use the smaller `root_dns_traces.json` input because it finishes much faster.
 
 ## Directory Skeleton
 
@@ -92,4 +94,10 @@ For agent-facing workflow rules, see `AGENTS.md`.
 ```powershell
 python .\main_analysis.py
 python .\concerntration_analysis.py
+```
+
+For future tests in this repository, the default assumption is to use the smaller traceroute source:
+
+```text
+data/traceroute_rundnsroot/root_dns_traces.json
 ```
