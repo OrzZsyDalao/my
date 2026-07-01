@@ -2,6 +2,7 @@ import argparse
 import ipaddress
 import json
 import os
+import sys
 from collections import defaultdict
 from typing import Any, Dict, List, Optional, Set, Tuple
 
@@ -14,7 +15,7 @@ except ImportError:
 from tqdm import tqdm
 
 
-# --- [默认配置区域] ---
+# --- Default configuration ---
 DEFAULT_FLAG_CROSS_COUNTRY = True
 
 # Default to the smaller traceroute source for routine testing.
@@ -36,14 +37,14 @@ DEFAULT_CABLE_DIR = CABLE_DIR
 DEFAULT_PFX2AS_PATH = os.path.join(PFX2AS_DIR, '202512.pfx2as')
 DEFAULT_PROBE_DIR = PROBE_DIR
 
-# --- [默认] 聚合与过滤配置 ---
+# --- Default aggregation and filtering configuration ---
 DEFAULT_AGGREGATION_MODE = "weighted"
 DEFAULT_MATCH_THRESHOLD = 0.5
 DEFAULT_ONLY_CONFIDENCE_BUCKET = None
 DEFAULT_SUMMARY_JSON = None
 
-# owner 聚合模式默认仍然是 full：
-# 只要 owner 参与拥有该 cable，就继承该 cable 的归一化概率
+# The default owner aggregation mode remains "full":
+# if an owner participates in a cable, it inherits that cable's normalized score.
 DEFAULT_OWNER_MULTI_ENTITY_MODE = "full"
 
 CABLE_EXCLUSION_FILE = 'landing-point-geo.json'
@@ -86,7 +87,7 @@ class IPv4PrefixLookup:
                 return prefix_bucket[network_int]
         return None
 
-# Root 映射表
+# Root mapping table
 MSM_TO_TARGET = {
     5001: "K-Root", 5004: "F-Root", 5005: "I-Root", 5006: "M-Root",
     5008: "L-Root", 5009: "A-Root", 5010: "B-Root", 5011: "C-Root",
@@ -131,15 +132,26 @@ def get_geo_info(ip_address: str, mmdb_reader: maxminddb.Reader) -> Dict[str, An
     return geo_data
 
 
+def safe_console_print(message: Any) -> None:
+    """Print text safely even when the terminal encoding cannot represent all characters."""
+    text = str(message)
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        encoding = getattr(sys.stdout, "encoding", None) or "utf-8"
+        sys.stdout.buffer.write(text.encode(encoding, errors="backslashreplace") + b"\n")
+        sys.stdout.flush()
+
+
 def load_probe_metadata(filepath: str) -> Dict[str, str]:
-    print(f"📡 正在加载探针元数据: {filepath} ...")
+    print(f"Loading probe metadata: {filepath} ...")
     probe_map: Dict[str, str] = {}
 
     if not os.path.exists(filepath):
         filepath = os.path.basename(filepath)
 
     if not os.path.exists(filepath):
-        print("⚠️ 警告: 找不到探针文件。")
+        print("WARNING: probe metadata file not found.")
         return {}
 
     try:
@@ -149,10 +161,10 @@ def load_probe_metadata(filepath: str) -> Dict[str, str]:
             for p in objects:
                 if p.get("id") and p.get("country_code"):
                     probe_map[str(p["id"])] = p["country_code"]
-        print(f"✅ 已加载 {len(probe_map)} 个探针。")
+        print(f"Loaded {len(probe_map)} probes.")
         return probe_map
     except Exception as e:
-        print(f"❌ 加载探针失败: {e}")
+        print(f"ERROR: failed to load probe metadata: {e}")
         return {}
 
 
@@ -233,13 +245,13 @@ def resolve_probe_metadata_path(
 
 def load_pfx2as_mapping(path: str) -> Optional[Any]:
     if not path:
-        print("⚠️ 未提供 pfx2as 文件，逻辑层 AS-pair 特征将被跳过。")
+        print("WARNING: no pfx2as file provided; logical-layer AS-pair features will be skipped.")
         return None
     if not os.path.exists(path):
-        print(f"⚠️ 找不到 pfx2as 文件: {path}，逻辑层 AS-pair 特征将被跳过。")
+        print(f"WARNING: pfx2as file not found: {path}; logical-layer AS-pair features will be skipped.")
         return None
 
-    print(f"🧭 正在加载 pfx2as: {path} ...")
+    print(f"Loading pfx2as mapping: {path} ...")
     trie = pytricia.PyTricia(32) if pytricia is not None else IPv4PrefixLookup(32)
     count = 0
     with open(path, 'r', encoding='utf-8') as f:
@@ -252,11 +264,11 @@ def load_pfx2as_mapping(path: str) -> Optional[Any]:
             except ValueError:
                 continue
             if ':' in prefix:
-                continue  # 当前只做 IPv4
+                continue  # IPv4-only lookup for now
             asn = asn.strip('{}').split('_')[0]
             trie[f"{prefix}/{length}"] = asn
             count += 1
-    print(f"✅ 已加载 {count} 条 pfx2as 前缀。")
+    print(f"Loaded {count} pfx2as prefixes.")
     return trie
 
 
@@ -305,11 +317,11 @@ def normalize_owners_field(raw_owners: Any) -> List[str]:
 
 
 def load_cable_owner_mapping(cable_dir: str) -> Dict[str, Dict[str, Any]]:
-    print(f"🧵 正在加载 cable owner 元数据: {cable_dir} ...")
+    print(f"Loading cable owner metadata: {cable_dir} ...")
     mapping: Dict[str, Dict[str, Any]] = {}
 
     if not os.path.exists(cable_dir):
-        print("⚠️ cable 目录不存在，将无法回填 owner 信息。")
+        print("WARNING: cable directory does not exist; owner metadata cannot be backfilled.")
         return mapping
 
     count = 0
@@ -343,7 +355,7 @@ def load_cable_owner_mapping(cable_dir: str) -> Dict[str, Dict[str, Any]]:
         except Exception:
             continue
 
-    print(f"✅ 已加载 {count} 条 cable 元数据。")
+    print(f"Loaded {count} cable metadata records.")
     return mapping
 
 
@@ -506,13 +518,14 @@ def extract_crossborder_as_pairs_from_trace(
     pfx2as_trie: Optional[Any],
 ) -> Set[Tuple[str, str]]:
     """
-    从单条 traceroute 中提取“跨国 AS-pair”集合。
-    规则：
-    - 仅考虑相邻 hop
-    - 相邻 hop 的国家不同
-    - 两端 ASN 都有效
-    - ASN 不相同
-    - 同一条 trace 内相同 pair 只记一次
+    Extract unique cross-border AS pairs from a single traceroute.
+
+    Rules:
+    - only adjacent hops are considered
+    - the two hops must geolocate to different countries
+    - both endpoints must have valid ASNs
+    - the ASNs must differ
+    - repeated pairs within the same trace are counted once
     """
     results = traceroute_item.get('result', [])
     if not isinstance(results, list) or not results:
@@ -587,64 +600,7 @@ def stringify_as_pair(pair: Any) -> str:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="按国家/Root 聚合海缆依赖，并扩展到 owner 与逻辑层跨境 AS-pair 分析。支持一次输出单表或总表。"
-    )
-
-    parser.add_argument("--raw-traces-file", default=DEFAULT_RAW_TRACES_FILE,
-                        help="原始 traceroute 文件路径，用于统计总流量分母与逻辑层 AS-pair。")
-    parser.add_argument("--match-output-file", default=DEFAULT_MATCH_OUTPUT_FILE,
-                        help="merge_main 输出的海缆匹配结果 JSON。")
-    parser.add_argument("--probe-meta-file", default=DEFAULT_PROBE_META_FILE,
-                        help="探针元数据文件路径。")
-    parser.add_argument("--mmdb-path", default=DEFAULT_MMDB_PATH,
-                        help="IP 地理库 MMDB 路径。")
-    parser.add_argument("--pfx2as-file", default=DEFAULT_PFX2AS_PATH,
-                        help="pfx2as 文件路径，用于逻辑层跨境 AS-pair 特征。")
-    parser.add_argument("--output-csv", default=DEFAULT_OUTPUT_CSV,
-                        help="输出 CSV 路径。单模式时输出单表；总表模式时输出总表。")
-    parser.add_argument("--summary-json", default=DEFAULT_SUMMARY_JSON,
-                        help="可选：输出一个 summary JSON。")
-    parser.add_argument("--cable-dir", default=DEFAULT_CABLE_DIR,
-                        help="海缆元数据目录，用于回填 cable owners。")
-
-    parser.add_argument("--aggregation-mode",
-                        choices=["hard_top1", "weighted", "thresholded_normalized"],
-                        default=DEFAULT_AGGREGATION_MODE,
-                        help="单条 trace 内 cable 候选的聚合方式。")
-    parser.add_argument("--match-threshold", type=float, default=DEFAULT_MATCH_THRESHOLD,
-                        help="thresholded_normalized 模式及统一实验配置使用的阈值。")
-    parser.add_argument("--confidence-bucket",
-                        choices=["high", "medium", "ambiguous"],
-                        default=DEFAULT_ONLY_CONFIDENCE_BUCKET,
-                        help="仅保留指定 confidence bucket 的匹配结果。默认不过滤。")
-
-    parser.add_argument("--owner-multi-entity-mode",
-                        choices=["full", "split"],
-                        default=DEFAULT_OWNER_MULTI_ENTITY_MODE,
-                        help="owner 聚合模式。full=owner 继承相关 cable 的归一化概率；split=再在 owners 间均分。")
-
-    parser.add_argument("--cross-country", dest="cross_country", action="store_true",
-                        default=DEFAULT_FLAG_CROSS_COUNTRY,
-                        help="仅统计跨国流量（默认开启）。")
-    parser.add_argument("--no-cross-country", dest="cross_country", action="store_false",
-                        help="不做跨国过滤。")
-    parser.add_argument("--topn-preview", type=int, default=10,
-                        help="终端打印前 N 条高风险结果。")
-
-    parser.add_argument("--output-total-table", action="store_true",
-                        help="一次运行输出总表：自动生成 weighted_all / hard_top1_all / weighted_high 三种模式，并合并成总表。")
-    parser.add_argument("--detail-dir", default=None,
-                        help="总表模式下，可选：同时输出每个子模式的明细 CSV 到该目录。")
-
-    parser.add_argument("--collapse-roots", action="store_true",
-                        help="忽略不同 DNS Root / target 的差异，按 Country 聚合。启用后 Root 列统一写为 ALL。")
-
-    return parser.parse_args()
-
-
-def parse_args_v2() -> argparse.Namespace:
-    """Parse command-line arguments with clean probe-selection options."""
+    """Parse command-line arguments for the dependency aggregation stage."""
     parser = argparse.ArgumentParser(
         description=(
             "Aggregate submarine-candidate dependency by country and root/target, "
@@ -652,9 +608,21 @@ def parse_args_v2() -> argparse.Namespace:
         )
     )
 
-    parser.add_argument("--raw-traces-file", default=DEFAULT_RAW_TRACES_FILE)
-    parser.add_argument("--match-output-file", default=DEFAULT_MATCH_OUTPUT_FILE)
-    parser.add_argument("--probe-meta-file", default=DEFAULT_PROBE_META_FILE)
+    parser.add_argument(
+        "--raw-traces-file",
+        default=DEFAULT_RAW_TRACES_FILE,
+        help="Raw traceroute input file or directory used for denominator and logical-layer features.",
+    )
+    parser.add_argument(
+        "--match-output-file",
+        default=DEFAULT_MATCH_OUTPUT_FILE,
+        help="Stage-1 cable matching JSON output.",
+    )
+    parser.add_argument(
+        "--probe-meta-file",
+        default=DEFAULT_PROBE_META_FILE,
+        help="Probe metadata file path. Can be absolute, relative, or repo-local.",
+    )
     parser.add_argument(
         "--probe-file-name",
         default=None,
@@ -665,27 +633,35 @@ def parse_args_v2() -> argparse.Namespace:
         action="store_true",
         help="Optional flag to use the most recently modified JSON file under data/probe/.",
     )
-    parser.add_argument("--mmdb-path", default=DEFAULT_MMDB_PATH)
-    parser.add_argument("--pfx2as-file", default=DEFAULT_PFX2AS_PATH)
-    parser.add_argument("--output-csv", default=DEFAULT_OUTPUT_CSV)
-    parser.add_argument("--summary-json", default=DEFAULT_SUMMARY_JSON)
-    parser.add_argument("--cable-dir", default=DEFAULT_CABLE_DIR)
+    parser.add_argument("--mmdb-path", default=DEFAULT_MMDB_PATH, help="IP geolocation MMDB path.")
+    parser.add_argument("--pfx2as-file", default=DEFAULT_PFX2AS_PATH, help="pfx2as mapping file path.")
+    parser.add_argument("--output-csv", default=DEFAULT_OUTPUT_CSV, help="Dependency output CSV path.")
+    parser.add_argument("--summary-json", default=DEFAULT_SUMMARY_JSON, help="Optional summary JSON path.")
+    parser.add_argument("--cable-dir", default=DEFAULT_CABLE_DIR, help="Cable metadata directory.")
 
     parser.add_argument(
         "--aggregation-mode",
         choices=["hard_top1", "weighted", "thresholded_normalized"],
         default=DEFAULT_AGGREGATION_MODE,
+        help="Trace-level cable candidate aggregation mode.",
     )
-    parser.add_argument("--match-threshold", type=float, default=DEFAULT_MATCH_THRESHOLD)
+    parser.add_argument(
+        "--match-threshold",
+        type=float,
+        default=DEFAULT_MATCH_THRESHOLD,
+        help="Threshold used by thresholded_normalized mode and aligned experiments.",
+    )
     parser.add_argument(
         "--confidence-bucket",
         choices=["high", "medium", "ambiguous"],
         default=DEFAULT_ONLY_CONFIDENCE_BUCKET,
+        help="Optional confidence bucket filter.",
     )
     parser.add_argument(
         "--owner-multi-entity-mode",
         choices=["full", "split"],
         default=DEFAULT_OWNER_MULTI_ENTITY_MODE,
+        help="Owner aggregation mode: full or split.",
     )
 
     parser.add_argument(
@@ -693,13 +669,27 @@ def parse_args_v2() -> argparse.Namespace:
         dest="cross_country",
         action="store_true",
         default=DEFAULT_FLAG_CROSS_COUNTRY,
+        help="Keep only cross-country traffic. Enabled by default.",
     )
-    parser.add_argument("--no-cross-country", dest="cross_country", action="store_false")
-    parser.add_argument("--topn-preview", type=int, default=10)
+    parser.add_argument(
+        "--no-cross-country",
+        dest="cross_country",
+        action="store_false",
+        help="Disable cross-country filtering.",
+    )
+    parser.add_argument("--topn-preview", type=int, default=10, help="Number of top rows to print in the preview.")
 
-    parser.add_argument("--output-total-table", action="store_true")
-    parser.add_argument("--detail-dir", default=None)
-    parser.add_argument("--collapse-roots", action="store_true")
+    parser.add_argument(
+        "--output-total-table",
+        action="store_true",
+        help="Produce the merged weighted_all / hard_top1_all / weighted_high total table.",
+    )
+    parser.add_argument(
+        "--detail-dir",
+        default=None,
+        help="Optional directory for per-mode detail CSVs when total-table mode is enabled.",
+    )
+    parser.add_argument("--collapse-roots", action="store_true", help="Aggregate by Country only and collapse Root to ALL.")
 
     return parser.parse_args()
 
@@ -764,18 +754,18 @@ def load_raw_trace_totals_and_logic_features(
     cross_country = 0
 
     if not raw_trace_files:
-        print("⚠️ 找不到可用的原始 traceroute 输入，分母与逻辑层特征将不完整。")
+        print("WARNING: no usable raw traceroute input found; denominators and logical-layer features will be incomplete.")
         return total_counts_raw, as_pair_counts_raw, cross_country
 
     try:
         with maxminddb.open_database(mmdb_path) as mmdb_reader:
             for raw_traces_file in raw_trace_files:
-                print(f"📂 正在读取原始 Trace 文件: {raw_traces_file}")
+                print(f"Reading raw traceroute file: {raw_traces_file}")
                 try:
                     with open(raw_traces_file, 'r', encoding='utf-8') as f:
                         raw_data = json.load(f)
                 except Exception:
-                    print("⚠️ 尝试重新读取原始文件为行格式...")
+                    print("WARNING: retrying raw traceroute file as line-delimited JSON...")
                     raw_data = []
                     with open(raw_traces_file, 'r', encoding='utf-8') as f:
                         for line in f:
@@ -783,8 +773,8 @@ def load_raw_trace_totals_and_logic_features(
                             if line:
                                 raw_data.append(json.loads(line))
 
-                print(f"📊 正在处理 {len(raw_data)} 条原始记录...")
-                for item in tqdm(raw_data, desc=f"统计 {os.path.basename(raw_traces_file)}"):
+                print(f"Processing {len(raw_data)} raw traceroute records...")
+                for item in tqdm(raw_data, desc=f"Count {os.path.basename(raw_traces_file)}"):
                     probe_id = str(item.get('prb_id', item.get('probe_id')))
                     country = probe_geo_db.get(probe_id)
                     if not country:
@@ -804,7 +794,7 @@ def load_raw_trace_totals_and_logic_features(
 
                     total_counts_raw[country][root_name] += 1
 
-                    # 逻辑层：提取跨国 AS-pair，单条 trace 内去重后再计数
+                    # Logical layer: extract de-duplicated cross-border AS pairs per trace.
                     as_pairs = extract_crossborder_as_pairs_from_trace(
                         traceroute_item=item,
                         mmdb_reader=mmdb_reader,
@@ -814,13 +804,13 @@ def load_raw_trace_totals_and_logic_features(
                         as_pair_counts_raw[country][root_name][pair] += 1
 
     except Exception as e:
-        raise RuntimeError(f"处理原始 Trace 失败: {e}")
+        raise RuntimeError(f"Failed to process raw traceroute input: {e}")
 
     return total_counts_raw, as_pair_counts_raw, cross_country
 
 
 def load_match_data(match_output_file: str) -> List[Dict[str, Any]]:
-    print(f"🔗 正在读取海缆匹配结果: {match_output_file}")
+    print(f"Reading cable matching output: {match_output_file}")
     with open(match_output_file, 'r', encoding='utf-8') as f:
         return json.load(f)
 
@@ -845,7 +835,7 @@ def compute_single_mode(
     submarine_trace_counts = defaultdict(lambda: defaultdict(int))
     bucket_trace_counts = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
 
-    for entry in tqdm(match_data, desc=f"计算 {aggregation_mode}/{only_confidence_bucket or 'all'}"):
+    for entry in tqdm(match_data, desc=f"Compute {aggregation_mode}/{only_confidence_bucket or 'all'}"):
         link = entry.get('link_info', {})
         segments = entry.get('all_segments', [])
         summary = entry.get('match_summary', {})
@@ -992,9 +982,11 @@ def compute_single_mode(
 
 
 def print_preview(df: pd.DataFrame, topn: int, title: str) -> None:
+    """Print a compact preview of the highest-risk rows."""
     if df.empty:
-        print(f"⚠️ {title}: 没有结果。")
+        print(f"WARNING: {title}: no results.")
         return
+
     preview_cols = [
         'Country', 'Root', 'Aggregation_Mode', 'Confidence_Filter',
         'Total_Traces', 'Dependency_Rate',
@@ -1002,33 +994,33 @@ def print_preview(df: pd.DataFrame, topn: int, title: str) -> None:
         'Top_CrossBorder_AS_Pair', 'Top_CrossBorder_AS_Pair_Share',
         'Cable_vs_ASPair_Concentration_Gap',
         'Top_Owner', 'Top_Owner_Share',
-        'Cable_Owner_Concentration_Gap'
+        'Cable_Owner_Concentration_Gap',
     ]
     preview_cols = [c for c in preview_cols if c in df.columns]
-    print(f"\n--- 🔥 Top {topn} {title} ---")
-    print(df[preview_cols].head(topn).to_string(index=False))
+    print(f"\n--- Top {topn} {title} ---")
+    safe_console_print(df[preview_cols].head(topn).to_string(index=False))
 
 
 def write_summary(summary_json: str, summary: Dict[str, Any]) -> None:
+    """Write a small run summary JSON file."""
     out_dir = os.path.dirname(summary_json)
     if out_dir:
         os.makedirs(out_dir, exist_ok=True)
     with open(summary_json, 'w', encoding='utf-8') as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
-    print(f"📝 Summary 已保存: {summary_json}")
-
+    print(f"Summary saved to: {summary_json}")
 
 
 def merge_total_table_variants(
     merged_frames: List[Tuple[str, pd.DataFrame]]
 ) -> pd.DataFrame:
     """
-    正确合并 weighted_all / hard_top1_all / weighted_high 三个子表。
+    Merge the weighted_all, hard_top1_all, and weighted_high subtables safely.
 
-    关键修复：
-    1. 只按稳定主键 Country + Root 合并，避免因为 Total_Traces 在不同子模式下出现差异而拆成两行；
-    2. Total_Traces 只保留一列，并在合并后做一致性兜底；
-    3. 对重复键做聚合性去重，优先保留非空值。
+    Key safeguards:
+    1. Merge only on the stable key (Country, Root).
+    2. Keep a single Total_Traces column after reconciliation.
+    3. Collapse duplicate keys by preferring the first non-null value.
     """
     def collapse_duplicate_keys(df: pd.DataFrame) -> pd.DataFrame:
         if df.empty:
@@ -1053,7 +1045,7 @@ def merge_total_table_variants(
     for label, variant_df in merged_frames:
         current = variant_df.copy()
 
-        # 记录并统一 Total_Traces 的来源；只在最终表保留一个 Total_Traces
+        # Track Total_Traces sources and keep only one reconciled column in the final table.
         total_col = 'Total_Traces'
         if total_col in current.columns:
             current.rename(columns={total_col: f'Total_Traces__{label}'}, inplace=True)
@@ -1074,7 +1066,7 @@ def merge_total_table_variants(
     if merged_df is None:
         return pd.DataFrame()
 
-    # 合并 Total_Traces：优先 weighted_all，其次 hard_top1_all，再其次 weighted_high
+    # Reconcile Total_Traces, preferring weighted_all, then hard_top1_all, then weighted_high.
     preferred_order = [
         'Total_Traces__weighted_all',
         'Total_Traces__hard_top1_all',
@@ -1089,7 +1081,7 @@ def merge_total_table_variants(
         for c in ordered_cols:
             merged_df['Total_Traces'] = merged_df['Total_Traces'].fillna(merged_df[c])
 
-        # 保留一个一致性标记，方便调试，但不强制中断
+        # Keep a consistency flag for debugging without failing the run.
         if len(ordered_cols) >= 2:
             def _trace_consistent(row):
                 vals = []
@@ -1102,15 +1094,16 @@ def merge_total_table_variants(
 
         merged_df.drop(columns=[c for c in ordered_cols if c in merged_df.columns], inplace=True)
 
-    # 再做一次最终去重，防止 merge 前后极端情况下残留重复键
+    # Run one more deduplication pass in case merge edge cases leave duplicate keys behind.
     merged_df = collapse_duplicate_keys(merged_df)
 
-    # 列顺序整理：主键和 Total_Traces 放在前面
+    # Reorder columns so key identifiers and Total_Traces appear first.
     front_cols = [c for c in ['Country', 'Root', 'Total_Traces', 'Total_Traces_Consistent'] if c in merged_df.columns]
     other_cols = [c for c in merged_df.columns if c not in front_cols]
     merged_df = merged_df[front_cols + other_cols]
 
     return merged_df
+
 
 def analyze_dependency_hybrid(args: argparse.Namespace):
     raw_traces_file = args.raw_traces_file
@@ -1149,7 +1142,7 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
         collapse_roots=collapse_roots,
     )
     if flag_cross_country:
-        print(f"🌐 跨国流量计数: {cross_country} 条记录。")
+        print(f"Cross-border trace count: {cross_country} records.")
 
     match_data = load_match_data(match_output_file)
 
@@ -1193,7 +1186,7 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
             )
 
             if df.empty:
-                print(f"⚠️ {label} 没有结果。")
+                print(f"WARNING: {label}: no results.")
                 continue
 
             rename_cols = {
@@ -1238,12 +1231,12 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
             if detail_dir:
                 detail_path = os.path.join(detail_dir, f"{label}.csv")
                 df.to_csv(detail_path, index=False, encoding='utf-8-sig')
-                print(f"📄 明细已保存: {detail_path}")
+                print(f"Saved detail table: {detail_path}")
 
             merged_frames.append((label, variant_df))
 
         if not merged_frames:
-            print("⚠️ 总表模式下没有可写出的结果。")
+            print("WARNING: total-table mode produced no output rows.")
             return
 
         merged_df = merge_total_table_variants(merged_frames)
@@ -1278,8 +1271,8 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
         if output_dir:
             os.makedirs(output_dir, exist_ok=True)
         merged_df.to_csv(output_csv, index=False, encoding='utf-8-sig')
-        print(f"\n✅ 总表分析完成！")
-        print(f"📄 总表已保存: {output_csv}")
+        print("\nTotal-table analysis complete.")
+        print(f"Saved total table: {output_csv}")
 
         sort_col = 'Top_Cable_Share_weighted_all'
         if sort_col in merged_df.columns:
@@ -1298,8 +1291,8 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
             'Owner_Stable_vs_Hard', 'Owner_Stable_vs_High', 'Owner_Stable_All3',
             'Cable_Owner_Concentration_Gap_weighted_all',
         ] if c in merged_df.columns]
-        print(f"\n--- 🔥 Top {topn_preview} 总表预览 ---")
-        print(merged_df[preview_cols].head(topn_preview).to_string(index=False))
+        print(f"\n--- Top {topn_preview} total-table preview ---")
+        safe_console_print(merged_df[preview_cols].head(topn_preview).to_string(index=False))
 
         if summary_json:
             summary = {
@@ -1338,7 +1331,7 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
     )
 
     if df.empty:
-        print("⚠️ 没有结果可写出，请检查输入和过滤条件。")
+        print("WARNING: no rows to write; please check the input and filtering conditions.")
         return
 
     output_dir = os.path.dirname(output_csv)
@@ -1346,8 +1339,8 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
         os.makedirs(output_dir, exist_ok=True)
     df.to_csv(output_csv, index=False, encoding='utf-8-sig')
 
-    print("\n✅ 混合分析完成！")
-    print(f"📄 结果已保存: {output_csv}")
+    print("\nHybrid dependency analysis complete.")
+    print(f"Saved output table: {output_csv}")
     print_preview(df, topn_preview, "High Risk (Cable / AS-pair / Owner)")
 
     if summary_json:
@@ -1375,7 +1368,7 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
 
 def main() -> None:
     """Run the dependency aggregation pipeline from parsed CLI arguments."""
-    args = parse_args_v2()
+    args = parse_args()
     analyze_dependency_hybrid(args)
 
 
