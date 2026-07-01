@@ -7,7 +7,10 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 import maxminddb
 import pandas as pd
-import pytricia
+try:
+    import pytricia
+except ImportError:
+    pytricia = None
 from tqdm import tqdm
 
 
@@ -40,6 +43,44 @@ DEFAULT_SUMMARY_JSON = None
 DEFAULT_OWNER_MULTI_ENTITY_MODE = "full"
 
 CABLE_EXCLUSION_FILE = 'landing-point-geo.json'
+
+
+class IPv4PrefixLookup:
+    """Fallback longest-prefix matcher used when pytricia is unavailable."""
+
+    def __init__(self, max_bits: int = 32):
+        self.max_bits = max_bits
+        self._prefix_maps: Dict[int, Dict[int, str]] = {}
+        self._masks = {
+            prefix_len: ((0xFFFFFFFF << (32 - prefix_len)) & 0xFFFFFFFF) if prefix_len > 0 else 0
+            for prefix_len in range(max_bits + 1)
+        }
+
+    def __setitem__(self, cidr: str, value: str) -> None:
+        network = ipaddress.ip_network(cidr, strict=False)
+        if network.version != 4:
+            return
+        prefix_len = network.prefixlen
+        network_int = int(network.network_address)
+        self._prefix_maps.setdefault(prefix_len, {})[network_int] = value
+
+    def get(self, ip_address: str) -> Optional[str]:
+        try:
+            ip_obj = ipaddress.ip_address(ip_address)
+        except ValueError:
+            return None
+
+        if ip_obj.version != 4:
+            return None
+
+        ip_int = int(ip_obj)
+        for prefix_len in range(self.max_bits, -1, -1):
+            mask = self._masks[prefix_len]
+            network_int = ip_int & mask
+            prefix_bucket = self._prefix_maps.get(prefix_len)
+            if prefix_bucket and network_int in prefix_bucket:
+                return prefix_bucket[network_int]
+        return None
 
 # Root 映射表
 MSM_TO_TARGET = {
@@ -111,7 +152,7 @@ def load_probe_metadata(filepath: str) -> Dict[str, str]:
         return {}
 
 
-def load_pfx2as_mapping(path: str) -> Optional[pytricia.PyTricia]:
+def load_pfx2as_mapping(path: str) -> Optional[Any]:
     if not path:
         print("⚠️ 未提供 pfx2as 文件，逻辑层 AS-pair 特征将被跳过。")
         return None
@@ -120,7 +161,7 @@ def load_pfx2as_mapping(path: str) -> Optional[pytricia.PyTricia]:
         return None
 
     print(f"🧭 正在加载 pfx2as: {path} ...")
-    trie = pytricia.PyTricia(32)
+    trie = pytricia.PyTricia(32) if pytricia is not None else IPv4PrefixLookup(32)
     count = 0
     with open(path, 'r', encoding='utf-8') as f:
         for line in f:
@@ -140,7 +181,7 @@ def load_pfx2as_mapping(path: str) -> Optional[pytricia.PyTricia]:
     return trie
 
 
-def ip_to_asn(ip_address: str, pfx2as_trie: Optional[pytricia.PyTricia]) -> Optional[str]:
+def ip_to_asn(ip_address: str, pfx2as_trie: Optional[Any]) -> Optional[str]:
     if not ip_address or is_private_or_special_ip(ip_address) or pfx2as_trie is None:
         return None
     try:
@@ -383,7 +424,7 @@ def aggregate_trace_owners(
 def extract_crossborder_as_pairs_from_trace(
     traceroute_item: Dict[str, Any],
     mmdb_reader: maxminddb.Reader,
-    pfx2as_trie: Optional[pytricia.PyTricia],
+    pfx2as_trie: Optional[Any],
 ) -> Set[Tuple[str, str]]:
     """
     从单条 traceroute 中提取“跨国 AS-pair”集合。
@@ -523,64 +564,114 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def collect_json_files(path: Optional[str]) -> List[str]:
+    if not path:
+        return []
+    if os.path.isfile(path):
+        return [path]
+    if not os.path.isdir(path):
+        return []
+
+    files: List[str] = []
+    for root, _, filenames in os.walk(path):
+        for filename in filenames:
+            if filename.endswith('.json'):
+                files.append(os.path.join(root, filename))
+    files.sort()
+    return files
+
+
+def resolve_raw_trace_files(raw_traces_file: Optional[str], match_output_file: str) -> List[str]:
+    direct_files = collect_json_files(raw_traces_file)
+    if direct_files:
+        return direct_files
+
+    manifest_path = os.path.join(os.path.dirname(os.path.abspath(match_output_file)), 'cable_matching_manifest.json')
+    if not os.path.exists(manifest_path):
+        return []
+
+    try:
+        with open(manifest_path, 'r', encoding='utf-8') as f:
+            manifest = json.load(f)
+    except Exception:
+        return []
+
+    raw_paths = manifest.get('traceroute_file_paths', [])
+    if not isinstance(raw_paths, list):
+        return []
+
+    repo_base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(manifest_path))))
+    resolved_files: List[str] = []
+    for raw_path in raw_paths:
+        if not isinstance(raw_path, str) or not raw_path.strip():
+            continue
+        candidate = raw_path if os.path.isabs(raw_path) else os.path.normpath(os.path.join(repo_base_dir, raw_path))
+        if os.path.exists(candidate):
+            resolved_files.append(candidate)
+    return resolved_files
+
+
 def load_raw_trace_totals_and_logic_features(
-    raw_traces_file: str,
+    raw_trace_files: List[str],
     probe_geo_db: Dict[str, str],
     mmdb_path: str,
     flag_cross_country: bool,
-    pfx2as_trie: Optional[pytricia.PyTricia],
+    pfx2as_trie: Optional[Any],
     collapse_roots: bool = False,
 ):
     total_counts_raw = defaultdict(lambda: defaultdict(int))
     as_pair_counts_raw = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
     cross_country = 0
 
-    print(f"📂 正在读取原始 Trace 文件: {raw_traces_file}")
-    if not os.path.exists(raw_traces_file):
-        print("⚠️ 找不到原始文件，分母与逻辑层特征将不完整。")
+    if not raw_trace_files:
+        print("⚠️ 找不到可用的原始 traceroute 输入，分母与逻辑层特征将不完整。")
         return total_counts_raw, as_pair_counts_raw, cross_country
 
     try:
-        try:
-            with open(raw_traces_file, 'r', encoding='utf-8') as f:
-                raw_data = json.load(f)
-        except Exception:
-            print("⚠️ 尝试重新读取原始文件为行格式...")
-            raw_data = []
-            with open(raw_traces_file, 'r', encoding='utf-8') as f:
-                for line in f:
-                    raw_data.append(json.loads(line.strip()))
-
-        print(f"📊 正在处理 {len(raw_data)} 条原始记录...")
         with maxminddb.open_database(mmdb_path) as mmdb_reader:
-            for item in tqdm(raw_data, desc="统计总流量+逻辑层特征"):
-                probe_id = str(item.get('prb_id', item.get('probe_id')))
-                country = probe_geo_db.get(probe_id)
-                if not country:
-                    continue
+            for raw_traces_file in raw_trace_files:
+                print(f"📂 正在读取原始 Trace 文件: {raw_traces_file}")
+                try:
+                    with open(raw_traces_file, 'r', encoding='utf-8') as f:
+                        raw_data = json.load(f)
+                except Exception:
+                    print("⚠️ 尝试重新读取原始文件为行格式...")
+                    raw_data = []
+                    with open(raw_traces_file, 'r', encoding='utf-8') as f:
+                        for line in f:
+                            line = line.strip()
+                            if line:
+                                raw_data.append(json.loads(line))
 
-                root_name = get_root_name(item)
-                if not root_name:
-                    continue
-                if collapse_roots:
-                    root_name = "ALL"
-
-                if flag_cross_country:
-                    dst_country = get_geo_info(item.get('dst_addr'), mmdb_reader).get('country')
-                    if dst_country == country:
+                print(f"📊 正在处理 {len(raw_data)} 条原始记录...")
+                for item in tqdm(raw_data, desc=f"统计 {os.path.basename(raw_traces_file)}"):
+                    probe_id = str(item.get('prb_id', item.get('probe_id')))
+                    country = probe_geo_db.get(probe_id)
+                    if not country:
                         continue
-                    cross_country += 1
 
-                total_counts_raw[country][root_name] += 1
+                    root_name = get_root_name(item)
+                    if not root_name:
+                        continue
+                    if collapse_roots:
+                        root_name = "ALL"
 
-                # 逻辑层：提取跨国 AS-pair，单条 trace 内去重后再计数
-                as_pairs = extract_crossborder_as_pairs_from_trace(
-                    traceroute_item=item,
-                    mmdb_reader=mmdb_reader,
-                    pfx2as_trie=pfx2as_trie,
-                )
-                for pair in as_pairs:
-                    as_pair_counts_raw[country][root_name][pair] += 1
+                    if flag_cross_country:
+                        dst_country = get_geo_info(item.get('dst_addr'), mmdb_reader).get('country')
+                        if dst_country == country:
+                            continue
+                        cross_country += 1
+
+                    total_counts_raw[country][root_name] += 1
+
+                    # 逻辑层：提取跨国 AS-pair，单条 trace 内去重后再计数
+                    as_pairs = extract_crossborder_as_pairs_from_trace(
+                        traceroute_item=item,
+                        mmdb_reader=mmdb_reader,
+                        pfx2as_trie=pfx2as_trie,
+                    )
+                    for pair in as_pairs:
+                        as_pair_counts_raw[country][root_name][pair] += 1
 
     except Exception as e:
         raise RuntimeError(f"处理原始 Trace 失败: {e}")
@@ -901,9 +992,10 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
     probe_geo_db = load_probe_metadata(probe_meta_file)
     cable_owner_meta = load_cable_owner_mapping(cable_dir)
     pfx2as_trie = load_pfx2as_mapping(pfx2as_file)
+    raw_trace_files = resolve_raw_trace_files(raw_traces_file, match_output_file)
 
     total_counts_raw, as_pair_counts_raw, cross_country = load_raw_trace_totals_and_logic_features(
-        raw_traces_file=raw_traces_file,
+        raw_trace_files=raw_trace_files,
         probe_geo_db=probe_geo_db,
         mmdb_path=mmdb_path,
         flag_cross_country=flag_cross_country,
@@ -1066,6 +1158,7 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
         if summary_json:
             summary = {
                 "raw_traces_file": raw_traces_file,
+                "resolved_raw_trace_files": raw_trace_files,
                 "match_output_file": match_output_file,
                 "probe_meta_file": probe_meta_file,
                 "mmdb_path": mmdb_path,
@@ -1114,6 +1207,7 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
     if summary_json:
         summary = {
             "raw_traces_file": raw_traces_file,
+            "resolved_raw_trace_files": raw_trace_files,
             "match_output_file": match_output_file,
             "probe_meta_file": probe_meta_file,
             "mmdb_path": mmdb_path,

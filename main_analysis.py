@@ -6,7 +6,10 @@ from typing import Any, Dict, Generator, Iterable, List, Optional, Set, Tuple
 import maxminddb
 import numpy as np
 import pandas as pd
-import pytricia
+try:
+    import pytricia
+except ImportError:
+    pytricia = None
 from geopy.distance import geodesic
 from sklearn.neighbors import BallTree
 from tqdm import tqdm
@@ -35,10 +38,49 @@ OWNER2ASN_PATH = os.path.join(OWNER2ASN_DIR, 'owner_to_asn.csv')
 CABLE_DEBUG_OUTPUT_PATH = os.path.join(BASE_DIR, 'cable_loading_debug.json')
 OUTPUT_RESULTS_PATH = os.path.join(OUTPUT_DIR, 'cable_matching_output.json')
 MATCH_STATS_OUTPUT_PATH = os.path.join(OUTPUT_DIR, 'cable_matching_stats_5051.json')
+MATCH_MANIFEST_OUTPUT_PATH = os.path.join(OUTPUT_DIR, 'cable_matching_manifest.json')
 
 # 文件过滤配置
 TRACEROUTE_EXCLUSIONS = ('_result.json', '_geo.json', '_analysis.json')
 CABLE_EXCLUSION_FILE = 'landing-point-geo.json'
+
+
+class IPv4PrefixLookup:
+    """Fallback longest-prefix matcher used when pytricia is unavailable."""
+
+    def __init__(self, max_bits: int = 32):
+        self.max_bits = max_bits
+        self._prefix_maps: Dict[int, Dict[int, str]] = {}
+        self._masks = {
+            prefix_len: ((0xFFFFFFFF << (32 - prefix_len)) & 0xFFFFFFFF) if prefix_len > 0 else 0
+            for prefix_len in range(max_bits + 1)
+        }
+
+    def __setitem__(self, cidr: str, value: str) -> None:
+        network = ipaddress.ip_network(cidr, strict=False)
+        if network.version != 4:
+            return
+        prefix_len = network.prefixlen
+        network_int = int(network.network_address)
+        self._prefix_maps.setdefault(prefix_len, {})[network_int] = value
+
+    def get(self, ip_address: str) -> Optional[str]:
+        try:
+            ip_obj = ipaddress.ip_address(ip_address)
+        except ValueError:
+            return None
+
+        if ip_obj.version != 4:
+            return None
+
+        ip_int = int(ip_obj)
+        for prefix_len in range(self.max_bits, -1, -1):
+            mask = self._masks[prefix_len]
+            network_int = ip_int & mask
+            prefix_bucket = self._prefix_maps.get(prefix_len)
+            if prefix_bucket and network_int in prefix_bucket:
+                return prefix_bucket[network_int]
+        return None
 
 
 ############################################################
@@ -111,9 +153,9 @@ def load_as_relationship(path: str) -> Dict[Tuple[str, str], int]:
     return as_relations
 
 
-def load_pfx2as_mapping(path: str) -> pytricia.PyTricia:
+def load_pfx2as_mapping(path: str) -> Any:
     """加载 pfx2as 到 PyTricia。"""
-    trie = pytricia.PyTricia(32)
+    trie = pytricia.PyTricia(32) if pytricia is not None else IPv4PrefixLookup(32)
     with open(path, 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip()
@@ -368,7 +410,7 @@ class CableMatcher:
         processed_cables: List[Dict[str, Any]],
         ls_coordinates: Dict[str, Tuple[float, float]],
         as_relationship: Dict[Tuple[str, str], int],
-        pfx2as_trie: pytricia.PyTricia,
+        pfx2as_trie: Any,
         owner2asn: Dict[str, Set[str]],
     ):
         self.all_cables = processed_cables
@@ -719,6 +761,35 @@ def output_debug_cable_info(ls_coords: Dict[str, Tuple[float, float]], cables: L
         print(f"❌ 调试文件写入失败: {e}")
 
 
+def to_repo_relative_path(path: str) -> str:
+    try:
+        return os.path.relpath(path, BASE_DIR)
+    except Exception:
+        return path
+
+
+def write_match_manifest(
+    traceroute_file_paths: List[str],
+    total_files_processed: int,
+    total_traces_processed: int,
+    empty_trace_count: int,
+    valid_link_count: int,
+    path: str,
+) -> None:
+    manifest = {
+        'traceroute_file_paths': [to_repo_relative_path(p) for p in traceroute_file_paths],
+        'total_files_processed': total_files_processed,
+        'total_traces_processed': total_traces_processed,
+        'empty_trace_count': empty_trace_count,
+        'matched_links_above_threshold': valid_link_count,
+        'match_output_file': to_repo_relative_path(OUTPUT_RESULTS_PATH),
+        'match_stats_file': to_repo_relative_path(MATCH_STATS_OUTPUT_PATH),
+    }
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(manifest, f, ensure_ascii=False, indent=2)
+
+
 def load_all_traceroute_files(directory: str) -> List[str]:
     """遍历 traceroute 目录，加载所有符合条件的 JSON 文件路径。"""
     traceroute_files: List[str] = []
@@ -877,6 +948,15 @@ def main():
 
         with open(MATCH_STATS_OUTPUT_PATH, 'w', encoding='utf-8') as stats_file:
             json.dump(matcher.stats, stats_file, ensure_ascii=False, indent=4)
+
+        write_match_manifest(
+            traceroute_file_paths=traceroute_file_paths,
+            total_files_processed=total_files_processed,
+            total_traces_processed=total_traces_processed,
+            empty_trace_count=empty_trace_count,
+            valid_link_count=valid_link_count,
+            path=MATCH_MANIFEST_OUTPUT_PATH,
+        )
 
     except Exception as e:
         print(f'\n❌ 结果文件写入失败: {e}')
