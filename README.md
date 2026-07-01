@@ -76,6 +76,17 @@ output/
   result/
 ```
 
+## Collaboration Workflow
+
+This repository is set up so it can be used from multiple computers through GitHub.
+
+- The shared source of truth is the GitHub repository, not a single Codex session.
+- After pulling the repository on another computer, Codex can continue editing the same project because the code, directory skeleton, and workflow instructions are all tracked in the repo.
+- The default workflow for this project is to work on `main`, commit completed changes, and push them to `origin/main` unless you explicitly ask for a different branch strategy.
+- Runtime datasets are still local inputs that must be placed into the prepared `data/` folders on each machine as needed.
+
+For agent-facing workflow rules, see `AGENTS.md`.
+
 ## Quick Run Order
 
 ```powershell
