@@ -105,6 +105,13 @@ python .\postprocess_candidate_output.py --input .\output\result\cable_matching_
 python .\robustness_compare.py --input .\output\result\trace_candidate_support.csv --output .\output\result
 ```
 
+If you want to choose a specific probe metadata file for stage 2:
+
+```powershell
+python .\concerntration_analysis.py --probe-file-name 20251223.json
+python .\concerntration_analysis.py --probe-use-latest
+```
+
 You can also run the source files directly:
 
 ```powershell

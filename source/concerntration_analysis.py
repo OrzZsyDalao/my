@@ -29,10 +29,12 @@ DATA_DIR = os.path.join(BASE_DIR, 'data')
 IPINFO_DIR = os.path.join(DATA_DIR, 'ipinfo')
 CABLE_DIR = os.path.join(DATA_DIR, 'cable')
 PFX2AS_DIR = os.path.join(DATA_DIR, 'pfx2as')
+PROBE_DIR = os.path.join(DATA_DIR, 'probe')
 
 DEFAULT_MMDB_PATH = os.path.join(IPINFO_DIR, 'ipinfo_location.mmdb')
 DEFAULT_CABLE_DIR = CABLE_DIR
 DEFAULT_PFX2AS_PATH = os.path.join(PFX2AS_DIR, '202512.pfx2as')
+DEFAULT_PROBE_DIR = PROBE_DIR
 
 # --- [默认] 聚合与过滤配置 ---
 DEFAULT_AGGREGATION_MODE = "weighted"
@@ -152,6 +154,81 @@ def load_probe_metadata(filepath: str) -> Dict[str, str]:
     except Exception as e:
         print(f"❌ 加载探针失败: {e}")
         return {}
+
+
+def list_probe_metadata_files(probe_dir: str) -> List[str]:
+    """List available probe metadata JSON files in the configured probe directory."""
+    if not os.path.isdir(probe_dir):
+        return []
+
+    probe_files = [
+        os.path.join(probe_dir, filename)
+        for filename in os.listdir(probe_dir)
+        if filename.lower().endswith('.json')
+    ]
+    probe_files.sort()
+    return probe_files
+
+
+def probe_metadata_sort_key(path: str) -> Tuple[int, float]:
+    """Sort probe metadata by embedded YYYYMMDD filename first, then by modified time."""
+    basename = os.path.splitext(os.path.basename(path))[0]
+    if basename.isdigit() and len(basename) == 8:
+        return (1, float(int(basename)))
+    return (0, float(os.path.getmtime(path)))
+
+
+def resolve_probe_metadata_path(
+    probe_meta_file: Optional[str],
+    probe_file_name: Optional[str],
+    probe_dir: str,
+    use_latest_probe: bool = False,
+) -> str:
+    """Resolve the probe metadata path from CLI options and available local files."""
+    available_probe_files = list_probe_metadata_files(probe_dir)
+
+    if probe_file_name:
+        probe_name = probe_file_name.strip()
+        if probe_name:
+            direct_candidate = probe_name
+            if os.path.exists(direct_candidate):
+                print(f"Using selected probe file: {direct_candidate}")
+                return direct_candidate
+
+            probe_dir_candidate = os.path.join(probe_dir, probe_name)
+            if os.path.exists(probe_dir_candidate):
+                print(f"Using selected probe file from data/probe: {probe_dir_candidate}")
+                return probe_dir_candidate
+
+            if not probe_name.lower().endswith('.json'):
+                probe_dir_candidate_with_suffix = os.path.join(probe_dir, f"{probe_name}.json")
+                if os.path.exists(probe_dir_candidate_with_suffix):
+                    print(f"Using selected probe file from data/probe: {probe_dir_candidate_with_suffix}")
+                    return probe_dir_candidate_with_suffix
+
+            print(f"Probe file selection not found: {probe_name}. Falling back to other resolution rules.")
+
+    if use_latest_probe and available_probe_files:
+        latest_probe = max(available_probe_files, key=probe_metadata_sort_key)
+        print(f"Using latest probe metadata file: {latest_probe}")
+        return latest_probe
+
+    if probe_meta_file and os.path.exists(probe_meta_file):
+        return probe_meta_file
+
+    if probe_meta_file:
+        probe_meta_basename = os.path.basename(probe_meta_file)
+        probe_dir_candidate = os.path.join(probe_dir, probe_meta_basename)
+        if os.path.exists(probe_dir_candidate):
+            print(f"Resolved probe metadata file to: {probe_dir_candidate}")
+            return probe_dir_candidate
+
+    if available_probe_files and not probe_meta_file:
+        latest_probe = max(available_probe_files, key=probe_metadata_sort_key)
+        print(f"No probe file specified. Using latest available probe metadata file: {latest_probe}")
+        return latest_probe
+
+    return probe_meta_file or os.path.join(probe_dir, '20251201.json')
 
 
 def load_pfx2as_mapping(path: str) -> Optional[Any]:
@@ -562,6 +639,67 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument("--collapse-roots", action="store_true",
                         help="忽略不同 DNS Root / target 的差异，按 Country 聚合。启用后 Root 列统一写为 ALL。")
+
+    return parser.parse_args()
+
+
+def parse_args_v2() -> argparse.Namespace:
+    """Parse command-line arguments with clean probe-selection options."""
+    parser = argparse.ArgumentParser(
+        description=(
+            "Aggregate submarine-candidate dependency by country and root/target, "
+            "with optional owner and cross-border AS-pair views."
+        )
+    )
+
+    parser.add_argument("--raw-traces-file", default=DEFAULT_RAW_TRACES_FILE)
+    parser.add_argument("--match-output-file", default=DEFAULT_MATCH_OUTPUT_FILE)
+    parser.add_argument("--probe-meta-file", default=DEFAULT_PROBE_META_FILE)
+    parser.add_argument(
+        "--probe-file-name",
+        default=None,
+        help="Optional filename under data/probe/ to use for probe metadata selection.",
+    )
+    parser.add_argument(
+        "--probe-use-latest",
+        action="store_true",
+        help="Optional flag to use the most recently modified JSON file under data/probe/.",
+    )
+    parser.add_argument("--mmdb-path", default=DEFAULT_MMDB_PATH)
+    parser.add_argument("--pfx2as-file", default=DEFAULT_PFX2AS_PATH)
+    parser.add_argument("--output-csv", default=DEFAULT_OUTPUT_CSV)
+    parser.add_argument("--summary-json", default=DEFAULT_SUMMARY_JSON)
+    parser.add_argument("--cable-dir", default=DEFAULT_CABLE_DIR)
+
+    parser.add_argument(
+        "--aggregation-mode",
+        choices=["hard_top1", "weighted", "thresholded_normalized"],
+        default=DEFAULT_AGGREGATION_MODE,
+    )
+    parser.add_argument("--match-threshold", type=float, default=DEFAULT_MATCH_THRESHOLD)
+    parser.add_argument(
+        "--confidence-bucket",
+        choices=["high", "medium", "ambiguous"],
+        default=DEFAULT_ONLY_CONFIDENCE_BUCKET,
+    )
+    parser.add_argument(
+        "--owner-multi-entity-mode",
+        choices=["full", "split"],
+        default=DEFAULT_OWNER_MULTI_ENTITY_MODE,
+    )
+
+    parser.add_argument(
+        "--cross-country",
+        dest="cross_country",
+        action="store_true",
+        default=DEFAULT_FLAG_CROSS_COUNTRY,
+    )
+    parser.add_argument("--no-cross-country", dest="cross_country", action="store_false")
+    parser.add_argument("--topn-preview", type=int, default=10)
+
+    parser.add_argument("--output-total-table", action="store_true")
+    parser.add_argument("--detail-dir", default=None)
+    parser.add_argument("--collapse-roots", action="store_true")
 
     return parser.parse_args()
 
@@ -990,6 +1128,12 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
     cable_dir = args.cable_dir
     owner_multi_entity_mode = args.owner_multi_entity_mode
     collapse_roots = getattr(args, "collapse_roots", False)
+    probe_meta_file = resolve_probe_metadata_path(
+        probe_meta_file=probe_meta_file,
+        probe_file_name=getattr(args, "probe_file_name", None),
+        probe_dir=DEFAULT_PROBE_DIR,
+        use_latest_probe=getattr(args, "probe_use_latest", False),
+    )
 
     probe_geo_db = load_probe_metadata(probe_meta_file)
     cable_owner_meta = load_cable_owner_mapping(cable_dir)
@@ -1231,7 +1375,7 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
 
 def main() -> None:
     """Run the dependency aggregation pipeline from parsed CLI arguments."""
-    args = parse_args()
+    args = parse_args_v2()
     analyze_dependency_hybrid(args)
 
 
