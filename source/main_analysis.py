@@ -1,7 +1,10 @@
+import argparse
+import gzip
 import ipaddress
 import json
 import math
 import os
+import pickle
 from statistics import median
 from typing import Any, Dict, Generator, List, Optional, Set, Tuple
 
@@ -21,6 +24,7 @@ SOURCE_DIR = os.path.dirname(os.path.abspath(__file__)) if "__file__" in locals(
 BASE_DIR = os.path.dirname(SOURCE_DIR)
 DATA_DIR = os.path.join(BASE_DIR, "data")
 OUTPUT_DIR = os.path.join(BASE_DIR, "output", "result")
+PREPROCESSED_DIR = os.path.join(BASE_DIR, "output", "preprocessed")
 
 CABLE_DIR = os.path.join(DATA_DIR, "cable")
 TRACE_DIR = os.path.join(DATA_DIR, "traceroute_rundnsroot")
@@ -39,6 +43,7 @@ CABLE_DEBUG_OUTPUT_PATH = os.path.join(BASE_DIR, "cable_loading_debug.json")
 OUTPUT_RESULTS_PATH = os.path.join(OUTPUT_DIR, "cable_matching_output.json")
 MATCH_STATS_OUTPUT_PATH = os.path.join(OUTPUT_DIR, "cable_matching_stats_5051.json")
 MATCH_MANIFEST_OUTPUT_PATH = os.path.join(OUTPUT_DIR, "cable_matching_manifest.json")
+AS_GRAPH_PRECOMPUTE_PATH = os.path.join(PREPROCESSED_DIR, "as_graph_owner_reachability.pkl.gz")
 
 TRACEROUTE_EXCLUSIONS = ("_result.json", "_geo.json", "_analysis.json")
 CABLE_EXCLUSION_FILE = "landing-point-geo.json"
@@ -99,6 +104,18 @@ def normalize_owners_field(raw_owners: Any) -> List[str]:
         return owners
     owner = str(raw_owners).strip()
     return [owner] if owner else []
+
+
+def owner_group_signature(owner_asns: Set[str]) -> str:
+    """Build a stable signature for a normalized owner-ASN set."""
+    normalized = sorted(
+        {
+            normalize_asn_value(asn)
+            for asn in owner_asns
+            if normalize_asn_value(asn) != "-1"
+        }
+    )
+    return "|".join(normalized)
 
 
 def normalize_asn_value(raw_asn: Any) -> str:
@@ -228,6 +245,29 @@ def load_owner2asn_mapping(path: str) -> Dict[str, Set[str]]:
             continue
         owner2asn.setdefault(owner, set()).add(asn)
     return owner2asn
+
+
+def load_as_graph_precompute(path: str) -> Optional[Dict[str, Any]]:
+    """Load precomputed AS-graph owner reachability state if available."""
+    if not path:
+        return None
+    if not os.path.exists(path):
+        print(f"Warning: AS-graph precompute file not found, falling back to legacy AS-economic scoring: {path}")
+        return None
+
+    with gzip.open(path, "rb") as handle:
+        payload = pickle.load(handle)
+
+    required_keys = {
+        "asn_to_id",
+        "owner_group_signatures",
+        "owner_group_reachability",
+        "config",
+    }
+    missing_keys = sorted(required_keys.difference(payload.keys()))
+    if missing_keys:
+        raise ValueError(f"AS precompute file is missing required keys: {missing_keys}")
+    return payload
 
 
 def stream_json_array(path: str) -> Generator[Dict[str, Any], None, None]:
@@ -412,6 +452,10 @@ class CableMatcher:
     SHORT_PATH_INFLATION_PENALTY = 0.5
     MULTI_SEGMENT_GCD_THRESHOLD_KM = 3000.0
     MULTI_SEGMENT_MARGIN_THRESHOLD_MS = 10.0
+    AS_GRAPH_MAX_HOPS_UNKNOWN = 4
+    AS_GRAPH_SEARCH_MAX_HOPS = 4
+    AS_GRAPH_ONE_SIDED_PENALTY = 1.0
+    AS_GRAPH_UNKNOWN_COST = 4.0
 
     def __init__(
         self,
@@ -420,13 +464,25 @@ class CableMatcher:
         as_relationship: Dict[Tuple[str, str], int],
         pfx2as_trie: Any,
         owner2asn: Dict[str, Set[str]],
+        as_graph_precompute: Optional[Dict[str, Any]] = None,
     ):
         self.all_cables = processed_cables
         self.ls_geo = ls_coordinates
         self.as_relationship = as_relationship
         self.pfx2as_trie = pfx2as_trie
         self.owner2asn = owner2asn
+        self.as_graph_precompute = as_graph_precompute or {}
         self.candidate_count_per_matched_link: List[int] = []
+        self.owner_group_signatures: Dict[str, int] = self.as_graph_precompute.get("owner_group_signatures", {})
+        self.owner_group_reachability: Dict[int, Dict[int, Tuple[float, int]]] = self.as_graph_precompute.get(
+            "owner_group_reachability",
+            {},
+        )
+        self.as_precompute_asn_to_id: Dict[str, int] = self.as_graph_precompute.get("asn_to_id", {})
+        as_graph_config = self.as_graph_precompute.get("config", {})
+        self.as_graph_precompute_loaded = bool(self.as_graph_precompute)
+        self.as_graph_max_hops_unknown = int(as_graph_config.get("max_hops_unknown", self.AS_GRAPH_MAX_HOPS_UNKNOWN))
+        self.as_graph_search_max_hops = int(as_graph_config.get("search_max_hops", self.AS_GRAPH_SEARCH_MAX_HOPS))
 
         self.stats: Dict[str, Any] = {
             "total_links_seen": 0,
@@ -448,6 +504,7 @@ class CableMatcher:
             "links_with_parallel_ambiguity": 0,
             "links_with_many_candidates": 0,
             "links_with_domestic_candidates": 0,
+            "as_precompute_enabled": self.as_graph_precompute_loaded,
             "candidate_count_list": self.candidate_count_per_matched_link,
         }
 
@@ -462,6 +519,11 @@ class CableMatcher:
 
         for cable in self.all_cables:
             points = cable["ls_points"]
+            cable_owner_asns: Set[str] = set()
+            for owner in cable["owners"]:
+                cable_owner_asns.update(self.owner2asn.get(owner, set()))
+            owner_signature = owner_group_signature(cable_owner_asns)
+            owner_group_id = self.owner_group_signatures.get(owner_signature) if owner_signature else None
             for i in range(len(points)):
                 for j in range(i + 1, len(points)):
                     ls_a = points[i]
@@ -476,6 +538,9 @@ class CableMatcher:
                             "cable_id": cable["id"],
                             "cable_name": cable["name"],
                             "cable_owners": cable["owners"],
+                            "cable_owner_asns": cable_owner_asns,
+                            "owner_group_signature": owner_signature,
+                            "owner_group_id": owner_group_id,
                             "gcd_dist": self.gcd_cache[segment],
                         }
                     )
@@ -556,19 +621,38 @@ class CableMatcher:
                 return True
         return False
 
-    def compute_as_economic_support(
-        self,
-        src_asn: str,
-        dst_asn: str,
-        cable_owner_asns: Set[str],
-    ) -> Dict[str, Any]:
-        """AS-economic Core: relationship-cost model for candidate support."""
-        src = normalize_asn_value(src_asn)
-        dst = normalize_asn_value(dst_asn)
-        owner_asns = {normalize_asn_value(asn) for asn in cable_owner_asns if normalize_asn_value(asn) != "-1"}
+    def _lookup_precomputed_owner_path(self, endpoint_asn: str, owner_group_id: Optional[int]) -> Optional[Dict[str, Any]]:
+        """Lookup precomputed endpoint-to-owner-group reachability."""
+        if owner_group_id is None:
+            return None
 
+        node_id = self.as_precompute_asn_to_id.get(normalize_asn_value(endpoint_asn))
+        if node_id is None:
+            return None
+
+        reachability = self.owner_group_reachability.get(owner_group_id)
+        if not reachability:
+            return None
+
+        path_info = reachability.get(node_id)
+        if path_info is None:
+            return None
+
+        path_cost, path_hops = path_info
+        return {
+            "path_cost": float(path_cost),
+            "path_hops": int(path_hops),
+        }
+
+    def _legacy_as_economic_support(
+        self,
+        src: str,
+        dst: str,
+        owner_asns: Set[str],
+    ) -> Dict[str, Any]:
+        """Fallback relationship-cost model used when no precompute lookup is available."""
         if src == "-1" or dst == "-1":
-            cost = 4.0
+            cost = self.AS_GRAPH_UNKNOWN_COST
             reason = "unknown"
         elif src in owner_asns and dst in owner_asns:
             cost = 0.0
@@ -588,14 +672,87 @@ class CableMatcher:
                 cost = 3.0
                 reason = "owner_neighbor_relationship"
             else:
-                cost = 4.0
+                cost = self.AS_GRAPH_UNKNOWN_COST
                 reason = "unknown"
+
+        return {
+            "as_economic_score": float(math.exp(-self.LAMBDA_AS * cost)),
+            "as_economic_cost": float(cost),
+            "as_economic_reason": reason,
+            "as_economic_src_owner_hops": None,
+            "as_economic_dst_owner_hops": None,
+            "as_economic_src_owner_path_cost": None,
+            "as_economic_dst_owner_path_cost": None,
+            "as_economic_path_found": False,
+            "as_economic_owner_group_id": None,
+        }
+
+    def compute_as_economic_support(
+        self,
+        src_asn: str,
+        dst_asn: str,
+        cable_owner_asns: Set[str],
+    ) -> Dict[str, Any]:
+        """AS-economic Core using precomputed owner-group reachability when available."""
+        src = normalize_asn_value(src_asn)
+        dst = normalize_asn_value(dst_asn)
+        owner_asns = {normalize_asn_value(asn) for asn in cable_owner_asns if normalize_asn_value(asn) != "-1"}
+        owner_signature = owner_group_signature(owner_asns)
+        owner_group_id = self.owner_group_signatures.get(owner_signature) if owner_signature else None
+
+        if not owner_asns:
+            return self._legacy_as_economic_support(src, dst, owner_asns)
+
+        if src in owner_asns and dst in owner_asns:
+            cost = 0.0
+            reason = "self_or_both_owner"
+            src_path = {"path_cost": 0.0, "path_hops": 0}
+            dst_path = {"path_cost": 0.0, "path_hops": 0}
+        elif src in owner_asns or dst in owner_asns:
+            cost = 0.25
+            reason = "one_endpoint_owner"
+            src_path = {"path_cost": 0.0, "path_hops": 0} if src in owner_asns else None
+            dst_path = {"path_cost": 0.0, "path_hops": 0} if dst in owner_asns else None
+        elif self.as_graph_precompute_loaded and owner_group_id is not None:
+            src_path = self._lookup_precomputed_owner_path(src, owner_group_id)
+            dst_path = self._lookup_precomputed_owner_path(dst, owner_group_id)
+            valid_paths = [
+                path_info
+                for path_info in (src_path, dst_path)
+                if path_info is not None and path_info["path_hops"] <= self.as_graph_max_hops_unknown
+            ]
+
+            if len(valid_paths) == 2:
+                cost = (valid_paths[0]["path_cost"] + valid_paths[1]["path_cost"]) / 2.0
+                reason = "owner_group_path_both_endpoints"
+            elif len(valid_paths) == 1:
+                cost = valid_paths[0]["path_cost"] + self.AS_GRAPH_ONE_SIDED_PENALTY
+                reason = "owner_group_path_one_endpoint"
+            elif (src_path is not None and src_path["path_hops"] > self.as_graph_max_hops_unknown) or (
+                dst_path is not None and dst_path["path_hops"] > self.as_graph_max_hops_unknown
+            ):
+                cost = self.AS_GRAPH_UNKNOWN_COST
+                reason = "owner_group_path_exceeds_max_hops"
+            else:
+                cost = self.AS_GRAPH_UNKNOWN_COST
+                reason = "unknown"
+        else:
+            return self._legacy_as_economic_support(src, dst, owner_asns)
 
         as_economic_score = math.exp(-self.LAMBDA_AS * cost)
         return {
             "as_economic_score": float(as_economic_score),
             "as_economic_cost": float(cost),
             "as_economic_reason": reason,
+            "as_economic_src_owner_hops": None if src_path is None else int(src_path["path_hops"]),
+            "as_economic_dst_owner_hops": None if dst_path is None else int(dst_path["path_hops"]),
+            "as_economic_src_owner_path_cost": None if src_path is None else float(src_path["path_cost"]),
+            "as_economic_dst_owner_path_cost": None if dst_path is None else float(dst_path["path_cost"]),
+            "as_economic_path_found": bool(
+                (src_path is not None and src_path["path_hops"] <= self.as_graph_max_hops_unknown)
+                or (dst_path is not None and dst_path["path_hops"] <= self.as_graph_max_hops_unknown)
+            ),
+            "as_economic_owner_group_id": owner_group_id,
         }
 
     def asRelationship_prob_calculation(self, asn1: str, asn2: str, cable_owners: Set[str]) -> float:
@@ -833,9 +990,7 @@ class CableMatcher:
                         continue
                     rtt_feasible_candidate_found = True
 
-                    cable_owner_asns: Set[str] = set()
-                    for owner in cable_info["cable_owners"]:
-                        cable_owner_asns.update(self.owner2asn.get(owner, set()))
+                    cable_owner_asns: Set[str] = set(cable_info.get("cable_owner_asns", set()))
 
                     as_support_info = self.compute_as_economic_support(
                         src_asn=asn_a,
@@ -877,6 +1032,12 @@ class CableMatcher:
                         "as_economic_cost": float(as_support_info["as_economic_cost"]),
                         "as_economic_reason": as_support_info["as_economic_reason"],
                         "as_economic_support": float(as_support_info["as_economic_score"]),
+                        "as_economic_src_owner_hops": as_support_info.get("as_economic_src_owner_hops"),
+                        "as_economic_dst_owner_hops": as_support_info.get("as_economic_dst_owner_hops"),
+                        "as_economic_src_owner_path_cost": as_support_info.get("as_economic_src_owner_path_cost"),
+                        "as_economic_dst_owner_path_cost": as_support_info.get("as_economic_dst_owner_path_cost"),
+                        "as_economic_path_found": bool(as_support_info.get("as_economic_path_found", False)),
+                        "as_economic_owner_group_id": as_support_info.get("as_economic_owner_group_id"),
                         "src_asn": asn_a,
                         "dst_asn": asn_b,
                         "owner_asn_count": len(cable_owner_asns),
@@ -1043,6 +1204,7 @@ def write_match_manifest(
     total_traces_processed: int,
     empty_trace_count: int,
     valid_link_count: int,
+    as_precompute_file: Optional[str],
     path: str,
 ) -> None:
     """Write a manifest describing the processed traceroute inputs and outputs."""
@@ -1054,6 +1216,7 @@ def write_match_manifest(
         "matched_links_above_threshold": valid_link_count,
         "match_output_file": to_repo_relative_path(OUTPUT_RESULTS_PATH),
         "match_stats_file": to_repo_relative_path(MATCH_STATS_OUTPUT_PATH),
+        "as_precompute_file": to_repo_relative_path(as_precompute_file) if as_precompute_file else None,
         "method_profile": "dual_core_cross_layer_evidence_fusion",
     }
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -1088,26 +1251,53 @@ def load_all_traceroute_files(directory: str) -> List[str]:
     return traceroute_files
 
 
+def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments for the main candidate-support analysis stage."""
+    parser = argparse.ArgumentParser(
+        description="Run the cable candidate-support analysis with optional AS-graph precompute input."
+    )
+    parser.add_argument(
+        "--as-precompute-file",
+        default=AS_GRAPH_PRECOMPUTE_PATH,
+        help="Optional precomputed AS-graph owner reachability file produced by precompute_as_graph.py.",
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
     """Process traceroute links and emit candidate-support outputs."""
+    args = parse_args()
+
     try:
         ls_coordinates = load_ls_coordinates(LS_GEO_PATH)
         all_cables = load_all_cables(CABLE_DIR)
         as_relationship = load_as_relationship(ASREL_PATH)
         pfx2as_trie = load_pfx2as_mapping(PFX2AS_PATH)
         owner2asn = load_owner2asn_mapping(OWNER2ASN_PATH)
-    except FileNotFoundError as exc:
+        as_graph_precompute = load_as_graph_precompute(args.as_precompute_file)
+    except (FileNotFoundError, ValueError) as exc:
         print("--- Critical error: failed to load required input files ---")
         print(str(exc))
         return
 
     output_debug_cable_info(ls_coordinates, all_cables, CABLE_DEBUG_OUTPUT_PATH)
-    matcher = CableMatcher(all_cables, ls_coordinates, as_relationship, pfx2as_trie, owner2asn)
+    matcher = CableMatcher(
+        all_cables,
+        ls_coordinates,
+        as_relationship,
+        pfx2as_trie,
+        owner2asn,
+        as_graph_precompute=as_graph_precompute,
+    )
     traceroute_file_paths = load_all_traceroute_files(TRACE_DIR)
 
     print("\n--- Candidate-support matching task started ---")
     print(f"Identified {len(traceroute_file_paths)} traceroute files.")
     print(f"Incremental output will be written to: {OUTPUT_RESULTS_PATH}")
+    if matcher.as_graph_precompute_loaded:
+        print(f"Using AS-graph precompute file: {args.as_precompute_file}")
+    else:
+        print("Using legacy AS-economic fallback because no AS-graph precompute file was loaded.")
     print("---------------------------------------------")
 
     valid_link_count = 0
@@ -1199,6 +1389,7 @@ def main() -> None:
             total_traces_processed=total_traces_processed,
             empty_trace_count=empty_trace_count,
             valid_link_count=valid_link_count,
+            as_precompute_file=args.as_precompute_file if matcher.as_graph_precompute_loaded else None,
             path=MATCH_MANIFEST_OUTPUT_PATH,
         )
     except Exception as exc:

@@ -23,5 +23,8 @@ data/**
 output/result/**
 !output/result/
 !output/result/.gitkeep
+output/preprocessed/**
+!output/preprocessed/
+!output/preprocessed/.gitkeep
 
 cable_loading_debug.json
