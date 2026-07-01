@@ -38,13 +38,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--max-hops-unknown",
         type=int,
-        default=4,
+        default=2,
         help="Online threshold: paths with more hops than this are treated as unknown.",
     )
     parser.add_argument(
         "--search-max-hops",
         type=int,
-        default=4,
+        default=2,
         help="Offline search depth used when expanding owner groups across the AS graph.",
     )
     parser.add_argument("--peer-cost", type=float, default=1.0, help="Traversal cost assigned to peer edges.")
