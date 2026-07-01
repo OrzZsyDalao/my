@@ -1,0 +1,18 @@
+{
+  "compare_root": "D:\\Workspace\\infocom26\\data\\cable",
+  "downloaded_cable_files": 694,
+  "failed_downloads": [],
+  "generated_at_utc": "2026-07-01T05:25:07.807624+00:00",
+  "output_root": "D:\\Workspace\\infocom26\\submarinecablemap",
+  "reports": {
+    "changed": "D:\\Workspace\\infocom26\\submarinecablemap\\comparison_changed.json",
+    "failures": "D:\\Workspace\\infocom26\\submarinecablemap\\download_failures.json",
+    "landing_point_geo": "D:\\Workspace\\infocom26\\submarinecablemap\\comparison_landing_point_geo.json",
+    "local_only": "D:\\Workspace\\infocom26\\submarinecablemap\\comparison_local_only.json",
+    "remote_only": "D:\\Workspace\\infocom26\\submarinecablemap\\comparison_remote_only.json",
+    "replacement_validation": "D:\\Workspace\\infocom26\\submarinecablemap\\replacement_validation.json",
+    "summary": "D:\\Workspace\\infocom26\\submarinecablemap\\comparison_summary.json"
+  },
+  "timeout": 30,
+  "workers": 8
+}

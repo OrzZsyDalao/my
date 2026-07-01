@@ -1,0 +1,4363 @@
+[
+  {
+    "changed_fields": [
+      "is_planned",
+      "landing_points",
+      "owners"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "landing_points": {
+        "added": [
+          "duynefontein-south-africa"
+        ],
+        "local_count": 50,
+        "remote_count": 50,
+        "removed": [
+          "melkbosstrand-south-africa"
+        ],
+        "updated": []
+      },
+      "owners": {
+        "local": "Bayobab, China Mobile, Meta, Orange, Saudi Telecom, Telecom Egypt, Vodafone, WIOCC",
+        "remote": "Bayobab, China Mobile, Meta, Orange, Telecom Egypt, Vodafone, WIOCC, center3"
+      }
+    },
+    "id": "2africa",
+    "name": "2Africa"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "suppliers"
+    ],
+    "changes": {
+      "owners": {
+        "local": "NTT",
+        "remote": "Tokyo Metropolitan Government"
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "NEC"
+      }
+    },
+    "id": "5-villages-6-islands",
+    "name": "5 Villages 6 Islands"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Aqua Comms",
+        "remote": "EXA Infrastructure"
+      },
+      "url": {
+        "local": "https://aquacomms.com/",
+        "remote": "https://exainfra.net/"
+      }
+    },
+    "id": "aec-1",
+    "name": "AEC-1"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "owners",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "al-hudaydah-yemen",
+          "sidi-kerir-egypt"
+        ],
+        "local_count": 11,
+        "remote_count": 11,
+        "removed": [
+          "mocha-yemen",
+          "port-said-egypt"
+        ],
+        "updated": []
+      },
+      "owners": {
+        "local": "Etisalat UAE, G42, Mobily, Pakistan Telecommunications Company Ltd., Telecom Egypt",
+        "remote": "G42, Mobily, Pakistan Telecommunications Company Ltd., TeleYemen, Telecom Egypt, Zain Omantel International, e&"
+      },
+      "rfs": {
+        "local": "2024 Q4",
+        "remote": "2027"
+      },
+      "rfs_year": {
+        "local": 2024,
+        "remote": 2027
+      }
+    },
+    "id": "africa-1",
+    "name": "Africa-1"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Bayobab, Benin ACE GIE, Cable Consortium of Liberia, Canalink, Dolphin Telecom, GUILAB, Gambia Submarine Cable Company, International Mauritania Telecom, Orange, Orange Cameroun, Orange Cote d’Ivoire, Orange Mali, Republic of Cameroon, Republic of Equatorial Guinea, Republic of Gabon, Republic of Guinea Bissau, STP Cabo, Sierra Leone Cable Company, Sonatel, Zamani Telecom",
+        "remote": "Bayobab, Cable Consortium of Liberia, Canalink, Dolphin Telecom, GUILAB, Gambia Submarine Cable Company, International Mauritania Telecom, Orange, Orange Cameroun, Orange Cote d’Ivoire, Orange Mali, Republic of Cameroon, Republic of Equatorial Guinea, Republic of Gabon, Republic of Guinea Bissau, SBIN (Société Béninoise des Infrastructures Numériques du Bénin), STP Cabo, Sierra Leone Cable Company, Sonatel, Zamani Telecom"
+      }
+    },
+    "id": "africa-coast-to-europe-ace",
+    "name": "Africa Coast to Europe (ACE)"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "landing_points",
+      "length",
+      "rfs",
+      "rfs_year",
+      "url"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "landing_points": {
+        "added": [
+          "quinhagak-ak-united-states",
+          "togiak-ak-united-states"
+        ],
+        "local_count": 3,
+        "remote_count": 5,
+        "removed": [],
+        "updated": []
+      },
+      "length": {
+        "local": "536 km",
+        "remote": "840 km"
+      },
+      "rfs": {
+        "local": "2024 Q4",
+        "remote": "2025 Q1"
+      },
+      "rfs_year": {
+        "local": 2024,
+        "remote": 2025
+      },
+      "url": {
+        "local": null,
+        "remote": "https://www.gci.com/bethel-airraq-network"
+      }
+    },
+    "id": "airraq",
+    "name": "Airraq"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "owners"
+    ],
+    "changes": {
+      "length": {
+        "local": "128 km",
+        "remote": "122 km"
+      },
+      "owners": {
+        "local": "",
+        "remote": "Setar, United Telecommunication Services (UTS)"
+      }
+    },
+    "id": "alonso-de-ojeda",
+    "name": "Alonso de Ojeda"
+  },
+  {
+    "changed_fields": [
+      "rfs"
+    ],
+    "changes": {
+      "rfs": {
+        "local": "1999",
+        "remote": "1999 December"
+      }
+    },
+    "id": "american-1",
+    "name": "AmeriCan-1"
+  },
+  {
+    "changed_fields": [
+      "length"
+    ],
+    "changes": {
+      "length": {
+        "local": "85 km",
+        "remote": "87 km"
+      }
+    },
+    "id": "amerigo-vespucci",
+    "name": "Amerigo Vespucci"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Aqua Comms, Meta, Microsoft, Orange, Vodafone",
+        "remote": "EXA Infrastructure, Meta, Microsoft, Orange, Vodafone"
+      }
+    },
+    "id": "amitie",
+    "name": "Amitie"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "owners",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "chania-greece",
+          "genoa-italy",
+          "haifa-israel"
+        ],
+        "local_count": 5,
+        "remote_count": 4,
+        "removed": [
+          "haql-saudi-arabia",
+          "korakia-greece",
+          "tirat-carmel-israel",
+          "yeroskipos-cyprus"
+        ],
+        "updated": []
+      },
+      "owners": {
+        "local": "Grid Telecom, Tamares Telecom",
+        "remote": "Etisalat Group, Exelera, Grid Telecom"
+      },
+      "rfs": {
+        "local": "2024 Q4",
+        "remote": null
+      },
+      "rfs_year": {
+        "local": 2024,
+        "remote": null
+      }
+    },
+    "id": "andromeda",
+    "name": "ANDROMEDA"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "rfs": {
+        "local": "2024 Q4",
+        "remote": "2026"
+      },
+      "rfs_year": {
+        "local": 2024,
+        "remote": 2026
+      }
+    },
+    "id": "anjana",
+    "name": "Anjana"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "owners"
+    ],
+    "changes": {
+      "length": {
+        "local": "650 km",
+        "remote": "601 km"
+      },
+      "owners": {
+        "local": "Altice Dominicana, Antelecom, Claro Dominicana (Codetel), Liberty Latin America (LLA), Setar",
+        "remote": "Altice Dominicana, Antelecom, Claro Dominicana (Codetel), Liberty Networks, Setar"
+      }
+    },
+    "id": "antillas-1",
+    "name": "Antillas 1"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "owners"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "cherating-malaysia"
+        ],
+        "local_count": 10,
+        "remote_count": 10,
+        "removed": [
+          "kuantan-malaysia"
+        ],
+        "updated": []
+      },
+      "owners": {
+        "local": "AT&T, BT, China Telecom, China Unicom, Chunghwa Telecom, HKBN, KDDI, KT, LG Uplus, NTT, Orange, PCCW, PLDT, Singtel, Singtel Optus, Softbank Corp, Starhub, Tata Communications, Telekom Malaysia, Telstra, Verizon, Vodafone",
+        "remote": "AT&T, BT, China Telecom, China Unicom, Chunghwa Telecom, HKBN, KDDI, KT, LG Uplus, NTT, Orange, PCCW, PLDT, Singtel, Singtel Optus, Softbank, Starhub, Tata Communications, Telekom Malaysia, Telstra, Verizon, Vodafone"
+      }
+    },
+    "id": "apcn-2",
+    "name": "APCN-2"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.vodafone.com/business/article-cs-apollo-submarine-cable-system",
+        "remote": "https://www.vodafone.com/business/solutions/by-business-type/carrier-and-infrastructure-provider/submarine-and-terrestrial-cables/apollo"
+      }
+    },
+    "id": "apollo",
+    "name": "Apollo"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "rfs": {
+        "local": "2024 Q2",
+        "remote": "2025 May"
+      },
+      "rfs_year": {
+        "local": 2024,
+        "remote": 2025
+      }
+    },
+    "id": "apollo-east-and-west",
+    "name": "Apollo East and West"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "rfs",
+      "rfs_year",
+      "suppliers"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "rfs": {
+        "local": "2026",
+        "remote": "2025 Q4"
+      },
+      "rfs_year": {
+        "local": 2026,
+        "remote": 2025
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "SubCom"
+      }
+    },
+    "id": "apricot",
+    "name": "Apricot"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "owners",
+      "suppliers",
+      "url"
+    ],
+    "changes": {
+      "length": {
+        "local": "8,600 km",
+        "remote": "8,704 km"
+      },
+      "owners": {
+        "local": "AT&T, Alestra, Bahamas Telecommunications Company, Belize Telemedia, CANTV, Claro Dominicana (Codetel), Enitel, Hondutel, ICE (Kolbi), Internexa, Liberty Latin America (LLA), Orbinet Overseas, RACSA, Telecomunicaciones Ultramarinas de Puerto Rico, Telepuerto San Isidro, Tigo Colombia, Tricom USA, United Telecommunication Services (UTS), Verizon",
+        "remote": "AT&T, Alestra, Bahamas Telecommunications Company, Belize Telemedia, CANTV, Claro Dominicana (Codetel), Enitel, Hondutel, ICE (Kolbi), InterNexa, Liberty Networks, Orbinet Overseas, RACSA, Telecomunicaciones Ultramarinas de Puerto Rico, Telepuerto San Isidro, Tigo Colombia, Tricom USA, United Telecommunication Services (UTS), Verizon"
+      },
+      "suppliers": {
+        "local": "SubCom",
+        "remote": "Prysmian, SubCom"
+      },
+      "url": {
+        "local": "https://libertynet.com/",
+        "remote": "https://libertynet.com"
+      }
+    },
+    "id": "arcos",
+    "name": "ARCOS"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [],
+        "local_count": 2,
+        "remote_count": 2,
+        "removed": [],
+        "updated": [
+          "cabo-espiritu-santo-argentina"
+        ]
+      }
+    },
+    "id": "arsat-submarine-fiber-optic-cable",
+    "name": "ARSAT Submarine Fiber Optic Cable"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "China Unicom, Djibouti Telecom, Etisalat UAE, Hyalroute, Metfone, Mobily, National Telecom, OTEGLOBE, Omantel, Ooredoo, PCCW, Pakistan Telecommunications Company Ltd., Reliance Jio Infocomm, Retelit, TIME dotCom, TeleYemen, Telecom Egypt, VNPT International, Viettel Corporation",
+        "remote": "China Unicom, Djibouti Telecom, Hyalroute, Metfone, Mobily, National Telecom, OTEGLOBE, Ooredoo, PCCW, Pakistan Telecommunications Company Ltd., Reliance Jio Infocomm, Retelit, TIME dotCom, TeleYemen, Telecom Egypt, VNPT International, Viettel Corporation, Zain Omantel International, e&"
+      }
+    },
+    "id": "asia-africa-europe-1-aae-1",
+    "name": "Asia Africa Europe-1 (AAE-1)"
+  },
+  {
+    "changed_fields": [
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "rfs": {
+        "local": "2027",
+        "remote": "2029"
+      },
+      "rfs_year": {
+        "local": 2027,
+        "remote": 2029
+      }
+    },
+    "id": "asia-connect-cable-1-acc-1",
+    "name": "Asia Connect Cable-1 (ACC-1)"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "length",
+      "owners",
+      "rfs"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "length": {
+        "local": "9,800 km",
+        "remote": "9,988 km"
+      },
+      "owners": {
+        "local": "China Telecom, China Unicom, National Telecom, PLDT, Singtel, Softbank Corp, Tata Communications, Viettel Corporation",
+        "remote": "China Telecom, China Unicom, National Telecom, PLDT, Singtel, Softbank, Tata Communications, Viettel Corporation"
+      },
+      "rfs": {
+        "local": "2024 Q1",
+        "remote": "2024 December"
+      }
+    },
+    "id": "asia-direct-cable-adc",
+    "name": "Asia Direct Cable (ADC)"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "owners",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "changi-singapore",
+          "chung-hom-kok-china",
+          "lingshui-china"
+        ],
+        "local_count": 8,
+        "remote_count": 8,
+        "removed": [
+          "changi-south-singapore",
+          "hainan-china",
+          "hong-kong-china"
+        ],
+        "updated": []
+      },
+      "owners": {
+        "local": "China Telecom, DITO Telecommunity, FPT Telecom, Globe Telecom, Singtel, TIME dotCom, Telekom Malaysia, Unified National Networks (UNN)",
+        "remote": "China Telecom, China Unicom, DITO Telecommunity, FPT Telecom, Globe Telecom, Matrix NAP Info, Singtel, TIME dotCom, Telekom Malaysia, Unified National Networks (UNN), VNPT, Viettel Corporation"
+      },
+      "rfs": {
+        "local": "2025 Q3",
+        "remote": "2027 Q1"
+      },
+      "rfs_year": {
+        "local": 2025,
+        "remote": 2027
+      }
+    },
+    "id": "asia-link-cable-alc",
+    "name": "Asia Link Cable (ALC)"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "cherating-malaysia"
+        ],
+        "local_count": 11,
+        "remote_count": 11,
+        "removed": [
+          "kuantan-malaysia"
+        ],
+        "updated": []
+      }
+    },
+    "id": "asia-pacific-gateway-apg",
+    "name": "Asia Pacific Gateway (APG)"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "sasanlagu-northern-mariana-islands"
+        ],
+        "local_count": 4,
+        "remote_count": 4,
+        "removed": [
+          "sasanlagu-rota-northern-mariana-islands"
+        ],
+        "updated": []
+      }
+    },
+    "id": "atisa",
+    "name": "Atisa"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.lumen.com/wholesale.html",
+        "remote": null
+      }
+    },
+    "id": "atlantic-crossing-1-ac-1",
+    "name": "Atlantic Crossing-1 (AC-1)"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "length",
+      "rfs"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "length": {
+        "local": null,
+        "remote": "500 km"
+      },
+      "rfs": {
+        "local": "2024 Q2",
+        "remote": "2024 Q1"
+      }
+    },
+    "id": "aurora",
+    "name": "Aurora"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "AT&T, NTT, Softbank Corp, Telstra, Verizon",
+        "remote": "AT&T, NTT, Softbank, Telstra, Verizon"
+      }
+    },
+    "id": "australia-japan-cable-ajc",
+    "name": "Australia-Japan Cable (AJC)"
+  },
+  {
+    "changed_fields": [
+      "suppliers"
+    ],
+    "changes": {
+      "suppliers": {
+        "local": "NSW",
+        "remote": "Norddeutsche Seekabelwerke GmbH (NSW)"
+      }
+    },
+    "id": "azores-fiber-optic-system-afos",
+    "name": "Azores Fiber Optic System (AFOS)"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "owners"
+    ],
+    "changes": {
+      "length": {
+        "local": "470 km",
+        "remote": "476 km"
+      },
+      "owners": {
+        "local": "AT&T, Telefonica, Verizon",
+        "remote": "Bermuda Telephone Company (BTC)"
+      }
+    },
+    "id": "bahamas-2",
+    "name": "Bahamas 2"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "owners"
+    ],
+    "changes": {
+      "length": {
+        "local": "2,817 km",
+        "remote": "2,735 km"
+      },
+      "owners": {
+        "local": "Bahamas Telecommunications Company, Teleco",
+        "remote": "Bahamas Telecommunications Company"
+      }
+    },
+    "id": "bahamas-domestic-submarine-network-bdsni",
+    "name": "Bahamas Domestic Submarine Network (BDSNi)"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [],
+        "local_count": 8,
+        "remote_count": 7,
+        "removed": [
+          "spanish-river-park-fl-united-states"
+        ],
+        "updated": []
+      }
+    },
+    "id": "bahamas-internet-cable-system-bics",
+    "name": "Bahamas Internet Cable System (BICS)"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "XL Axiata",
+        "remote": "XLSmart"
+      }
+    },
+    "id": "balok",
+    "name": "BALOK"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "koobrzeg-poland"
+        ],
+        "local_count": 4,
+        "remote_count": 4,
+        "removed": [
+          "kolobrzeg-poland"
+        ],
+        "updated": []
+      }
+    },
+    "id": "baltica",
+    "name": "Baltica"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "XL Axiata",
+        "remote": "XLSmart"
+      }
+    },
+    "id": "batam-rengit-cable-system-brcs",
+    "name": "Batam-Rengit Cable System (BRCS)"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "batam-indonesia",
+          "kuching-malaysia"
+        ],
+        "local_count": 2,
+        "remote_count": 2,
+        "removed": [
+          "kampung-buntal-malaysia",
+          "tanjung-bemban-indonesia"
+        ],
+        "updated": []
+      }
+    },
+    "id": "batam-sarawak-internet-cable-system-basics",
+    "name": "Batam Sarawak Internet Cable System (BaSICS)"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "AT&T, China Telecom, Dialog Axiata, Etisalat UAE, Omantel, Reliance Jio Infocomm, Telekom Malaysia, Telstra, Vodafone",
+        "remote": "AT&T, China Telecom, Dialog Axiata, Reliance Jio Infocomm, Telekom Malaysia, Telstra, Vodafone, Zain Omantel International, e&"
+      }
+    },
+    "id": "bay-of-bengal-gateway-bbg",
+    "name": "Bay of Bengal Gateway (BBG)"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "length",
+      "owners",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "newgale-united-kingdom"
+        ],
+        "local_count": 3,
+        "remote_count": 2,
+        "removed": [
+          "bude-united-kingdom",
+          "port-eynon-united-kingdom"
+        ],
+        "updated": []
+      },
+      "length": {
+        "local": null,
+        "remote": "158 km"
+      },
+      "owners": {
+        "local": "Amazon Web Services, Vodafone",
+        "remote": "Amazon Web Services, Microsoft, Vodafone"
+      },
+      "rfs": {
+        "local": "2024",
+        "remote": "2027"
+      },
+      "rfs_year": {
+        "local": 2024,
+        "remote": 2027
+      }
+    },
+    "id": "beaufort",
+    "name": "Beaufort"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "tripoli-lebanon"
+        ],
+        "local_count": 4,
+        "remote_count": 4,
+        "removed": [
+          "trablous-lebanon"
+        ],
+        "updated": []
+      }
+    },
+    "id": "berytar",
+    "name": "BERYTAR"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "rfs"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "rfs": {
+        "local": "2025",
+        "remote": "2025 December"
+      }
+    },
+    "id": "bifrost",
+    "name": "Bifrost"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "length": {
+        "local": "818 km",
+        "remote": "105 km"
+      },
+      "rfs": {
+        "local": "2023 July",
+        "remote": "2024 Q1"
+      },
+      "rfs_year": {
+        "local": 2023,
+        "remote": 2024
+      }
+    },
+    "id": "biznet-nusantara-cable-system-1-bncs-1",
+    "name": "Biznet Nusantara Cable System-1 (BNCS-1)"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "length",
+      "owners",
+      "suppliers"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [],
+        "local_count": 12,
+        "remote_count": 10,
+        "removed": [
+          "benghazi-libya",
+          "derna-libya"
+        ],
+        "updated": []
+      },
+      "length": {
+        "local": "4,696 km",
+        "remote": "5,055 km"
+      },
+      "owners": {
+        "local": "Google, Omantel, Sparkle",
+        "remote": "Google, Sparkle, Zain Omantel International"
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "ASN"
+      }
+    },
+    "id": "blue",
+    "name": "Blue"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "holmar-united-kingdom",
+          "mallaig-united-kingdom"
+        ],
+        "local_count": 40,
+        "remote_count": 40,
+        "removed": [
+          "mallaigvaig-united-kingdom",
+          "sandwick-village-united-kingdom"
+        ],
+        "updated": []
+      }
+    },
+    "id": "bt-highlands-and-islands-submarine-cable-system",
+    "name": "BT Highlands and Islands Submarine Cable System"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [],
+        "local_count": 4,
+        "remote_count": 2,
+        "removed": [
+          "ballyhornan-united-kingdom",
+          "peel-isle-of-man"
+        ],
+        "updated": []
+      }
+    },
+    "id": "bt-mt-1",
+    "name": "BT-MT-1"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "length"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "faratea-french-polynesia",
+          "kapolei-hi-united-states",
+          "mitirapa-french-polynesia",
+          "natadola-fiji",
+          "papenoo-french-polynesia",
+          "piti-guam",
+          "tinian-northern-mariana-islands"
+        ],
+        "local_count": 2,
+        "remote_count": 8,
+        "removed": [
+          "tanguisson-point-guam"
+        ],
+        "updated": [
+          "suva-fiji"
+        ]
+      },
+      "length": {
+        "local": null,
+        "remote": "21,600 km"
+      }
+    },
+    "id": "bulikula",
+    "name": "Bulikula"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.cvtelecom.cv",
+        "remote": "https://www.cvtelecom.cv"
+      }
+    },
+    "id": "cabo-verde-telecom-domestic-submarine-cable-phase-1",
+    "name": "Cabo Verde Telecom Domestic Submarine Cable Phase 1"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.cvtelecom.cv",
+        "remote": "https://www.cvtelecom.cv"
+      }
+    },
+    "id": "cabo-verde-telecom-domestic-submarine-cable-phase-2",
+    "name": "Cabo Verde Telecom Domestic Submarine Cable Phase 2"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.cvtelecom.cv",
+        "remote": "https://www.cvtelecom.cv"
+      }
+    },
+    "id": "cabo-verde-telecom-domestic-submarine-cable-phase-3",
+    "name": "Cabo Verde Telecom Domestic Submarine Cable Phase 3"
+  },
+  {
+    "changed_fields": [
+      "rfs",
+      "suppliers"
+    ],
+    "changes": {
+      "rfs": {
+        "local": "2026 February",
+        "remote": "2026"
+      },
+      "suppliers": {
+        "local": "Elettra",
+        "remote": null
+      }
+    },
+    "id": "cadmos-2",
+    "name": "CADMOS-2"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "owners",
+      "suppliers",
+      "url"
+    ],
+    "changes": {
+      "length": {
+        "local": "1,600 km",
+        "remote": "1,700 km"
+      },
+      "owners": {
+        "local": "Liberty Latin America (LLA)",
+        "remote": "Liberty Networks, Orange"
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "Xtera"
+      },
+      "url": {
+        "local": "https://libertynet.com/contact",
+        "remote": null
+      }
+    },
+    "id": "caribbean-bermuda-u-s-cbus",
+    "name": "Caribbean-Bermuda U.S. (CBUS)"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "length",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "cancn-mexico"
+        ],
+        "local_count": 5,
+        "remote_count": 6,
+        "removed": [],
+        "updated": []
+      },
+      "length": {
+        "local": "4,500 km",
+        "remote": "4,670 km"
+      },
+      "rfs": {
+        "local": "2025 Q4",
+        "remote": "2026 Q4"
+      },
+      "rfs_year": {
+        "local": 2025,
+        "remote": 2026
+      }
+    },
+    "id": "carnival-submarine-network-1-csn-1",
+    "name": "Carnival Submarine Network-1 (CSN-1)"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "length": {
+        "local": "870 km",
+        "remote": "1,197 km"
+      },
+      "owners": {
+        "local": "Liberty Latin America (LLA)",
+        "remote": "CW Cayman, CW Jamaica"
+      },
+      "url": {
+        "local": "https://libertynet.com/",
+        "remote": null
+      }
+    },
+    "id": "cayman-jamaica-fiber-system-cjfs",
+    "name": "Cayman-Jamaica Fiber System (CJFS)"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Aqua Comms",
+        "remote": "EXA Infrastructure"
+      },
+      "url": {
+        "local": "https://aquacomms.com/",
+        "remote": "https://exainfra.net/"
+      }
+    },
+    "id": "celtixconnect-1-cc-1",
+    "name": "CeltixConnect-1 (CC-1)"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "stoke-fleming-united-kingdom"
+        ],
+        "local_count": 2,
+        "remote_count": 2,
+        "removed": [
+          "blackpool-sands-united-kingdom"
+        ],
+        "updated": []
+      }
+    },
+    "id": "channel-islands-9-liberty-submarine-cable",
+    "name": "Channel Islands-9 Liberty Submarine Cable"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Federated States of Micronesia Telecommunications Company",
+        "remote": "Federated States of Micronesia Telecommunications Cable Corporation (FSMTCC)"
+      }
+    },
+    "id": "chuuk-pohnpei-cable",
+    "name": "Chuuk-Pohnpei Cable"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "https://www.telecom.pt/",
+        "remote": "https://altice.net/altice-international"
+      }
+    },
+    "id": "columbus-iii-azores-portugal",
+    "name": "Columbus-III Azores-Portugal"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [],
+        "local_count": 4,
+        "remote_count": 2,
+        "removed": [
+          "thorpeness-united-kingdom",
+          "zeebrugge-belgium"
+        ],
+        "updated": []
+      }
+    },
+    "id": "concerto",
+    "name": "Concerto"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "landing_points"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "landing_points": {
+        "added": [
+          "ahousat-bc-canada",
+          "bamfield-bc-canada",
+          "coal-harbour-bc-canada",
+          "eastbourne-bc-canada",
+          "esperanza-bc-canada",
+          "gambier-harbour-bc-canada",
+          "gibsons-bc-canada",
+          "gillies-bay-bc-canada",
+          "gold-river-bc-canada",
+          "haggards-cove-bc-canada",
+          "holberg-bc-canada",
+          "hot-springs-cove-bc-canada",
+          "kains-island-bc-canada",
+          "kingcome-inlet-bc-canada",
+          "kitamaat-village-bc-canada",
+          "kitimat-bc-canada",
+          "kyuquot-bc-canada",
+          "macoah-bc-canada",
+          "nuchatlaht-bc-canada",
+          "opitsat-bc-canada",
+          "port-alice-bc-canada",
+          "powell-river-bc-canada",
+          "quatsino-bc-canada",
+          "queens-cove-bc-canada",
+          "salmon-beach-bc-canada",
+          "saltery-bay-bc-canada",
+          "sarita-bc-canada",
+          "tahsis-bc-canada",
+          "tofino-bc-canada",
+          "toquaht-bay-bc-canada",
+          "uchucklesaht-bc-canada",
+          "ucluelet-bc-canada",
+          "van-anda-bc-canada",
+          "winter-harbour-bc-canada",
+          "yuquot-bc-canada",
+          "zeballos-bc-canada"
+        ],
+        "local_count": 73,
+        "remote_count": 108,
+        "removed": [
+          "yaculta-bc-canada"
+        ],
+        "updated": []
+      }
+    },
+    "id": "connected-coast",
+    "name": "Connected Coast"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "https://ptwholesale.pt/",
+        "remote": "https://altice.net/altice-international"
+      }
+    },
+    "id": "continente-madeira",
+    "name": "Continente-Madeira"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "owners",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "owners": {
+        "local": "Naitel, Telecom Egypt",
+        "remote": "NaiTel, Telecom Egypt"
+      },
+      "rfs": {
+        "local": null,
+        "remote": "2025 August"
+      },
+      "rfs_year": {
+        "local": null,
+        "remote": 2025
+      }
+    },
+    "id": "coral-bridge",
+    "name": "Coral Bridge"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "rfs"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "rfs": {
+        "local": "2024 April",
+        "remote": "2024 May"
+      }
+    },
+    "id": "deep-blue-one",
+    "name": "Deep Blue One"
+  },
+  {
+    "changed_fields": [
+      "is_planned"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      }
+    },
+    "id": "domestic-submarine-cable-of-maldives-dscom",
+    "name": "Domestic Submarine Cable of Maldives (DSCoM)"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "https://www.telstra.com.au/",
+        "remote": "https://www.telstrainternational.com/"
+      }
+    },
+    "id": "eac-c2c",
+    "name": "EAC-C2C"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "landing_points",
+      "owners",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "landing_points": {
+        "added": [
+          "kosrae-micronesia",
+          "tarawa-kiribati"
+        ],
+        "local_count": 4,
+        "remote_count": 4,
+        "removed": [
+          "bairiki-kiribati",
+          "tofol-micronesia"
+        ],
+        "updated": []
+      },
+      "owners": {
+        "local": "BwebwerikiNET Limited (BNL), Federated States of Micronesia Telecommunications Company, Nauru Fibre Cable Corporation",
+        "remote": "BwebwerikiNET Limited (BNL), Federated States of Micronesia Telecommunications Cable Corporation (FSMTCC), Nauru Fibre Cable Corporation"
+      },
+      "rfs": {
+        "local": "2025 Q4",
+        "remote": "2026 Q1"
+      },
+      "rfs_year": {
+        "local": 2025,
+        "remote": 2026
+      }
+    },
+    "id": "east-micronesia-cable-system-emcs",
+    "name": "East Micronesia Cable System (EMCS)"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "BT, Bayobab, Bharti Airtel, Botswana Fibre Networks, Comores Telecom, Djibouti Telecom, Etisalat UAE, Liquid Intelligent Technologies, Mauritius Telecom, Orange, Saudi Telecom, Sudatel, Tanzania Telecommunication Corporation, Telkom Kenya, Telkom South Africa, Telma (Telecom Malagasy), Vodacom DRC, WIOCC, Zambia Telecom",
+        "remote": "BT, Bayobab, Bharti Airtel, Botswana Fibre Networks, Comores Telecom, Djibouti Telecom, Liquid Intelligent Technologies, Mauritius Telecom, Orange, Sudatel, Tanzania Telecommunication Corporation, Telkom Kenya, Telkom South Africa, Telma (Telecom Malagasy), Vodacom DRC, WIOCC, Zambia Telecom, center3, e&"
+      }
+    },
+    "id": "eastern-africa-submarine-system-eassy",
+    "name": "Eastern Africa Submarine System (EASSy)"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "length",
+      "owners"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "frigate-bay-saint-kitts-and-nevis"
+        ],
+        "local_count": 13,
+        "remote_count": 13,
+        "removed": [
+          "basseterre-saint-kitts-and-nevis"
+        ],
+        "updated": []
+      },
+      "length": {
+        "local": "1,730 km",
+        "remote": "1,335 km"
+      },
+      "owners": {
+        "local": "AT&T, Claro Dominicana (Codetel), Guyana Telephone and Telegraph (GT&T), Liberty Latin America (LLA), Orange, Verizon",
+        "remote": "AT&T, Claro Dominicana (Codetel), Guyana Telephone and Telegraph (GT&T), Liberty Networks, Orange, Verizon"
+      }
+    },
+    "id": "eastern-caribbean-fiber-system-ecfs",
+    "name": "Eastern Caribbean Fiber System (ECFS)"
+  },
+  {
+    "changed_fields": [
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "rfs": {
+        "local": "2025",
+        "remote": "2027"
+      },
+      "rfs_year": {
+        "local": 2025,
+        "remote": 2027
+      }
+    },
+    "id": "eastern-light-sweden-finland-ii",
+    "name": "Eastern Light Sweden-Finland II"
+  },
+  {
+    "changed_fields": [
+      "length"
+    ],
+    "changes": {
+      "length": {
+        "local": null,
+        "remote": "1,175 km"
+      }
+    },
+    "id": "eaufon-1",
+    "name": "EAUFON 1"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "length",
+      "rfs",
+      "rfs_year",
+      "suppliers"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [],
+        "local_count": 6,
+        "remote_count": 6,
+        "removed": [],
+        "updated": [
+          "deception-qc-canada"
+        ]
+      },
+      "length": {
+        "local": null,
+        "remote": "675 km"
+      },
+      "rfs": {
+        "local": "2023 Q4",
+        "remote": "2024 February"
+      },
+      "rfs_year": {
+        "local": 2023,
+        "remote": 2024
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "ASN"
+      }
+    },
+    "id": "eaufon-2",
+    "name": "EAUFON 2"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "length": {
+        "local": null,
+        "remote": "900 km"
+      },
+      "rfs": {
+        "local": "2026",
+        "remote": "2027"
+      },
+      "rfs_year": {
+        "local": 2026,
+        "remote": 2027
+      }
+    },
+    "id": "eaufon-3",
+    "name": "EAUFON 3"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "rfs"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "rfs": {
+        "local": "2025 Q1",
+        "remote": "2025"
+      }
+    },
+    "id": "echo",
+    "name": "Echo"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.globalconnect.dk",
+        "remote": "https://www.globalconnectcarrier.com/"
+      }
+    },
+    "id": "elektra-globalconnect-1-gc1",
+    "name": "Elektra-GlobalConnect 1 (GC1)"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "nouadhibou-mauritania"
+        ],
+        "local_count": 6,
+        "remote_count": 7,
+        "removed": [],
+        "updated": []
+      }
+    },
+    "id": "ellalink",
+    "name": "EllaLink"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "owners": {
+        "local": "ESB Telecoms, Zayo",
+        "remote": "Zayo"
+      },
+      "url": {
+        "local": "https://www.esb.ie/our-businesses/telecoms/telecoms-overview",
+        "remote": "https://zayoeurope.com/"
+      }
+    },
+    "id": "emerald-bridge-fibres",
+    "name": "Emerald Bridge Fibres"
+  },
+  {
+    "changed_fields": [
+      "suppliers"
+    ],
+    "changes": {
+      "suppliers": {
+        "local": "HMN Tech",
+        "remote": null
+      }
+    },
+    "id": "energy-bridge-cable",
+    "name": "Energy Bridge Cable"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "https://www.epic.com.mt/",
+        "remote": "https://epic.com.mt/"
+      }
+    },
+    "id": "epic-malta-sicily-cable-system-emscs",
+    "name": "Epic Malta-Sicily Cable System (EMSCS)"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.fiberatlantic.com/system/KrQqY",
+        "remote": null
+      }
+    },
+    "id": "esat-2",
+    "name": "ESAT-2"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "AT&T, Altice Portugal, BT, Bayobab, Bharat Sanchar Nigam Ltd. (BSNL), Bharti Airtel, Djibouti Telecom, Gibtelecom, Libya International Telecommunications Company, Omantel, Saudi Telecom, Telecom Egypt, Telkom South Africa, Verizon, Vodafone, du",
+        "remote": "AT&T, Altice Portugal, BT, Bayobab, Bharat Sanchar Nigam Ltd. (BSNL), Bharti Airtel, Djibouti Telecom, Gibtelecom, Kalaam Telecom, Libya International Telecommunications Company, Telecom Egypt, Telkom South Africa, Verizon, Vodafone, Zain Omantel International, center3, du"
+      }
+    },
+    "id": "europe-india-gateway-eig",
+    "name": "Europe India Gateway (EIG)"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Eviny Digital AS",
+        "remote": "Lyse Tele AS"
+      },
+      "url": {
+        "local": "https://www.eviny.no/",
+        "remote": "https://www.lyse.no/"
+      }
+    },
+    "id": "eviny-digital",
+    "name": "Eviny Digital"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Global Cloud Xchange",
+        "remote": "FLAG"
+      },
+      "url": {
+        "local": "http://www.globalcloudxchange.com",
+        "remote": "https://flagtel.com/"
+      }
+    },
+    "id": "falcon",
+    "name": "FALCON"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Bahrain Telecommunications Company (Batelco), Etisalat UAE, Kuwait Ministry of Communications, Ooredoo",
+        "remote": "Bahrain Telecommunications Company (Batelco), Kuwait Ministry of Communications, Ooredoo, e&"
+      }
+    },
+    "id": "fiber-optic-gulf-fog",
+    "name": "Fiber Optic Gulf (FOG)"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "length": {
+        "local": "1,000 km",
+        "remote": "1,102 km"
+      },
+      "owners": {
+        "local": "Liberty Latin America (LLA)",
+        "remote": "Liberty Networks"
+      },
+      "url": {
+        "local": "https://libertynet.com/contact",
+        "remote": "https://libertynet.com"
+      }
+    },
+    "id": "fibralink",
+    "name": "Fibralink"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "rfs": {
+        "local": "2024",
+        "remote": "2025"
+      },
+      "rfs_year": {
+        "local": 2024,
+        "remote": 2025
+      }
+    },
+    "id": "firmina",
+    "name": "Firmina"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "rfs",
+      "rfs_year",
+      "suppliers"
+    ],
+    "changes": {
+      "length": {
+        "local": null,
+        "remote": "900 km"
+      },
+      "rfs": {
+        "local": "2026",
+        "remote": "2027"
+      },
+      "rfs_year": {
+        "local": 2026,
+        "remote": 2027
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "Prysmian, Xtera"
+      }
+    },
+    "id": "fish-south",
+    "name": "FISH South"
+  },
+  {
+    "changed_fields": [
+      "rfs",
+      "rfs_year",
+      "suppliers"
+    ],
+    "changes": {
+      "rfs": {
+        "local": "2026",
+        "remote": "2027"
+      },
+      "rfs_year": {
+        "local": 2026,
+        "remote": 2027
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "Prysmian"
+      }
+    },
+    "id": "fish-west",
+    "name": "FISH West"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Global Cloud Xchange",
+        "remote": "FLAG"
+      },
+      "url": {
+        "local": "http://www.globalcloudxchange.com",
+        "remote": "https://flagtel.com/"
+      }
+    },
+    "id": "flag-atlantic-1-fa-1",
+    "name": "FLAG Atlantic-1 (FA-1)"
+  },
+  {
+    "changed_fields": [
+      "notes",
+      "owners"
+    ],
+    "changes": {
+      "notes": {
+        "local": "Global Cloud Xchange owns 3 fiber pairs which it refers to as FLAG North Asia Loop. Of the three remaining fiber pairs comprising the REACH North Asia Loop, Telstra owns one fiber pair, PCCW owns one fiber pair, with the final fiber pair is jointly owned by Telstra and PCCW",
+        "remote": "FLAG owns 3 fiber pairs which it refers to as FLAG North Asia Loop. Of the three remaining fiber pairs comprising the REACH North Asia Loop, Telstra owns one fiber pair, PCCW owns one fiber pair, with the final fiber pair is jointly owned by Telstra and PCCW"
+      },
+      "owners": {
+        "local": "Global Cloud Xchange, PCCW, Telstra",
+        "remote": "FLAG, PCCW, Telstra"
+      }
+    },
+    "id": "flag-north-asia-loopreach-north-asia-loop",
+    "name": "FLAG North Asia Loop/REACH North Asia Loop"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "owners",
+      "suppliers",
+      "url"
+    ],
+    "changes": {
+      "length": {
+        "local": "1,287 km",
+        "remote": "1,501 km"
+      },
+      "owners": {
+        "local": "Liberty Latin America (LLA)",
+        "remote": "Liberty Networks, Orange"
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "Orange Marine, Xtera"
+      },
+      "url": {
+        "local": "https://libertynet.com/contact",
+        "remote": null
+      }
+    },
+    "id": "gemini-bermuda",
+    "name": "Gemini Bermuda"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "dzhubga-russia"
+        ],
+        "local_count": 3,
+        "remote_count": 3,
+        "removed": [
+          "novorossiysk-russia"
+        ],
+        "updated": []
+      },
+      "owners": {
+        "local": "FOPTNET, Rostelecom",
+        "remote": "FOPTNET, GEO-METRIA, Rostelecom"
+      },
+      "url": {
+        "local": "http://www.georgia-russia.com",
+        "remote": "https://www.company.rt.ru/"
+      }
+    },
+    "id": "georgia-russia",
+    "name": "Georgia-Russia"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "st-croix-virgin-islands-virgin-islands-u-s-"
+        ],
+        "local_count": 6,
+        "remote_count": 6,
+        "removed": [
+          "st-croix-virgin-islands-u-s-"
+        ],
+        "updated": []
+      }
+    },
+    "id": "global-caribbean-network-gcn",
+    "name": "Global Caribbean Network (GCN)"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.globalconnect.dk",
+        "remote": "https://www.globalconnectcarrier.com/"
+      }
+    },
+    "id": "globalconnect-2-gc2",
+    "name": "GlobalConnect 2 (GC2)"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.globalconnect.dk",
+        "remote": "https://www.globalconnectcarrier.com/"
+      }
+    },
+    "id": "globalconnect-3-gc3",
+    "name": "GlobalConnect 3 (GC3)"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.globalconnect.dk",
+        "remote": "https://www.globalconnectcarrier.com/"
+      }
+    },
+    "id": "globalconnect-kpn",
+    "name": "GlobalConnect-KPN"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "punta-salinas-pr-united-states"
+        ],
+        "local_count": 2,
+        "remote_count": 2,
+        "removed": [
+          "punta-salina-pr-united-states"
+        ],
+        "updated": []
+      }
+    },
+    "id": "gtmo-pr",
+    "name": "GTMO-PR"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "naha-japan"
+        ],
+        "local_count": 3,
+        "remote_count": 3,
+        "removed": [
+          "okinawa-japan"
+        ],
+        "updated": []
+      }
+    },
+    "id": "guam-okinawa-kyushu-incheon-goki",
+    "name": "Guam Okinawa Kyushu Incheon (GOKI)"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Golis Telecommunications, Omantel, Telesom",
+        "remote": "Golis Telecommunications, Telesom, Zain Omantel International"
+      }
+    },
+    "id": "gulf2africa-g2a",
+    "name": "Gulf2Africa (G2A)"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "length",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "faratea-french-polynesia",
+          "tinian-northern-mariana-islands",
+          "valparaso-chile"
+        ],
+        "local_count": 2,
+        "remote_count": 5,
+        "removed": [],
+        "updated": [
+          "papenoo-french-polynesia"
+        ]
+      },
+      "length": {
+        "local": null,
+        "remote": "17,483 km"
+      },
+      "rfs": {
+        "local": "2026",
+        "remote": "2029"
+      },
+      "rfs_year": {
+        "local": 2026,
+        "remote": 2029
+      }
+    },
+    "id": "halaihai",
+    "name": "Halaihai"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Federated States of Micronesia Telecommunications Company, Hannon Armstrong, Marshall Islands Telecommunications Authority",
+        "remote": "Federated States of Micronesia Telecommunications Cable Corporation (FSMTCC), Hannon Armstrong, Marshall Islands Telecommunications Authority"
+      }
+    },
+    "id": "hantru1-cable-system",
+    "name": "HANTRU1 Cable System"
+  },
+  {
+    "changed_fields": [
+      "notes",
+      "owners"
+    ],
+    "changes": {
+      "notes": {
+        "local": "Aqua Comms ((http://www.aquacomms.com) acts as the overall system administrator for the Havfrue cable, and has dubbed the portion of the cable where it has ownership (Denmark, Ireland, and U.S. segments) as AEC-2. Bulk Infrastructure (http://www.bulk.no) is the Norwegian landing party for Havfrue.",
+        "remote": "EXA Infrastructure acts as the overall system administrator for the Havfrue cable, and has dubbed the portion of the cable where it has ownership (Denmark, Ireland, and U.S. segments) as AEC-2. Bulk Infrastructure is the Norwegian landing party for Havfrue."
+      },
+      "owners": {
+        "local": "Aqua Comms, Bulk, Google, Meta",
+        "remote": "Bulk Infrastructure, EXA Infrastructure, Google, Meta"
+      }
+    },
+    "id": "havfrueaec-2",
+    "name": "Havfrue/AEC-2"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Aqua Comms, Bulk, Meta",
+        "remote": "Bulk Infrastructure, EXA Infrastructure, Meta"
+      }
+    },
+    "id": "havhingstenceltixconnect-2-cc-2",
+    "name": "Havhingsten/CeltixConnect-2 (CC-2)"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Aqua Comms, Bulk, Meta",
+        "remote": "Bulk Infrastructure, EXA Infrastructure, Meta"
+      }
+    },
+    "id": "havhingstennorth-sea-connect-nsc",
+    "name": "Havhingsten/North Sea Connect (NSC)"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Bulk",
+        "remote": "Bulk Infrastructure"
+      },
+      "url": {
+        "local": "https://bulk.no/",
+        "remote": "http://bulkinfrastructure.com/"
+      }
+    },
+    "id": "havsil",
+    "name": "Havsil"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "length",
+      "suppliers"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "barbers-point-hi-united-states"
+        ],
+        "local_count": 6,
+        "remote_count": 6,
+        "removed": [
+          "honolulu-hi-united-states"
+        ],
+        "updated": []
+      },
+      "length": {
+        "local": "675 km",
+        "remote": "740 km"
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "Prysmian"
+      }
+    },
+    "id": "hawaiian-islands-fiber-link-hifl",
+    "name": "Hawaiian Islands Fiber Link (HIFL)"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "owners"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "neiafu-tonga"
+        ],
+        "local_count": 5,
+        "remote_count": 6,
+        "removed": [],
+        "updated": []
+      },
+      "owners": {
+        "local": "Hawaiki Submarine Cable LP",
+        "remote": "BW Digital"
+      }
+    },
+    "id": "hawaiki",
+    "name": "Hawaiki"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Global Cloud Xchange",
+        "remote": "FLAG"
+      },
+      "url": {
+        "local": "http://www.globalcloudxchange.com",
+        "remote": "https://flagtel.com/"
+      }
+    },
+    "id": "hawk",
+    "name": "Hawk"
+  },
+  {
+    "changed_fields": [
+      "suppliers"
+    ],
+    "changes": {
+      "suppliers": {
+        "local": null,
+        "remote": "Xtera"
+      }
+    },
+    "id": "high-capacity-undersea-guernsey-optical-fibre-hugo",
+    "name": "High-capacity Undersea Guernsey Optical-fibre (HUGO)"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "KDDI, NTT, Rakuten, Softbank Corp",
+        "remote": "KDDI, NTT, Rakuten, Softbank"
+      }
+    },
+    "id": "hokkaido-akita-cable",
+    "name": "Hokkaido-Akita Cable"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "length"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "auckland-new-zealand",
+          "faratea-french-polynesia",
+          "melbourne-vic-australia",
+          "san-diego-ca-united-states"
+        ],
+        "local_count": 3,
+        "remote_count": 6,
+        "removed": [
+          "los-angeles-ca-united-states"
+        ],
+        "updated": [
+          "papenoo-french-polynesia",
+          "sydney-nsw-australia"
+        ]
+      },
+      "length": {
+        "local": null,
+        "remote": "15,215 km"
+      }
+    },
+    "id": "honomoana",
+    "name": "Honomoana"
+  },
+  {
+    "changed_fields": [
+      "is_planned"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      }
+    },
+    "id": "iceni",
+    "name": "Iceni"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Bharti Airtel, Etisalat UAE, Ogero, Orange, Pakistan Telecommunications Company Ltd., Saudi Telecom, Sparkle, Tata Communications, Telecom Egypt",
+        "remote": "Bharti Airtel, Ogero, Orange, Pakistan Telecommunications Company Ltd., Sparkle, Tata Communications, Telecom Egypt, center3, e&"
+      }
+    },
+    "id": "imewe",
+    "name": "IMEWE"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "landing_points",
+      "rfs"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "landing_points": {
+        "added": [
+          "digha-india",
+          "machilipatnam-india"
+        ],
+        "local_count": 7,
+        "remote_count": 9,
+        "removed": [],
+        "updated": []
+      },
+      "rfs": {
+        "local": "2024",
+        "remote": "2024 Q4"
+      }
+    },
+    "id": "india-asia-xpress-iax",
+    "name": "India Asia Xpress (IAX)"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "jeddah-saudi-arabia",
+          "marseille-france",
+          "tympaki-greece"
+        ],
+        "local_count": 9,
+        "remote_count": 11,
+        "removed": [
+          "timpaki-greece"
+        ],
+        "updated": []
+      },
+      "rfs": {
+        "local": "2025",
+        "remote": "2026 Q3"
+      },
+      "rfs_year": {
+        "local": 2025,
+        "remote": 2026
+      }
+    },
+    "id": "india-europe-xpress-iex",
+    "name": "India Europe Xpress (IEX)"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.telin.co.id",
+        "remote": "https://www.telin.net/"
+      }
+    },
+    "id": "indonesia-global-gateway-igg-system",
+    "name": "Indonesia Global Gateway (IGG) System"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "netanya-israel"
+        ],
+        "local_count": 7,
+        "remote_count": 7,
+        "removed": [
+          "netania-israel"
+        ],
+        "updated": []
+      }
+    },
+    "id": "israel-coasting-1-ic-1",
+    "name": "Israel Coasting 1 (IC-1)"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "st-georges-bay-malta"
+        ],
+        "local_count": 2,
+        "remote_count": 2,
+        "removed": [
+          "msida-malta"
+        ],
+        "updated": []
+      },
+      "rfs": {
+        "local": "1995",
+        "remote": "1994"
+      },
+      "rfs_year": {
+        "local": 1995,
+        "remote": 1994
+      }
+    },
+    "id": "italy-malta",
+    "name": "Italy-Malta"
+  },
+  {
+    "changed_fields": [
+      "suppliers"
+    ],
+    "changes": {
+      "suppliers": {
+        "local": "Fujitsu, NSW",
+        "remote": "Fujitsu, Norddeutsche Seekabelwerke GmbH (NSW)"
+      }
+    },
+    "id": "jaka2ladema",
+    "name": "JaKa2LaDeMa"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Indosat Ooredoo, Moratelindo, XL Axiata",
+        "remote": "Indosat Ooredoo, Moratelindo, XLSmart"
+      }
+    },
+    "id": "jambi-batam-cable-system-jiba",
+    "name": "Jambi-Batam Cable System (JIBA)"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "suppliers"
+    ],
+    "changes": {
+      "owners": {
+        "local": "EXA Infrastructure, Regione Sardegne, Tiscali, WINDTRE (incl. Wind and 3 Italia)",
+        "remote": "EXA Infrastructure, Regione Sardegne, Tiscali, WINDTRE"
+      },
+      "suppliers": {
+        "local": "NSW",
+        "remote": "Norddeutsche Seekabelwerke GmbH (NSW)"
+      }
+    },
+    "id": "janna",
+    "name": "Janna"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "owners": {
+        "local": "RTI",
+        "remote": "Lightstorm Telecom"
+      },
+      "url": {
+        "local": "http://www.rticable.com",
+        "remote": "https://www.lightstorm.net/"
+      }
+    },
+    "id": "japan-guam-australia-north-jga-n",
+    "name": "Japan-Guam-Australia North (JGA-N)"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Australia’s Academic and Research Network (AARNET), Google, RTI",
+        "remote": "Australia’s Academic and Research Network (AARNET), Google, Lightstorm Telecom"
+      },
+      "url": {
+        "local": "http://www.rticable.com",
+        "remote": "https://www.lightstorm.net/"
+      }
+    },
+    "id": "japan-guam-australia-south-jga-s",
+    "name": "Japan-Guam-Australia South (JGA-S)"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "suppliers"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "naha-japan"
+        ],
+        "local_count": 9,
+        "remote_count": 9,
+        "removed": [
+          "okinawa-japan"
+        ],
+        "updated": []
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "NEC"
+      }
+    },
+    "id": "japan-information-highway-jih",
+    "name": "Japan Information Highway (JIH)"
+  },
+  {
+    "changed_fields": [
+      "length"
+    ],
+    "changes": {
+      "length": {
+        "local": "40 km",
+        "remote": null
+      }
+    },
+    "id": "java-bali-cable-system-jbcs",
+    "name": "Java Bali Cable System (JBCS)"
+  },
+  {
+    "changed_fields": [
+      "suppliers"
+    ],
+    "changes": {
+      "suppliers": {
+        "local": "NSW",
+        "remote": "Norddeutsche Seekabelwerke GmbH (NSW)"
+      }
+    },
+    "id": "javali",
+    "name": "JAVALI"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "owners",
+      "suppliers",
+      "url"
+    ],
+    "changes": {
+      "length": {
+        "local": null,
+        "remote": "88 km"
+      },
+      "owners": {
+        "local": "Liberty Latin America (LLA)",
+        "remote": "Liberty Networks"
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "SubCom"
+      },
+      "url": {
+        "local": "https://libertynet.com/contact",
+        "remote": "https://libertynet.com"
+      }
+    },
+    "id": "jerry-newton",
+    "name": "Jerry Newton"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "landing_points",
+      "owners",
+      "rfs",
+      "rfs_year",
+      "url"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "landing_points": {
+        "added": [],
+        "local_count": 4,
+        "remote_count": 3,
+        "removed": [
+          "harbour-pointe-wa-united-states"
+        ],
+        "updated": []
+      },
+      "owners": {
+        "local": "Seren Juno Network Co., Ltd.",
+        "remote": "Seren Juno"
+      },
+      "rfs": {
+        "local": "2024 Q4",
+        "remote": "2025 May"
+      },
+      "rfs_year": {
+        "local": 2024,
+        "remote": 2025
+      },
+      "url": {
+        "local": null,
+        "remote": "https://seren-juno.com/"
+      }
+    },
+    "id": "juno",
+    "name": "JUNO"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Amazon Web Services, Meta, NTT, PCCW, PLDT, Softbank Corp",
+        "remote": "Amazon Web Services, Meta, NTT, PCCW, PLDT, Softbank"
+      }
+    },
+    "id": "jupiter",
+    "name": "JUPITER"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "KT, NTT, QTNet, Softbank Corp",
+        "remote": "KT, NTT, QTNet, Softbank"
+      }
+    },
+    "id": "korea-japan-cable-network-kjcn",
+    "name": "Korea-Japan Cable Network (KJCN)"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [],
+        "local_count": 15,
+        "remote_count": 14,
+        "removed": [
+          "jayapura-indonesia"
+        ],
+        "updated": []
+      }
+    },
+    "id": "kumul-domestic-submarine-cable-system",
+    "name": "Kumul Domestic Submarine Cable System"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Sparkle, Tele2, Tet",
+        "remote": "Tele2, Tet"
+      }
+    },
+    "id": "latvia-sweden-1-lv-se-1",
+    "name": "Latvia-Sweden 1 (LV-SE 1)"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "XL Axiata",
+        "remote": "XLSmart"
+      }
+    },
+    "id": "link-1-phase-1",
+    "name": "Link 1 Phase-1"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "XL Axiata",
+        "remote": "XLSmart"
+      }
+    },
+    "id": "link-1-phase-2",
+    "name": "Link 1 Phase-2"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "XL Axiata",
+        "remote": "XLSmart"
+      }
+    },
+    "id": "link-2-phase-1",
+    "name": "Link 2 Phase-1"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "XL Axiata",
+        "remote": "XLSmart"
+      }
+    },
+    "id": "link-2-phase-2",
+    "name": "Link 2 Phase-2"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "XL Axiata",
+        "remote": "XLSmart"
+      }
+    },
+    "id": "link-3-phase-1",
+    "name": "Link 3 Phase-1"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "XL Axiata",
+        "remote": "XLSmart"
+      }
+    },
+    "id": "link-3-phase-2",
+    "name": "Link 3 Phase-2"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "XL Axiata",
+        "remote": "XLSmart"
+      }
+    },
+    "id": "link-4-phase-2",
+    "name": "Link 4 Phase-2"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "XL Axiata",
+        "remote": "XLSmart"
+      }
+    },
+    "id": "link-5-phase-2",
+    "name": "Link 5 Phase-2"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "length"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "porto-alegre-brazil"
+        ],
+        "local_count": 3,
+        "remote_count": 4,
+        "removed": [],
+        "updated": []
+      },
+      "length": {
+        "local": "2,600 km",
+        "remote": "2,880 km"
+      }
+    },
+    "id": "malbec",
+    "name": "Malbec"
+  },
+  {
+    "changed_fields": [
+      "suppliers"
+    ],
+    "changes": {
+      "suppliers": {
+        "local": "Elettra",
+        "remote": null
+      }
+    },
+    "id": "malta-gozo-cable",
+    "name": "Malta-Gozo Cable"
+  },
+  {
+    "changed_fields": [
+      "length"
+    ],
+    "changes": {
+      "length": {
+        "local": null,
+        "remote": "268 km"
+      }
+    },
+    "id": "mariana-guam-cable",
+    "name": "Mariana-Guam Cable"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Matrix Networks Pte. Ltd.",
+        "remote": "Matrix NAP Info, Matrix Networks"
+      }
+    },
+    "id": "matrix-cable-system",
+    "name": "Matrix Cable System"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "landing_points",
+      "notes",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "landing_points": {
+        "added": [
+          "athens-greece",
+          "manilva-spain",
+          "mellieha-malta",
+          "misuratah-libya",
+          "tartous-syria"
+        ],
+        "local_count": 17,
+        "remote_count": 18,
+        "removed": [
+          "heraklion-greece",
+          "sines-portugal",
+          "torreguadiaro-spain",
+          "tripoli-libya"
+        ],
+        "updated": []
+      },
+      "notes": {
+        "local": "Orange Tunisie owns the Tunisia branch which they market as ViaTunisia.",
+        "remote": "Orange Tunisie owns the Tunisia branch."
+      },
+      "rfs": {
+        "local": "2025 Q4",
+        "remote": "2026"
+      },
+      "rfs_year": {
+        "local": 2025,
+        "remote": 2026
+      }
+    },
+    "id": "medusa-submarine-cable-system",
+    "name": "Medusa Submarine Cable System"
+  },
+  {
+    "changed_fields": [
+      "suppliers"
+    ],
+    "changes": {
+      "suppliers": {
+        "local": "NSW",
+        "remote": "Norddeutsche Seekabelwerke GmbH (NSW)"
+      }
+    },
+    "id": "melita-1",
+    "name": "Melita 1"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "CEB Fibernet, Canal+ Telecom, Emtel, SFR, Telma (Telecom Malagasy), Zeop (incl. Reunicable)",
+        "remote": "***Canal+ Telecom***, CEB Fibernet, Emtel, SFR, Telma (Telecom Malagasy), Zeop (incl. Reunicable)"
+      }
+    },
+    "id": "meltingpot-indianoceanic-submarine-system-metiss",
+    "name": "Meltingpot Indianoceanic Submarine System (METISS)"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "st-croix-virgin-islands-virgin-islands-u-s-"
+        ],
+        "local_count": 3,
+        "remote_count": 3,
+        "removed": [
+          "st-croix-virgin-islands-u-s-"
+        ],
+        "updated": []
+      }
+    },
+    "id": "mid-atlantic-crossing-mac",
+    "name": "Mid-Atlantic Crossing (MAC)"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [],
+        "local_count": 6,
+        "remote_count": 5,
+        "removed": [
+          "djibouti-city-djibouti"
+        ],
+        "updated": []
+      }
+    },
+    "id": "middle-east-north-africa-mena-cable-systemgulf-bridge-international",
+    "name": "Middle East North Africa (MENA) Cable System/Gulf Bridge International"
+  },
+  {
+    "changed_fields": [
+      "suppliers"
+    ],
+    "changes": {
+      "suppliers": {
+        "local": null,
+        "remote": "Prysmian"
+      }
+    },
+    "id": "minoas-east-and-west",
+    "name": "Minoas East and West"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "rfs"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "rfs": {
+        "local": "2024 February",
+        "remote": "2024 December"
+      }
+    },
+    "id": "mist",
+    "name": "MIST"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "suppliers"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "naha-japan"
+        ],
+        "local_count": 2,
+        "remote_count": 2,
+        "removed": [
+          "okinawa-japan"
+        ],
+        "updated": []
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "NEC"
+      }
+    },
+    "id": "miyazaki-okinawa-cable-moc",
+    "name": "Miyazaki-Okinawa Cable (MOC)"
+  },
+  {
+    "changed_fields": [
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "rfs": {
+        "local": "2019 February",
+        "remote": "2017 December"
+      },
+      "rfs_year": {
+        "local": 2019,
+        "remote": 2017
+      }
+    },
+    "id": "monet",
+    "name": "Monet"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "China Mobile, China Telecom, China Unicom, Chunghwa Telecom, KT, Microsoft, Softbank Corp",
+        "remote": "China Mobile, China Telecom, China Unicom, Chunghwa Telecom, KT, Microsoft, Softbank"
+      }
+    },
+    "id": "new-cross-pacific-ncp-cable-system",
+    "name": "New Cross Pacific (NCP) Cable System"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "https://www.altiboxcarrier.com/",
+        "remote": "https://midgardinfra.com/"
+      }
+    },
+    "id": "no-uk",
+    "name": "NO-UK"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "emmonak-ak-united-states",
+          "hooper-bay-ak-united-states"
+        ],
+        "local_count": 7,
+        "remote_count": 8,
+        "removed": [
+          "alakanuk-ak-united-states"
+        ],
+        "updated": []
+      }
+    },
+    "id": "nome-to-homer-express-nthe",
+    "name": "Nome to Homer Express (NTHE)"
+  },
+  {
+    "changed_fields": [
+      "notes",
+      "owners"
+    ],
+    "changes": {
+      "notes": {
+        "local": "Lietuvos Energija and Svenska Kraftnät operatoe the NordBalt cable, a high-voltage power cable that also has a fiber-optic cable attached to it.",
+        "remote": "Lietuvos Energija and Svenska Kraftnät operate the NordBalt cable, a high-voltage power cable that also has a fiber-optic cable alongside it."
+      },
+      "owners": {
+        "local": "Lietuvos Energija, Svenska Kraftnät",
+        "remote": "Litgrid, Svenska Kraftnät"
+      }
+    },
+    "id": "nordbalt",
+    "name": "NordBalt"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "length"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "annies-bay-bermuda",
+          "sines-portugal",
+          "so-miguel-portugal"
+        ],
+        "local_count": 3,
+        "remote_count": 4,
+        "removed": [
+          "sesimbra-portugal",
+          "st-davids-bermuda"
+        ],
+        "updated": []
+      },
+      "length": {
+        "local": null,
+        "remote": "7,194 km"
+      }
+    },
+    "id": "nuvem",
+    "name": "Nuvem"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "suppliers"
+    ],
+    "changes": {
+      "owners": {
+        "local": "NTT",
+        "remote": "Tokyo Metropolitan Government"
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "NEC"
+      }
+    },
+    "id": "ogasawara-cable-network",
+    "name": "Ogasawara Cable Network"
+  },
+  {
+    "changed_fields": [
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "rfs": {
+        "local": "2025 Q1",
+        "remote": "2026 Q2"
+      },
+      "rfs_year": {
+        "local": 2025,
+        "remote": 2026
+      }
+    },
+    "id": "olisipo",
+    "name": "Olisipo"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "barka-oman"
+        ],
+        "local_count": 5,
+        "remote_count": 5,
+        "removed": [
+          "muscat-oman"
+        ],
+        "updated": []
+      }
+    },
+    "id": "oman-australia-cable-oac",
+    "name": "Oman Australia Cable (OAC)"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "notes",
+      "owners"
+    ],
+    "changes": {
+      "length": {
+        "local": "6,000 km",
+        "remote": "6,163 km"
+      },
+      "notes": {
+        "local": null,
+        "remote": "The portion of PCCS linking Aruba with Curacao is operated by Setar and United Telecommunication Services (UTS). This portion of the cable is called Alonso de Ojeda II."
+      },
+      "owners": {
+        "local": "Liberty Latin America (LLA), Setar, Telconet, Telxius, United Telecommunication Services (UTS)",
+        "remote": "Liberty Networks, Setar, Telconet, Telxius, United Telecommunication Services (UTS)"
+      }
+    },
+    "id": "pacific-caribbean-cable-system-pccs",
+    "name": "Pacific Caribbean Cable System (PCCS)"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "ternate-indonesia"
+        ],
+        "local_count": 20,
+        "remote_count": 20,
+        "removed": [
+          "terante-indonesia"
+        ],
+        "updated": []
+      }
+    },
+    "id": "palapa-ring-middle",
+    "name": "Palapa Ring Middle"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Paniolo Cable Company",
+        "remote": "Hawaiian Telcom"
+      }
+    },
+    "id": "paniolo-cable-network",
+    "name": "Paniolo Cable Network"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "FiberStar, XL Axiata",
+        "remote": "FiberStar, XLSmart"
+      }
+    },
+    "id": "pasuli",
+    "name": "PASULI"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "notes"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "kalba-united-arab-emirates"
+        ],
+        "local_count": 13,
+        "remote_count": 14,
+        "removed": [],
+        "updated": []
+      },
+      "notes": {
+        "local": "Cyta owns the branch which they market as Arsinoe. GO owns the branch to Malta which they market as LaValette. Ooredoo Tunisia owns the Tunisian branch which they market as IFRIQYA. Zain owns the branch to Jeddah which they market as J2M (Jeddah to Marseille).",
+        "remote": "Cyta owns the branch to Cyprus which they market as Arsinoe. GO owns the branch to Malta which they market as LaValette. Ooredoo Tunisia owns the Tunisian branch which they market as IFRIQYA. Zain owns the branch to Jeddah which they market as J2M (Jeddah to Marseille). du owns a branch to the UAE that will be completed in 2026."
+      }
+    },
+    "id": "peace-cable",
+    "name": "PEACE Cable"
+  },
+  {
+    "changed_fields": [
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "rfs": {
+        "local": null,
+        "remote": "2016"
+      },
+      "rfs_year": {
+        "local": null,
+        "remote": 2016
+      }
+    },
+    "id": "pencan-9",
+    "name": "Pencan-9"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "landing_points"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "landing_points": {
+        "added": [
+          "canneto-italy"
+        ],
+        "local_count": 30,
+        "remote_count": 31,
+        "removed": [],
+        "updated": []
+      }
+    },
+    "id": "piano-isole-minori",
+    "name": "Piano Isole Minori"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "owners": {
+        "local": "TPG Corporation (incl. iiNet and Internode)",
+        "remote": "Vocus Communications"
+      },
+      "url": {
+        "local": "https://www.tpg.com.au",
+        "remote": "http://www.vocus.com.au"
+      }
+    },
+    "id": "pipe-pacific-cable-1-ppc-1",
+    "name": "PIPE Pacific Cable-1 (PPC-1)"
+  },
+  {
+    "changed_fields": [
+      "notes",
+      "suppliers"
+    ],
+    "changes": {
+      "notes": {
+        "local": "The first phase linking Teriberka and Amderma was completed in October 2022. The Amderm-Dikson-Tiksi segments are anticipated to be ready in 2025. The remaining portions are scheduled to be in service by 2026.",
+        "remote": "The first phase linking Teriberka and Amderma was completed in October 2022. The remaining portions are scheduled to be in service between 2026 and 2028."
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "JSC Optic Fiber Systems"
+      }
+    },
+    "id": "polar-express",
+    "name": "Polar Express"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "https://www.oceanspecialists.com",
+        "remote": null
+      }
+    },
+    "id": "poseidon",
+    "name": "POSEIDON"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Etisalat UAE, Ooredoo",
+        "remote": "Ooredoo, e&"
+      }
+    },
+    "id": "qatar-u-a-e-submarine-cable-system",
+    "name": "Qatar-U.A.E. Submarine Cable System"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "length",
+      "owners",
+      "rfs",
+      "rfs_year",
+      "suppliers"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "djibouti-city-djibouti"
+        ],
+        "local_count": 6,
+        "remote_count": 6,
+        "removed": [
+          "haramous-djibouti"
+        ],
+        "updated": []
+      },
+      "length": {
+        "local": "7,028 km",
+        "remote": "7,376 km"
+      },
+      "owners": {
+        "local": "Google, Omantel, Sparkle",
+        "remote": "Google, Sparkle, Zain Omantel International"
+      },
+      "rfs": {
+        "local": "2025",
+        "remote": "2026"
+      },
+      "rfs_year": {
+        "local": 2025,
+        "remote": 2026
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "ASN"
+      }
+    },
+    "id": "raman",
+    "name": "Raman"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "joetsu-japan"
+        ],
+        "local_count": 2,
+        "remote_count": 2,
+        "removed": [
+          "naoetsu-japan"
+        ],
+        "updated": []
+      }
+    },
+    "id": "russia-japan-cable-network-rjcn",
+    "name": "Russia-Japan Cable Network (RJCN)"
+  },
+  {
+    "changed_fields": [
+      "suppliers"
+    ],
+    "changes": {
+      "suppliers": {
+        "local": null,
+        "remote": "NEC"
+      }
+    },
+    "id": "s-u-b-cable-system",
+    "name": "S-U-B Cable System"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "AT&T, Angola Telecom, BICS, Camtel, China Telecom, Chunghwa Telecom, Ghana Telecommunications Company, KPN, KT, Liquid Intelligent Technologies, Maroc Telecom, Mauritius Telecom, NATCOM (Nigeria), OPT, Orange, Orange Cote d’Ivoire, PCCW, Singtel, Sonatel, Sparkle, T-Mobile, Tata Communications, Telecom Namibia, Telefonica, Telekom Malaysia, Telkom South Africa, Telstra, Verizon, Vodafone",
+        "remote": "AT&T, Angola Telecom, BICS, Camtel, China Telecom, Chunghwa Telecom, Cogent, Ghana Telecommunications Company, KPN, Liquid Intelligent Technologies, Maroc Telecom, Mauritius Telecom, NATCOM (Nigeria), OPT, Orange, Orange Cote d’Ivoire, PCCW, Singtel, Sonatel, Sparkle, Tata Communications, Telecom Namibia, Telefonica, Telekom Malaysia, Telkom South Africa, Telstra, Verizon, Vodafone"
+      }
+    },
+    "id": "safe",
+    "name": "SAFE"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "okhotskoe-russia"
+        ],
+        "local_count": 4,
+        "remote_count": 4,
+        "removed": [
+          "yuzhno-sakhalinsk-russia"
+        ],
+        "updated": []
+      }
+    },
+    "id": "sakhalin-kuril-islands-cable",
+    "name": "Sakhalin-Kuril Islands Cable"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "AT&T, Altice Portugal, Angola Telecom, BICS, BT, Benin Telecoms, Camtel, China Telecom, Chunghwa Telecom, Cyta, Deutsche Telekom, Ghana Telecommunications Company, KPN, KT, Liquid Intelligent Technologies, Maroc Telecom, Mauritius Telecom, NATCOM (Nigeria), OPT, Orange, Orange Cote d’Ivoire, PCCW, Singtel, Sparkle, T-Mobile, Tata Communications, Telecom Namibia, Telekom Malaysia, Telkom South Africa, Telstra, Telxius, Verizon, Vodafone",
+        "remote": "AT&T, Altice Portugal, Angola Telecom, BICS, BT, Camtel, China Telecom, Chunghwa Telecom, Cogent, Cyta, Deutsche Telekom, Ghana Telecommunications Company, KPN, KT, Liquid Intelligent Technologies, Maroc Telecom, Mauritius Telecom, NATCOM (Nigeria), OPT, Orange, Orange Cote d’Ivoire, PCCW, SBIN (La Société Béninoise d’Infrastructures Numériques), Singtel, Sparkle, Tata Communications, Telecom Namibia, Telekom Malaysia, Telkom South Africa, Telstra, Telxius, Verizon, Vodafone"
+      }
+    },
+    "id": "sat-3wasc",
+    "name": "SAT-3/WASC"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Saudi Telecom, Sudatel, The Arab Investment Company",
+        "remote": "Sudatel, The Arab Investment Company, center3"
+      }
+    },
+    "id": "saudi-arabia-sudan-1-sas-1",
+    "name": "Saudi Arabia-Sudan-1 (SAS-1)"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Saudi Telecom, Sudatel",
+        "remote": "Sudatel, center3"
+      }
+    },
+    "id": "saudi-arabia-sudan-2-sas-2",
+    "name": "Saudi Arabia-Sudan-2 (SAS-2)"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Saudi Telecom",
+        "remote": "center3"
+      },
+      "url": {
+        "local": "http://www.stc.com.sa",
+        "remote": "https://center3.com/"
+      }
+    },
+    "id": "saudi-vision",
+    "name": "Saudi Vision"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "landing_points",
+      "length",
+      "owners",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "landing_points": {
+        "added": [
+          "tseung-kwan-o-china"
+        ],
+        "local_count": 6,
+        "remote_count": 6,
+        "removed": [
+          "chung-hom-kok-china"
+        ],
+        "updated": [
+          "kuching-malaysia"
+        ]
+      },
+      "length": {
+        "local": "5,000 km",
+        "remote": "6,000 km"
+      },
+      "owners": {
+        "local": "China Mobile, China Unicom, Converge ICT, Irix Sdn Bhd",
+        "remote": "China Mobile, China Unicom, Converge ICT"
+      },
+      "rfs": {
+        "local": "2024",
+        "remote": "2026"
+      },
+      "rfs_year": {
+        "local": 2024,
+        "remote": 2026
+      }
+    },
+    "id": "sea-h2x",
+    "name": "SEA-H2X"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "GTA TeleGuam, Globe Telecom, Hawaiian Telcom, RTI, Telin",
+        "remote": "GTA TeleGuam, Globe Telecom, Hawaiian Telcom, Lightstorm Telecom, Telin"
+      }
+    },
+    "id": "sea-us",
+    "name": "SEA-US"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.aptalaska.com",
+        "remote": "https://www.aptalaska.com/"
+      }
+    },
+    "id": "sealink",
+    "name": "SEALink"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Algerie Telecom, Bangladesh Submarine Cable Company Limited (BSCCL), Bharti Airtel, Etisalat UAE, National Telecom, Orange, Pakistan Telecommunications Company Ltd., Saudi Telecom, Singtel, Sparkle, Sri Lanka Telecom, Tata Communications, Telecom Egypt, Telekom Malaysia, Tunisia Telecom, Verizon",
+        "remote": "Algerie Telecom, Bangladesh Submarine Cable Company Limited (BSCCL), Bharti Airtel, National Telecom, Orange, Pakistan Telecommunications Company Ltd., Singtel, Sparkle, Sri Lanka Telecom, Tata Communications, Telecom Egypt, Telekom Malaysia, Tunisia Telecom, Verizon, center3, e&"
+      }
+    },
+    "id": "seamewe-4",
+    "name": "SeaMeWe-4"
+  },
+  {
+    "changed_fields": [
+      "notes",
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "notes": {
+        "local": null,
+        "remote": "Yemen landing has not yet been activated."
+      },
+      "owners": {
+        "local": "Bangladesh Submarine Cable Company Limited (BSCCL), China Mobile, China Telecom, China Unicom, Djibouti Telecom, Myanmar Post and Telecommunication (MPT), Ooredoo, Orange, Saudi Telecom, Singtel, Sparkle, Sri Lanka Telecom, TeleYemen, Telecom Egypt, Telekom Malaysia, Telkom Indonesia, Transworld, du",
+        "remote": "Bangladesh Submarine Cable Company Limited (BSCCL), China Mobile, China Telecom, China Unicom, Djibouti Telecom, Myanmar Post and Telecommunication (MPT), Ooredoo, Orange, Singtel, Sparkle, Sri Lanka Telecom, TeleYemen, Telecom Egypt, Telekom Malaysia, Telkom Indonesia, Transworld, center3, du"
+      },
+      "url": {
+        "local": "http://www.seamewe5.com",
+        "remote": null
+      }
+    },
+    "id": "seamewe-5",
+    "name": "SeaMeWe-5"
+  },
+  {
+    "changed_fields": [
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "rfs": {
+        "local": "2025",
+        "remote": "2027"
+      },
+      "rfs_year": {
+        "local": 2025,
+        "remote": 2027
+      }
+    },
+    "id": "seamewe-6",
+    "name": "SeaMeWe-6"
+  },
+  {
+    "changed_fields": [
+      "owners",
+      "url"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Agence De L’informatique del’Etat",
+        "remote": "Sénégal Numérique SA"
+      },
+      "url": {
+        "local": "https://adie.sn/",
+        "remote": "https://senegalnumeriquesa.sn/"
+      }
+    },
+    "id": "senegal-horn-of-africa-regional-express-share-cable",
+    "name": "Senegal Horn of Africa Regional Express (SHARE) Cable"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Etisalat UAE",
+        "remote": "e&"
+      }
+    },
+    "id": "sir-abu-nuayr-cable",
+    "name": "Sir Abu Nu’ayr Cable"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "XL Axiata",
+        "remote": "XLSmart"
+      }
+    },
+    "id": "sjjk",
+    "name": "SJJK"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Altibox",
+        "remote": "Midgard Infra"
+      }
+    },
+    "id": "skagenfiber-west",
+    "name": "Skagenfiber West"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "st-croix-virgin-islands-virgin-islands-u-s-"
+        ],
+        "local_count": 11,
+        "remote_count": 11,
+        "removed": [
+          "st-croix-virgin-islands-u-s-"
+        ],
+        "updated": []
+      }
+    },
+    "id": "south-american-crossing-sac",
+    "name": "South American Crossing (SAC)"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.angolacables.co.ao",
+        "remote": "https://www.angolacables.co.ao/"
+      }
+    },
+    "id": "south-atlantic-cable-system-sacs",
+    "name": "South Atlantic Cable System (SACS)"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "owners",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "owners": {
+        "local": "China Mobile, Chunghwa Telecom, DongHwa Telecom, KDDI, Meta, SK Broadband, Singtel, Telin, True Corporation, VNPT-Vinaphone",
+        "remote": "China Mobile, Chunghwa Telecom, DongHwa Telecom, KDDI, Meta, SK Broadband, Singtel, Telin, True Corporation, VNPT International"
+      },
+      "rfs": {
+        "local": "2024 Q4",
+        "remote": "2025 July"
+      },
+      "rfs_year": {
+        "local": 2024,
+        "remote": 2025
+      }
+    },
+    "id": "southeast-asia-japan-cable-2-sjc2",
+    "name": "Southeast Asia-Japan Cable 2 (SJC2)"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "url"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "st-croix-virgin-islands-virgin-islands-u-s-"
+        ],
+        "local_count": 16,
+        "remote_count": 16,
+        "removed": [
+          "st-croix-virgin-islands-u-s-"
+        ],
+        "updated": []
+      },
+      "url": {
+        "local": "http://southern-caribbean.com",
+        "remote": null
+      }
+    },
+    "id": "southern-caribbean-fiber",
+    "name": "Southern Caribbean Fiber"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "hermosa-beach-ca-united-states"
+        ],
+        "local_count": 7,
+        "remote_count": 7,
+        "removed": [
+          "los-angeles-ca-united-states"
+        ],
+        "updated": []
+      }
+    },
+    "id": "southern-cross-next",
+    "name": "Southern Cross NEXT"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "christiansted-virgin-islands-u-s-"
+        ],
+        "local_count": 7,
+        "remote_count": 7,
+        "removed": [
+          "christiansted-virgin-islands-virgin-islands-u-s-"
+        ],
+        "updated": []
+      }
+    },
+    "id": "st-thomas-st-croix-system",
+    "name": "St. Thomas-St. Croix System"
+  },
+  {
+    "changed_fields": [
+      "suppliers",
+      "url"
+    ],
+    "changes": {
+      "suppliers": {
+        "local": null,
+        "remote": "HMN Tech"
+      },
+      "url": {
+        "local": null,
+        "remote": "https://dito.ph/"
+      }
+    },
+    "id": "submarine-cable-in-the-philippines-scip",
+    "name": "Submarine Cable in the Philippines (SCiP)"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "length": {
+        "local": "130 km",
+        "remote": "125 km"
+      },
+      "rfs": {
+        "local": "2024",
+        "remote": "2027"
+      },
+      "rfs_year": {
+        "local": 2024,
+        "remote": 2027
+      }
+    },
+    "id": "sunoque-iii",
+    "name": "Sunoque III"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "rfs"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "maroubra-nsw-australia"
+        ],
+        "local_count": 4,
+        "remote_count": 5,
+        "removed": [],
+        "updated": []
+      },
+      "rfs": {
+        "local": "2026 Q1",
+        "remote": "2026 June"
+      }
+    },
+    "id": "sydney-melbourne-adelaide-perth-smap",
+    "name": "Sydney-Melbourne-Adelaide-Perth (SMAP)"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "kapolei-hi-united-states",
+          "maroochydore-qld-australia",
+          "natadola-fiji"
+        ],
+        "local_count": 3,
+        "remote_count": 6,
+        "removed": [],
+        "updated": [
+          "los-angeles-ca-united-states",
+          "suva-fiji",
+          "sydney-nsw-australia"
+        ]
+      }
+    },
+    "id": "tabua",
+    "name": "Tabua"
+  },
+  {
+    "changed_fields": [
+      "length",
+      "owners",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "length": {
+        "local": "130 km",
+        "remote": "187 km"
+      },
+      "owners": {
+        "local": "AT&T, Embratel, Liberty Latin America (LLA), Orange, T-Mobile",
+        "remote": "AT&T, Altice USA, CANTV, Cogent, Embratel, Liberty Networks, Orange, Setar"
+      },
+      "rfs": {
+        "local": "1993 January",
+        "remote": "1992 January"
+      },
+      "rfs_year": {
+        "local": 1993,
+        "remote": 1992
+      }
+    },
+    "id": "taino-carib",
+    "name": "Taino-Carib"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "length",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [],
+        "local_count": 13,
+        "remote_count": 10,
+        "removed": [
+          "magens-bay-vi-united-states",
+          "puerto-plata-dominican-republic",
+          "road-town-virgin-islands-u-k-"
+        ],
+        "updated": []
+      },
+      "length": {
+        "local": "7,000 km",
+        "remote": "7,200 km"
+      },
+      "rfs": {
+        "local": "2025",
+        "remote": "2026 Q4"
+      },
+      "rfs_year": {
+        "local": 2025,
+        "remote": 2026
+      }
+    },
+    "id": "tam-1",
+    "name": "TAM-1"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "length",
+      "name",
+      "owners",
+      "rfs",
+      "rfs_year",
+      "url"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "luganville-vanuatu",
+          "norsup-vanuatu",
+          "tanna-vanuatu"
+        ],
+        "local_count": 2,
+        "remote_count": 5,
+        "removed": [],
+        "updated": [
+          "we-new-caledonia"
+        ]
+      },
+      "length": {
+        "local": "375 km",
+        "remote": "1,000 km"
+      },
+      "name": {
+        "local": "TAMTAM",
+        "remote": "Tamtam"
+      },
+      "owners": {
+        "local": "Interchange",
+        "remote": "Prima"
+      },
+      "rfs": {
+        "local": "2026",
+        "remote": "2027 Q4"
+      },
+      "rfs_year": {
+        "local": 2026,
+        "remote": 2027
+      },
+      "url": {
+        "local": null,
+        "remote": "https://www.prima.vu/"
+      }
+    },
+    "id": "tamtam",
+    "name": "Tamtam"
+  },
+  {
+    "changed_fields": [
+      "is_planned"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      }
+    },
+    "id": "tautira-teahupoo",
+    "name": "Tautira-Teahupo'o"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.telstra.com.au/aboutus/telstra-international",
+        "remote": "https://www.telstrainternational.com/"
+      }
+    },
+    "id": "telstra-endeavour",
+    "name": "Telstra Endeavour"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Etisalat UAE, TEAMS Ltd.",
+        "remote": "TEAMS Ltd., e&"
+      }
+    },
+    "id": "the-east-african-marine-system-teams",
+    "name": "The East African Marine System (TEAMS)"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "aethos-greece"
+        ],
+        "local_count": 20,
+        "remote_count": 20,
+        "removed": [
+          "aetos-greece"
+        ],
+        "updated": []
+      }
+    },
+    "id": "thetis",
+    "name": "Thetis"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "length",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "length": {
+        "local": "600 km",
+        "remote": "607 km"
+      },
+      "rfs": {
+        "local": "2024",
+        "remote": "2025"
+      },
+      "rfs_year": {
+        "local": 2024,
+        "remote": 2025
+      }
+    },
+    "id": "timor-leste-south-submarine-cable-tlssc",
+    "name": "Timor-Leste South Submarine Cable (TLSSC)"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "HKBN, SUNeVision",
+        "remote": "HKBN, iAdvantage"
+      }
+    },
+    "id": "tko-connect",
+    "name": "TKO Connect"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.tongacable.net",
+        "remote": null
+      }
+    },
+    "id": "tonga-cable",
+    "name": "Tonga Cable"
+  },
+  {
+    "changed_fields": [
+      "landing_points",
+      "suppliers"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "toucheng-taiwan"
+        ],
+        "local_count": 4,
+        "remote_count": 5,
+        "removed": [],
+        "updated": []
+      },
+      "suppliers": {
+        "local": null,
+        "remote": "NEC"
+      }
+    },
+    "id": "topaz",
+    "name": "Topaz"
+  },
+  {
+    "changed_fields": [
+      "is_planned",
+      "landing_points",
+      "rfs",
+      "rfs_year"
+    ],
+    "changes": {
+      "is_planned": {
+        "local": true,
+        "remote": false
+      },
+      "landing_points": {
+        "added": [
+          "tinian-northern-mariana-islands"
+        ],
+        "local_count": 4,
+        "remote_count": 5,
+        "removed": [],
+        "updated": []
+      },
+      "rfs": {
+        "local": "2025 May",
+        "remote": "2026 May"
+      },
+      "rfs_year": {
+        "local": 2025,
+        "remote": 2026
+      }
+    },
+    "id": "tpu",
+    "name": "TPU"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://tpecable.org",
+        "remote": "https://tpecable.org:59876/"
+      }
+    },
+    "id": "trans-pacific-express-tpe-cable-system",
+    "name": "Trans-Pacific Express (TPE) Cable System"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Etisalat UAE, Telecommunication Infrastructure Company of Iran",
+        "remote": "Telecommunication Infrastructure Company of Iran, e&"
+      }
+    },
+    "id": "uae-iran",
+    "name": "UAE-Iran"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "stoke-fleming-united-kingdom"
+        ],
+        "local_count": 2,
+        "remote_count": 2,
+        "removed": [
+          "dartmouth-united-kingdom"
+        ],
+        "updated": []
+      }
+    },
+    "id": "uk-channel-islands-7",
+    "name": "UK-Channel Islands-7"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "",
+        "remote": "BT"
+      }
+    },
+    "id": "uk-channel-islands-8",
+    "name": "UK-Channel Islands-8"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.gitge.com",
+        "remote": "https://gitge.com/en/home/"
+      }
+    },
+    "id": "ultramar-ge",
+    "name": "Ultramar GE"
+  },
+  {
+    "changed_fields": [
+      "length"
+    ],
+    "changes": {
+      "length": {
+        "local": null,
+        "remote": "199 km"
+      }
+    },
+    "id": "ulysses-2",
+    "name": "Ulysses 2"
+  },
+  {
+    "changed_fields": [
+      "owners"
+    ],
+    "changes": {
+      "owners": {
+        "local": "Shaw Business",
+        "remote": "Rogers Communications"
+      }
+    },
+    "id": "vancouver-bowen-island-vancouver-island",
+    "name": "Vancouver-Bowen Island-Vancouver Island"
+  },
+  {
+    "changed_fields": [
+      "suppliers"
+    ],
+    "changes": {
+      "suppliers": {
+        "local": "NSW",
+        "remote": "Norddeutsche Seekabelwerke GmbH (NSW)"
+      }
+    },
+    "id": "vodafone-greece-domestic",
+    "name": "Vodafone Greece Domestic"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "http://www.lumen.com/wholesale.html",
+        "remote": null
+      }
+    },
+    "id": "yellow",
+    "name": "Yellow"
+  },
+  {
+    "changed_fields": [
+      "landing_points"
+    ],
+    "changes": {
+      "landing_points": {
+        "added": [
+          "hirara-japan",
+          "naha-japan"
+        ],
+        "local_count": 4,
+        "remote_count": 4,
+        "removed": [
+          "miyakojima-japan",
+          "okinawa-japan"
+        ],
+        "updated": []
+      }
+    },
+    "id": "yui",
+    "name": "YUI"
+  },
+  {
+    "changed_fields": [
+      "suppliers"
+    ],
+    "changes": {
+      "suppliers": {
+        "local": null,
+        "remote": "NEC"
+      }
+    },
+    "id": "yuza-tobishima",
+    "name": "Yuza-Tobishima"
+  },
+  {
+    "changed_fields": [
+      "url"
+    ],
+    "changes": {
+      "url": {
+        "local": "https://www.zayo.com/",
+        "remote": "https://zayoeurope.com/"
+      }
+    },
+    "id": "zeus",
+    "name": "Zeus"
+  }
+]
