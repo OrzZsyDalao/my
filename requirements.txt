@@ -1,0 +1,5 @@
+maxminddb
+geopy
+scikit-learn
+tqdm
+pandas
