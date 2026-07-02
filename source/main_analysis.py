@@ -886,6 +886,38 @@ class CableMatcher:
             "num_ambiguous_candidates": sum(1 for candidate in candidates if candidate.get("ambiguity_tags")),
         }
 
+    def classify_link_physical_projection(self, candidates: List[Dict[str, Any]]) -> str:
+        """Classify the link-level physical projection pattern implied by retained candidates."""
+        if not candidates:
+            return "no_physical_candidate"
+
+        corridor_ids = {
+            str(candidate.get("corridor_id", "")).strip()
+            for candidate in candidates
+            if str(candidate.get("corridor_id", "")).strip()
+        }
+        cable_ids = {
+            str(candidate.get("cable_id", "")).strip()
+            for candidate in candidates
+            if str(candidate.get("cable_id", "")).strip()
+        }
+        has_parallel_group = any(
+            bool(candidate.get("is_parallel_ambiguous"))
+            or int(candidate.get("parallel_group_size", 0) or 0) > 1
+            or "parallel_candidate_corridor" in candidate.get("ambiguity_tags", [])
+            for candidate in candidates
+        )
+
+        if len(corridor_ids) == 1 and len(cable_ids) == 1 and not has_parallel_group:
+            return "single_cable_single_corridor"
+        if len(corridor_ids) == 1 and has_parallel_group:
+            return "parallel_cable_same_corridor"
+        if len(corridor_ids) == 1 and len(cable_ids) > 1:
+            return "multi_cable_single_corridor"
+        if len(corridor_ids) > 1:
+            return "multi_corridor_projection"
+        return "mixed_or_unknown_projection"
+
     def _link_info_summary(self, filtered_candidates: List[Dict[str, Any]]) -> None:
         if not filtered_candidates:
             return
@@ -931,6 +963,7 @@ class CableMatcher:
                     "confidence_bucket": "none",
                     "core_agreement_summary": {"dominant_core_agreement": "none"},
                     "ambiguity_summary": {"tags_present": [], "tag_counts": {}, "num_ambiguous_candidates": 0},
+                    "link_physical_projection_class": "no_physical_candidate",
                     "top1_score": 0.0,
                     "top2_score": 0.0,
                 },
@@ -1024,6 +1057,8 @@ class CableMatcher:
                         "parallel_group_id": parallel_group_id,
                         "parallel_group_size": len(segment_cables),
                         "is_parallel_ambiguous": len(segment_cables) > 1,
+                        "physical_candidate_group_id": parallel_group_id,
+                        "physical_candidate_group_type": "srlg_like_corridor_group",
                         "candidate_support": float(fused_candidate_support),
                         "fused_candidate_support": float(fused_candidate_support),
                         "normalized_candidate_support": 0.0,
@@ -1106,6 +1141,7 @@ class CableMatcher:
                     "confidence_bucket": "none",
                     "core_agreement_summary": {"dominant_core_agreement": "none"},
                     "ambiguity_summary": {"tags_present": [], "tag_counts": {}, "num_ambiguous_candidates": 0},
+                    "link_physical_projection_class": "no_physical_candidate",
                     "top1_score": 0.0,
                     "top2_score": 0.0,
                 },
@@ -1159,6 +1195,10 @@ class CableMatcher:
 
         core_agreement_summary = self.build_core_agreement_summary(filtered_candidates)
         ambiguity_summary = self.build_ambiguity_summary(filtered_candidates)
+        link_physical_projection_class = self.classify_link_physical_projection(filtered_candidates)
+
+        for candidate in filtered_candidates:
+            candidate["link_physical_projection_class"] = link_physical_projection_class
 
         return {
             "all_segments": filtered_candidates,
@@ -1173,6 +1213,7 @@ class CableMatcher:
                 "confidence_bucket": bucket,
                 "core_agreement_summary": core_agreement_summary,
                 "ambiguity_summary": ambiguity_summary,
+                "link_physical_projection_class": link_physical_projection_class,
                 "top1_score": float(top1),  # deprecated compatibility
                 "top2_score": float(top2),  # deprecated compatibility
             },

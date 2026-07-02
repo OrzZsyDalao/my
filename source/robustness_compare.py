@@ -8,6 +8,7 @@ import pandas as pd
 try:
     from source.postprocess_candidate_output import (
         TARGET_MISMATCH_CATEGORY,
+        NETWORK_DEFINITION_COLUMNS,
         build_quadrant_summary,
         build_unit_network_layer_diversity,
         build_unit_network_physical_mismatch,
@@ -24,6 +25,7 @@ except ModuleNotFoundError:
         sys.path.append(BASE_DIR)
     from source.postprocess_candidate_output import (  # type: ignore
         TARGET_MISMATCH_CATEGORY,
+        NETWORK_DEFINITION_COLUMNS,
         build_quadrant_summary,
         build_unit_network_layer_diversity,
         build_unit_network_physical_mismatch,
@@ -129,6 +131,8 @@ def build_mode_result(
     candidate_col: str,
     physical_level: str,
     network_frame: pd.DataFrame,
+    network_definition: str,
+    network_score_column: str,
 ) -> Dict[str, pd.DataFrame]:
     """Build physical-diversity and mismatch tables for one evidence setting."""
     if mode_frame.empty:
@@ -142,7 +146,13 @@ def build_mode_result(
             physical_level=physical_level,
             support_col=support_col,
         )
-        mismatch = build_unit_network_physical_mismatch(network_frame, physical, physical_level)
+        mismatch = build_unit_network_physical_mismatch(
+            network_frame,
+            physical,
+            physical_level,
+            network_score_column=network_score_column,
+            network_definition=network_definition,
+        )
         mismatch["mode"] = mode_name
         quadrant_summary = build_quadrant_summary(mismatch, physical_level)
         quadrant_summary["mode"] = mode_name
@@ -152,6 +162,8 @@ def build_mode_result(
     return {
         "mode": mode_name,
         "physical_level": physical_level,
+        "network_definition": network_definition,
+        "network_score_column": network_score_column,
         "physical": physical,
         "mismatch": mismatch,
         "quadrant_summary": quadrant_summary,
@@ -199,6 +211,13 @@ def infer_evidence_view(setting: str) -> str:
     if setting.startswith("fused_dual_core"):
         return "fused_dual_core"
     return "custom"
+
+
+def infer_physical_projection_setting(setting: str, physical_level: str) -> str:
+    """Map a setting to a paper-facing physical projection label."""
+    if str(physical_level) == "corridor" or setting.endswith("_corridor"):
+        return "corridor_grouped_candidates"
+    return "cable_candidates"
 
 
 def build_robustness_interpretation(row: pd.Series) -> str:
@@ -270,94 +289,107 @@ def main() -> None:
         ),
     ]
 
-    mode_results = [build_mode_result(*spec, network_frame=network_frame) for spec in mode_specs]
-    baseline = next(result for result in mode_results if result["mode"] == "fused_dual_core_cable")
-    baseline_physical = baseline["physical"]
-    baseline_mismatch = baseline["mismatch"]
-    baseline_target = target_unit_set(baseline_mismatch)
-    top_k = max(1, min(10, len(baseline_physical))) if not baseline_physical.empty else 1
-
     robustness_rows: List[Dict[str, float]] = []
     stability_rows: List[Dict[str, float]] = []
     quadrant_summaries: List[pd.DataFrame] = []
+    for network_definition, network_score_column in NETWORK_DEFINITION_COLUMNS.items():
+        mode_results = [
+            build_mode_result(
+                *spec,
+                network_frame=network_frame,
+                network_definition=network_definition,
+                network_score_column=network_score_column,
+            )
+            for spec in mode_specs
+        ]
+        baseline = next(result for result in mode_results if result["mode"] == "fused_dual_core_cable")
+        baseline_physical = baseline["physical"]
+        baseline_mismatch = baseline["mismatch"]
+        baseline_target = target_unit_set(baseline_mismatch)
+        top_k = max(1, min(10, len(baseline_physical))) if not baseline_physical.empty else 1
 
-    for result in mode_results:
-        mode_name = str(result["mode"])
-        physical_level = str(result["physical_level"])
-        physical = result["physical"]
-        mismatch = result["mismatch"]
-        quadrant_summary = result["quadrant_summary"]
+        for result in mode_results:
+            mode_name = str(result["mode"])
+            physical_level = str(result["physical_level"])
+            physical = result["physical"]
+            mismatch = result["mismatch"]
+            quadrant_summary = result["quadrant_summary"]
 
-        if not quadrant_summary.empty:
-            quadrant_summaries.append(quadrant_summary)
+            if not quadrant_summary.empty:
+                quadrant_summary["network_definition"] = network_definition
+                quadrant_summaries.append(quadrant_summary)
 
-        merged = baseline_physical.merge(physical, on="unit_id", suffixes=("_baseline", "_mode"), how="inner")
-        if merged.empty:
-            robustness_rows.append(
+            merged = baseline_physical.merge(physical, on="unit_id", suffixes=("_baseline", "_mode"), how="inner")
+            if merged.empty:
+                robustness_rows.append(
+                    {
+                        "network_definition": network_definition,
+                        "mode": mode_name,
+                        "physical_level": physical_level,
+                        "num_units_compared": 0,
+                        "spearman_dominant_candidate_support_share": 0.0,
+                        "spearman_effective_num_candidates": 0.0,
+                        "topk_dominant_share_overlap": 0.0,
+                    }
+                )
+            else:
+                robustness_rows.append(
+                    {
+                        "network_definition": network_definition,
+                        "mode": mode_name,
+                        "physical_level": physical_level,
+                        "num_units_compared": int(len(merged)),
+                        "spearman_dominant_candidate_support_share": spearman_corr(
+                            merged["dominant_candidate_support_share_baseline"],
+                            merged["dominant_candidate_support_share_mode"],
+                        ),
+                        "spearman_effective_num_candidates": spearman_corr(
+                            merged["effective_num_candidates_baseline"],
+                            merged["effective_num_candidates_mode"],
+                        ),
+                        "topk_dominant_share_overlap": top_k_overlap(
+                            baseline_physical,
+                            physical,
+                            "dominant_candidate_support_share",
+                            top_k,
+                        ),
+                    }
+                )
+
+            mode_target = target_unit_set(mismatch)
+            intersection = baseline_target & mode_target
+            union = baseline_target | mode_target
+            stability_rows.append(
                 {
+                    "network_definition": network_definition,
                     "mode": mode_name,
                     "physical_level": physical_level,
-                    "num_units_compared": 0,
-                    "spearman_dominant_candidate_support_share": 0.0,
-                    "spearman_effective_num_candidates": 0.0,
-                    "topk_dominant_share_overlap": 0.0,
-                }
-            )
-        else:
-            robustness_rows.append(
-                {
-                    "mode": mode_name,
-                    "physical_level": physical_level,
-                    "num_units_compared": int(len(merged)),
-                    "spearman_dominant_candidate_support_share": spearman_corr(
-                        merged["dominant_candidate_support_share_baseline"],
-                        merged["dominant_candidate_support_share_mode"],
-                    ),
-                    "spearman_effective_num_candidates": spearman_corr(
-                        merged["effective_num_candidates_baseline"],
-                        merged["effective_num_candidates_mode"],
-                    ),
-                    "topk_dominant_share_overlap": top_k_overlap(
-                        baseline_physical,
-                        physical,
-                        "dominant_candidate_support_share",
-                        top_k,
-                    ),
+                    "num_units_compared": int(len(mismatch)),
+                    "baseline_target_units": int(len(baseline_target)),
+                    "mode_target_units": int(len(mode_target)),
+                    "shared_target_units": int(len(intersection)),
+                    "target_jaccard_vs_baseline": float(len(intersection) / len(union)) if union else 1.0,
+                    "target_precision_vs_baseline": float(len(intersection) / len(mode_target)) if mode_target else 0.0,
+                    "target_recall_vs_baseline": float(len(intersection) / len(baseline_target)) if baseline_target else 0.0,
+                    "quadrant_agreement_rate": quadrant_agreement_rate(baseline_mismatch, mismatch),
                 }
             )
 
-        mode_target = target_unit_set(mismatch)
-        intersection = baseline_target & mode_target
-        union = baseline_target | mode_target
-        stability_rows.append(
-            {
-                "mode": mode_name,
-                "physical_level": physical_level,
-                "num_units_compared": int(len(mismatch)),
-                "baseline_target_units": int(len(baseline_target)),
-                "mode_target_units": int(len(mode_target)),
-                "shared_target_units": int(len(intersection)),
-                "target_jaccard_vs_baseline": float(len(intersection) / len(union)) if union else 1.0,
-                "target_precision_vs_baseline": float(len(intersection) / len(mode_target)) if mode_target else 0.0,
-                "target_recall_vs_baseline": float(len(intersection) / len(baseline_target)) if baseline_target else 0.0,
-                "quadrant_agreement_rate": quadrant_agreement_rate(baseline_mismatch, mismatch),
-            }
-        )
-
-    robustness_summary = pd.DataFrame(robustness_rows).sort_values(["physical_level", "mode"])
-    mismatch_stability = pd.DataFrame(stability_rows).sort_values(["physical_level", "mode"])
+    robustness_summary = pd.DataFrame(robustness_rows).sort_values(["network_definition", "physical_level", "mode"])
+    mismatch_stability = pd.DataFrame(stability_rows).sort_values(["network_definition", "physical_level", "mode"])
     quadrant_summary_frame = pd.concat(quadrant_summaries, ignore_index=True) if quadrant_summaries else pd.DataFrame()
     robustness_profile_table = (
         mismatch_stability.merge(
             robustness_summary[
                 [
+                    "network_definition",
                     "mode",
                     "physical_level",
                     "spearman_dominant_candidate_support_share",
                     "spearman_effective_num_candidates",
                 ]
             ],
-            on=["mode", "physical_level"],
+            on=["network_definition", "mode", "physical_level"],
             how="left",
         )
         .rename(
@@ -371,14 +403,20 @@ def main() -> None:
         )
         .assign(
             evidence_view=lambda df: df["setting"].map(infer_evidence_view),
+            physical_projection_setting=lambda df: df.apply(
+                lambda row: infer_physical_projection_setting(str(row["setting"]), str(row["physical_level"])),
+                axis=1,
+            ),
         )
     )
     robustness_profile_table["interpretation"] = robustness_profile_table.apply(build_robustness_interpretation, axis=1)
     robustness_profile_table = robustness_profile_table[
         [
+            "network_definition",
             "setting",
             "evidence_view",
             "physical_level",
+            "physical_projection_setting",
             "rank_corr_dominant_support",
             "rank_corr_effective_num",
             "target_quadrant_jaccard",
@@ -386,7 +424,7 @@ def main() -> None:
             "quadrant_agreement_rate",
             "interpretation",
         ]
-    ].sort_values(["physical_level", "setting"])
+    ].sort_values(["network_definition", "physical_level", "setting"])
 
     robustness_summary_path = os.path.join(args.output, "robustness_summary.csv")
     mismatch_stability_path = os.path.join(args.output, "robustness_mismatch_stability.csv")
@@ -398,9 +436,12 @@ def main() -> None:
     quadrant_summary_frame.to_csv(quadrant_summary_path, index=False, encoding="utf-8-sig")
     robustness_profile_table.to_csv(robustness_profile_path, index=False, encoding="utf-8-sig")
 
-    if not mismatch_stability.empty:
+    chart_source = mismatch_stability[mismatch_stability["network_definition"] == "composite"].copy()
+    if chart_source.empty:
+        chart_source = mismatch_stability.copy()
+    if not chart_source.empty:
         write_named_bar_svg(
-            mismatch_stability,
+            chart_source,
             os.path.join(args.output, "robustness_network_high_physical_low_stability.svg"),
             "Shared network_high_physical_low units vs fused_dual_core_cable baseline",
         )

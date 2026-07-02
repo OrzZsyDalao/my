@@ -27,6 +27,12 @@ QUADRANT_COLORS = {
     "network_low_physical_low": "#af7ac5",
     "network_low_physical_high": "#52be80",
 }
+NETWORK_DEFINITION_COLUMNS = {
+    "composite": "network_layer_diversity_score",
+    "as_only": "network_layer_diversity_score_as_only",
+    "country_only": "network_layer_diversity_score_country_only",
+    "probe_target_only": "network_layer_diversity_score_probe_target_only",
+}
 KNOWN_AMBIGUITY_TAGS = [
     "parallel_candidate_corridor",
     "many_candidates",
@@ -186,6 +192,14 @@ def ensure_corridor_columns(frame: pd.DataFrame) -> pd.DataFrame:
         result["parallel_group_id"].notna() & (result["parallel_group_id"].astype(str).str.strip() != ""),
         result["corridor_id_fallback"],
     )
+    if "physical_candidate_group_id" not in result.columns:
+        result["physical_candidate_group_id"] = np.nan
+    if "physical_candidate_group_type" not in result.columns:
+        result["physical_candidate_group_type"] = "srlg_like_corridor_group"
+    result["physical_candidate_group_id_fallback"] = result["physical_candidate_group_id"].where(
+        result["physical_candidate_group_id"].notna() & (result["physical_candidate_group_id"].astype(str).str.strip() != ""),
+        result["parallel_group_id_fallback"],
+    )
     return result
 
 
@@ -210,6 +224,61 @@ def build_support_series(frame: pd.DataFrame) -> pd.Series:
         fallback = pd.to_numeric(frame["candidate_support"], errors="coerce").fillna(0.0)
         series = series.fillna(fallback)
     return series.fillna(0.0).clip(lower=0.0)
+
+
+def classify_link_physical_projection_group(group: pd.DataFrame) -> str:
+    """Infer a link-level physical projection class from candidate rows."""
+    if group.empty:
+        return "no_physical_candidate"
+
+    corridor_col = "corridor_id_fallback" if "corridor_id_fallback" in group.columns else "segment"
+    corridor_ids = {
+        str(value).strip()
+        for value in group.get(corridor_col, pd.Series(index=group.index, dtype=object))
+        if str(value).strip() and str(value).strip().lower() != "nan"
+    }
+    cable_ids = {
+        str(value).strip()
+        for value in group.get("cable_id", pd.Series(index=group.index, dtype=object))
+        if str(value).strip() and str(value).strip().lower() != "nan"
+    }
+    parallel_sizes = pd.to_numeric(group.get("parallel_group_size", pd.Series(index=group.index, dtype=float)), errors="coerce").fillna(0.0)
+    parallel_flags = group.get("is_parallel_ambiguous", pd.Series(index=group.index, dtype=object)).fillna(False).astype(bool)
+    tag_flags = group.get("ambiguity_tags", pd.Series(index=group.index, dtype=object)).apply(safe_parse_tags)
+    has_parallel_group = bool(parallel_flags.any()) or bool((parallel_sizes > 1).any()) or bool(
+        tag_flags.apply(lambda tags: "parallel_candidate_corridor" in tags).any()
+    )
+
+    if len(corridor_ids) == 1 and len(cable_ids) == 1 and not has_parallel_group:
+        return "single_cable_single_corridor"
+    if len(corridor_ids) == 1 and has_parallel_group:
+        return "parallel_cable_same_corridor"
+    if len(corridor_ids) == 1 and len(cable_ids) > 1:
+        return "multi_cable_single_corridor"
+    if len(corridor_ids) > 1:
+        return "multi_corridor_projection"
+    return "mixed_or_unknown_projection"
+
+
+def annotate_link_projection_classes(frame: pd.DataFrame) -> pd.DataFrame:
+    """Ensure the flattened candidate table carries a link-level physical projection class."""
+    result = frame.copy()
+    existing = (
+        "link_physical_projection_class" in result.columns
+        and result["link_physical_projection_class"].fillna("").astype(str).str.strip().ne("").any()
+    )
+    if existing:
+        return result
+    if "link_id" not in result.columns:
+        result["link_physical_projection_class"] = "mixed_or_unknown_projection"
+        return result
+
+    projection_map = {
+        link_id: classify_link_physical_projection_group(group)
+        for link_id, group in result.groupby("link_id", dropna=False)
+    }
+    result["link_physical_projection_class"] = result["link_id"].map(projection_map).fillna("mixed_or_unknown_projection")
+    return result
 
 
 def read_candidate_output(path: str) -> List[Dict[str, Any]]:
@@ -265,6 +334,7 @@ def explode_candidate_rows(records: List[Dict[str, Any]], unit_fields: List[str]
                 "confidence_bucket": match_summary.get("confidence_bucket"),
                 "num_candidates_above_threshold": match_summary.get("num_candidates_above_threshold"),
                 "support_sum": match_summary.get("support_sum"),
+                "link_physical_projection_class": match_summary.get("link_physical_projection_class"),
             }
             for key, value in candidate.items():
                 if isinstance(value, list):
@@ -396,6 +466,7 @@ def build_unit_network_layer_diversity(frame: pd.DataFrame) -> pd.DataFrame:
             network_score_component_as_pair + network_score_component_endpoint_asn
         )
         network_layer_diversity_score_country_only = network_score_component_country_pair
+        network_layer_diversity_score_probe_target_only = network_score_component_probe_target
         network_layer_diversity_score = (
             network_score_component_as_pair
             + network_score_component_country_pair
@@ -425,6 +496,7 @@ def build_unit_network_layer_diversity(frame: pd.DataFrame) -> pd.DataFrame:
                 "network_score_component_probe_target": float(network_score_component_probe_target),
                 "network_layer_diversity_score_as_only": float(network_layer_diversity_score_as_only),
                 "network_layer_diversity_score_country_only": float(network_layer_diversity_score_country_only),
+                "network_layer_diversity_score_probe_target_only": float(network_layer_diversity_score_probe_target_only),
                 "network_layer_diversity_score": float(network_layer_diversity_score),
                 "logical_diversity_score": float(network_layer_diversity_score),
             }
@@ -447,27 +519,51 @@ def build_unit_network_physical_mismatch(
     network_frame: pd.DataFrame,
     physical_frame: pd.DataFrame,
     physical_level: str,
+    network_score_column: str = "network_layer_diversity_score",
+    network_definition: str = "composite",
 ) -> pd.DataFrame:
     """Join network-layer and physical diversity metrics and classify quadrants."""
     merged = network_frame.merge(physical_frame, on="unit_id", how="inner")
     if merged.empty:
         return merged
 
-    network_median = merged["network_layer_diversity_score"].median()
+    if network_score_column not in merged.columns:
+        network_score_column = "network_layer_diversity_score"
+
+    merged["selected_network_diversity_score"] = pd.to_numeric(merged[network_score_column], errors="coerce").fillna(0.0)
+    network_median = merged["selected_network_diversity_score"].median()
     physical_median = merged["physical_candidate_diversity_score"].median()
-    merged["network_high"] = merged["network_layer_diversity_score"] >= network_median
+    merged["network_high"] = merged["selected_network_diversity_score"] >= network_median
     merged["physical_low"] = merged["physical_candidate_diversity_score"] <= physical_median
     merged["network_physical_mismatch_category"] = merged.apply(
         lambda row: classify_network_physical_quadrant(bool(row["network_high"]), bool(row["physical_low"])),
         axis=1,
     )
     merged["network_physical_gap"] = (
-        merged["network_layer_diversity_score"] - merged["physical_candidate_diversity_score"]
+        merged["selected_network_diversity_score"] - merged["physical_candidate_diversity_score"]
     )
+    merged["network_diversity_percentile"] = merged["selected_network_diversity_score"].rank(
+        method="average", pct=True, ascending=True
+    )
+    merged["physical_diversity_percentile"] = merged["physical_candidate_diversity_score"].rank(
+        method="average", pct=True, ascending=True
+    )
+    merged["network_physical_percentile_gap"] = (
+        merged["network_diversity_percentile"] - merged["physical_diversity_percentile"]
+    )
+    merged["network_diversity_rank"] = merged["selected_network_diversity_score"].rank(
+        method="dense", ascending=False
+    )
+    merged["physical_diversity_rank"] = merged["physical_candidate_diversity_score"].rank(
+        method="dense", ascending=False
+    )
+    merged["network_physical_rank_gap"] = merged["physical_diversity_rank"] - merged["network_diversity_rank"]
     merged["logical_physical_gap"] = merged["network_physical_gap"]
     merged["logical_high"] = merged["network_high"]
     merged["mismatch_category"] = merged["network_physical_mismatch_category"]
     merged["physical_level"] = physical_level
+    merged["network_definition"] = network_definition
+    merged["network_score_column"] = network_score_column
     merged["is_target_quadrant"] = merged["network_physical_mismatch_category"] == TARGET_MISMATCH_CATEGORY
 
     merged["network_physical_mismatch_category"] = pd.Categorical(
@@ -739,6 +835,7 @@ def build_method_manifest() -> Dict[str, Any]:
             "ambiguity_summary.csv",
             "unit_ambiguity_profile.csv",
         ],
+        "network_definitions": list(NETWORK_DEFINITION_COLUMNS.keys()),
         "interpretation": "aggregate candidate-support distribution, not per-path physical ground truth",
     }
 
@@ -1256,6 +1353,7 @@ def main() -> None:
         raise ValueError("No candidate rows were found in the input output JSON.")
 
     candidate_frame = ensure_corridor_columns(candidate_frame)
+    candidate_frame = annotate_link_projection_classes(candidate_frame)
     corridor_candidate_col = resolve_corridor_candidate_column(candidate_frame)
 
     trace_output = os.path.join(args.output, "trace_candidate_support.csv")

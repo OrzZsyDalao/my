@@ -222,6 +222,7 @@ Main Stage 1 link-level candidate-support output. It is a JSON array where each 
 | `confidence_bucket` | Link confidence bucket, such as `high`, `medium`, or `ambiguous` |
 | `core_agreement_summary` | Summary of agreement/disagreement among evidence cores |
 | `ambiguity_summary` | Summary of ambiguity tags for this link |
+| `link_physical_projection_class` | Link-level projection class, such as single-cable, parallel-corridor, or multi-corridor projection |
 | `top1_score`, `top2_score` | Compatibility aliases used by downstream aggregation code |
 
 ##### `all_segments[]` candidate fields
@@ -238,6 +239,9 @@ Spatial and candidate identity:
 | `parallel_group_id` | Parallel-candidate grouping identifier |
 | `parallel_group_size` | Number of cables in the same corridor group |
 | `is_parallel_ambiguous` | Whether this candidate belongs to a parallel corridor group |
+| `physical_candidate_group_id` | SRLG-like physical candidate group identifier, currently aligned with the corridor-level parallel bundle |
+| `physical_candidate_group_type` | Physical grouping type, currently `srlg_like_corridor_group` |
+| `link_physical_projection_class` | Link-level projection class copied onto candidate rows for flattened analysis |
 
 Support and ranking:
 
@@ -433,6 +437,8 @@ Flattened candidate-level table derived from `cable_matching_output.json`. It co
 | `link_id` | Unique link-level row identifier |
 | `record_index` | Index of the parent Stage 1 record |
 | `corridor_id_fallback`, `parallel_group_id_fallback` | Graceful fallback identifiers used when explicit corridor fields are missing |
+| `physical_candidate_group_id`, `physical_candidate_group_type`, `physical_candidate_group_id_fallback` | SRLG-like physical grouping columns retained for corridor / bundle analysis |
+| `link_physical_projection_class` | Link-level projection class used by downstream mismatch and robustness analysis |
 
 #### `output/result/unit_physical_candidate_diversity_cable.csv`
 #### `output/result/unit_physical_candidate_diversity_corridor.csv`
@@ -476,6 +482,7 @@ Unit-level network diversity tables. The legacy file `unit_logical_diversity.csv
 | `network_score_component_probe_target` | Probe/target multiplicity component |
 | `network_layer_diversity_score_as_only` | Composite score using only AS-related components |
 | `network_layer_diversity_score_country_only` | Composite score using only country component |
+| `network_layer_diversity_score_probe_target_only` | Composite score using only the probe/target multiplicity component |
 | `network_layer_diversity_score` | Main network-layer diversity score |
 | `logical_diversity_score` | Legacy alias of `network_layer_diversity_score` |
 
@@ -493,6 +500,13 @@ These files contain all unit-level network-layer columns plus all physical-diver
 | `physical_low` | Whether physical diversity is at or below the unit median |
 | `network_physical_mismatch_category` | One of the four quadrant labels |
 | `network_physical_gap` | Network-layer diversity score minus physical diversity score |
+| `network_definition` | Network diversity definition used to build the mismatch view |
+| `network_score_column` | Concrete score column used for the network-side mismatch computation |
+| `selected_network_diversity_score` | Network diversity score actually used for this mismatch view |
+| `network_diversity_percentile`, `physical_diversity_percentile` | Percentile positions of the network and physical scores |
+| `network_physical_percentile_gap` | Percentile gap between network and physical diversity |
+| `network_diversity_rank`, `physical_diversity_rank` | Descending ranks of network and physical diversity |
+| `network_physical_rank_gap` | Rank-gap mismatch between physical and network diversity |
 | `logical_physical_gap` | Legacy alias of the same gap |
 | `logical_high` | Legacy alias of `network_high` |
 | `mismatch_category` | Legacy alias of `network_physical_mismatch_category` |
@@ -629,6 +643,7 @@ Post-processing method manifest.
 | `fusion_model` | High-level fusion rule |
 | `physical_levels` | Supported physical aggregation levels |
 | `ambiguity_classes` | Known ambiguity tags |
+| `network_definitions` | Supported network diversity definitions used in robustness and mismatch comparison |
 | `primary_outputs` | Main post-processing outputs |
 | `interpretation` | One-line interpretation guidance |
 
@@ -649,6 +664,7 @@ Post-processing method manifest.
 | Column | Meaning |
 | --- | --- |
 | `mode` | Evidence-setting label |
+| `network_definition` | Network diversity definition used in the comparison |
 | `physical_level` | `cable` or `corridor` |
 | `num_units_compared` | Number of units compared with baseline |
 | `spearman_dominant_candidate_support_share` | Spearman correlation of dominant support share |
@@ -660,6 +676,7 @@ Post-processing method manifest.
 | Column | Meaning |
 | --- | --- |
 | `mode` | Evidence-setting label |
+| `network_definition` | Network diversity definition used in the comparison |
 | `physical_level` | `cable` or `corridor` |
 | `num_units_compared` | Number of units in the comparison |
 | `baseline_target_units` | Number of baseline target-quadrant units |
@@ -678,6 +695,7 @@ Post-processing method manifest.
 | `network_physical_mismatch_category` | Quadrant label |
 | `unit_count` | Number of units in that quadrant |
 | `unit_share` | Share of units in that quadrant |
+| `network_definition` | Network diversity definition used for that robustness slice |
 | `mode` | Evidence-setting label |
 
 #### `output/result/robustness_profile_table.csv`
@@ -688,7 +706,9 @@ Paper-facing robustness table.
 | --- | --- |
 | `setting` | Full setting label such as `fused_dual_core_cable` |
 | `evidence_view` | Coarser evidence view such as `geo_only` or `as_only` |
+| `network_definition` | Network diversity definition, such as `composite`, `as_only`, or `country_only` |
 | `physical_level` | `cable` or `corridor` |
+| `physical_projection_setting` | Whether physical candidates are evaluated as direct cable candidates or corridor-grouped candidates |
 | `rank_corr_dominant_support` | Spearman correlation of dominant support ranking |
 | `rank_corr_effective_num` | Spearman correlation of effective number ranking |
 | `target_quadrant_jaccard` | Jaccard overlap of target-quadrant units |
