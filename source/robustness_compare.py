@@ -13,6 +13,7 @@ try:
         build_unit_network_physical_mismatch,
         build_unit_physical_candidate_diversity,
         ensure_corridor_columns,
+        resolve_corridor_candidate_column,
     )
 except ModuleNotFoundError:
     import sys
@@ -28,6 +29,7 @@ except ModuleNotFoundError:
         build_unit_network_physical_mismatch,
         build_unit_physical_candidate_diversity,
         ensure_corridor_columns,
+        resolve_corridor_candidate_column,
     )
 
 
@@ -200,12 +202,27 @@ def infer_evidence_view(setting: str) -> str:
 
 
 def build_robustness_interpretation(row: pd.Series) -> str:
-    """Generate a concise interpretation for one robustness setting."""
-    if float(row["target_quadrant_jaccard"]) >= 0.85 and float(row["quadrant_agreement_rate"]) >= 0.95:
-        return "Target-quadrant units remain highly stable under this evidence view."
-    if float(row["target_quadrant_jaccard"]) >= 0.5:
-        return "Target-quadrant units remain moderately stable, with limited reassignment."
-    return "This setting meaningfully changes the target-quadrant membership and should be interpreted as a sensitivity view."
+    """Generate the paper-facing interpretation string for one robustness setting."""
+    setting = str(row.get("setting", ""))
+    if setting == "fused_dual_core_cable":
+        return "baseline dual-core cable-level view"
+    if setting.endswith("_corridor"):
+        if setting.startswith("geo_only"):
+            return "tests whether network-physical mismatch is stable under geo-spatial evidence only after aggregating parallel candidates into corridors"
+        if setting.startswith("as_only"):
+            return "tests whether network-physical mismatch is stable under AS-economic evidence only after aggregating parallel candidates into corridors"
+        if setting.startswith("high_confidence_subset"):
+            return "tests whether mismatch persists under high-confidence observations after aggregating parallel candidates into corridors"
+        return "tests whether mismatch persists after aggregating parallel candidates into corridors"
+    if setting.startswith("geo_only"):
+        return "tests whether network-physical mismatch is stable under geo-spatial evidence only"
+    if setting.startswith("as_only"):
+        return "tests whether network-physical mismatch is stable under AS-economic evidence only"
+    if setting.startswith("high_confidence_subset"):
+        return "tests whether mismatch persists under high-confidence observations"
+    if setting.startswith("fused_dual_core"):
+        return "baseline dual-core candidate-support view"
+    return "supplementary robustness view"
 
 
 def main() -> None:
@@ -221,6 +238,7 @@ def main() -> None:
     frame["as_economic_score"] = frame["as_economic_score"].fillna(0.0)
     frame["normalized_candidate_support"] = frame["normalized_candidate_support"].fillna(0.0)
     frame = ensure_corridor_columns(frame)
+    corridor_candidate_col = resolve_corridor_candidate_column(frame)
 
     network_frame = build_unit_network_layer_diversity(frame)
     geo_frame = normalize_within_links(frame, "geo_spatial_score", "geo_only_support")
@@ -240,14 +258,14 @@ def main() -> None:
             "cable_id",
             "cable",
         ),
-        ("fused_dual_core_corridor", frame, "normalized_candidate_support", "corridor_id_fallback", "corridor"),
-        ("geo_only_corridor", geo_frame, "geo_only_support", "corridor_id_fallback", "corridor"),
-        ("as_only_corridor", as_frame, "as_only_support", "corridor_id_fallback", "corridor"),
+        ("fused_dual_core_corridor", frame, "normalized_candidate_support", corridor_candidate_col, "corridor"),
+        ("geo_only_corridor", geo_frame, "geo_only_support", corridor_candidate_col, "corridor"),
+        ("as_only_corridor", as_frame, "as_only_support", corridor_candidate_col, "corridor"),
         (
             "high_confidence_subset_corridor",
             high_conf_frame if not high_conf_frame.empty else frame.iloc[0:0],
             "normalized_candidate_support",
-            "corridor_id_fallback",
+            corridor_candidate_col,
             "corridor",
         ),
     ]

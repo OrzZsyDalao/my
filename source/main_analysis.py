@@ -975,7 +975,7 @@ class CableMatcher:
                 if not segment_cables:
                     continue
                 had_segment_candidates = True
-                corridor_id = " <-> ".join(segment_key)
+                corridor_id = f"{segment_key[0]}::{segment_key[1]}"
                 parallel_group_id = corridor_id
 
                 geo_score_info = self.compute_geo_spatial_score(d_in=d_in, d_out=d_out)

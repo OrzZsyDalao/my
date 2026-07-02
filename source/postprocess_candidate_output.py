@@ -142,8 +142,8 @@ def normalize_token(value: Any, prefix: str = "") -> str:
     return text
 
 
-def normalize_tag_list(value: Any) -> List[str]:
-    """Normalize ambiguity-tag fields into a deterministic list."""
+def safe_parse_tags(value: Any) -> List[str]:
+    """Safely parse ambiguity-tag fields from JSON strings, lists, or empty values."""
     if isinstance(value, list):
         tags = value
     elif value is None:
@@ -166,6 +166,11 @@ def normalize_tag_list(value: Any) -> List[str]:
     return unique_tags
 
 
+def normalize_tag_list(value: Any) -> List[str]:
+    """Backward-compatible wrapper around safe ambiguity-tag parsing."""
+    return safe_parse_tags(value)
+
+
 def ensure_corridor_columns(frame: pd.DataFrame) -> pd.DataFrame:
     """Ensure corridor-level identifiers exist and gracefully fall back to segment."""
     result = frame.copy()
@@ -182,6 +187,29 @@ def ensure_corridor_columns(frame: pd.DataFrame) -> pd.DataFrame:
         result["corridor_id_fallback"],
     )
     return result
+
+
+def resolve_corridor_candidate_column(frame: pd.DataFrame) -> str:
+    """Choose the corridor aggregation identifier, preferring corridor_id over segment."""
+    if "corridor_id" in frame.columns:
+        values = frame["corridor_id"].dropna().astype(str).str.strip()
+        if not values.empty and (values != "").any():
+            return "corridor_id"
+    return "segment"
+
+
+def build_support_series(frame: pd.DataFrame) -> pd.Series:
+    """Return a non-negative support series with graceful fallbacks."""
+    if "normalized_candidate_support" in frame.columns:
+        series = pd.to_numeric(frame["normalized_candidate_support"], errors="coerce")
+    elif "candidate_support" in frame.columns:
+        series = pd.to_numeric(frame["candidate_support"], errors="coerce")
+    else:
+        series = pd.Series(np.zeros(len(frame)), index=frame.index, dtype=float)
+    if "candidate_support" in frame.columns:
+        fallback = pd.to_numeric(frame["candidate_support"], errors="coerce").fillna(0.0)
+        series = series.fillna(fallback)
+    return series.fillna(0.0).clip(lower=0.0)
 
 
 def read_candidate_output(path: str) -> List[Dict[str, Any]]:
@@ -357,7 +385,6 @@ def build_unit_network_layer_diversity(frame: pd.DataFrame) -> pd.DataFrame:
             0.5 * dst_as_entropy
             + 0.25 * src_as_entropy
             + 0.5 * safe_log1p(num_dst_asns)
-            + 0.25 * safe_log1p(num_src_asns)
         )
         network_score_component_probe_target = (
             0.5 * safe_log1p(num_probes)
@@ -544,157 +571,385 @@ def build_cable_corridor_comparison(
 
 
 def build_unit_ambiguity_profile(frame: pd.DataFrame) -> pd.DataFrame:
-    """Aggregate ambiguity-tag support shares per unit."""
+    """Aggregate per-unit ambiguity support shares into a wide profile table."""
+    columns = [
+        "unit_id",
+        "num_candidate_rows",
+        "num_links",
+    ] + [f"{tag}_support_share" for tag in KNOWN_AMBIGUITY_TAGS] + ["no_ambiguity_support_share"]
     if frame.empty:
-        return pd.DataFrame(
-            columns=[
-                "unit_id",
-                "ambiguity_tag",
-                "ambiguity_support",
-                "ambiguity_support_share",
-                "num_candidates_with_tag",
-                "num_links_with_tag",
-            ]
-        )
+        return pd.DataFrame(columns=columns)
 
     working = frame.copy()
-    working["ambiguity_tags_list"] = working["ambiguity_tags"].apply(normalize_tag_list)
-    expanded_rows: List[Dict[str, Any]] = []
-    for row in working.itertuples(index=False):
-        tags = list(getattr(row, "ambiguity_tags_list", []))
-        for tag in tags:
-            expanded_rows.append(
-                {
-                    "unit_id": getattr(row, "unit_id"),
-                    "link_id": getattr(row, "link_id"),
-                    "ambiguity_tag": tag,
-                    "normalized_candidate_support": float(getattr(row, "normalized_candidate_support", 0.0) or 0.0),
-                }
+    working["ambiguity_tags_list"] = working["ambiguity_tags"].apply(safe_parse_tags)
+    working["support_value"] = build_support_series(working)
+
+    rows: List[Dict[str, Any]] = []
+    for unit_id, group in working.groupby("unit_id", dropna=False):
+        row: Dict[str, Any] = {
+            "unit_id": unit_id,
+            "num_candidate_rows": int(len(group)),
+            "num_links": int(group["link_id"].nunique()) if "link_id" in group.columns else 0,
+        }
+        total_support = float(group["support_value"].sum())
+        for tag in KNOWN_AMBIGUITY_TAGS:
+            tagged_support = float(
+                group.loc[group["ambiguity_tags_list"].apply(lambda tags: tag in tags), "support_value"].sum()
             )
-
-    if not expanded_rows:
-        return pd.DataFrame(
-            columns=[
-                "unit_id",
-                "ambiguity_tag",
-                "ambiguity_support",
-                "ambiguity_support_share",
-                "num_candidates_with_tag",
-                "num_links_with_tag",
-            ]
+            row[f"{tag}_support_share"] = float(tagged_support / total_support) if total_support > 0 else 0.0
+        no_ambiguity_support = float(
+            group.loc[group["ambiguity_tags_list"].apply(lambda tags: len(tags) == 0), "support_value"].sum()
         )
-
-    expanded = pd.DataFrame(expanded_rows)
-    totals = (
-        working.groupby("unit_id", dropna=False)["normalized_candidate_support"]
-        .sum()
-        .reset_index(name="unit_total_support")
-    )
-    summary = (
-        expanded.groupby(["unit_id", "ambiguity_tag"], dropna=False)
-        .agg(
-            ambiguity_support=("normalized_candidate_support", "sum"),
-            num_candidates_with_tag=("ambiguity_tag", "size"),
-            num_links_with_tag=("link_id", pd.Series.nunique),
-        )
-        .reset_index()
-    )
-    summary = summary.merge(totals, on="unit_id", how="left")
-    summary["ambiguity_support_share"] = np.where(
-        summary["unit_total_support"] > 0,
-        summary["ambiguity_support"] / summary["unit_total_support"],
-        0.0,
-    )
-    return summary.sort_values(["unit_id", "ambiguity_tag"]).reset_index(drop=True)
+        row["no_ambiguity_support_share"] = float(no_ambiguity_support / total_support) if total_support > 0 else 0.0
+        rows.append(row)
+    return pd.DataFrame(rows, columns=columns).sort_values("unit_id").reset_index(drop=True)
 
 
 def build_ambiguity_summary(frame: pd.DataFrame) -> pd.DataFrame:
-    """Aggregate ambiguity-tag counts and support shares globally."""
+    """Aggregate global ambiguity counts and support shares, including no_ambiguity."""
+    columns = [
+        "ambiguity_class",
+        "candidate_rows",
+        "candidate_row_share",
+        "aggregate_normalized_support",
+        "aggregate_support_share",
+        "units_affected",
+    ]
     if frame.empty:
-        return pd.DataFrame(
-            columns=[
-                "ambiguity_tag",
-                "candidate_count",
-                "link_count",
-                "unit_count",
-                "ambiguity_support",
-                "ambiguity_support_share",
-            ]
-        )
+        return pd.DataFrame(columns=columns)
 
     working = frame.copy()
-    working["ambiguity_tags_list"] = working["ambiguity_tags"].apply(normalize_tag_list)
-    total_support = float(working["normalized_candidate_support"].sum())
-    expanded_rows: List[Dict[str, Any]] = []
-    for row in working.itertuples(index=False):
-        tags = list(getattr(row, "ambiguity_tags_list", []))
-        for tag in tags:
-            expanded_rows.append(
-                {
-                    "ambiguity_tag": tag,
-                    "unit_id": getattr(row, "unit_id"),
-                    "link_id": getattr(row, "link_id"),
-                    "normalized_candidate_support": float(getattr(row, "normalized_candidate_support", 0.0) or 0.0),
-                }
-            )
+    working["ambiguity_tags_list"] = working["ambiguity_tags"].apply(safe_parse_tags)
+    working["support_value"] = build_support_series(working)
+    total_rows = max(len(working), 1)
+    total_support = float(working["support_value"].sum())
 
-    if not expanded_rows:
-        return pd.DataFrame(
-            columns=[
-                "ambiguity_tag",
-                "candidate_count",
-                "link_count",
-                "unit_count",
-                "ambiguity_support",
-                "ambiguity_support_share",
-            ]
+    summary_rows: List[Dict[str, Any]] = []
+    all_classes = list(KNOWN_AMBIGUITY_TAGS) + ["no_ambiguity"]
+    for ambiguity_class in all_classes:
+        if ambiguity_class == "no_ambiguity":
+            mask = working["ambiguity_tags_list"].apply(lambda tags: len(tags) == 0)
+        else:
+            mask = working["ambiguity_tags_list"].apply(lambda tags: ambiguity_class in tags)
+        subset = working.loc[mask]
+        candidate_rows = int(len(subset))
+        aggregate_support = float(subset["support_value"].sum())
+        summary_rows.append(
+            {
+                "ambiguity_class": ambiguity_class,
+                "candidate_rows": candidate_rows,
+                "candidate_row_share": float(candidate_rows / total_rows),
+                "aggregate_normalized_support": aggregate_support,
+                "aggregate_support_share": float(aggregate_support / total_support) if total_support > 0 else 0.0,
+                "units_affected": int(subset["unit_id"].nunique()) if "unit_id" in subset.columns else 0,
+            }
         )
-
-    expanded = pd.DataFrame(expanded_rows)
-    summary = (
-        expanded.groupby("ambiguity_tag", dropna=False)
-        .agg(
-            candidate_count=("ambiguity_tag", "size"),
-            link_count=("link_id", pd.Series.nunique),
-            unit_count=("unit_id", pd.Series.nunique),
-            ambiguity_support=("normalized_candidate_support", "sum"),
-        )
-        .reset_index()
-    )
-    summary["ambiguity_support_share"] = np.where(
-        total_support > 0,
-        summary["ambiguity_support"] / total_support,
-        0.0,
-    )
-    return summary.sort_values("ambiguity_tag").reset_index(drop=True)
+    return pd.DataFrame(summary_rows, columns=columns).sort_values("ambiguity_class").reset_index(drop=True)
 
 
 def build_ambiguity_taxonomy() -> pd.DataFrame:
-    """Return a fixed ambiguity taxonomy for interpretation guidance."""
-    return pd.DataFrame(AMBIGUITY_TAXONOMY_ROWS)
+    """Return the fixed ambiguity taxonomy used for interpretation."""
+    return pd.DataFrame(
+        [
+            {
+                "ambiguity_class": "parallel_candidate_corridor",
+                "reviewer_concern": "parallel cables cannot be reliably distinguished",
+                "treatment": "corridor-level aggregation",
+                "interpretation_boundary": "no per-cable ground-truth claim",
+            },
+            {
+                "ambiguity_class": "multi_segment_possible",
+                "reviewer_concern": "hop transition may hide multiple submarine segments",
+                "treatment": "tag and inspect through robustness/profile",
+                "interpretation_boundary": "aggregate-only interpretation",
+            },
+            {
+                "ambiguity_class": "domestic_submarine_candidate",
+                "reviewer_concern": "same-country paths may still use submarine cable infrastructure",
+                "treatment": "separate ambiguity tag and profile",
+                "interpretation_boundary": "not treated as purely terrestrial",
+            },
+            {
+                "ambiguity_class": "large_landing_radius",
+                "reviewer_concern": "IP geolocation uncertainty",
+                "treatment": "weaker confidence and high-confidence subset/profile",
+                "interpretation_boundary": "not a high-confidence per-path attribution",
+            },
+            {
+                "ambiguity_class": "rtt_inconclusive",
+                "reviewer_concern": "RTT feasibility boundary is weak",
+                "treatment": "ambiguity tag",
+                "interpretation_boundary": "no strong candidate attribution",
+            },
+            {
+                "ambiguity_class": "many_candidates",
+                "reviewer_concern": "underdetermined candidate set",
+                "treatment": "preserve candidate-support distribution",
+                "interpretation_boundary": "no forced top-1 attribution",
+            },
+            {
+                "ambiguity_class": "geo_dominant_as_weak",
+                "reviewer_concern": "spatial evidence and AS-economic evidence disagree",
+                "treatment": "core-disagreement tag",
+                "interpretation_boundary": "evidence disagreement retained",
+            },
+            {
+                "ambiguity_class": "as_dominant_geo_ambiguous",
+                "reviewer_concern": "AS-economic evidence stronger than spatial evidence",
+                "treatment": "core-disagreement tag",
+                "interpretation_boundary": "evidence disagreement retained",
+            },
+        ]
+    )
 
 
 def build_method_manifest() -> Dict[str, Any]:
-    """Return a compact method manifest for downstream interpretation."""
+    """Return the method manifest used to interpret post-processing outputs."""
     return {
         "method_name": "network_physical_diversity_auditing",
         "claim_boundary": "candidate_support_not_ground_truth_cable_attribution",
-        "main_question": (
-            "Given observed network-layer diversity, does that diversity remain present in the physical-candidate space?"
-        ),
+        "main_question": "whether network-layer diversity survives in the physical-candidate infrastructure space",
+        "primary_target_quadrant": "network_high_physical_low",
         "evidence_cores": [
-            "Geo-spatial Core",
-            "AS-economic Core",
-            "RTT/Physical Feasibility Core",
+            "geo_spatial_core",
+            "as_economic_core",
+            "rtt_physical_feasibility_core",
         ],
-        "fusion_model": "dual_core_candidate_support_with_rtt_feasibility",
-        "primary_target_quadrant": TARGET_MISMATCH_CATEGORY,
+        "fusion_model": "product_of_experts",
         "physical_levels": ["cable", "corridor"],
-        "ambiguity_classes": list(KNOWN_AMBIGUITY_TAGS),
-        "interpretation": (
-            "Candidate support is an evidence score for physical-candidate support consistency, not a ground-truth cable attribution."
-        ),
+        "ambiguity_classes": [
+            "parallel_candidate_corridor",
+            "many_candidates",
+            "large_landing_radius",
+            "rtt_inconclusive",
+            "domestic_submarine_candidate",
+            "multi_segment_possible",
+            "geo_dominant_as_weak",
+            "as_dominant_geo_ambiguous",
+        ],
+        "primary_outputs": [
+            "unit_network_layer_diversity.csv",
+            "unit_physical_candidate_diversity_cable.csv",
+            "unit_physical_candidate_diversity_corridor.csv",
+            "unit_network_physical_mismatch.csv",
+            "unit_network_physical_mismatch_corridor.csv",
+            "network_physical_quadrants.csv",
+            "cable_vs_corridor_physical_diversity.csv",
+            "ambiguity_taxonomy.csv",
+            "ambiguity_summary.csv",
+            "unit_ambiguity_profile.csv",
+        ],
+        "interpretation": "aggregate candidate-support distribution, not per-path physical ground truth",
     }
+
+
+def build_core_agreement_summary(frame: pd.DataFrame) -> pd.DataFrame:
+    """Aggregate global core-agreement counts and support shares."""
+    columns = [
+        "core_agreement",
+        "candidate_rows",
+        "candidate_row_share",
+        "aggregate_normalized_support",
+        "aggregate_support_share",
+        "units_affected",
+    ]
+    if frame.empty:
+        return pd.DataFrame(columns=columns)
+
+    working = frame.copy()
+    working["support_value"] = build_support_series(working)
+    working["core_agreement_value"] = (
+        working.get("core_agreement", pd.Series(index=working.index, dtype=object))
+        .fillna("unknown")
+        .astype(str)
+        .str.strip()
+        .replace("", "unknown")
+    )
+    total_rows = max(len(working), 1)
+    total_support = float(working["support_value"].sum())
+    summary = (
+        working.groupby("core_agreement_value", dropna=False)
+        .agg(
+            candidate_rows=("core_agreement_value", "size"),
+            aggregate_normalized_support=("support_value", "sum"),
+            units_affected=("unit_id", pd.Series.nunique),
+        )
+        .reset_index()
+        .rename(columns={"core_agreement_value": "core_agreement"})
+    )
+    summary["candidate_row_share"] = summary["candidate_rows"] / total_rows
+    summary["aggregate_support_share"] = np.where(
+        total_support > 0,
+        summary["aggregate_normalized_support"] / total_support,
+        0.0,
+    )
+    return summary[columns].sort_values("core_agreement").reset_index(drop=True)
+
+
+def pick_top_candidate_row(group: pd.DataFrame, rank_col: str, score_col: str, fallback_rank_cols: Sequence[str]) -> pd.Series:
+    """Pick a top-ranked candidate row using rank columns first and score fallback second."""
+    for candidate_rank_col in [rank_col, *fallback_rank_cols]:
+        if candidate_rank_col in group.columns:
+            ranked = pd.to_numeric(group[candidate_rank_col], errors="coerce")
+            top_group = group.loc[ranked == 1]
+            if not top_group.empty:
+                return top_group.iloc[0]
+    if score_col in group.columns:
+        scores = pd.to_numeric(group[score_col], errors="coerce").fillna(-1.0)
+        return group.loc[scores.idxmax()]
+    return group.iloc[0]
+
+
+def coerce_rank_value(value: Any, default: float = 1.0) -> float:
+    """Convert a rank-like scalar to float with graceful fallback."""
+    numeric = pd.to_numeric(pd.Series([value]), errors="coerce").iloc[0]
+    return float(numeric) if pd.notna(numeric) else default
+
+
+def build_as_reranking_effect(frame: pd.DataFrame) -> pd.DataFrame:
+    """Summarize how geo-only, AS-only, and fused rankings differ at link level."""
+    columns = [
+        "total_links",
+        "geo_as_top_agreement_rate",
+        "geo_fused_top_agreement_rate",
+        "as_fused_top_agreement_rate",
+        "as_changes_geo_top1_rate",
+        "mean_geo_to_fused_rank_shift",
+        "mean_as_to_fused_rank_shift",
+        "parallel_links",
+        "parallel_links_with_dual_core_agreement",
+        "parallel_links_remaining_ambiguous",
+    ]
+    if frame.empty:
+        return pd.DataFrame([{column: 0.0 for column in columns}])
+
+    working = frame.copy()
+    parallel_group_size_series = working.get("parallel_group_size", pd.Series(index=working.index, dtype=float))
+    is_parallel_series = working.get("is_parallel_ambiguous", pd.Series(index=working.index, dtype=object))
+    ambiguity_tag_series = working.get("ambiguity_tags", pd.Series(index=working.index, dtype=object))
+    dual_core_series = working.get("dual_core_agreement", pd.Series(index=working.index, dtype=object))
+
+    working["parallel_group_size_num"] = pd.to_numeric(parallel_group_size_series, errors="coerce").fillna(0.0)
+    working["is_parallel_ambiguous_bool"] = is_parallel_series.fillna(False).astype(bool)
+    working["ambiguity_tags_list"] = ambiguity_tag_series.apply(safe_parse_tags)
+    working["core_agreement_value"] = (
+        working.get("core_agreement", pd.Series(index=working.index, dtype=object))
+        .fillna("unknown")
+        .astype(str)
+    )
+    working["dual_core_agreement_bool"] = pd.to_numeric(dual_core_series, errors="coerce").fillna(0).astype(bool)
+    confidence_values = working.get("confidence_bucket", pd.Series(index=working.index, dtype=object)).fillna("").astype(str)
+
+    total_links = int(working["link_id"].nunique()) if "link_id" in working.columns else 0
+    if total_links == 0:
+        return pd.DataFrame([{column: 0.0 for column in columns}])
+
+    geo_as_match = 0
+    geo_fused_match = 0
+    as_fused_match = 0
+    geo_to_fused_shifts: List[float] = []
+    as_to_fused_shifts: List[float] = []
+    parallel_links = 0
+    parallel_links_with_dual_core_agreement = 0
+    parallel_links_remaining_ambiguous = 0
+
+    for _, group in working.groupby("link_id", dropna=False):
+        geo_top = pick_top_candidate_row(group, "geo_only_rank", "geo_spatial_score", [])
+        as_top = pick_top_candidate_row(group, "as_only_rank", "as_economic_score", [])
+        fused_top = pick_top_candidate_row(
+            group,
+            "candidate_rank_by_fused_support",
+            "fused_candidate_support",
+            ["candidate_rank"],
+        )
+
+        geo_key = str(geo_top.get("cable_id", geo_top.name))
+        as_key = str(as_top.get("cable_id", as_top.name))
+        fused_key = str(fused_top.get("cable_id", fused_top.name))
+        if geo_key == as_key:
+            geo_as_match += 1
+        if geo_key == fused_key:
+            geo_fused_match += 1
+        if as_key == fused_key:
+            as_fused_match += 1
+
+        geo_to_fused_shifts.append(
+            max(coerce_rank_value(geo_top.get("candidate_rank_by_fused_support"), 1.0) - 1.0, 0.0)
+        )
+        as_to_fused_shifts.append(
+            max(coerce_rank_value(as_top.get("candidate_rank_by_fused_support"), 1.0) - 1.0, 0.0)
+        )
+
+        is_parallel_link = bool(group["is_parallel_ambiguous_bool"].any()) or bool((group["parallel_group_size_num"] > 1).any()) or bool(
+            group["ambiguity_tags_list"].apply(lambda tags: "parallel_candidate_corridor" in tags).any()
+        )
+        if is_parallel_link:
+            parallel_links += 1
+            if bool((group["core_agreement_value"] == "dual_core_agreement").any()) or bool(group["dual_core_agreement_bool"].any()):
+                parallel_links_with_dual_core_agreement += 1
+            has_ambiguous_confidence = bool(confidence_values.loc[group.index].str.contains("ambiguous", case=False, na=False).any())
+            has_dual_core = bool((group["core_agreement_value"] == "dual_core_agreement").any())
+            if (not has_dual_core) or has_ambiguous_confidence:
+                parallel_links_remaining_ambiguous += 1
+
+    result = {
+        "total_links": total_links,
+        "geo_as_top_agreement_rate": geo_as_match / total_links,
+        "geo_fused_top_agreement_rate": geo_fused_match / total_links,
+        "as_fused_top_agreement_rate": as_fused_match / total_links,
+        "as_changes_geo_top1_rate": 1.0 - (geo_as_match / total_links),
+        "mean_geo_to_fused_rank_shift": float(np.mean(geo_to_fused_shifts)) if geo_to_fused_shifts else 0.0,
+        "mean_as_to_fused_rank_shift": float(np.mean(as_to_fused_shifts)) if as_to_fused_shifts else 0.0,
+        "parallel_links": parallel_links,
+        "parallel_links_with_dual_core_agreement": parallel_links_with_dual_core_agreement,
+        "parallel_links_remaining_ambiguous": parallel_links_remaining_ambiguous,
+    }
+    return pd.DataFrame([result], columns=columns)
+
+
+def build_filtering_breakdown(output_dir: str) -> pd.DataFrame:
+    """Read stage-1 stats and manifest and expose a lightweight filtering breakdown."""
+    columns = [
+        "total_traces_processed",
+        "empty_trace_count",
+        "total_links_seen",
+        "same_city_filtered",
+        "links_with_ls_candidates",
+        "links_with_geo_candidates",
+        "candidate_segments_considered",
+        "rtt_infeasible_filtered",
+        "links_with_any_match",
+        "total_candidates_generated",
+        "total_candidates_after_threshold",
+        "links_with_parallel_ambiguity",
+        "links_with_domestic_candidates",
+    ]
+    stats_path = os.path.join(output_dir, "cable_matching_stats_5051.json")
+    manifest_path = os.path.join(output_dir, "cable_matching_manifest.json")
+    if not os.path.exists(stats_path) or not os.path.exists(manifest_path):
+        return pd.DataFrame(columns=columns)
+
+    with open(stats_path, "r", encoding="utf-8") as handle:
+        stats = json.load(handle)
+    with open(manifest_path, "r", encoding="utf-8") as handle:
+        manifest = json.load(handle)
+
+    row = {
+        "total_traces_processed": manifest.get("total_traces_processed", 0),
+        "empty_trace_count": manifest.get("empty_trace_count", 0),
+        "total_links_seen": stats.get("total_links_seen", 0),
+        "same_city_filtered": stats.get("same_city_filtered", 0),
+        "links_with_ls_candidates": stats.get("links_with_ls_candidates", 0),
+        "links_with_geo_candidates": stats.get("links_with_geo_candidates", 0),
+        "candidate_segments_considered": stats.get("candidate_segments_considered", 0),
+        "rtt_infeasible_filtered": stats.get("rtt_infeasible_filtered", 0),
+        "links_with_any_match": stats.get("links_with_any_match", 0),
+        "total_candidates_generated": stats.get("total_candidates_generated", 0),
+        "total_candidates_after_threshold": stats.get("total_candidates_after_threshold", 0),
+        "links_with_parallel_ambiguity": stats.get("links_with_parallel_ambiguity", 0),
+        "links_with_domestic_candidates": stats.get("links_with_domestic_candidates", 0),
+    }
+    return pd.DataFrame([row], columns=columns)
 
 
 def scale_series(values: Sequence[float], low: float, high: float) -> List[float]:
@@ -1001,12 +1256,13 @@ def main() -> None:
         raise ValueError("No candidate rows were found in the input output JSON.")
 
     candidate_frame = ensure_corridor_columns(candidate_frame)
+    corridor_candidate_col = resolve_corridor_candidate_column(candidate_frame)
 
     trace_output = os.path.join(args.output, "trace_candidate_support.csv")
     candidate_frame.to_csv(trace_output, index=False, encoding="utf-8-sig")
 
     cable_physical = build_unit_physical_candidate_diversity(candidate_frame, "cable_id", "cable")
-    corridor_physical = build_unit_physical_candidate_diversity(candidate_frame, "corridor_id_fallback", "corridor")
+    corridor_physical = build_unit_physical_candidate_diversity(candidate_frame, corridor_candidate_col, "corridor")
     network_frame = build_unit_network_layer_diversity(candidate_frame)
     cable_mismatch = build_unit_network_physical_mismatch(network_frame, cable_physical, "cable")
     corridor_mismatch = build_unit_network_physical_mismatch(network_frame, corridor_physical, "corridor")
@@ -1016,6 +1272,8 @@ def main() -> None:
     unit_ambiguity_profile = build_unit_ambiguity_profile(candidate_frame)
     ambiguity_summary = build_ambiguity_summary(candidate_frame)
     ambiguity_taxonomy = build_ambiguity_taxonomy()
+    core_agreement_summary = build_core_agreement_summary(candidate_frame)
+    as_reranking_effect = build_as_reranking_effect(candidate_frame)
     cable_corridor_comparison = build_cable_corridor_comparison(
         cable_physical,
         corridor_physical,
@@ -1023,6 +1281,7 @@ def main() -> None:
         corridor_mismatch,
     )
     method_manifest = build_method_manifest()
+    filtering_breakdown = build_filtering_breakdown(args.output)
     summary_frame = build_dataset_summary(
         candidate_frame,
         cable_physical,
@@ -1046,6 +1305,9 @@ def main() -> None:
     unit_ambiguity_profile_path = os.path.join(args.output, "unit_ambiguity_profile.csv")
     ambiguity_summary_path = os.path.join(args.output, "ambiguity_summary.csv")
     ambiguity_taxonomy_path = os.path.join(args.output, "ambiguity_taxonomy.csv")
+    core_agreement_summary_path = os.path.join(args.output, "core_agreement_summary.csv")
+    as_reranking_effect_path = os.path.join(args.output, "as_reranking_effect.csv")
+    filtering_breakdown_path = os.path.join(args.output, "filtering_breakdown.csv")
     method_manifest_path = os.path.join(args.output, "method_manifest.json")
     summary_path = os.path.join(args.output, "dataset_summary.csv")
 
@@ -1062,6 +1324,9 @@ def main() -> None:
     unit_ambiguity_profile.to_csv(unit_ambiguity_profile_path, index=False, encoding="utf-8-sig")
     ambiguity_summary.to_csv(ambiguity_summary_path, index=False, encoding="utf-8-sig")
     ambiguity_taxonomy.to_csv(ambiguity_taxonomy_path, index=False, encoding="utf-8-sig")
+    core_agreement_summary.to_csv(core_agreement_summary_path, index=False, encoding="utf-8-sig")
+    as_reranking_effect.to_csv(as_reranking_effect_path, index=False, encoding="utf-8-sig")
+    filtering_breakdown.to_csv(filtering_breakdown_path, index=False, encoding="utf-8-sig")
     summary_frame.to_csv(summary_path, index=False, encoding="utf-8-sig")
     with open(method_manifest_path, "w", encoding="utf-8") as handle:
         json.dump(method_manifest, handle, indent=2, ensure_ascii=False)
@@ -1101,6 +1366,9 @@ def main() -> None:
     print(f"Saved unit ambiguity profile to {unit_ambiguity_profile_path}")
     print(f"Saved ambiguity summary to {ambiguity_summary_path}")
     print(f"Saved ambiguity taxonomy to {ambiguity_taxonomy_path}")
+    print(f"Saved core agreement summary to {core_agreement_summary_path}")
+    print(f"Saved AS reranking effect to {as_reranking_effect_path}")
+    print(f"Saved filtering breakdown to {filtering_breakdown_path}")
     print(f"Saved method manifest to {method_manifest_path}")
     print(f"Saved quadrant summary table to {quadrant_summary_path}")
     print(f"Saved dataset summary table to {summary_path}")
