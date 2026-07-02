@@ -1,166 +1,29 @@
 # infocom26
 
-This repository now keeps its implementation under `source/`, while preserving root-level entrypoints so the project can still be run with the original commands.
+This repository implements an uncertainty-aware cross-layer diversity auditing pipeline for RIPE Atlas traceroute measurements, AS-level economic signals, and submarine-cable candidate infrastructure.
 
-## Research Focus
+The main research question is:
 
-This codebase is organized around **uncertainty-aware cross-layer diversity auditing**.
+> Does network-layer diversity remain diverse after it is projected into the physical-candidate infrastructure space?
 
-The main goal is **not** per-path submarine cable attribution. Instead, the project audits whether diversity observed at the network layer remains diverse in the **physical-candidate space**. In other words, it asks:
+The goal is **not** per-path ground-truth submarine cable attribution. The pipeline produces candidate-support distributions, diversity metrics, mismatch diagnostics, ambiguity profiles, and robustness comparisons.
 
-- given observed network-layer diversity, how broad is the candidate physical-support distribution?
-- does logical or network diversity remain diverse after projection into cable or corridor candidates?
-- where do we observe a mismatch between network-layer diversity and physical-candidate diversity?
+## Interpretation Boundary
 
-The primary research artifact is therefore a set of candidate-support, diversity, mismatch, ambiguity, and robustness outputs rather than a claim that one traceroute definitely used one ground-truth cable.
+- `candidate_support`, `fused_candidate_support`, and `normalized_candidate_support` are evidence scores, not ground-truth cable utilization.
+- A top-ranked candidate is the strongest explanation under the current evidence model, not proof that the path truly used that cable.
+- Cable-level and corridor-level outputs are both kept because parallel infrastructure can change the interpretation granularity.
 
-## Pipeline Layout
-
-### Stage 1: `main_analysis.py` / `source/main_analysis.py`
-
-This is the uncertainty-aware candidate-support generation stage. It:
-
-- loads landing-station coordinates, submarine cable metadata, AS relationship data, `pfx2as`, owner-to-ASN mappings, and traceroute files
-- geolocates hops with the MMDB database
-- converts traceroute hops into adjacent hop-pair links
-- builds Geo-spatial Core, AS-economic Core, and RTT/Physical Feasibility Core evidence
-- fuses evidence into `candidate_support`, `fused_candidate_support`, `normalized_candidate_support`, and `core_agreement`
-- writes link-level candidate outputs to `output/result/cable_matching_output.json`
-- writes enhanced matcher statistics to `output/result/cable_matching_stats_5051.json`
-- writes a run manifest to `output/result/cable_matching_manifest.json`
-
-### Stage 2: `concerntration_analysis.py` / `source/concerntration_analysis.py`
-
-This is the dependency aggregation stage. It:
-
-- loads the raw traceroute file, stage-1 output, probe metadata, cable owner metadata, MMDB, and `pfx2as`
-- aggregates dependency by country and root/target
-- computes cable concentration, owner concentration, cross-border AS-pair concentration, and related summary indicators
-- writes the final dependency table to `output/result/country_root_cable_dependency_hybrid.csv`
-
-### Post-processing: `postprocess_candidate_output.py`
-
-This script reads the stage-1 JSON output and generates:
-
-- `output/result/trace_candidate_support.csv`
-- `output/result/unit_physical_candidate_diversity.csv`
-- `output/result/unit_physical_candidate_diversity_cable.csv`
-- `output/result/unit_physical_candidate_diversity_corridor.csv`
-- `output/result/unit_network_layer_diversity.csv`
-- `output/result/unit_logical_diversity.csv`
-- `output/result/unit_network_physical_mismatch.csv`
-- `output/result/unit_network_physical_mismatch_corridor.csv`
-- `output/result/unit_mismatch.csv`
-- `output/result/network_physical_quadrants.csv`
-- `output/result/cable_vs_corridor_physical_diversity.csv`
-- `output/result/unit_ambiguity_profile.csv`
-- `output/result/ambiguity_summary.csv`
-- `output/result/ambiguity_taxonomy.csv`
-- `output/result/method_manifest.json`
-- `output/result/network_physical_quadrant_scatter_cable.svg`
-- `output/result/network_physical_quadrant_scatter_corridor.svg`
-- `output/result/network_physical_quadrant_counts_cable.svg`
-- `output/result/network_physical_quadrant_counts_corridor.svg`
-- `output/result/cable_vs_corridor_physical_diversity.svg`
-- `output/result/dataset_summary.csv`
-
-### Robustness: `robustness_compare.py`
-
-This script compares evidence settings over the post-processed candidate table and writes:
-
-- `output/result/robustness_summary.csv`
-- `output/result/robustness_mismatch_stability.csv`
-- `output/result/robustness_quadrant_summary.csv`
-- `output/result/robustness_profile_table.csv`
-- `output/result/robustness_network_high_physical_low_stability.svg`
-
-## Source Organization
+## Repository Layout
 
 ```text
 source/
-  __init__.py
   main_analysis.py
   concerntration_analysis.py
   postprocess_candidate_output.py
   robustness_compare.py
-```
+  precompute_as_graph.py
 
-Root-level scripts are thin wrappers that call the corresponding `source/` modules.
-
-## Required Inputs
-
-### Stage 1 inputs
-
-- `data/cable/landing-point-geo.json`
-- `data/cable/*.json`
-- `data/traceroute_rundnsroot/**/*.json`
-- `data/ipinfo/ipinfo_location.mmdb`
-- `data/asrelationship/20250901.as-rel2.txt`
-- `data/pfx2as/202512.pfx2as`
-- `data/owner2asn/owner_to_asn.csv`
-
-### Stage 2 inputs
-
-- `data/traceroute_rundnsroot/root_dns_traces.json` for routine testing
-- `output/result/cable_matching_output.json` produced by stage 1
-- `data/probe/20251201.json`
-- `data/ipinfo/ipinfo_location.mmdb`
-- `data/pfx2as/202512.pfx2as`
-- `data/cable/*.json`
-
-The larger `data/traceroute/ripe_atlas_5051_20251201.json` file can still be used for full runs, but routine tests should stay on the smaller `root_dns_traces.json` input.
-
-## Environment Setup
-
-Install dependencies with:
-
-```powershell
-python -m pip install -r .\requirements.txt
-```
-
-On this machine, a user-scoped Python 3.13.14 environment and these packages have already been installed:
-
-- `maxminddb`
-- `geopy`
-- `scikit-learn`
-- `tqdm`
-- `pandas`
-
-## Run Order
-
-The original entrypoints still work:
-
-```powershell
-python .\main_analysis.py
-python .\concerntration_analysis.py
-python .\postprocess_candidate_output.py --input .\output\result\cable_matching_output.json --output .\output\result
-python .\robustness_compare.py --input .\output\result\trace_candidate_support.csv --output .\output\result
-```
-
-## Interpretation Boundary
-
-- `candidate_support`, `fused_candidate_support`, and `normalized_candidate_support` are **evidence scores** over candidate physical support.
-- They should **not** be interpreted as ground-truth cable utilization.
-- A top candidate is a dominant candidate-support explanation under the current evidence model, not a claim that the route truly used that cable.
-- Cable-level and corridor-level outputs are both retained because parallel infrastructure can affect the granularity of interpretation.
-
-If you want to choose a specific probe metadata file for stage 2:
-
-```powershell
-python .\concerntration_analysis.py --probe-file-name 20251223.json
-python .\concerntration_analysis.py --probe-use-latest
-```
-
-You can also run the source files directly:
-
-```powershell
-python .\source\main_analysis.py
-python .\source\concerntration_analysis.py
-```
-
-## Directory Skeleton
-
-```text
 data/
   asrelationship/
   cable/
@@ -170,17 +33,676 @@ data/
   probe/
   traceroute/
   traceroute_rundnsroot/
+
 output/
+  preprocessed/
   result/
 ```
 
-## Collaboration Workflow
+Root-level scripts such as `main_analysis.py` are thin wrappers that call the corresponding `source/` modules.
 
-This repository is intended to be edited across multiple computers through GitHub.
+## Pipeline Overview
 
-- The shared source of truth is `origin/main`.
-- After pulling the repository on another computer, Codex can continue editing the same tracked source tree.
-- Runtime datasets remain local inputs and should be placed into the prepared `data/` folders on any machine that needs to run the pipelines.
-- Completed changes in this project should be committed to `main` and pushed to GitHub unless you explicitly choose a different workflow.
+1. `precompute_as_graph.py`  
+   Optional offline preprocessing for the AS-economic core. Builds bounded owner-group reachability over the CAIDA AS relationship graph.
 
-For agent-facing workflow rules, see `AGENTS.md`.
+2. `main_analysis.py`  
+   Stage 1 candidate-support generation. Reads traceroutes and infrastructure metadata, scores cable candidates, and writes link-level matching output.
+
+3. `concerntration_analysis.py`  
+   Stage 2 dependency aggregation. Reads Stage 1 output and produces country/root dependency and concentration tables.
+
+4. `postprocess_candidate_output.py`  
+   Reads Stage 1 output and produces unit-level diversity, mismatch, ambiguity, and interpretation files.
+
+5. `robustness_compare.py`  
+   Reads the flattened candidate-support table and compares mismatch stability under different evidence views.
+
+## Input File Reference
+
+### Shared Input Files
+
+| Path | Used By | Expected Content | Purpose |
+| --- | --- | --- | --- |
+| `data/cable/landing-point-geo.json` | Stage 1 | GeoJSON features keyed by landing-station `id`, with coordinates | Landing-station coordinate lookup for spatial candidate generation |
+| `data/cable/*.json` | Stage 1, Stage 2, AS precompute | One JSON per cable, including `id`, `name`, `landing_points`, `owners` | Cable metadata, landing pairs, and owner metadata |
+| `data/ipinfo/ipinfo_location.mmdb` | Stage 1, Stage 2 | MMDB geolocation database | IP-to-country/city/ASN geolocation |
+| `data/asrelationship/20250901.as-rel2.txt` | Stage 1, AS precompute | CAIDA-style AS relationships (`AS1|AS2|rel`) | AS-economic relationship model |
+| `data/pfx2as/202512.pfx2as` | Stage 1, Stage 2 | Prefix-to-origin-AS mapping | IP to origin ASN lookup |
+| `data/owner2asn/owner_to_asn.csv` | Stage 1, AS precompute | CSV with `owner,asn` | Maps cable owners to ASNs |
+
+### Traceroute and Probe Inputs
+
+| Path | Used By | Expected Content | Purpose |
+| --- | --- | --- | --- |
+| `data/traceroute_rundnsroot/root_dns_traces.json` | Stage 1 default, Stage 2 default | RIPE Atlas traceroute results in JSON array format | Small routine test input |
+| `data/traceroute_rundnsroot/**/*.json` | Stage 1 | RIPE Atlas traceroute result files | Main traceroute source directory |
+| `data/traceroute/ripe_atlas_5051_20251201.json` | Optional | Larger full-scale traceroute input | Full dataset run |
+| `data/probe/*.json` | Stage 2 | Probe metadata, typically with `objects[].id` and `objects[].country_code` | Maps probe IDs to source countries |
+
+### Precomputed Optional Input
+
+| Path | Used By | Expected Content | Purpose |
+| --- | --- | --- | --- |
+| `output/preprocessed/as_graph_owner_reachability.pkl.gz` | Stage 1 | Gzipped Python pickle with owner-group reachability payload | Speeds up the AS-economic support computation |
+
+## Command-Line Parameters
+
+### `python precompute_as_graph.py`
+
+| Parameter | Default | Meaning |
+| --- | --- | --- |
+| `--asrel-file` | `data/asrelationship/20250901.as-rel2.txt` | CAIDA AS relationship input |
+| `--owner2asn-file` | `data/owner2asn/owner_to_asn.csv` | Owner-to-ASN mapping |
+| `--cable-dir` | `data/cable/` | Cable metadata directory |
+| `--output` | `output/preprocessed/as_graph_owner_reachability.pkl.gz` | Output precompute payload |
+| `--max-hops-unknown` | `2` | Online hop threshold above which AS paths are treated as unknown |
+| `--search-max-hops` | `2` | Offline bounded search depth |
+| `--peer-cost` | `1.0` | Cost assigned to peer edges |
+| `--provider-customer-cost` | `2.0` | Cost assigned to provider-customer edges |
+| `--limit-owner-groups` | `None` | Optional smoke-test limit |
+
+### `python main_analysis.py`
+
+| Parameter | Default | Meaning |
+| --- | --- | --- |
+| `--as-precompute-file` | `output/preprocessed/as_graph_owner_reachability.pkl.gz` | Optional precomputed owner-group reachability input |
+
+### `python concerntration_analysis.py`
+
+| Parameter | Default | Meaning |
+| --- | --- | --- |
+| `--raw-traces-file` | `data/traceroute_rundnsroot/root_dns_traces.json` | Raw traceroute input file or directory |
+| `--match-output-file` | `output/result/cable_matching_output.json` | Stage 1 matching JSON |
+| `--probe-meta-file` | `data/probe/20251201.json` | Probe metadata file |
+| `--probe-file-name` | `None` | Probe filename under `data/probe/` |
+| `--probe-use-latest` | `False` | Automatically select latest probe JSON |
+| `--mmdb-path` | `data/ipinfo/ipinfo_location.mmdb` | MMDB path |
+| `--pfx2as-file` | `data/pfx2as/202512.pfx2as` | pfx2as path |
+| `--output-csv` | `output/result/country_root_cable_dependency_hybrid.csv` | Main Stage 2 output path |
+| `--summary-json` | `None` | Optional Stage 2 summary JSON path |
+| `--cable-dir` | `data/cable/` | Cable metadata directory |
+| `--aggregation-mode` | `weighted` | Candidate-to-trace aggregation mode: `hard_top1`, `weighted`, or `thresholded_normalized` |
+| `--match-threshold` | `0.5` | Minimum candidate support threshold for thresholded aggregation |
+| `--confidence-bucket` | `None` | Optional filter: `high`, `medium`, or `ambiguous` |
+| `--owner-multi-entity-mode` | `full` | Whether owners inherit full support or split it |
+| `--cross-country` / `--no-cross-country` | `--cross-country` | Whether to keep only cross-country traces |
+| `--topn-preview` | `10` | Number of preview rows printed to console |
+| `--output-total-table` | `False` | Emit merged variant table instead of one single-mode table |
+| `--detail-dir` | `None` | Optional detail directory for per-mode tables |
+| `--collapse-roots` | `False` | Collapse all roots into `ALL` |
+
+### `python postprocess_candidate_output.py`
+
+| Parameter | Default | Meaning |
+| --- | --- | --- |
+| `--input` | `output/result/cable_matching_output.json` | Stage 1 candidate-support JSON |
+| `--output` | `output/result/` | Directory for post-processed files |
+| `--unit-fields` | `src_country,msm_id,file_name` | Fields from `link_info` used to define aggregation units |
+
+### `python robustness_compare.py`
+
+| Parameter | Default | Meaning |
+| --- | --- | --- |
+| `--input` | `output/result/trace_candidate_support.csv` | Flattened candidate-support table |
+| `--output` | `output/result/` | Directory for robustness outputs |
+
+## Recommended Run Order
+
+```powershell
+python .\precompute_as_graph.py
+python .\main_analysis.py
+python .\concerntration_analysis.py
+python .\postprocess_candidate_output.py --input .\output\result\cable_matching_output.json --output .\output\result
+python .\robustness_compare.py --input .\output\result\trace_candidate_support.csv --output .\output\result
+```
+
+## Output File Reference
+
+### A. AS-Graph Precompute Outputs
+
+#### `output/preprocessed/as_graph_owner_reachability.pkl.gz`
+
+Binary precomputed reachability payload used by Stage 1. It contains:
+
+- AS node mappings
+- owner-group signatures
+- bounded shortest-path metadata from endpoint ASNs to owner groups
+
+This file is an implementation artifact and is not meant for manual inspection.
+
+#### `output/preprocessed/as_graph_owner_reachability.pkl.gz.manifest.json`
+
+Manifest for the precompute payload. Main keys:
+
+| Key | Meaning |
+| --- | --- |
+| `output_file` | Relative path to the generated payload |
+| `owner_group_count` | Number of unique cable-owner ASN groups precomputed |
+| `graph_node_count` | Number of AS nodes in the graph |
+| `graph_edge_count` | Number of directed AS edges |
+| `reachable_entry_count` | Number of stored bounded reachability entries |
+| `config` | The precompute configuration used to build the file |
+
+### B. Stage 1 Outputs
+
+#### `cable_loading_debug.json`
+
+Debug file describing cable and landing-station loading status. Useful for validating data completeness.
+
+#### `output/result/cable_matching_output.json`
+
+Main Stage 1 link-level candidate-support output. It is a JSON array where each element has:
+
+##### `link_info`
+
+| Field | Meaning |
+| --- | --- |
+| `msm_id` | RIPE Atlas measurement ID |
+| `probe_id` | RIPE Atlas probe ID |
+| `file_name` | Source traceroute file |
+| `timestamp` | Trace timestamp |
+| `hop_range` | Hop-pair index range represented by the link |
+| `src_ip`, `dst_ip` | Link endpoint IPs |
+| `src_city`, `dst_city` | Geolocated cities of the hop endpoints |
+| `src_country`, `dst_country` | Geolocated countries of the hop endpoints |
+| `rtt_delta_ms` | Measured RTT delta between the two consecutive hops |
+| `is_potential_oceanic` | Whether the hop-pair is potentially submarine/oceanic |
+
+##### `match_summary`
+
+| Field | Meaning |
+| --- | --- |
+| `filtered_reason` | Reason for no-candidate or filtered outcome |
+| `num_candidates_total` | Number of unique candidates generated before thresholding |
+| `num_candidates_above_threshold` | Number of candidates kept after thresholding |
+| `support_sum` | Sum of candidate support values within the link |
+| `top1_candidate_support`, `top2_candidate_support` | Raw support of the top two candidates |
+| `top1_top2_gap` | Gap between top-1 and top-2 support |
+| `confidence_bucket` | Link confidence bucket, such as `high`, `medium`, or `ambiguous` |
+| `core_agreement_summary` | Summary of agreement/disagreement among evidence cores |
+| `ambiguity_summary` | Summary of ambiguity tags for this link |
+| `top1_score`, `top2_score` | Compatibility aliases used by downstream aggregation code |
+
+##### `all_segments[]` candidate fields
+
+Spatial and candidate identity:
+
+| Field | Meaning |
+| --- | --- |
+| `cable_name`, `cable_id` | Candidate cable identity |
+| `segment` | Directed landing-station pair string |
+| `landing_pair` | Same landing-pair description retained for compatibility |
+| `corridor_id` | Canonical corridor identifier |
+| `corridor_type` | Corridor type, currently `exact_landing_pair` |
+| `parallel_group_id` | Parallel-candidate grouping identifier |
+| `parallel_group_size` | Number of cables in the same corridor group |
+| `is_parallel_ambiguous` | Whether this candidate belongs to a parallel corridor group |
+
+Support and ranking:
+
+| Field | Meaning |
+| --- | --- |
+| `candidate_support` | Main candidate evidence score |
+| `fused_candidate_support` | Same fused score under current implementation |
+| `normalized_candidate_support` | Candidate support normalized within the link |
+| `candidate_rank_by_fused_support` | Rank under fused support |
+| `geo_only_rank` | Rank under geo-spatial score only |
+| `as_only_rank` | Rank under AS-economic score only |
+| `dual_core_rank` | Rank after dual-core fusion |
+| `candidate_rank` | Legacy alias for fused rank |
+| `score_gap_to_top1` | Difference from the top fused-support candidate |
+
+Geo-spatial core:
+
+| Field | Meaning |
+| --- | --- |
+| `geo_spatial_score` | Fused geo-spatial core score |
+| `geo_entry_score`, `geo_exit_score` | Entry/exit side spatial scores |
+| `prob_in`, `prob_out` | Butterworth-style entry and exit proximity terms |
+| `d_in`, `d_out` | Endpoint-to-landing-station distances in km |
+| `ls_entry_to_ls_exit_gcd_km` | Great-circle distance between the landing stations |
+| `city_a`, `city_b`, `country_a`, `country_b` | Candidate-side geographic context |
+| `geo-a`, `geo-b` | Rounded endpoint coordinates |
+
+AS-economic core:
+
+| Field | Meaning |
+| --- | --- |
+| `as_economic_score` | Main AS-economic support score |
+| `as_economic_cost` | Cost before exponential transformation |
+| `as_economic_reason` | Cost-model reason label |
+| `as_economic_support` | Alias of AS-economic score |
+| `as_economic_src_owner_hops`, `as_economic_dst_owner_hops` | Hop distance from endpoint ASNs to owner groups |
+| `as_economic_src_owner_path_cost`, `as_economic_dst_owner_path_cost` | Path-cost details |
+| `as_economic_path_found` | Whether precomputed owner reachability was found |
+| `as_economic_owner_group_id` | Internal owner-group identifier |
+| `src_asn`, `dst_asn` | Origin ASNs of the endpoint IPs |
+| `owner_asn_count` | Number of owner ASNs known for the cable |
+
+RTT and feasibility:
+
+| Field | Meaning |
+| --- | --- |
+| `rtt_feasible` | Whether the candidate passed the feasibility filter |
+| `rtt_score` | RTT-based feasibility score |
+| `min_rtt_ms` | Estimated minimum RTT under the fiber model |
+| `measured_rtt_ms` | Measured hop-pair RTT delta |
+| `rtt_margin_ms` | Headroom between measured RTT and estimated minimum |
+| `latency_penalty` | Penalty term applied during score fusion |
+
+Interpretation and ambiguity:
+
+| Field | Meaning |
+| --- | --- |
+| `core_agreement` | Relationship between geo and AS-economic evidence |
+| `ambiguity_tags` | List of ambiguity labels |
+| `parallel_segment_candidate_count` | Legacy parallel-corridor count |
+| `dual_core_agreement` | Boolean convenience flag |
+| `deprecated_fields` | Names of compatibility fields retained for downstream readers |
+
+Legacy compatibility aliases:
+
+| Field | Meaning |
+| --- | --- |
+| `segment_probability` | Deprecated alias of `candidate_support` |
+| `geo_score` | Deprecated alias of `geo_spatial_score` |
+| `ownership_score` | Deprecated alias of `as_economic_score` |
+
+#### `output/result/cable_matching_stats_5051.json`
+
+Global Stage 1 run statistics.
+
+| Key | Meaning |
+| --- | --- |
+| `total_links_seen` | Total hop-pair links inspected |
+| `same_city_filtered` | Links filtered because both endpoints stayed in the same city |
+| `links_with_ls_candidates` | Links with at least one landing-station candidate |
+| `links_with_geo_candidates` | Links with valid geo-spatial candidate generation |
+| `candidate_segments_considered` | Candidate cable segments evaluated before RTT filtering |
+| `rtt_infeasible_filtered` | Candidates removed by RTT feasibility |
+| `links_below_threshold` | Links where candidates remained below the support threshold |
+| `candidates_above_threshold` | Count of retained candidates above threshold |
+| `links_with_any_match` | Links with at least one retained candidate |
+| `links_with_filtered_candidates` | Links with post-threshold candidate sets |
+| `links_with_no_feasible_rtt_candidate` | Links where RTT filtering removed all candidates |
+| `total_candidates_generated` | Number of raw generated candidates |
+| `total_candidates_after_threshold` | Number of retained candidates after thresholding |
+| `links_with_dual_core_agreement` | Links containing dual-core-agreement candidates |
+| `links_with_geo_dominant_as_weak` | Links showing geo-dominant disagreement |
+| `links_with_as_dominant_geo_ambiguous` | Links showing AS-dominant disagreement |
+| `links_with_parallel_ambiguity` | Links with parallel-corridor ambiguity |
+| `links_with_many_candidates` | Links with large candidate sets |
+| `links_with_domestic_candidates` | Links with domestic submarine candidates |
+| `as_precompute_enabled` | Whether AS-graph precompute was loaded |
+| `candidate_count_list` | Per-matched-link retained candidate counts |
+| `mean_candidate_count_per_matched_link`, `median_candidate_count_per_matched_link` | Aggregate candidate multiplicity metrics |
+
+#### `output/result/cable_matching_manifest.json`
+
+Stage 1 run manifest.
+
+| Key | Meaning |
+| --- | --- |
+| `traceroute_file_paths` | Input traceroute files processed |
+| `total_files_processed` | Number of traceroute input files |
+| `total_traces_processed` | Number of traceroute records processed |
+| `empty_trace_count` | Invalid or empty traceroute record count |
+| `matched_links_above_threshold` | Number of matched links written to output |
+| `match_output_file` | Output JSON path |
+| `match_stats_file` | Stats JSON path |
+| `as_precompute_file` | AS precompute file used, if any |
+| `method_profile` | Named method profile string |
+
+### C. Stage 2 Outputs
+
+#### `output/result/country_root_cable_dependency_hybrid.csv`
+#### `output/result/country_root_cable_dependency_hybrid_same_source.csv`
+
+Country/root dependency tables. The `_same_source` variant is another run variant with the same schema.
+
+| Column | Meaning |
+| --- | --- |
+| `Country`, `Root` | Aggregation key |
+| `Aggregation_Mode`, `Confidence_Filter`, `Owner_Multi_Entity_Mode` | Stage 2 configuration used for the row |
+| `Total_Traces` | Denominator trace count for the unit |
+| `Submarine_Traces` | Number of traces with submarine-candidate support |
+| `Dependency_Rate` | `Submarine_Traces / Total_Traces` |
+| `Top_Cable`, `Top2_Cable` | Highest and second-highest aggregated cable candidates |
+| `Top_Cable_Expected_Vol`, `Top2_Cable_Expected_Vol` | Aggregated support mass assigned to the top cable candidates |
+| `Top_Cable_Share`, `Top2_Cable_Share` | Top cable support divided by `Total_Traces` |
+| `Dominance_Margin` | Gap between top cable and second cable share |
+| `Unique_CrossBorder_AS_Pairs` | Count of distinct logical cross-border AS pairs |
+| `Top_CrossBorder_AS_Pair`, `Top2_CrossBorder_AS_Pair` | Most frequent cross-border AS pairs |
+| `Top_CrossBorder_AS_Pair_Count`, `Top2_CrossBorder_AS_Pair_Count` | Raw counts of those AS pairs |
+| `Top_CrossBorder_AS_Pair_Share`, `Top2_CrossBorder_AS_Pair_Share` | AS-pair count divided by `Total_Traces` |
+| `CrossBorder_AS_Pair_Dominance_Margin` | Gap between top AS pair and second AS pair |
+| `Cable_vs_ASPair_Concentration_Gap` | Top cable share minus top AS-pair share |
+| `Top_Owner`, `Top2_Owner` | Highest and second-highest cable owners after owner aggregation |
+| `Top_Owner_Expected_Vol`, `Top2_Owner_Expected_Vol` | Aggregated support mass assigned to owners |
+| `Top_Owner_Share`, `Top2_Owner_Share` | Owner support divided by `Total_Traces` |
+| `Owner_Dominance_Margin` | Gap between top owner and second owner share |
+| `Cable_Owner_Concentration_Gap` | Top owner share minus top cable share |
+| `High_Bucket_Traces`, `Medium_Bucket_Traces`, `Ambiguous_Bucket_Traces` | Number of traces in each confidence bucket |
+
+#### `output/result/country_root_dependency_total.csv`
+
+Merged comparison table across three Stage 2 settings:
+
+- `weighted_all`
+- `hard_top1_all`
+- `weighted_high`
+
+The schema repeats most dependency columns above with a suffix showing which setting produced the metric. Additional stability fields:
+
+| Column | Meaning |
+| --- | --- |
+| `Cable_Stable_vs_Hard`, `Cable_Stable_vs_High`, `Cable_Stable_All3` | Whether the top cable remained stable across settings |
+| `Owner_Stable_vs_Hard`, `Owner_Stable_vs_High`, `Owner_Stable_All3` | Whether the top owner remained stable across settings |
+
+#### `output/result/dependency_variants/*.csv` (optional)
+
+If Stage 2 is run with `--output-total-table --detail-dir ...`, this directory contains per-setting detail tables such as `weighted_all.csv`, `hard_top1_all.csv`, and `weighted_high.csv`.
+
+These files use the same schema as `country_root_cable_dependency_hybrid.csv`, but each file corresponds to one aggregation / confidence-filter setting only.
+
+#### `output/result/country_root_summary.json`
+#### `output/result/country_root_summary_same_source.json`
+
+Small run summaries for Stage 2. Main keys:
+
+| Key | Meaning |
+| --- | --- |
+| `raw_traces_file`, `resolved_raw_trace_files` | Stage 2 traceroute input path(s) |
+| `match_output_file` | Stage 1 output used |
+| `probe_meta_file` | Probe metadata file used |
+| `mmdb_path`, `pfx2as_file`, `cable_dir` | Reference input files |
+| `output_csv` | Main Stage 2 output path |
+| `aggregation_mode`, `collapse_roots`, `match_threshold`, `confidence_bucket`, `cross_country`, `owner_multi_entity_mode` | Stage 2 configuration |
+| `rows`, `countries`, `roots` | Output size summary |
+
+### D. Post-Processing Outputs
+
+#### `output/result/trace_candidate_support.csv`
+
+Flattened candidate-level table derived from `cable_matching_output.json`. It contains all `link_info`, `match_summary`, and candidate fields described above, plus:
+
+| Column | Meaning |
+| --- | --- |
+| `unit_id` | Aggregation unit built from `--unit-fields` |
+| `link_id` | Unique link-level row identifier |
+| `record_index` | Index of the parent Stage 1 record |
+| `corridor_id_fallback`, `parallel_group_id_fallback` | Graceful fallback identifiers used when explicit corridor fields are missing |
+
+#### `output/result/unit_physical_candidate_diversity_cable.csv`
+#### `output/result/unit_physical_candidate_diversity_corridor.csv`
+#### `output/result/unit_physical_candidate_diversity.csv`
+
+Physical-candidate diversity tables. The legacy file `unit_physical_candidate_diversity.csv` is an alias of the cable-level version.
+
+| Column | Meaning |
+| --- | --- |
+| `unit_id` | Aggregation unit |
+| `physical_level` | `cable` or `corridor` |
+| `dominant_candidate_key` | Dominant cable ID or corridor ID |
+| `dominant_candidate_support_share` | Dominant candidate share after unit-level aggregation |
+| `expected_candidate_support_total` | Total aggregated support mass before share normalization |
+| `candidate_entropy` | Shannon entropy over aggregated candidate shares |
+| `effective_num_candidates` | `exp(entropy)` |
+| `gini_candidate_support` | Gini coefficient over candidate shares |
+| `num_candidates_with_support` | Number of candidates with non-zero support |
+| `num_matched_links` | Number of matched links in the unit |
+| `num_probes` | Number of probes represented in the unit |
+| `physical_candidate_diversity_score` | Primary physical diversity score, currently `effective_num_candidates` |
+| `candidate_identifier_column` | Column actually used for aggregation, such as `cable_id`, `corridor_id`, or `segment` |
+
+#### `output/result/unit_network_layer_diversity.csv`
+#### `output/result/unit_logical_diversity.csv`
+
+Unit-level network diversity tables. The legacy file `unit_logical_diversity.csv` is an alias of the network-layer version.
+
+| Column | Meaning |
+| --- | --- |
+| `unit_id` | Aggregation unit |
+| `num_probes`, `num_measurements`, `num_files_or_targets` | Unit composition counts |
+| `num_dst_countries`, `num_src_dst_country_pairs` | Geographic diversity counts |
+| `num_src_asns`, `num_dst_asns`, `num_src_dst_as_pairs` | ASN diversity counts |
+| `link_country_sequence_entropy` | Entropy of observed country-pair sequences |
+| `src_asn_entropy`, `dst_asn_entropy` | Entropy of source and destination ASN distributions |
+| `as_pair_entropy`, `src_dst_as_pair_entropy` | Entropy of source-destination ASN pair distribution |
+| `network_score_component_as_pair` | ASN-pair component of the composite network score |
+| `network_score_component_country_pair` | Country-pair component of the composite network score |
+| `network_score_component_endpoint_asn` | Endpoint-ASN component of the composite network score |
+| `network_score_component_probe_target` | Probe/target multiplicity component |
+| `network_layer_diversity_score_as_only` | Composite score using only AS-related components |
+| `network_layer_diversity_score_country_only` | Composite score using only country component |
+| `network_layer_diversity_score` | Main network-layer diversity score |
+| `logical_diversity_score` | Legacy alias of `network_layer_diversity_score` |
+
+#### `output/result/unit_network_physical_mismatch.csv`
+#### `output/result/unit_network_physical_mismatch_corridor.csv`
+#### `output/result/unit_mismatch.csv`
+
+Joined network-vs-physical mismatch tables. The legacy file `unit_mismatch.csv` is an alias of the cable-level mismatch table.
+
+These files contain all unit-level network-layer columns plus all physical-diversity columns, and:
+
+| Column | Meaning |
+| --- | --- |
+| `network_high` | Whether network-layer diversity is above the unit median |
+| `physical_low` | Whether physical diversity is at or below the unit median |
+| `network_physical_mismatch_category` | One of the four quadrant labels |
+| `network_physical_gap` | Network-layer diversity score minus physical diversity score |
+| `logical_physical_gap` | Legacy alias of the same gap |
+| `logical_high` | Legacy alias of `network_high` |
+| `mismatch_category` | Legacy alias of `network_physical_mismatch_category` |
+| `is_target_quadrant` | Whether the unit is in `network_high_physical_low` |
+
+#### `output/result/network_physical_quadrants.csv`
+
+| Column | Meaning |
+| --- | --- |
+| `physical_level` | `cable` or `corridor` |
+| `network_physical_mismatch_category` | Quadrant label |
+| `unit_count` | Number of units in that quadrant |
+| `unit_share` | Share of units in that quadrant |
+
+#### `output/result/cable_vs_corridor_physical_diversity.csv`
+
+Compares cable-level and corridor-level physical diversity for each unit.
+
+| Column Group | Meaning |
+| --- | --- |
+| `cable_*` | Cable-level diversity metrics and quadrant labels |
+| `corridor_*` | Corridor-level diversity metrics and quadrant labels |
+| `corridor_minus_cable_physical_diversity` | Corridor score minus cable score |
+| `corridor_vs_cable_effective_num_ratio` | Effective number ratio |
+| `target_quadrant_preserved` | Whether the unit stays in the target quadrant at both levels |
+| `quadrant_label_stable` | Whether cable-level and corridor-level quadrant labels agree |
+
+#### `output/result/unit_ambiguity_profile.csv`
+
+Unit-level ambiguity support profile.
+
+| Column | Meaning |
+| --- | --- |
+| `unit_id` | Aggregation unit |
+| `num_candidate_rows` | Number of candidate rows belonging to the unit |
+| `num_links` | Number of links in the unit |
+| `*_support_share` | Share of unit support associated with a given ambiguity class |
+| `no_ambiguity_support_share` | Share of support with no ambiguity tag |
+
+#### `output/result/ambiguity_summary.csv`
+
+Global ambiguity summary.
+
+| Column | Meaning |
+| --- | --- |
+| `ambiguity_class` | Ambiguity category, including `no_ambiguity` |
+| `candidate_rows` | Candidate rows carrying that ambiguity |
+| `candidate_row_share` | Share of candidate rows |
+| `aggregate_normalized_support` | Summed candidate support attributed to that ambiguity |
+| `aggregate_support_share` | Share of global support mass |
+| `units_affected` | Number of units affected |
+
+#### `output/result/ambiguity_taxonomy.csv`
+
+Interpretation guide for ambiguity classes.
+
+| Column | Meaning |
+| --- | --- |
+| `ambiguity_class` | Tag name |
+| `reviewer_concern` | Concern likely to be raised by a reviewer |
+| `treatment` | How the code handles or interprets the ambiguity |
+| `interpretation_boundary` | What the result should not be over-claimed to mean |
+
+#### `output/result/core_agreement_summary.csv`
+
+Global summary of evidence-core agreement.
+
+| Column | Meaning |
+| --- | --- |
+| `core_agreement` | Agreement class such as `dual_core_agreement` |
+| `candidate_rows` | Number of candidate rows in the class |
+| `candidate_row_share` | Share of candidate rows |
+| `aggregate_normalized_support` | Summed support mass in the class |
+| `aggregate_support_share` | Share of total support mass |
+| `units_affected` | Number of units containing the class |
+
+#### `output/result/as_reranking_effect.csv`
+
+Link-level summary of how geo-only, AS-only, and fused rankings differ.
+
+| Column | Meaning |
+| --- | --- |
+| `total_links` | Number of links evaluated |
+| `geo_as_top_agreement_rate` | Fraction of links where geo-only and AS-only top-1 agree |
+| `geo_fused_top_agreement_rate` | Fraction of links where geo-only and fused top-1 agree |
+| `as_fused_top_agreement_rate` | Fraction of links where AS-only and fused top-1 agree |
+| `as_changes_geo_top1_rate` | Fraction of links where AS-only changes the geo-only top-1 |
+| `mean_geo_to_fused_rank_shift` | Average shift from geo top-1 to its fused rank |
+| `mean_as_to_fused_rank_shift` | Average shift from AS top-1 to its fused rank |
+| `parallel_links` | Number of parallel-corridor links |
+| `parallel_links_with_dual_core_agreement` | Parallel links containing dual-core agreement |
+| `parallel_links_remaining_ambiguous` | Parallel links that remain ambiguous |
+
+#### `output/result/filtering_breakdown.csv`
+
+Lightweight summary of Stage 1 filtering and retention.
+
+| Column | Meaning |
+| --- | --- |
+| `total_traces_processed` | Number of traceroute records processed |
+| `empty_trace_count` | Empty or invalid trace count |
+| `total_links_seen` | Total links evaluated |
+| `same_city_filtered` | Same-city links removed early |
+| `links_with_ls_candidates` | Links with landing-station candidates |
+| `links_with_geo_candidates` | Links with spatial candidates |
+| `candidate_segments_considered` | Candidate segments considered before RTT filtering |
+| `rtt_infeasible_filtered` | RTT-infeasible candidates removed |
+| `links_with_any_match` | Links with at least one final match |
+| `total_candidates_generated` | Total candidate rows generated |
+| `total_candidates_after_threshold` | Candidate rows retained after thresholding |
+| `links_with_parallel_ambiguity` | Links marked as parallel ambiguous |
+| `links_with_domestic_candidates` | Links with domestic submarine candidates |
+
+#### `output/result/dataset_summary.csv`
+
+Two-column metric table summarizing the overall run.
+
+| Column | Meaning |
+| --- | --- |
+| `metric` | Summary metric name |
+| `value` | Metric value |
+
+#### `output/result/method_manifest.json`
+
+Post-processing method manifest.
+
+| Key | Meaning |
+| --- | --- |
+| `method_name` | High-level method name |
+| `main_question` | Main auditing question |
+| `claim_boundary` | Explicit interpretation boundary |
+| `primary_target_quadrant` | Main mismatch quadrant of interest |
+| `evidence_cores` | Evidence cores used by the model |
+| `fusion_model` | High-level fusion rule |
+| `physical_levels` | Supported physical aggregation levels |
+| `ambiguity_classes` | Known ambiguity tags |
+| `primary_outputs` | Main post-processing outputs |
+| `interpretation` | One-line interpretation guidance |
+
+#### Post-processing SVG files
+
+| File | Meaning |
+| --- | --- |
+| `network_physical_quadrant_scatter_cable.svg` | Scatter of network-layer vs cable-level physical diversity |
+| `network_physical_quadrant_scatter_corridor.svg` | Scatter of network-layer vs corridor-level physical diversity |
+| `network_physical_quadrant_counts_cable.svg` | Cable-level quadrant count bar chart |
+| `network_physical_quadrant_counts_corridor.svg` | Corridor-level quadrant count bar chart |
+| `cable_vs_corridor_physical_diversity.svg` | Scatter comparing cable-level and corridor-level physical diversity |
+
+### E. Robustness Outputs
+
+#### `output/result/robustness_summary.csv`
+
+| Column | Meaning |
+| --- | --- |
+| `mode` | Evidence-setting label |
+| `physical_level` | `cable` or `corridor` |
+| `num_units_compared` | Number of units compared with baseline |
+| `spearman_dominant_candidate_support_share` | Spearman correlation of dominant support share |
+| `spearman_effective_num_candidates` | Spearman correlation of effective number of candidates |
+| `topk_dominant_share_overlap` | Overlap ratio of top-k dominant-share units |
+
+#### `output/result/robustness_mismatch_stability.csv`
+
+| Column | Meaning |
+| --- | --- |
+| `mode` | Evidence-setting label |
+| `physical_level` | `cable` or `corridor` |
+| `num_units_compared` | Number of units in the comparison |
+| `baseline_target_units` | Number of baseline target-quadrant units |
+| `mode_target_units` | Number of target-quadrant units in the current setting |
+| `shared_target_units` | Number of shared target-quadrant units |
+| `target_jaccard_vs_baseline` | Jaccard overlap with baseline target units |
+| `target_precision_vs_baseline` | Precision relative to baseline target units |
+| `target_recall_vs_baseline` | Recall relative to baseline target units |
+| `quadrant_agreement_rate` | Overall quadrant-label agreement rate |
+
+#### `output/result/robustness_quadrant_summary.csv`
+
+| Column | Meaning |
+| --- | --- |
+| `physical_level` | `cable` or `corridor` |
+| `network_physical_mismatch_category` | Quadrant label |
+| `unit_count` | Number of units in that quadrant |
+| `unit_share` | Share of units in that quadrant |
+| `mode` | Evidence-setting label |
+
+#### `output/result/robustness_profile_table.csv`
+
+Paper-facing robustness table.
+
+| Column | Meaning |
+| --- | --- |
+| `setting` | Full setting label such as `fused_dual_core_cable` |
+| `evidence_view` | Coarser evidence view such as `geo_only` or `as_only` |
+| `physical_level` | `cable` or `corridor` |
+| `rank_corr_dominant_support` | Spearman correlation of dominant support ranking |
+| `rank_corr_effective_num` | Spearman correlation of effective number ranking |
+| `target_quadrant_jaccard` | Jaccard overlap of target-quadrant units |
+| `target_quadrant_recall` | Recall of target-quadrant units relative to baseline |
+| `quadrant_agreement_rate` | Overall quadrant-label agreement |
+| `interpretation` | Human-readable description of the robustness setting |
+
+#### `output/result/robustness_network_high_physical_low_stability.svg`
+
+Bar chart showing shared `network_high_physical_low` units across robustness settings.
+
+## Collaboration Notes
+
+- The repository is intended to be used across multiple computers through GitHub.
+- The expected shared source of truth is `origin/main`.
+- Runtime data files remain local inputs; code and documentation are tracked in Git.
+- For agent-side collaboration rules, see `AGENTS.md`.
