@@ -1,10 +1,32 @@
 import argparse
-import math
 import os
-from typing import Dict, Iterable, List
+from typing import Dict, List, Set
 
 import numpy as np
 import pandas as pd
+
+try:
+    from source.postprocess_candidate_output import (
+        TARGET_MISMATCH_CATEGORY,
+        build_quadrant_summary,
+        build_unit_network_layer_diversity,
+        build_unit_network_physical_mismatch,
+        build_unit_physical_candidate_diversity,
+    )
+except ModuleNotFoundError:
+    import sys
+
+    SOURCE_DIR = os.path.dirname(os.path.abspath(__file__)) if "__file__" in locals() else "."
+    BASE_DIR = os.path.dirname(SOURCE_DIR)
+    if BASE_DIR not in sys.path:
+        sys.path.append(BASE_DIR)
+    from source.postprocess_candidate_output import (  # type: ignore
+        TARGET_MISMATCH_CATEGORY,
+        build_quadrant_summary,
+        build_unit_network_layer_diversity,
+        build_unit_network_physical_mismatch,
+        build_unit_physical_candidate_diversity,
+    )
 
 
 SOURCE_DIR = os.path.dirname(os.path.abspath(__file__)) if "__file__" in locals() else "."
@@ -15,31 +37,10 @@ DEFAULT_OUTPUT = os.path.join(BASE_DIR, "output", "result")
 
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
-    parser = argparse.ArgumentParser(description="Compare physical-candidate metrics across evidence settings.")
+    parser = argparse.ArgumentParser(description="Compare network-physical mismatch stability across evidence settings.")
     parser.add_argument("--input", default=DEFAULT_INPUT, help="Input trace_candidate_support.csv file.")
     parser.add_argument("--output", default=DEFAULT_OUTPUT, help="Output directory.")
     return parser.parse_args()
-
-
-def shannon_entropy(values: Iterable[float]) -> float:
-    """Compute Shannon entropy for a non-negative sequence."""
-    array = np.asarray([value for value in values if value > 0], dtype=float)
-    total = array.sum()
-    if total <= 0 or array.size == 0:
-        return 0.0
-    probs = array / total
-    return float(-(probs * np.log(probs)).sum())
-
-
-def gini_coefficient(values: Iterable[float]) -> float:
-    """Compute the Gini coefficient."""
-    array = np.asarray([max(value, 0.0) for value in values], dtype=float)
-    if array.size == 0 or np.allclose(array.sum(), 0.0):
-        return 0.0
-    sorted_array = np.sort(array)
-    n_items = sorted_array.size
-    cumulative = np.cumsum(sorted_array)
-    return float((n_items + 1 - 2 * (cumulative.sum() / cumulative[-1])) / n_items)
 
 
 def normalize_within_links(frame: pd.DataFrame, score_col: str, out_col: str) -> pd.DataFrame:
@@ -50,39 +51,12 @@ def normalize_within_links(frame: pd.DataFrame, score_col: str, out_col: str) ->
     return result
 
 
-def aggregate_mode_metrics(frame: pd.DataFrame, support_col: str, candidate_col: str) -> pd.DataFrame:
-    """Aggregate support into per-unit physical-candidate metrics."""
-    aggregated = (
-        frame.groupby(["unit_id", candidate_col], dropna=False)[support_col]
-        .sum()
-        .reset_index(name="aggregate_support")
-    )
-    aggregated["aggregate_support_share"] = aggregated.groupby("unit_id")["aggregate_support"].transform(
-        lambda values: values / values.sum() if values.sum() > 0 else 0.0
-    )
-
-    rows: List[Dict[str, float]] = []
-    for unit_id, group in aggregated.groupby("unit_id"):
-        shares = group["aggregate_support_share"].tolist()
-        top_row = group.sort_values("aggregate_support_share", ascending=False).iloc[0]
-        entropy_value = shannon_entropy(shares)
-        rows.append(
-            {
-                "unit_id": unit_id,
-                "dominant_candidate_support_share": float(top_row["aggregate_support_share"]),
-                "candidate_entropy": entropy_value,
-                "effective_num_candidates": float(math.exp(entropy_value)) if entropy_value > 0 else (1.0 if shares else 0.0),
-                "gini_candidate_support": gini_coefficient(shares),
-            }
-        )
-    return pd.DataFrame(rows)
-
-
 def spearman_corr(left: pd.Series, right: pd.Series) -> float:
     """Compute a Spearman correlation with graceful fallback."""
     if left.empty or right.empty:
         return 0.0
-    return float(left.corr(right, method="spearman"))
+    value = left.corr(right, method="spearman")
+    return 0.0 if pd.isna(value) else float(value)
 
 
 def top_k_overlap(left: pd.DataFrame, right: pd.DataFrame, metric: str, top_k: int) -> float:
@@ -96,8 +70,122 @@ def top_k_overlap(left: pd.DataFrame, right: pd.DataFrame, metric: str, top_k: i
     return float(len(left_ids & right_ids) / max(len(left_ids | right_ids), 1))
 
 
+def write_named_bar_svg(summary_frame: pd.DataFrame, output_path: str, title: str) -> None:
+    """Render a simple bar chart keyed by arbitrary mode names."""
+    width = 1040
+    height = 620
+    if summary_frame.empty:
+        svg = (
+            f"<svg xmlns='http://www.w3.org/2000/svg' width='{width}' height='{height}' viewBox='0 0 {width} {height}'>"
+            "<rect width='100%' height='100%' fill='white'/>"
+            "<text x='24' y='36' font-size='18'>No data available.</text></svg>"
+        )
+        with open(output_path, "w", encoding="utf-8") as handle:
+            handle.write(svg)
+        return
+
+    plot_left = 120
+    plot_top = 80
+    plot_width = 820
+    plot_height = 360
+    max_count = max(int(summary_frame["shared_target_units"].max()), 1)
+    bar_slot = plot_width / max(len(summary_frame), 1)
+    body = [
+        f"<text x='24' y='34' font-size='20' font-family='Arial'>{title}</text>",
+        f"<line x1='{plot_left}' y1='{plot_top + plot_height}' x2='{plot_left + plot_width}' y2='{plot_top + plot_height}' stroke='#566573'/>",
+        f"<line x1='{plot_left}' y1='{plot_top}' x2='{plot_left}' y2='{plot_top + plot_height}' stroke='#566573'/>",
+    ]
+
+    for index, (_, row) in enumerate(summary_frame.iterrows()):
+        x = plot_left + index * bar_slot + 18
+        height_value = plot_height * (float(row["shared_target_units"]) / max_count)
+        y = plot_top + plot_height - height_value
+        fill = "#c0392b" if str(row["mode"]) == "fused_dual_core_cable" else "#5dade2"
+        body.append(f"<rect x='{x:.2f}' y='{y:.2f}' width='72' height='{height_value:.2f}' fill='{fill}'/>")
+        body.append(f"<text x='{x + 12:.2f}' y='{y - 8:.2f}' font-size='12' font-family='Arial'>{int(row['shared_target_units'])}</text>")
+        body.append(f"<text x='{x - 4:.2f}' y='{plot_top + plot_height + 22:.2f}' font-size='10' font-family='Arial'>{row['mode']}</text>")
+        body.append(
+            f"<text x='{x - 4:.2f}' y='{plot_top + plot_height + 38:.2f}' font-size='10' font-family='Arial'>J={float(row['target_jaccard_vs_baseline']):.2f}</text>"
+        )
+
+    svg = (
+        f"<svg xmlns='http://www.w3.org/2000/svg' width='{width}' height='{height}' viewBox='0 0 {width} {height}'>"
+        "<rect width='100%' height='100%' fill='white'/>"
+        + "".join(body)
+        + "</svg>"
+    )
+    with open(output_path, "w", encoding="utf-8") as handle:
+        handle.write(svg)
+
+
+def build_mode_result(
+    mode_name: str,
+    mode_frame: pd.DataFrame,
+    support_col: str,
+    candidate_col: str,
+    physical_level: str,
+    network_frame: pd.DataFrame,
+) -> Dict[str, pd.DataFrame]:
+    """Build physical-diversity and mismatch tables for one evidence setting."""
+    if mode_frame.empty:
+        physical = pd.DataFrame()
+        mismatch = pd.DataFrame()
+        quadrant_summary = pd.DataFrame(columns=["physical_level", "network_physical_mismatch_category", "unit_count", "unit_share"])
+    else:
+        physical = build_unit_physical_candidate_diversity(
+            mode_frame,
+            candidate_id_col=candidate_col,
+            physical_level=physical_level,
+            support_col=support_col,
+        )
+        mismatch = build_unit_network_physical_mismatch(network_frame, physical, physical_level)
+        mismatch["mode"] = mode_name
+        quadrant_summary = build_quadrant_summary(mismatch, physical_level)
+        quadrant_summary["mode"] = mode_name
+
+    if not physical.empty:
+        physical["mode"] = mode_name
+    return {
+        "mode": mode_name,
+        "physical_level": physical_level,
+        "physical": physical,
+        "mismatch": mismatch,
+        "quadrant_summary": quadrant_summary,
+    }
+
+
+def target_unit_set(mismatch_frame: pd.DataFrame) -> Set[str]:
+    """Return the set of units in the target mismatch quadrant."""
+    if mismatch_frame.empty:
+        return set()
+    return set(
+        mismatch_frame.loc[
+            mismatch_frame["network_physical_mismatch_category"].astype(str) == TARGET_MISMATCH_CATEGORY,
+            "unit_id",
+        ]
+    )
+
+
+def quadrant_agreement_rate(baseline: pd.DataFrame, candidate: pd.DataFrame) -> float:
+    """Compute the fraction of units with the same quadrant label."""
+    merged = baseline[["unit_id", "network_physical_mismatch_category"]].merge(
+        candidate[["unit_id", "network_physical_mismatch_category"]],
+        on="unit_id",
+        suffixes=("_baseline", "_mode"),
+        how="inner",
+    )
+    if merged.empty:
+        return 0.0
+    return float(
+        (
+            merged["network_physical_mismatch_category_baseline"].astype(str)
+            == merged["network_physical_mismatch_category_mode"].astype(str)
+        ).mean()
+    )
+
+
 def main() -> None:
-    """Compare fused, geo-only, as-only, and filtered candidate-support views."""
+    """Compare evidence settings and their network-physical mismatch stability."""
     args = parse_args()
     os.makedirs(args.output, exist_ok=True)
 
@@ -109,66 +197,132 @@ def main() -> None:
     frame["as_economic_score"] = frame["as_economic_score"].fillna(0.0)
     frame["normalized_candidate_support"] = frame["normalized_candidate_support"].fillna(0.0)
 
+    network_frame = build_unit_network_layer_diversity(frame)
     geo_frame = normalize_within_links(frame, "geo_spatial_score", "geo_only_support")
     as_frame = normalize_within_links(frame, "as_economic_score", "as_only_support")
     high_conf_frame = frame[
         (frame["confidence_bucket"] == "high") | (frame["core_agreement"] == "dual_core_agreement")
     ].copy()
 
-    mode_frames = {
-        "fused_dual_core": aggregate_mode_metrics(frame, "normalized_candidate_support", "cable_id"),
-        "geo_only": aggregate_mode_metrics(geo_frame, "geo_only_support", "cable_id"),
-        "as_only": aggregate_mode_metrics(as_frame, "as_only_support", "cable_id"),
-        "high_confidence_subset": aggregate_mode_metrics(
+    mode_specs = [
+        ("fused_dual_core_cable", frame, "normalized_candidate_support", "cable_id", "cable"),
+        ("geo_only_cable", geo_frame, "geo_only_support", "cable_id", "cable"),
+        ("as_only_cable", as_frame, "as_only_support", "cable_id", "cable"),
+        (
+            "high_confidence_subset_cable",
             high_conf_frame if not high_conf_frame.empty else frame.iloc[0:0],
             "normalized_candidate_support",
             "cable_id",
+            "cable",
         ),
-        "corridor_segment": aggregate_mode_metrics(frame, "normalized_candidate_support", "segment"),
-    }
+        ("fused_dual_core_corridor", frame, "normalized_candidate_support", "segment", "corridor"),
+        ("geo_only_corridor", geo_frame, "geo_only_support", "segment", "corridor"),
+        ("as_only_corridor", as_frame, "as_only_support", "segment", "corridor"),
+        (
+            "high_confidence_subset_corridor",
+            high_conf_frame if not high_conf_frame.empty else frame.iloc[0:0],
+            "normalized_candidate_support",
+            "segment",
+            "corridor",
+        ),
+    ]
 
-    baseline = mode_frames["fused_dual_core"]
-    top_k = max(1, min(10, len(baseline)))
-    rows: List[Dict[str, float]] = []
+    mode_results = [build_mode_result(*spec, network_frame=network_frame) for spec in mode_specs]
+    baseline = next(result for result in mode_results if result["mode"] == "fused_dual_core_cable")
+    baseline_physical = baseline["physical"]
+    baseline_mismatch = baseline["mismatch"]
+    baseline_target = target_unit_set(baseline_mismatch)
+    top_k = max(1, min(10, len(baseline_physical))) if not baseline_physical.empty else 1
 
-    for mode_name, mode_frame in mode_frames.items():
-        merged = baseline.merge(mode_frame, on="unit_id", suffixes=("_baseline", "_mode"))
+    robustness_rows: List[Dict[str, float]] = []
+    stability_rows: List[Dict[str, float]] = []
+    quadrant_summaries: List[pd.DataFrame] = []
+
+    for result in mode_results:
+        mode_name = str(result["mode"])
+        physical_level = str(result["physical_level"])
+        physical = result["physical"]
+        mismatch = result["mismatch"]
+        quadrant_summary = result["quadrant_summary"]
+
+        if not quadrant_summary.empty:
+            quadrant_summaries.append(quadrant_summary)
+
+        merged = baseline_physical.merge(physical, on="unit_id", suffixes=("_baseline", "_mode"), how="inner")
         if merged.empty:
-            rows.append(
+            robustness_rows.append(
                 {
                     "mode": mode_name,
+                    "physical_level": physical_level,
                     "num_units_compared": 0,
                     "spearman_dominant_candidate_support_share": 0.0,
                     "spearman_effective_num_candidates": 0.0,
                     "topk_dominant_share_overlap": 0.0,
                 }
             )
-            continue
+        else:
+            robustness_rows.append(
+                {
+                    "mode": mode_name,
+                    "physical_level": physical_level,
+                    "num_units_compared": int(len(merged)),
+                    "spearman_dominant_candidate_support_share": spearman_corr(
+                        merged["dominant_candidate_support_share_baseline"],
+                        merged["dominant_candidate_support_share_mode"],
+                    ),
+                    "spearman_effective_num_candidates": spearman_corr(
+                        merged["effective_num_candidates_baseline"],
+                        merged["effective_num_candidates_mode"],
+                    ),
+                    "topk_dominant_share_overlap": top_k_overlap(
+                        baseline_physical,
+                        physical,
+                        "dominant_candidate_support_share",
+                        top_k,
+                    ),
+                }
+            )
 
-        rows.append(
+        mode_target = target_unit_set(mismatch)
+        intersection = baseline_target & mode_target
+        union = baseline_target | mode_target
+        stability_rows.append(
             {
                 "mode": mode_name,
-                "num_units_compared": int(len(merged)),
-                "spearman_dominant_candidate_support_share": spearman_corr(
-                    merged["dominant_candidate_support_share_baseline"],
-                    merged["dominant_candidate_support_share_mode"],
-                ),
-                "spearman_effective_num_candidates": spearman_corr(
-                    merged["effective_num_candidates_baseline"],
-                    merged["effective_num_candidates_mode"],
-                ),
-                "topk_dominant_share_overlap": top_k_overlap(
-                    baseline,
-                    mode_frame,
-                    "dominant_candidate_support_share",
-                    top_k,
-                ),
+                "physical_level": physical_level,
+                "num_units_compared": int(len(mismatch)),
+                "baseline_target_units": int(len(baseline_target)),
+                "mode_target_units": int(len(mode_target)),
+                "shared_target_units": int(len(intersection)),
+                "target_jaccard_vs_baseline": float(len(intersection) / len(union)) if union else 1.0,
+                "target_precision_vs_baseline": float(len(intersection) / len(mode_target)) if mode_target else 0.0,
+                "target_recall_vs_baseline": float(len(intersection) / len(baseline_target)) if baseline_target else 0.0,
+                "quadrant_agreement_rate": quadrant_agreement_rate(baseline_mismatch, mismatch),
             }
         )
 
-    summary = pd.DataFrame(rows).sort_values("mode")
-    summary.to_csv(os.path.join(args.output, "robustness_summary.csv"), index=False, encoding="utf-8-sig")
-    print(f"Saved robustness summary to {os.path.join(args.output, 'robustness_summary.csv')}")
+    robustness_summary = pd.DataFrame(robustness_rows).sort_values(["physical_level", "mode"])
+    mismatch_stability = pd.DataFrame(stability_rows).sort_values(["physical_level", "mode"])
+    quadrant_summary_frame = pd.concat(quadrant_summaries, ignore_index=True) if quadrant_summaries else pd.DataFrame()
+
+    robustness_summary_path = os.path.join(args.output, "robustness_summary.csv")
+    mismatch_stability_path = os.path.join(args.output, "robustness_mismatch_stability.csv")
+    quadrant_summary_path = os.path.join(args.output, "robustness_quadrant_summary.csv")
+
+    robustness_summary.to_csv(robustness_summary_path, index=False, encoding="utf-8-sig")
+    mismatch_stability.to_csv(mismatch_stability_path, index=False, encoding="utf-8-sig")
+    quadrant_summary_frame.to_csv(quadrant_summary_path, index=False, encoding="utf-8-sig")
+
+    if not mismatch_stability.empty:
+        write_named_bar_svg(
+            mismatch_stability,
+            os.path.join(args.output, "robustness_network_high_physical_low_stability.svg"),
+            "Shared network_high_physical_low units vs fused_dual_core_cable baseline",
+        )
+
+    print(f"Saved robustness summary to {robustness_summary_path}")
+    print(f"Saved mismatch stability summary to {mismatch_stability_path}")
+    print(f"Saved robustness quadrant summary to {quadrant_summary_path}")
 
 
 if __name__ == "__main__":
