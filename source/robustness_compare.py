@@ -12,6 +12,7 @@ try:
         build_quadrant_summary,
         build_unit_network_layer_diversity,
         build_unit_network_physical_mismatch,
+        build_unit_network_physical_upper_bound_mismatch,
         build_unit_physical_feasible_set_diversity,
         build_unit_physical_candidate_diversity,
         annotate_projection_quality,
@@ -31,6 +32,7 @@ except ModuleNotFoundError:
         build_quadrant_summary,
         build_unit_network_layer_diversity,
         build_unit_network_physical_mismatch,
+        build_unit_network_physical_upper_bound_mismatch,
         build_unit_physical_feasible_set_diversity,
         build_unit_physical_candidate_diversity,
         annotate_projection_quality,
@@ -270,6 +272,30 @@ def infer_projection_subset(setting: str) -> str:
     return "all_projections"
 
 
+def normalize_upper_bound_category(label: str) -> str:
+    """Normalize weighted and upper-bound quadrant labels onto a common comparison vocabulary."""
+    return str(label).replace("_physical_upper_", "_physical_")
+
+
+def build_conservative_audit_interpretation(
+    candidate_view: str,
+    physical_level: str,
+    projection_subset: str,
+    network_definition: str,
+) -> str:
+    """Generate a paper-facing interpretation for the conservative candidate-audit robustness table."""
+    pieces = [f"{network_definition} network definition"]
+    pieces.append("corridor-level" if physical_level == "corridor" else "cable-level")
+    pieces.append("conservative feasible-set view" if candidate_view == "conservative_set" else "weighted support view")
+    if projection_subset == "strong_only":
+        pieces.append("strong projections only")
+    elif projection_subset == "strong_or_moderate":
+        pieces.append("strong/moderate projections only")
+    else:
+        pieces.append("all projections")
+    return ", ".join(pieces)
+
+
 def build_robustness_interpretation(row: pd.Series) -> str:
     """Generate the paper-facing interpretation string for one robustness setting."""
     setting = str(row.get("setting", ""))
@@ -294,6 +320,25 @@ def build_robustness_interpretation(row: pd.Series) -> str:
     return "supplementary robustness view"
 
 
+def subset_by_projection(frame: pd.DataFrame, projection_subset: str) -> pd.DataFrame:
+    """Filter a candidate table by projection-quality subset."""
+    if frame.empty or "projection_class" not in frame.columns:
+        return frame.copy()
+    projection_values = frame["projection_class"].fillna("").astype(str)
+    if projection_subset == "strong_only":
+        return frame.loc[projection_values == "strong"].copy()
+    if projection_subset == "strong_or_moderate":
+        return frame.loc[projection_values.isin(["strong", "moderate"])].copy()
+    return frame.copy()
+
+
+def numeric_series_or_default(frame: pd.DataFrame, column: str, default: float = 0.0) -> pd.Series:
+    """Return a numeric Series from a DataFrame column or a constant-valued fallback series."""
+    if column in frame.columns:
+        return pd.to_numeric(frame[column], errors="coerce").fillna(default)
+    return pd.Series(np.full(len(frame), default, dtype=float), index=frame.index, dtype=float)
+
+
 def main() -> None:
     """Compare evidence settings and their network-physical mismatch stability."""
     args = parse_args()
@@ -303,6 +348,13 @@ def main() -> None:
     if frame.empty:
         raise ValueError("Input trace_candidate_support.csv is empty.")
 
+    feasible_input_path = os.path.join(os.path.dirname(args.input), "trace_feasible_candidate_space.csv")
+    if os.path.exists(feasible_input_path):
+        feasible_frame = pd.read_csv(feasible_input_path)
+    else:
+        print("Warning: trace_feasible_candidate_space.csv not found; falling back to trace_candidate_support.csv.")
+        feasible_frame = frame.copy()
+
     frame["geo_spatial_score"] = frame["geo_spatial_score"].fillna(0.0)
     frame["as_economic_score"] = frame["as_economic_score"].fillna(0.0)
     frame["normalized_candidate_support"] = frame["normalized_candidate_support"].fillna(0.0)
@@ -310,7 +362,19 @@ def main() -> None:
     frame = annotate_projection_quality(frame)
     corridor_candidate_col = resolve_corridor_candidate_column(frame)
 
-    network_frame = build_unit_network_layer_diversity(frame)
+    feasible_frame["candidate_support"] = pd.to_numeric(
+        feasible_frame.get("candidate_support", pd.Series(np.zeros(len(feasible_frame)), index=feasible_frame.index)),
+        errors="coerce",
+    ).fillna(0.0)
+    feasible_frame["normalized_candidate_support"] = pd.to_numeric(
+        feasible_frame.get("normalized_candidate_support", feasible_frame["candidate_support"]),
+        errors="coerce",
+    ).fillna(0.0)
+    feasible_frame = ensure_corridor_columns(feasible_frame)
+    feasible_frame = annotate_projection_quality(feasible_frame)
+    feasible_corridor_candidate_col = resolve_corridor_candidate_column(feasible_frame)
+
+    network_frame = build_unit_network_layer_diversity(feasible_frame if not feasible_frame.empty else frame)
     geo_frame = normalize_within_links(frame, "geo_spatial_score", "geo_only_support")
     as_frame = normalize_within_links(frame, "as_economic_score", "as_only_support")
     high_conf_frame = frame[
@@ -598,11 +662,200 @@ def main() -> None:
         ["network_definition", "projection_subset", "physical_level", "setting"]
     )
 
+    conservative_rows: List[Dict[str, float]] = []
+    projection_subsets = ["all", "strong_only", "strong_or_moderate"]
+    baseline_physical = build_unit_physical_feasible_set_diversity(
+        feasible_frame,
+        feasible_corridor_candidate_col,
+        "corridor",
+    )
+    baseline_upper = build_unit_network_physical_upper_bound_mismatch(
+        network_frame,
+        {"corridor": baseline_physical},
+    )
+    baseline_corridor = baseline_upper[
+        (baseline_upper["network_definition"].astype(str) == "composite")
+        & (baseline_upper["physical_level"].astype(str) == "corridor")
+    ].copy()
+    baseline_target_units: Set[str] = set(
+        baseline_corridor.loc[
+            baseline_corridor.get("upper_bound_mismatch_category", pd.Series(dtype=object)).astype(str)
+            == "network_high_physical_upper_low",
+            "unit_id",
+        ]
+    )
+    baseline_strict_units: Set[str] = set(
+        baseline_corridor.loc[
+            baseline_corridor.get("strict_upper_bound_mismatch_75_25", pd.Series(dtype=bool)).fillna(False).astype(bool),
+            "unit_id",
+        ]
+    )
+    baseline_categories = baseline_corridor[["unit_id", "upper_bound_mismatch_category"]].copy()
+    if not baseline_categories.empty:
+        baseline_categories["normalized_category"] = baseline_categories["upper_bound_mismatch_category"].astype(str).map(
+            normalize_upper_bound_category
+        )
+    baseline_rank_gap = pd.Series(
+        pd.to_numeric(
+            baseline_corridor.get("network_physical_upper_bound_percentile_gap", pd.Series(dtype=float)),
+            errors="coerce",
+        ).fillna(0.0).values,
+        index=baseline_corridor["unit_id"] if not baseline_corridor.empty else None,
+        dtype=float,
+    )
+
+    for network_definition, network_score_column in NETWORK_DEFINITION_COLUMNS.items():
+        for projection_subset in projection_subsets:
+            weighted_subset = subset_by_projection(frame, projection_subset)
+            feasible_subset = subset_by_projection(feasible_frame, projection_subset)
+
+            for physical_level, candidate_col in [
+                ("cable", "cable_id"),
+                ("corridor", feasible_corridor_candidate_col),
+            ]:
+                if candidate_col not in feasible_subset.columns and physical_level == "corridor":
+                    continue
+
+                weighted_physical = build_unit_physical_candidate_diversity(
+                    weighted_subset,
+                    candidate_col,
+                    physical_level,
+                )
+                weighted_mismatch = build_unit_network_physical_mismatch(
+                    network_frame,
+                    weighted_physical,
+                    physical_level,
+                    network_score_column=network_score_column,
+                    network_definition=network_definition,
+                )
+
+                conservative_physical = build_unit_physical_feasible_set_diversity(
+                    feasible_subset,
+                    candidate_col,
+                    physical_level,
+                )
+                conservative_upper = build_unit_network_physical_upper_bound_mismatch(
+                    network_frame,
+                    {physical_level: conservative_physical},
+                )
+                conservative_mismatch = conservative_upper[
+                    (conservative_upper["network_definition"].astype(str) == network_definition)
+                    & (conservative_upper["physical_level"].astype(str) == physical_level)
+                ].copy()
+
+                views = [
+                    ("weighted_support", weighted_mismatch),
+                    ("conservative_set", conservative_mismatch),
+                ]
+                for candidate_view, mismatch in views:
+                    if candidate_view == "weighted_support":
+                        target_units = set(
+                            mismatch.loc[
+                                mismatch.get("network_physical_mismatch_category", pd.Series(dtype=object)).astype(str)
+                                == "network_high_physical_low",
+                                "unit_id",
+                            ]
+                        )
+                        network_percentile_series = numeric_series_or_default(mismatch, "network_diversity_percentile", 0.0)
+                        physical_percentile_series = numeric_series_or_default(mismatch, "physical_diversity_percentile", 1.0)
+                        strict_units = set(
+                            mismatch.loc[
+                                (network_percentile_series >= 0.75)
+                                & (physical_percentile_series <= 0.25),
+                                "unit_id",
+                            ]
+                        )
+                        categories = mismatch[["unit_id", "network_physical_mismatch_category"]].copy() if not mismatch.empty else pd.DataFrame()
+                        if not categories.empty:
+                            categories["normalized_category"] = categories["network_physical_mismatch_category"].astype(str).map(normalize_upper_bound_category)
+                        rank_gap = pd.to_numeric(
+                            numeric_series_or_default(mismatch, "network_physical_percentile_gap", 0.0),
+                            errors="coerce",
+                        ).fillna(0.0)
+                    else:
+                        target_units = set(
+                            mismatch.loc[
+                                mismatch.get("upper_bound_mismatch_category", pd.Series(dtype=object)).astype(str)
+                                == "network_high_physical_upper_low",
+                                "unit_id",
+                            ]
+                        )
+                        strict_units = set(
+                            mismatch.loc[
+                                mismatch.get("strict_upper_bound_mismatch_75_25", pd.Series(dtype=bool)).fillna(False).astype(bool),
+                                "unit_id",
+                            ]
+                        )
+                        categories = mismatch[["unit_id", "upper_bound_mismatch_category"]].copy() if not mismatch.empty else pd.DataFrame()
+                        if not categories.empty:
+                            categories["normalized_category"] = categories["upper_bound_mismatch_category"].astype(str).map(normalize_upper_bound_category)
+                        rank_gap = pd.to_numeric(
+                            numeric_series_or_default(mismatch, "network_physical_upper_bound_percentile_gap", 0.0),
+                            errors="coerce",
+                        ).fillna(0.0)
+
+                    intersection = baseline_target_units & target_units
+                    union = baseline_target_units | target_units
+                    merged_categories = baseline_categories.merge(
+                        categories[["unit_id", "normalized_category"]] if not categories.empty else pd.DataFrame(columns=["unit_id", "normalized_category"]),
+                        on="unit_id",
+                        how="inner",
+                        suffixes=("_baseline", "_mode"),
+                    )
+                    if merged_categories.empty:
+                        agreement_rate = 0.0
+                    else:
+                        agreement_rate = float(
+                            (
+                                merged_categories["normalized_category_baseline"].astype(str)
+                                == merged_categories["normalized_category_mode"].astype(str)
+                            ).mean()
+                        )
+
+                    if mismatch.empty or baseline_rank_gap.empty:
+                        rank_gap_corr = 0.0
+                    else:
+                        current_gap = pd.Series(rank_gap.values, index=mismatch["unit_id"])
+                        aligned = pd.DataFrame(
+                            {
+                                "baseline": baseline_rank_gap,
+                                "current": current_gap,
+                            }
+                        ).dropna()
+                        rank_gap_corr = spearman_corr(aligned["baseline"], aligned["current"]) if not aligned.empty else 0.0
+
+                    conservative_rows.append(
+                        {
+                            "network_definition": network_definition,
+                            "physical_level": physical_level,
+                            "candidate_view": candidate_view,
+                            "projection_subset": projection_subset,
+                            "target_units": int(len(target_units)),
+                            "strict_target_units": int(len(strict_units)),
+                            "target_jaccard_vs_baseline": float(len(intersection) / len(union)) if union else 1.0,
+                            "target_recall_vs_baseline": float(len(intersection) / len(baseline_target_units)) if baseline_target_units else 0.0,
+                            "quadrant_agreement_rate": agreement_rate,
+                            "rank_gap_spearman_vs_baseline": rank_gap_corr,
+                            "interpretation": build_conservative_audit_interpretation(
+                                candidate_view,
+                                physical_level,
+                                projection_subset,
+                                network_definition,
+                            ),
+                        }
+                    )
+
+    conservative_audit_path = os.path.join(args.output, "robustness_conservative_candidate_audit.csv")
+    conservative_audit_frame = pd.DataFrame(conservative_rows).sort_values(
+        ["network_definition", "physical_level", "candidate_view", "projection_subset"]
+    )
+
     robustness_summary.to_csv(robustness_summary_path, index=False, encoding="utf-8-sig")
     mismatch_stability.to_csv(mismatch_stability_path, index=False, encoding="utf-8-sig")
     quadrant_summary_frame.to_csv(quadrant_summary_path, index=False, encoding="utf-8-sig")
     robustness_profile_table.to_csv(robustness_profile_path, index=False, encoding="utf-8-sig")
     candidate_space_frame.to_csv(candidate_space_path, index=False, encoding="utf-8-sig")
+    conservative_audit_frame.to_csv(conservative_audit_path, index=False, encoding="utf-8-sig")
 
     chart_source = mismatch_stability[mismatch_stability["network_definition"] == "composite"].copy()
     if chart_source.empty:
@@ -619,6 +872,7 @@ def main() -> None:
     print(f"Saved robustness quadrant summary to {quadrant_summary_path}")
     print(f"Saved robustness profile table to {robustness_profile_path}")
     print(f"Saved candidate-space robustness table to {candidate_space_path}")
+    print(f"Saved conservative candidate-audit robustness table to {conservative_audit_path}")
 
 
 if __name__ == "__main__":

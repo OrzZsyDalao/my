@@ -822,3 +822,49 @@ evidence core 一致性统计。
 | `target_quadrant_recall` | 相对 corridor-weighted baseline 的目标象限召回率 |
 | `quadrant_agreement_rate` | 相对 corridor-weighted baseline 的整体象限一致率 |
 | `baseline_setting` | 当前 baseline，现为 `weighted_all_corridor` |
+
+## 最新保守候选空间审计补充
+
+仓库现在明确区分两种 Stage 1 候选视图：
+
+- `all_feasible_segments`：先做 infeasibility-first 过滤后保留下来的全部可行候选集合，不受 support threshold 限制。
+- `all_segments`：为兼容旧流程保留的 support-thresholded legacy 视图。
+
+### 新增 Stage 1 `match_summary` 字段
+
+| 字段 | 含义 |
+| --- | --- |
+| `num_feasible_candidates_total` | 当前 link 的可行候选总数 |
+| `num_feasible_corridors_total` | 当前 link 的可行 corridor 总数 |
+| `feasible_candidate_retention_mode` | 当前固定为 `infeasibility_first` |
+| `support_threshold_used_for_legacy_all_segments` | support threshold 只用于 legacy `all_segments` 视图 |
+| `support_threshold_value` | legacy 视图使用的阈值 |
+
+### 新增 candidate 字段
+
+| 字段 | 含义 |
+| --- | --- |
+| `hard_feasible` | 是否通过硬可行性过滤 |
+| `infeasibility_filter_passed` | 是否通过 infeasibility-first 过滤 |
+| `support_above_threshold` | 是否高于 legacy threshold |
+| `support_filter_reason` | `above_threshold` 或 `below_threshold_but_feasible` |
+| `geo_entry_support`, `geo_exit_support`, `geo_spatial_support` | Geo 证据支持分数；保留旧 `prob_*` 字段仅作兼容，不表示真实海缆使用概率 |
+
+### 新增输出文件
+
+| 文件 | 含义 |
+| --- | --- |
+| `output/result/trace_feasible_candidate_space.csv` | 从 `all_feasible_segments` 展开的可行候选空间表；旧 JSON 若缺少该字段会自动 fallback 到 `all_segments` 并告警 |
+| `output/result/unit_physical_candidate_set_diversity_cable.csv` | cable-level 保守可行集合多样性 |
+| `output/result/unit_physical_candidate_set_diversity_corridor.csv` | corridor-level 保守可行集合多样性，也是论文主物理层视图 |
+| `output/result/unit_network_physical_upper_bound_mismatch.csv` | 使用 conservative feasible-set upper bound 的 long-form mismatch 表，覆盖全部 network definition 和 cable/corridor 两层 |
+| `output/result/paper_unit_physical_candidate_diversity.csv` | 论文默认使用的 corridor-level 保守可行集合多样性别名 |
+| `output/result/paper_unit_network_physical_mismatch.csv` | 论文默认使用的 corridor-level upper-bound mismatch 别名 |
+| `output/result/conservative_candidate_audit_manifest.json` | 说明 infeasibility-first 语义、weighted view 与 conservative set view 的简明 manifest |
+| `output/result/robustness_conservative_candidate_audit.csv` | 对比 weighted support 与 conservative feasible set 的 robustness 表 |
+
+### 解释边界
+
+- Geo / RTT / landing / country 等约束主要用于排除不可能或高度不可信的候选。
+- `candidate_support` 是保留后的可行候选集合内部的 evidence support，不是 ground-truth 海缆使用概率。
+- conservative set-based diversity 把所有可行候选等权看待，因此应解释为“可能物理多样性上界”。

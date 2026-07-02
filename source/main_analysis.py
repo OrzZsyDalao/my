@@ -487,15 +487,24 @@ class CableMatcher:
         self.stats: Dict[str, Any] = {
             "total_links_seen": 0,
             "same_city_filtered": 0,
+            "links_without_landing_candidates": 0,
+            "links_without_segment_candidates": 0,
             "links_with_ls_candidates": 0,
             "links_with_geo_candidates": 0,
             "candidate_segments_considered": 0,
             "rtt_infeasible_filtered": 0,
+            "candidates_rtt_infeasible": 0,
+            "candidates_rtt_feasible": 0,
             "links_below_threshold": 0,
             "candidates_above_threshold": 0,
+            "candidates_support_above_threshold": 0,
+            "candidates_support_below_threshold": 0,
             "links_with_any_match": 0,
             "links_with_filtered_candidates": 0,
             "links_with_no_feasible_rtt_candidate": 0,
+            "links_with_no_feasible_candidate": 0,
+            "links_with_feasible_candidates": 0,
+            "links_with_only_low_support_feasible_candidates": 0,
             "total_candidates_generated": 0,
             "total_candidates_after_threshold": 0,
             "links_with_dual_core_agreement": 0,
@@ -567,14 +576,17 @@ class CableMatcher:
         return normalize_asn_value(asn)
 
     def compute_geo_spatial_score(self, d_in: float, d_out: float) -> Dict[str, float]:
-        """Geo-spatial Core: score landing-station proximity at both link endpoints."""
+        """Geo-spatial Core: compute landing-proximity evidence support, not ground-truth cable probability."""
         prob_in = 1.0 / (1.0 + (d_in / self.GEO_DECAY_CUTOFF_KM) ** self.GEO_DECAY_STEEPNESS)
         prob_out = 1.0 / (1.0 + (d_out / self.GEO_DECAY_CUTOFF_KM) ** self.GEO_DECAY_STEEPNESS)
         geo_spatial_score = math.sqrt(prob_in * prob_out)
         return {
             "geo_spatial_score": float(geo_spatial_score),
+            "geo_spatial_support": float(geo_spatial_score),
             "geo_entry_score": float(prob_in),
             "geo_exit_score": float(prob_out),
+            "geo_entry_support": float(prob_in),
+            "geo_exit_support": float(prob_out),
             "prob_in": float(prob_in),
             "prob_out": float(prob_out),
         }
@@ -812,7 +824,7 @@ class CableMatcher:
         return tags
 
     def normalize_candidate_supports(self, candidates: List[Dict[str, Any]]) -> float:
-        """Normalize candidate support inside a single link."""
+        """Normalize evidence support inside a single feasible candidate set for one link."""
         support_sum = sum(max(candidate["candidate_support"], 0.0) for candidate in candidates)
         if support_sum <= 0:
             for candidate in candidates:
@@ -983,6 +995,30 @@ class CableMatcher:
         if any("domestic_submarine_candidate" in candidate["ambiguity_tags"] for candidate in filtered_candidates):
             self.stats["links_with_domestic_candidates"] += 1
 
+    def _match_summary_stub(self, filtered_reason: str) -> Dict[str, Any]:
+        """Return a backward-compatible empty match summary for links without feasible candidates."""
+        return {
+            "filtered_reason": filtered_reason,
+            "num_candidates_total": 0,
+            "num_feasible_candidates_total": 0,
+            "num_feasible_corridors_total": 0,
+            "num_candidates_above_threshold": 0,
+            "feasible_candidate_retention_mode": "infeasibility_first",
+            "support_threshold_used_for_legacy_all_segments": True,
+            "support_threshold_value": float(self.MATCH_THRESHOLD),
+            "support_sum": 0.0,
+            "top1_candidate_support": 0.0,
+            "top2_candidate_support": 0.0,
+            "top1_top2_gap": 0.0,
+            "confidence_bucket": "none",
+            "core_agreement_summary": {"dominant_core_agreement": "none"},
+            "ambiguity_summary": {"tags_present": [], "tag_counts": {}, "num_ambiguous_candidates": 0},
+            "link_physical_projection_class": "no_physical_candidate",
+            "projection_class": "ambiguous",
+            "top1_score": 0.0,
+            "top2_score": 0.0,
+        }
+
     def match_link_to_cable(self, link: Dict[str, Any]) -> Dict[str, Any]:
         """Match a single hop-pair link to a candidate physical-support distribution."""
         self.stats["total_links_seen"] += 1
@@ -999,23 +1035,9 @@ class CableMatcher:
         if city_a and city_b and country_a and country_b and city_a == city_b and country_a == country_b:
             self.stats["same_city_filtered"] += 1
             return {
+                "all_feasible_segments": [],
                 "all_segments": [],
-                "match_summary": {
-                    "filtered_reason": "same_city",
-                    "num_candidates_total": 0,
-                    "num_candidates_above_threshold": 0,
-                    "support_sum": 0.0,
-                    "top1_candidate_support": 0.0,
-                    "top2_candidate_support": 0.0,
-                    "top1_top2_gap": 0.0,
-                    "confidence_bucket": "none",
-                    "core_agreement_summary": {"dominant_core_agreement": "none"},
-                    "ambiguity_summary": {"tags_present": [], "tag_counts": {}, "num_ambiguous_candidates": 0},
-                    "link_physical_projection_class": "no_physical_candidate",
-                    "projection_class": "ambiguous",
-                    "top1_score": 0.0,
-                    "top2_score": 0.0,
-                },
+                "match_summary": self._match_summary_stub("same_city"),
             }
 
         candidates: List[Dict[str, Any]] = []
@@ -1028,6 +1050,8 @@ class CableMatcher:
         idx_a_list = self.ls_tree.query_radius([hop_a_loc], r=radius_rad)[0]
         idx_b_list = self.ls_tree.query_radius([hop_b_loc], r=radius_rad)[0]
 
+        if len(idx_a_list) == 0 or len(idx_b_list) == 0:
+            self.stats["links_without_landing_candidates"] += 1
         if len(idx_a_list) > 0 and len(idx_b_list) > 0:
             self.stats["links_with_ls_candidates"] += 1
             self.stats["links_with_geo_candidates"] += 1
@@ -1071,8 +1095,10 @@ class CableMatcher:
                     rtt_score_info = self.compute_rtt_feasibility_score(measured_rtt_delta=measured_rtt_delta, min_rtt=min_rtt)
                     if not rtt_score_info["rtt_feasible"]:
                         self.stats["rtt_infeasible_filtered"] += 1
+                        self.stats["candidates_rtt_infeasible"] += 1
                         continue
                     rtt_feasible_candidate_found = True
+                    self.stats["candidates_rtt_feasible"] += 1
 
                     cable_owner_asns: Set[str] = set(cable_info.get("cable_owner_asns", set()))
 
@@ -1112,8 +1138,11 @@ class CableMatcher:
                         "fused_candidate_support": float(fused_candidate_support),
                         "normalized_candidate_support": 0.0,
                         "geo_spatial_score": float(geo_score_info["geo_spatial_score"]),
+                        "geo_spatial_support": float(geo_score_info["geo_spatial_support"]),
                         "geo_entry_score": float(geo_score_info["geo_entry_score"]),
                         "geo_exit_score": float(geo_score_info["geo_exit_score"]),
+                        "geo_entry_support": float(geo_score_info["geo_entry_support"]),
+                        "geo_exit_support": float(geo_score_info["geo_exit_support"]),
                         "prob_in": float(geo_score_info["prob_in"]),
                         "prob_out": float(geo_score_info["prob_out"]),
                         "d_in": float(d_in),
@@ -1158,6 +1187,10 @@ class CableMatcher:
                         ),
                         "parallel_segment_candidate_count": len(segment_cables),
                         "dual_core_agreement": core_agreement == "dual_core_agreement",
+                        "hard_feasible": True,
+                        "infeasibility_filter_passed": True,
+                        "support_above_threshold": False,
+                        "support_filter_reason": "below_threshold_but_feasible",
                         "deprecated_fields": [
                             "segment_probability",
                             "geo_score",
@@ -1173,47 +1206,51 @@ class CableMatcher:
                     candidates.append(candidate)
 
         self.stats["total_candidates_generated"] += len(candidates)
+        if len(idx_a_list) > 0 and len(idx_b_list) > 0 and not had_segment_candidates:
+            self.stats["links_without_segment_candidates"] += 1
         if had_segment_candidates and not rtt_feasible_candidate_found:
             self.stats["links_with_no_feasible_rtt_candidate"] += 1
 
         if not candidates:
+            self.stats["links_with_no_feasible_candidate"] += 1
             return {
+                "all_feasible_segments": [],
                 "all_segments": [],
-                "match_summary": {
-                    "filtered_reason": "no_candidate",
-                    "num_candidates_total": 0,
-                    "num_candidates_above_threshold": 0,
-                    "support_sum": 0.0,
-                    "top1_candidate_support": 0.0,
-                    "top2_candidate_support": 0.0,
-                    "top1_top2_gap": 0.0,
-                    "confidence_bucket": "none",
-                    "core_agreement_summary": {"dominant_core_agreement": "none"},
-                    "ambiguity_summary": {"tags_present": [], "tag_counts": {}, "num_ambiguous_candidates": 0},
-                    "link_physical_projection_class": "no_physical_candidate",
-                    "projection_class": "ambiguous",
-                    "top1_score": 0.0,
-                    "top2_score": 0.0,
-                },
+                "match_summary": self._match_summary_stub("no_candidate"),
             }
 
         sorted_candidates = sorted(candidates, key=lambda item: item.get("candidate_support", 0.0), reverse=True)
         deduplicated_candidates: Dict[str, Dict[str, Any]] = {}
         unique_candidates: List[Dict[str, Any]] = []
         for candidate in sorted_candidates:
-            cable_id = candidate["cable_id"]
-            if cable_id not in deduplicated_candidates:
-                deduplicated_candidates[cable_id] = candidate
+            feasible_key = f"{candidate['cable_id']}::{candidate['segment']}"
+            if feasible_key not in deduplicated_candidates:
+                deduplicated_candidates[feasible_key] = candidate
                 unique_candidates.append(candidate)
 
-        filtered_candidates = [
-            candidate for candidate in unique_candidates if candidate.get("candidate_support", 0.0) >= self.MATCH_THRESHOLD
-        ]
-        if unique_candidates and not filtered_candidates:
+        feasible_candidates = [dict(candidate) for candidate in unique_candidates]
+        feasible_support_sum = self.normalize_candidate_supports(feasible_candidates)
+        self.assign_candidate_ranks(feasible_candidates)
+
+        for candidate in feasible_candidates:
+            candidate["support_above_threshold"] = bool(candidate.get("candidate_support", 0.0) >= self.MATCH_THRESHOLD)
+            candidate["support_filter_reason"] = (
+                "above_threshold" if candidate["support_above_threshold"] else "below_threshold_but_feasible"
+            )
+            if candidate["support_above_threshold"]:
+                self.stats["candidates_support_above_threshold"] += 1
+            else:
+                self.stats["candidates_support_below_threshold"] += 1
+
+        filtered_candidates = [dict(candidate) for candidate in feasible_candidates if candidate["support_above_threshold"]]
+        if feasible_candidates and not filtered_candidates:
             self.stats["links_below_threshold"] += 1
+            self.stats["links_with_only_low_support_feasible_candidates"] += 1
 
         self.stats["candidates_above_threshold"] += len(filtered_candidates)
         self.stats["total_candidates_after_threshold"] += len(filtered_candidates)
+        if feasible_candidates:
+            self.stats["links_with_feasible_candidates"] += 1
         if filtered_candidates:
             self.stats["links_with_any_match"] += 1
             self.stats["links_with_filtered_candidates"] += 1
@@ -1221,10 +1258,16 @@ class CableMatcher:
         support_sum = self.normalize_candidate_supports(filtered_candidates)
         self.assign_candidate_ranks(filtered_candidates)
 
+        for candidate in feasible_candidates:
+            candidate["ambiguity_tags"] = self.build_ambiguity_tags(
+                candidate=candidate,
+                filtered_candidate_count=len(feasible_candidates),
+                segment_candidate_count=candidate["parallel_segment_candidate_count"],
+            )
         for candidate in filtered_candidates:
             candidate["ambiguity_tags"] = self.build_ambiguity_tags(
                 candidate=candidate,
-                filtered_candidate_count=len(filtered_candidates),
+                filtered_candidate_count=len(feasible_candidates),
                 segment_candidate_count=candidate["parallel_segment_candidate_count"],
             )
 
@@ -1243,27 +1286,44 @@ class CableMatcher:
         else:
             bucket = "none"
 
-        core_agreement_summary = self.build_core_agreement_summary(filtered_candidates)
-        ambiguity_summary = self.build_ambiguity_summary(filtered_candidates)
-        link_physical_projection_class = self.classify_link_physical_projection(filtered_candidates)
+        summary_candidates = feasible_candidates if feasible_candidates else filtered_candidates
+        core_agreement_summary = self.build_core_agreement_summary(summary_candidates)
+        ambiguity_summary = self.build_ambiguity_summary(summary_candidates)
+        link_physical_projection_class = self.classify_link_physical_projection(summary_candidates)
         projection_class = self.classify_projection_quality(
-            filtered_candidates,
+            summary_candidates,
             confidence_bucket=bucket,
             link_physical_projection_class=link_physical_projection_class,
             top1_top2_gap=gap,
         )
 
+        for candidate in feasible_candidates:
+            candidate["link_physical_projection_class"] = link_physical_projection_class
+            candidate["projection_class"] = projection_class
         for candidate in filtered_candidates:
             candidate["link_physical_projection_class"] = link_physical_projection_class
             candidate["projection_class"] = projection_class
 
         return {
+            "all_feasible_segments": feasible_candidates,
             "all_segments": filtered_candidates,
             "match_summary": {
                 "filtered_reason": None if filtered_candidates else "below_threshold",
-                "num_candidates_total": len(unique_candidates),
+                "num_candidates_total": len(feasible_candidates),
+                "num_feasible_candidates_total": len(feasible_candidates),
+                "num_feasible_corridors_total": len(
+                    {
+                        str(candidate.get("corridor_id", "")).strip()
+                        for candidate in feasible_candidates
+                        if str(candidate.get("corridor_id", "")).strip()
+                    }
+                ),
                 "num_candidates_above_threshold": len(filtered_candidates),
+                "feasible_candidate_retention_mode": "infeasibility_first",
+                "support_threshold_used_for_legacy_all_segments": True,
+                "support_threshold_value": float(self.MATCH_THRESHOLD),
                 "support_sum": float(support_sum),
+                "feasible_support_sum": float(feasible_support_sum),
                 "top1_candidate_support": float(top1),
                 "top2_candidate_support": float(top2),
                 "top1_top2_gap": float(gap),
@@ -1310,6 +1370,7 @@ def write_match_manifest(
     total_traces_processed: int,
     empty_trace_count: int,
     valid_link_count: int,
+    feasible_link_count: int,
     as_precompute_file: Optional[str],
     path: str,
 ) -> None:
@@ -1320,10 +1381,16 @@ def write_match_manifest(
         "total_traces_processed": total_traces_processed,
         "empty_trace_count": empty_trace_count,
         "matched_links_above_threshold": valid_link_count,
+        "links_with_feasible_candidates": feasible_link_count,
         "match_output_file": to_repo_relative_path(OUTPUT_RESULTS_PATH),
         "match_stats_file": to_repo_relative_path(MATCH_STATS_OUTPUT_PATH),
         "as_precompute_file": to_repo_relative_path(as_precompute_file) if as_precompute_file else None,
         "method_profile": "dual_core_cross_layer_evidence_fusion",
+        "interpretation": "infeasibility_first_conservative_candidate_audit",
+        "support_semantics": "candidate support is evidence support, not ground-truth probability",
+        "legacy_all_segments_semantics": "support-thresholded legacy candidate view",
+        "all_feasible_segments_semantics": "all hard-feasible candidates retained before support thresholding",
+        "support_threshold_value": float(CableMatcher.MATCH_THRESHOLD),
     }
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as handle:
@@ -1407,6 +1474,7 @@ def main() -> None:
     print("---------------------------------------------")
 
     valid_link_count = 0
+    feasible_link_count = 0
     total_files_processed = 0
     total_traces_processed = 0
     empty_trace_count = 0
@@ -1450,13 +1518,16 @@ def main() -> None:
 
                             for link in traceroute_links:
                                 match_output = matcher.match_link_to_cable(link)
+                                all_feasible_segments = match_output.get("all_feasible_segments", [])
                                 all_segments = match_output["all_segments"]
                                 match_summary = match_output["match_summary"]
 
-                                if not all_segments:
+                                if not all_feasible_segments:
                                     continue
 
-                                valid_link_count += 1
+                                feasible_link_count += 1
+                                if all_segments:
+                                    valid_link_count += 1
                                 link_info = {
                                     "msm_id": link.get("measurement_id", "N/A"),
                                     "probe_id": link.get("probe_id", "N/A"),
@@ -1475,6 +1546,7 @@ def main() -> None:
                                 match_result = {
                                     "link_info": link_info,
                                     "match_summary": match_summary,
+                                    "all_feasible_segments": all_feasible_segments,
                                     "all_segments": all_segments,
                                 }
 
@@ -1495,6 +1567,7 @@ def main() -> None:
             total_traces_processed=total_traces_processed,
             empty_trace_count=empty_trace_count,
             valid_link_count=valid_link_count,
+            feasible_link_count=feasible_link_count,
             as_precompute_file=args.as_precompute_file if matcher.as_graph_precompute_loaded else None,
             path=MATCH_MANIFEST_OUTPUT_PATH,
         )
@@ -1505,7 +1578,8 @@ def main() -> None:
     print(f"\nCompleted matching across {total_files_processed} traceroute files.")
     print(f"Processed {total_traces_processed} traceroute records.")
     print(f"Empty/invalid traceroute records: {empty_trace_count}")
-    print(f"Matched {valid_link_count} links above threshold (>= {matcher.MATCH_THRESHOLD}).")
+    print(f"Retained {feasible_link_count} links with feasible candidates before thresholding.")
+    print(f"Matched {valid_link_count} links above threshold (>= {matcher.MATCH_THRESHOLD}) in legacy all_segments.")
     print(f"Results saved to: {OUTPUT_RESULTS_PATH}")
     print(f"Stats saved to: {MATCH_STATS_OUTPUT_PATH}")
 

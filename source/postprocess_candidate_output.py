@@ -61,7 +61,7 @@ AMBIGUITY_TAXONOMY_ROWS = [
         "ambiguity_class": "large_landing_radius",
         "reviewer_concern": "Wide landing-station radii weaken fine-grained spatial interpretation.",
         "treatment": "Retain the candidate with an explicit ambiguity tag and expose its support contribution.",
-        "interpretation_boundary": "Spatial proximity is only one evidence core and does not by itself identify a used cable.",
+        "interpretation_boundary": "Spatial proximity is only one evidence core and does not by itself identify a unique physical candidate.",
     },
     {
         "ambiguity_class": "rtt_inconclusive",
@@ -376,27 +376,44 @@ def build_unit_id(link_info: Dict[str, Any], unit_fields: List[str]) -> str:
     return "|".join(f"{field}={link_info.get(field, 'NA')}" for field in unit_fields)
 
 
-def explode_candidate_rows(records: List[Dict[str, Any]], unit_fields: List[str]) -> pd.DataFrame:
-    """Flatten link-level candidate outputs into a candidate row table."""
+def build_link_id(link_info: Dict[str, Any], record_index: int) -> str:
+    """Build a stable link identifier used across weighted and feasible candidate views."""
+    return "|".join(
+        [
+            str(link_info.get("file_name", "NA")),
+            str(link_info.get("msm_id", "NA")),
+            str(link_info.get("probe_id", "NA")),
+            str(link_info.get("timestamp", "NA")),
+            str(link_info.get("hop_range", "NA")),
+            str(record_index),
+        ]
+    )
+
+
+def explode_candidate_rows_from_field(
+    records: List[Dict[str, Any]],
+    unit_fields: List[str],
+    candidate_field: str,
+    fallback_field: str = "",
+    warn_if_fallback: bool = False,
+) -> pd.DataFrame:
+    """Flatten a chosen candidate array field from the Stage 1 JSON output."""
     rows: List[Dict[str, Any]] = []
+    fallback_used = False
     for record_index, record in enumerate(records):
         link_info = record.get("link_info", {})
         match_summary = record.get("match_summary", {})
-        all_segments = record.get("all_segments", [])
+        candidate_rows = record.get(candidate_field, [])
+        if not candidate_rows and fallback_field:
+            fallback_candidates = record.get(fallback_field, [])
+            if fallback_candidates:
+                candidate_rows = fallback_candidates
+                fallback_used = True
 
         unit_id = build_unit_id(link_info, unit_fields)
-        link_id = "|".join(
-            [
-                str(link_info.get("file_name", "NA")),
-                str(link_info.get("msm_id", "NA")),
-                str(link_info.get("probe_id", "NA")),
-                str(link_info.get("timestamp", "NA")),
-                str(link_info.get("hop_range", "NA")),
-                str(record_index),
-            ]
-        )
+        link_id = build_link_id(link_info, record_index)
 
-        for candidate in all_segments:
+        for candidate in candidate_rows:
             row = {
                 "unit_id": unit_id,
                 "link_id": link_id,
@@ -414,8 +431,14 @@ def explode_candidate_rows(records: List[Dict[str, Any]], unit_fields: List[str]
                 "rtt_delta_ms": link_info.get("rtt_delta_ms"),
                 "confidence_bucket": match_summary.get("confidence_bucket"),
                 "num_candidates_above_threshold": match_summary.get("num_candidates_above_threshold"),
+                "num_feasible_candidates_total": match_summary.get("num_feasible_candidates_total"),
+                "num_feasible_corridors_total": match_summary.get("num_feasible_corridors_total"),
+                "support_threshold_value": match_summary.get("support_threshold_value"),
+                "support_threshold_used_for_legacy_all_segments": match_summary.get("support_threshold_used_for_legacy_all_segments"),
+                "feasible_candidate_retention_mode": match_summary.get("feasible_candidate_retention_mode"),
                 "support_sum": match_summary.get("support_sum"),
                 "link_physical_projection_class": match_summary.get("link_physical_projection_class"),
+                "projection_class": match_summary.get("projection_class"),
             }
             for key, value in candidate.items():
                 if isinstance(value, list):
@@ -426,7 +449,28 @@ def explode_candidate_rows(records: List[Dict[str, Any]], unit_fields: List[str]
                     row[key] = value
             rows.append(row)
 
+    if warn_if_fallback and fallback_used:
+        print(
+            f"Warning: `{candidate_field}` was missing in part of the input JSON; "
+            f"falling back to `{fallback_field}` for conservative candidate-space analysis."
+        )
     return pd.DataFrame(rows)
+
+
+def explode_candidate_rows(records: List[Dict[str, Any]], unit_fields: List[str]) -> pd.DataFrame:
+    """Flatten the legacy support-thresholded candidate outputs into a candidate row table."""
+    return explode_candidate_rows_from_field(records, unit_fields, "all_segments")
+
+
+def explode_feasible_candidate_rows(records: List[Dict[str, Any]], unit_fields: List[str]) -> pd.DataFrame:
+    """Flatten the infeasibility-first feasible candidate space, with legacy fallback for old JSON files."""
+    return explode_candidate_rows_from_field(
+        records,
+        unit_fields,
+        "all_feasible_segments",
+        fallback_field="all_segments",
+        warn_if_fallback=True,
+    )
 
 
 def aggregate_candidate_support(frame: pd.DataFrame, candidate_id_col: str, support_col: str) -> pd.DataFrame:
@@ -512,32 +556,34 @@ def build_unit_physical_feasible_set_diversity(
     candidate_id_col: str,
     physical_level: str,
 ) -> pd.DataFrame:
-    """Compute conservative uniform physical diversity from feasible candidate sets only."""
+    """Compute conservative set-based physical diversity from all feasible candidates."""
     columns = [
         "unit_id",
         "physical_level",
-        "dominant_candidate_key",
-        "dominant_candidate_support_share",
-        "expected_candidate_support_total",
-        "candidate_entropy",
-        "effective_num_candidates",
-        "gini_candidate_support",
-        "num_candidates_with_support",
         "feasible_candidate_count",
+        "feasible_corridor_count",
         "candidate_entropy_uniform",
+        "corridor_entropy_uniform",
         "effective_candidate_count_uniform",
-        "num_matched_links",
+        "effective_corridor_count_uniform",
+        "physical_candidate_diversity_upper_bound",
+        "num_feasible_links",
         "num_probes",
-        "physical_candidate_diversity_score",
         "candidate_identifier_column",
         "diversity_weighting",
+        "physical_candidate_diversity_score",
+        "candidate_entropy",
+        "effective_num_candidates",
+        "dominant_candidate_support_share",
     ]
     if frame.empty:
         return pd.DataFrame(columns=columns)
 
     working = frame.copy()
+    working = ensure_corridor_columns(working)
     working[candidate_id_col] = working[candidate_id_col].fillna("NA")
-    link_counts = working.groupby("unit_id")["link_id"].nunique()
+    corridor_col = resolve_corridor_candidate_column(working)
+    link_counts = working.groupby("unit_id")["link_id"].nunique() if "link_id" in working.columns else pd.Series(dtype=int)
     probe_counts = working.groupby("unit_id")["probe_id"].nunique()
     rows: List[Dict[str, Any]] = []
     for unit_id, group in working.groupby("unit_id", dropna=False):
@@ -545,29 +591,34 @@ def build_unit_physical_feasible_set_diversity(
             value
             for value in group[candidate_id_col].astype(str).str.strip().replace({"": np.nan, "nan": np.nan}).dropna().unique().tolist()
         ]
+        unique_corridors = [
+            value
+            for value in group[corridor_col].astype(str).str.strip().replace({"": np.nan, "nan": np.nan}).dropna().unique().tolist()
+        ]
         feasible_count = int(len(unique_candidates))
-        uniform_entropy = float(math.log(feasible_count)) if feasible_count > 0 else 0.0
-        dominant_key = unique_candidates[0] if unique_candidates else ""
-        dominant_share = float(1.0 / feasible_count) if feasible_count > 0 else 0.0
+        feasible_corridor_count = int(len(unique_corridors))
+        candidate_entropy_uniform = float(math.log(feasible_count)) if feasible_count > 0 else 0.0
+        corridor_entropy_uniform = float(math.log(feasible_corridor_count)) if feasible_corridor_count > 0 else 0.0
+        physical_upper_bound = float(feasible_count if physical_level == "cable" else feasible_corridor_count)
         rows.append(
             {
                 "unit_id": unit_id,
                 "physical_level": physical_level,
-                "dominant_candidate_key": dominant_key,
-                "dominant_candidate_support_share": dominant_share,
-                "expected_candidate_support_total": float(feasible_count),
-                "candidate_entropy": uniform_entropy,
-                "effective_num_candidates": float(feasible_count),
-                "gini_candidate_support": 0.0 if feasible_count > 0 else 0.0,
-                "num_candidates_with_support": feasible_count,
                 "feasible_candidate_count": feasible_count,
-                "candidate_entropy_uniform": uniform_entropy,
+                "feasible_corridor_count": feasible_corridor_count,
+                "candidate_entropy_uniform": candidate_entropy_uniform,
+                "corridor_entropy_uniform": corridor_entropy_uniform,
                 "effective_candidate_count_uniform": float(feasible_count),
-                "num_matched_links": int(link_counts.get(unit_id, 0)),
+                "effective_corridor_count_uniform": float(feasible_corridor_count),
+                "physical_candidate_diversity_upper_bound": physical_upper_bound,
+                "num_feasible_links": int(link_counts.get(unit_id, 0)),
                 "num_probes": int(probe_counts.get(unit_id, 0)),
-                "physical_candidate_diversity_score": float(feasible_count),
-                "candidate_identifier_column": candidate_id_col,
                 "diversity_weighting": "uniform_feasible_set",
+                "candidate_identifier_column": candidate_id_col,
+                "physical_candidate_diversity_score": physical_upper_bound,
+                "candidate_entropy": candidate_entropy_uniform if physical_level == "cable" else corridor_entropy_uniform,
+                "effective_num_candidates": physical_upper_bound,
+                "dominant_candidate_support_share": float(1.0 / physical_upper_bound) if physical_upper_bound > 0 else 0.0,
             }
         )
     return pd.DataFrame(rows, columns=columns).sort_values("unit_id").reset_index(drop=True)
@@ -577,7 +628,7 @@ def build_unit_physical_candidate_upper_bound(
     frame: pd.DataFrame,
     corridor_candidate_col: str,
 ) -> pd.DataFrame:
-    """Compute upper-bound physical diversity using only feasible candidate and corridor counts."""
+    """Compute a concise upper-bound physical diversity summary using feasible candidate and corridor counts."""
     columns = [
         "unit_id",
         "num_feasible_candidates",
@@ -622,7 +673,7 @@ def build_unit_physical_candidate_upper_bound(
                 "corridor_entropy_uniform": float(math.log(num_corridors)) if num_corridors > 0 else 0.0,
                 "effective_candidate_count_uniform": float(num_candidates),
                 "effective_corridor_count_uniform": float(num_corridors),
-                "physical_candidate_diversity_upper_bound": float(num_candidates),
+                "physical_candidate_diversity_upper_bound": float(num_corridors if num_corridors > 0 else num_candidates),
             }
         )
     return pd.DataFrame(rows, columns=columns).sort_values("unit_id").reset_index(drop=True)
@@ -878,52 +929,110 @@ def build_cable_corridor_comparison(
 
 def build_unit_network_physical_upper_bound_mismatch(
     network_frame: pd.DataFrame,
-    upper_bound_frame: pd.DataFrame,
+    physical_frames: Dict[str, pd.DataFrame],
 ) -> pd.DataFrame:
-    """Compare network diversity against conservative upper-bound physical diversity."""
-    merged = network_frame.merge(upper_bound_frame, on="unit_id", how="inner")
-    if merged.empty:
-        return merged
+    """Build long-form mismatch rows by comparing network diversity against conservative feasible-set upper bounds."""
+    rows: List[pd.DataFrame] = []
+    for physical_level, physical_frame in physical_frames.items():
+        if physical_frame.empty:
+            continue
+        merged = network_frame.merge(physical_frame, on="unit_id", how="inner")
+        if merged.empty:
+            continue
 
-    merged["network_diversity_combined"] = pd.to_numeric(merged["network_layer_diversity_score"], errors="coerce").fillna(0.0)
-    merged["network_diversity_as_only"] = pd.to_numeric(merged["network_layer_diversity_score_as_only"], errors="coerce").fillna(0.0)
-    merged["network_diversity_country_only"] = pd.to_numeric(merged["network_layer_diversity_score_country_only"], errors="coerce").fillna(0.0)
-    probe_target_series = (
-        merged["network_layer_diversity_score_probe_target_only"]
-        if "network_layer_diversity_score_probe_target_only" in merged.columns
-        else pd.Series(np.zeros(len(merged)), index=merged.index, dtype=float)
-    )
-    merged["network_diversity_target_probe"] = pd.to_numeric(probe_target_series, errors="coerce").fillna(0.0)
+        for network_definition, network_score_column in NETWORK_DEFINITION_COLUMNS.items():
+            if network_score_column not in merged.columns:
+                continue
+            current = merged.copy()
+            current["network_definition"] = network_definition
+            current["physical_level"] = physical_level
+            current["network_diversity_score"] = pd.to_numeric(current[network_score_column], errors="coerce").fillna(0.0)
+            current["network_percentile"] = current["network_diversity_score"].rank(method="average", pct=True, ascending=True)
+            current["physical_upper_bound_percentile"] = current["physical_candidate_diversity_upper_bound"].rank(
+                method="average", pct=True, ascending=True
+            )
+            current["network_physical_upper_bound_percentile_gap"] = (
+                current["network_percentile"] - current["physical_upper_bound_percentile"]
+            )
+            current["network_high"] = current["network_percentile"] >= 0.5
+            current["physical_upper_low"] = current["physical_upper_bound_percentile"] <= 0.5
+            current["upper_bound_mismatch_category"] = np.where(
+                current["network_high"] & current["physical_upper_low"],
+                "network_high_physical_upper_low",
+                np.where(
+                    current["network_high"] & ~current["physical_upper_low"],
+                    "network_high_physical_upper_high",
+                    np.where(
+                        ~current["network_high"] & current["physical_upper_low"],
+                        "network_low_physical_upper_low",
+                        "network_low_physical_upper_high",
+                    ),
+                ),
+            )
+            current["strict_upper_bound_mismatch_75_25"] = (
+                (current["network_percentile"] >= 0.75)
+                & (current["physical_upper_bound_percentile"] <= 0.25)
+            )
+            rows.append(
+                current[
+                    [
+                        "unit_id",
+                        "network_definition",
+                        "physical_level",
+                        "network_diversity_score",
+                        "physical_candidate_diversity_upper_bound",
+                        "network_percentile",
+                        "physical_upper_bound_percentile",
+                        "network_physical_upper_bound_percentile_gap",
+                        "network_high",
+                        "physical_upper_low",
+                        "upper_bound_mismatch_category",
+                        "strict_upper_bound_mismatch_75_25",
+                    ]
+                ]
+            )
 
-    network_median = merged["network_diversity_combined"].median()
-    physical_median = merged["physical_candidate_diversity_upper_bound"].median()
-    merged["network_percentile"] = merged["network_diversity_combined"].rank(method="average", pct=True, ascending=True)
-    merged["physical_upper_percentile"] = merged["physical_candidate_diversity_upper_bound"].rank(
-        method="average", pct=True, ascending=True
-    )
-    merged["network_rank_upper_bound"] = merged["network_diversity_combined"].rank(method="dense", ascending=False)
-    merged["physical_upper_rank"] = merged["physical_candidate_diversity_upper_bound"].rank(method="dense", ascending=False)
-    merged["rank_gap_upper_bound"] = merged["physical_upper_rank"] - merged["network_rank_upper_bound"]
-    merged["strict_upper_bound_mismatch"] = (
-        (merged["network_diversity_combined"] >= network_median)
-        & (merged["physical_candidate_diversity_upper_bound"] <= physical_median)
-    )
-    return merged.sort_values(["strict_upper_bound_mismatch", "unit_id"], ascending=[False, True]).reset_index(drop=True)
+    if not rows:
+        return pd.DataFrame(
+            columns=[
+                "unit_id",
+                "network_definition",
+                "physical_level",
+                "network_diversity_score",
+                "physical_candidate_diversity_upper_bound",
+                "network_percentile",
+                "physical_upper_bound_percentile",
+                "network_physical_upper_bound_percentile_gap",
+                "network_high",
+                "physical_upper_low",
+                "upper_bound_mismatch_category",
+                "strict_upper_bound_mismatch_75_25",
+            ]
+        )
+    return pd.concat(rows, ignore_index=True).sort_values(
+        ["network_definition", "physical_level", "unit_id"]
+    ).reset_index(drop=True)
 
 
 def build_candidate_space_profile(frame: pd.DataFrame, corridor_candidate_col: str) -> pd.DataFrame:
-    """Profile how conservative and ambiguous the feasible candidate space is for each unit."""
+    """Profile how much ambiguity is preserved inside the feasible candidate space for each unit."""
     columns = [
         "unit_id",
-        "avg_candidates_per_link",
-        "avg_corridors_per_link",
-        "max_candidates_per_link",
-        "max_corridors_per_link",
-        "share_parallel_ambiguity",
-        "share_multi_segment_possible",
-        "share_domestic_submarine",
-        "share_large_radius",
-        "share_low_confidence_projection",
+        "num_links",
+        "num_links_with_feasible_candidates",
+        "avg_feasible_candidates_per_link",
+        "median_feasible_candidates_per_link",
+        "max_feasible_candidates_per_link",
+        "avg_feasible_corridors_per_link",
+        "median_feasible_corridors_per_link",
+        "max_feasible_corridors_per_link",
+        "share_links_with_parallel_ambiguity",
+        "share_links_with_many_candidates",
+        "share_links_with_large_landing_radius",
+        "share_links_with_rtt_inconclusive",
+        "share_links_with_multi_segment_possible",
+        "share_links_with_domestic_submarine_candidate",
+        "share_links_with_only_low_support_feasible_candidates",
     ]
     if frame.empty:
         return pd.DataFrame(columns=columns)
@@ -944,18 +1053,24 @@ def build_candidate_space_profile(frame: pd.DataFrame, corridor_candidate_col: s
                 "has_parallel_ambiguity": bool(
                     group["ambiguity_tags_list"].apply(lambda tags: "parallel_candidate_corridor" in tags).any()
                 ) or bool(group.get("is_parallel_ambiguous", pd.Series(index=group.index, dtype=object)).fillna(False).astype(bool).any()),
+                "has_many_candidates": bool(
+                    group["ambiguity_tags_list"].apply(lambda tags: "many_candidates" in tags).any()
+                ) or int(group["cable_id"].astype(str).replace("nan", np.nan).dropna().nunique()) > 5,
+                "has_large_radius": bool(
+                    group["ambiguity_tags_list"].apply(lambda tags: "large_landing_radius" in tags).any()
+                ),
+                "has_rtt_inconclusive": bool(
+                    group["ambiguity_tags_list"].apply(lambda tags: "rtt_inconclusive" in tags).any()
+                ),
                 "has_multi_segment_possible": bool(
                     group["ambiguity_tags_list"].apply(lambda tags: "multi_segment_possible" in tags).any()
                 ),
                 "has_domestic_submarine": bool(
                     group["ambiguity_tags_list"].apply(lambda tags: "domestic_submarine_candidate" in tags).any()
                 ),
-                "has_large_radius": bool(
-                    group["ambiguity_tags_list"].apply(lambda tags: "large_landing_radius" in tags).any()
-                ),
-                "is_low_confidence_projection": bool(
-                    group["projection_class"].astype(str).isin(["weak", "ambiguous"]).any()
-                    or group.get("confidence_bucket", pd.Series(index=group.index, dtype=object)).fillna("").astype(str).isin(["ambiguous", "none"]).any()
+                "only_low_support_feasible": bool(
+                    "support_above_threshold" in group.columns
+                    and not group["support_above_threshold"].fillna(False).astype(bool).any()
                 ),
             }
         )
@@ -966,82 +1081,142 @@ def build_candidate_space_profile(frame: pd.DataFrame, corridor_candidate_col: s
         rows.append(
             {
                 "unit_id": unit_id,
-                "avg_candidates_per_link": float(group["candidate_count"].mean()),
-                "avg_corridors_per_link": float(group["corridor_count"].mean()),
-                "max_candidates_per_link": int(group["candidate_count"].max()),
-                "max_corridors_per_link": int(group["corridor_count"].max()),
-                "share_parallel_ambiguity": float(group["has_parallel_ambiguity"].mean()),
-                "share_multi_segment_possible": float(group["has_multi_segment_possible"].mean()),
-                "share_domestic_submarine": float(group["has_domestic_submarine"].mean()),
-                "share_large_radius": float(group["has_large_radius"].mean()),
-                "share_low_confidence_projection": float(group["is_low_confidence_projection"].mean()),
+                "num_links": int(len(group)),
+                "num_links_with_feasible_candidates": int(len(group)),
+                "avg_feasible_candidates_per_link": float(group["candidate_count"].mean()),
+                "median_feasible_candidates_per_link": float(group["candidate_count"].median()),
+                "max_feasible_candidates_per_link": int(group["candidate_count"].max()),
+                "avg_feasible_corridors_per_link": float(group["corridor_count"].mean()),
+                "median_feasible_corridors_per_link": float(group["corridor_count"].median()),
+                "max_feasible_corridors_per_link": int(group["corridor_count"].max()),
+                "share_links_with_parallel_ambiguity": float(group["has_parallel_ambiguity"].mean()),
+                "share_links_with_many_candidates": float(group["has_many_candidates"].mean()),
+                "share_links_with_large_landing_radius": float(group["has_large_radius"].mean()),
+                "share_links_with_rtt_inconclusive": float(group["has_rtt_inconclusive"].mean()),
+                "share_links_with_multi_segment_possible": float(group["has_multi_segment_possible"].mean()),
+                "share_links_with_domestic_submarine_candidate": float(group["has_domestic_submarine"].mean()),
+                "share_links_with_only_low_support_feasible_candidates": float(group["only_low_support_feasible"].mean()),
             }
         )
     return pd.DataFrame(rows, columns=columns).sort_values("unit_id").reset_index(drop=True)
 
 
 def build_weighted_vs_conservative_diversity(
-    network_frame: pd.DataFrame,
-    corridor_weighted: pd.DataFrame,
-    corridor_uniform: pd.DataFrame,
+    weighted_frames: Dict[str, pd.DataFrame],
+    uniform_frames: Dict[str, pd.DataFrame],
 ) -> pd.DataFrame:
-    """Compare weighted corridor diversity with uniform feasible-set corridor diversity."""
-    merged = corridor_weighted.merge(
-        corridor_uniform[
-            [
-                "unit_id",
-                "candidate_entropy",
-                "effective_num_candidates",
-            ]
-        ].rename(
-            columns={
-                "candidate_entropy": "uniform_entropy",
-                "effective_num_candidates": "uniform_effective_corridors",
-            }
-        ),
-        on="unit_id",
-        how="inner",
-    ).merge(
-        network_frame[["unit_id", "network_layer_diversity_score"]],
-        on="unit_id",
-        how="left",
-    )
-    if merged.empty:
+    """Compare weighted expectation metrics with conservative feasible-set diversity for each physical level."""
+    frames: List[pd.DataFrame] = []
+    for physical_level, weighted_frame in weighted_frames.items():
+        uniform_frame = uniform_frames.get(physical_level, pd.DataFrame())
+        if weighted_frame.empty or uniform_frame.empty:
+            continue
+        merged = weighted_frame.merge(
+            uniform_frame[
+                [
+                    "unit_id",
+                    "physical_level",
+                    "feasible_candidate_count",
+                    "candidate_entropy_uniform",
+                    "effective_candidate_count_uniform",
+                    "feasible_corridor_count",
+                    "corridor_entropy_uniform",
+                    "effective_corridor_count_uniform",
+                ]
+            ].rename(
+                columns={
+                    "feasible_candidate_count": "uniform_feasible_candidate_count",
+                    "candidate_entropy_uniform": "uniform_candidate_entropy_cable",
+                    "effective_candidate_count_uniform": "uniform_effective_candidate_count_cable",
+                    "feasible_corridor_count": "uniform_feasible_corridor_count",
+                    "corridor_entropy_uniform": "uniform_candidate_entropy_corridor",
+                    "effective_corridor_count_uniform": "uniform_effective_candidate_count_corridor",
+                }
+            ),
+            on=["unit_id", "physical_level"],
+            how="inner",
+        )
+        if merged.empty:
+            continue
+        if physical_level == "corridor":
+            merged["uniform_effective_num_candidates"] = pd.to_numeric(
+                merged["uniform_effective_candidate_count_corridor"], errors="coerce"
+            ).fillna(0.0)
+            merged["uniform_candidate_entropy"] = pd.to_numeric(
+                merged["uniform_candidate_entropy_corridor"], errors="coerce"
+            ).fillna(0.0)
+            merged["feasible_candidate_count_out"] = pd.to_numeric(merged["uniform_feasible_corridor_count"], errors="coerce").fillna(0.0)
+        else:
+            merged["uniform_effective_num_candidates"] = pd.to_numeric(
+                merged["uniform_effective_candidate_count_cable"], errors="coerce"
+            ).fillna(0.0)
+            merged["uniform_candidate_entropy"] = pd.to_numeric(
+                merged["uniform_candidate_entropy_cable"], errors="coerce"
+            ).fillna(0.0)
+            merged["feasible_candidate_count_out"] = pd.to_numeric(merged["uniform_feasible_candidate_count"], errors="coerce").fillna(0.0)
+
+        merged["weighted_effective_num_candidates"] = pd.to_numeric(merged["effective_num_candidates"], errors="coerce").fillna(0.0)
+        merged["weighted_candidate_entropy"] = pd.to_numeric(merged["candidate_entropy"], errors="coerce").fillna(0.0)
+        merged["weighted_dominant_support_share"] = pd.to_numeric(merged["dominant_candidate_support_share"], errors="coerce").fillna(0.0)
+        merged["weighted_minus_uniform_effective_num"] = (
+            merged["weighted_effective_num_candidates"] - merged["uniform_effective_num_candidates"]
+        )
+        merged["weighted_to_uniform_ratio"] = np.where(
+            merged["uniform_effective_num_candidates"] > 0,
+            merged["weighted_effective_num_candidates"] / merged["uniform_effective_num_candidates"],
+            0.0,
+        )
+        merged["interpretation"] = merged.apply(
+            lambda row: (
+                "robust_candidate_concentration"
+                if row["uniform_effective_num_candidates"] <= 2 and row["weighted_effective_num_candidates"] <= 2
+                else (
+                    "support_weight_driven_concentration"
+                    if row["uniform_effective_num_candidates"] > 2 and row["weighted_effective_num_candidates"] <= 2
+                    else (
+                        "check_inconsistent_support_distribution"
+                        if row["uniform_effective_num_candidates"] <= 2 and row["weighted_effective_num_candidates"] > 2
+                        else "no_clear_concentration"
+                    )
+                )
+            ),
+            axis=1,
+        )
+        frames.append(
+            merged[
+                [
+                    "unit_id",
+                    "physical_level",
+                    "weighted_effective_num_candidates",
+                    "weighted_candidate_entropy",
+                    "weighted_dominant_support_share",
+                    "uniform_effective_num_candidates",
+                    "uniform_candidate_entropy",
+                    "feasible_candidate_count_out",
+                    "weighted_minus_uniform_effective_num",
+                    "weighted_to_uniform_ratio",
+                    "interpretation",
+                ]
+            ].rename(columns={"feasible_candidate_count_out": "feasible_candidate_count"})
+        )
+
+    if not frames:
         return pd.DataFrame(
             columns=[
                 "unit_id",
-                "weighted_effective_corridors",
-                "uniform_effective_corridors",
-                "weighted_entropy",
-                "uniform_entropy",
-                "weighted_rank",
-                "uniform_rank",
-                "weighted_gap",
-                "uniform_gap",
+                "physical_level",
+                "weighted_effective_num_candidates",
+                "weighted_candidate_entropy",
+                "weighted_dominant_support_share",
+                "uniform_effective_num_candidates",
+                "uniform_candidate_entropy",
+                "feasible_candidate_count",
+                "weighted_minus_uniform_effective_num",
+                "weighted_to_uniform_ratio",
+                "interpretation",
             ]
         )
-
-    merged["weighted_effective_corridors"] = pd.to_numeric(merged["effective_num_candidates"], errors="coerce").fillna(0.0)
-    merged["weighted_entropy"] = pd.to_numeric(merged["candidate_entropy"], errors="coerce").fillna(0.0)
-    merged["uniform_effective_corridors"] = pd.to_numeric(merged["uniform_effective_corridors"], errors="coerce").fillna(0.0)
-    merged["uniform_entropy"] = pd.to_numeric(merged["uniform_entropy"], errors="coerce").fillna(0.0)
-    merged["weighted_rank"] = merged["weighted_effective_corridors"].rank(method="dense", ascending=False)
-    merged["uniform_rank"] = merged["uniform_effective_corridors"].rank(method="dense", ascending=False)
-    merged["weighted_gap"] = pd.to_numeric(merged["network_layer_diversity_score"], errors="coerce").fillna(0.0) - merged["weighted_effective_corridors"]
-    merged["uniform_gap"] = pd.to_numeric(merged["network_layer_diversity_score"], errors="coerce").fillna(0.0) - merged["uniform_effective_corridors"]
-    return merged[
-        [
-            "unit_id",
-            "weighted_effective_corridors",
-            "uniform_effective_corridors",
-            "weighted_entropy",
-            "uniform_entropy",
-            "weighted_rank",
-            "uniform_rank",
-            "weighted_gap",
-            "uniform_gap",
-        ]
-    ].sort_values("unit_id").reset_index(drop=True)
+    return pd.concat(frames, ignore_index=True).sort_values(["physical_level", "unit_id"]).reset_index(drop=True)
 
 
 def build_unit_ambiguity_profile(frame: pd.DataFrame) -> pd.DataFrame:
@@ -1203,12 +1378,17 @@ def build_method_manifest() -> Dict[str, Any]:
         ],
         "primary_outputs": [
             "unit_network_layer_diversity.csv",
+            "trace_feasible_candidate_space.csv",
             "unit_physical_candidate_diversity_cable.csv",
             "unit_physical_candidate_diversity_corridor.csv",
+            "unit_physical_candidate_set_diversity_cable.csv",
+            "unit_physical_candidate_set_diversity_corridor.csv",
             "unit_physical_candidate_upper_bound.csv",
             "unit_network_physical_mismatch.csv",
             "unit_network_physical_mismatch_corridor.csv",
             "unit_network_physical_upper_bound_mismatch.csv",
+            "paper_unit_physical_candidate_diversity.csv",
+            "paper_unit_network_physical_mismatch.csv",
             "network_physical_quadrants.csv",
             "cable_vs_corridor_physical_diversity.csv",
             "candidate_space_profile.csv",
@@ -1219,6 +1399,30 @@ def build_method_manifest() -> Dict[str, Any]:
         ],
         "network_definitions": list(NETWORK_DEFINITION_COLUMNS.keys()),
         "interpretation": "aggregate candidate-support distribution, not per-path physical ground truth",
+    }
+
+
+def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
+    """Return a compact manifest for the infeasibility-first conservative candidate audit view."""
+    return {
+        "pipeline_version": "infeasibility_first_conservative_candidate_audit_v1",
+        "interpretation": "infeasibility_first_conservative_candidate_audit",
+        "support_semantics": "evidence support, not ground-truth probability",
+        "weighted_view_description": "support-thresholded candidate-support view used for backward-compatible weighted expectation analysis",
+        "conservative_set_view_description": "all hard-feasible candidates retained before support thresholding and treated uniformly for upper-bound physical diversity",
+        "primary_physical_level": "corridor",
+        "legacy_all_segments_semantics": "support-thresholded legacy candidate list",
+        "all_feasible_segments_semantics": "all hard-feasible candidates preserved before support thresholding",
+        "generated_outputs": [
+            "trace_feasible_candidate_space.csv",
+            "unit_physical_candidate_set_diversity_cable.csv",
+            "unit_physical_candidate_set_diversity_corridor.csv",
+            "unit_network_physical_upper_bound_mismatch.csv",
+            "paper_unit_physical_candidate_diversity.csv",
+            "paper_unit_network_physical_mismatch.csv",
+            "candidate_space_profile.csv",
+            "weighted_vs_conservative_diversity.csv",
+        ],
     }
 
 
@@ -1393,11 +1597,20 @@ def build_filtering_breakdown(output_dir: str) -> pd.DataFrame:
         "empty_trace_count",
         "total_links_seen",
         "same_city_filtered",
+        "links_without_landing_candidates",
+        "links_without_segment_candidates",
         "links_with_ls_candidates",
         "links_with_geo_candidates",
         "candidate_segments_considered",
         "rtt_infeasible_filtered",
+        "candidates_rtt_infeasible",
+        "candidates_rtt_feasible",
+        "candidates_support_below_threshold",
+        "candidates_support_above_threshold",
         "links_with_any_match",
+        "links_with_feasible_candidates",
+        "links_with_no_feasible_candidate",
+        "links_with_only_low_support_feasible_candidates",
         "total_candidates_generated",
         "total_candidates_after_threshold",
         "links_with_parallel_ambiguity",
@@ -1418,11 +1631,20 @@ def build_filtering_breakdown(output_dir: str) -> pd.DataFrame:
         "empty_trace_count": manifest.get("empty_trace_count", 0),
         "total_links_seen": stats.get("total_links_seen", 0),
         "same_city_filtered": stats.get("same_city_filtered", 0),
+        "links_without_landing_candidates": stats.get("links_without_landing_candidates", 0),
+        "links_without_segment_candidates": stats.get("links_without_segment_candidates", 0),
         "links_with_ls_candidates": stats.get("links_with_ls_candidates", 0),
         "links_with_geo_candidates": stats.get("links_with_geo_candidates", 0),
         "candidate_segments_considered": stats.get("candidate_segments_considered", 0),
         "rtt_infeasible_filtered": stats.get("rtt_infeasible_filtered", 0),
+        "candidates_rtt_infeasible": stats.get("candidates_rtt_infeasible", 0),
+        "candidates_rtt_feasible": stats.get("candidates_rtt_feasible", 0),
+        "candidates_support_below_threshold": stats.get("candidates_support_below_threshold", 0),
+        "candidates_support_above_threshold": stats.get("candidates_support_above_threshold", 0),
         "links_with_any_match": stats.get("links_with_any_match", 0),
+        "links_with_feasible_candidates": stats.get("links_with_feasible_candidates", 0),
+        "links_with_no_feasible_candidate": stats.get("links_with_no_feasible_candidate", 0),
+        "links_with_only_low_support_feasible_candidates": stats.get("links_with_only_low_support_feasible_candidates", 0),
         "total_candidates_generated": stats.get("total_candidates_generated", 0),
         "total_candidates_after_threshold": stats.get("total_candidates_after_threshold", 0),
         "links_with_parallel_ambiguity": stats.get("links_with_parallel_ambiguity", 0),
@@ -1730,41 +1952,64 @@ def main() -> None:
     os.makedirs(args.output, exist_ok=True)
     records = read_candidate_output(args.input)
     candidate_frame = explode_candidate_rows(records, unit_fields)
+    feasible_frame = explode_feasible_candidate_rows(records, unit_fields)
 
-    if candidate_frame.empty:
+    if candidate_frame.empty and feasible_frame.empty:
         raise ValueError("No candidate rows were found in the input output JSON.")
 
-    candidate_frame = ensure_corridor_columns(candidate_frame)
-    candidate_frame = annotate_link_projection_classes(candidate_frame)
-    candidate_frame = annotate_projection_quality(candidate_frame)
-    corridor_candidate_col = resolve_corridor_candidate_column(candidate_frame)
+    if not candidate_frame.empty:
+        candidate_frame = ensure_corridor_columns(candidate_frame)
+        candidate_frame = annotate_link_projection_classes(candidate_frame)
+        candidate_frame = annotate_projection_quality(candidate_frame)
+    if not feasible_frame.empty:
+        feasible_frame = ensure_corridor_columns(feasible_frame)
+        feasible_frame = annotate_link_projection_classes(feasible_frame)
+        feasible_frame = annotate_projection_quality(feasible_frame)
+    if candidate_frame.empty and not feasible_frame.empty:
+        candidate_frame = feasible_frame.iloc[0:0].copy()
+    corridor_candidate_col = resolve_corridor_candidate_column(
+        feasible_frame if not feasible_frame.empty else candidate_frame
+    )
 
     trace_output = os.path.join(args.output, "trace_candidate_support.csv")
+    trace_feasible_output = os.path.join(args.output, "trace_feasible_candidate_space.csv")
     candidate_frame.to_csv(trace_output, index=False, encoding="utf-8-sig")
+    feasible_frame.to_csv(trace_feasible_output, index=False, encoding="utf-8-sig")
 
     cable_physical = build_unit_physical_candidate_diversity(candidate_frame, "cable_id", "cable")
     corridor_physical = build_unit_physical_candidate_diversity(candidate_frame, corridor_candidate_col, "corridor")
-    cable_physical_uniform = build_unit_physical_feasible_set_diversity(candidate_frame, "cable_id", "cable")
-    corridor_physical_uniform = build_unit_physical_feasible_set_diversity(candidate_frame, corridor_candidate_col, "corridor")
-    upper_bound_physical = build_unit_physical_candidate_upper_bound(candidate_frame, corridor_candidate_col)
-    network_frame = build_unit_network_layer_diversity(candidate_frame)
+    cable_physical_uniform = build_unit_physical_feasible_set_diversity(feasible_frame, "cable_id", "cable")
+    corridor_physical_uniform = build_unit_physical_feasible_set_diversity(feasible_frame, corridor_candidate_col, "corridor")
+    upper_bound_physical = build_unit_physical_candidate_upper_bound(feasible_frame, corridor_candidate_col)
+    network_frame = build_unit_network_layer_diversity(feasible_frame if not feasible_frame.empty else candidate_frame)
     cable_mismatch = build_unit_network_physical_mismatch(network_frame, cable_physical, "cable")
     corridor_mismatch = build_unit_network_physical_mismatch(network_frame, corridor_physical, "corridor")
-    upper_bound_mismatch = build_unit_network_physical_upper_bound_mismatch(network_frame, upper_bound_physical)
+    upper_bound_mismatch = build_unit_network_physical_upper_bound_mismatch(
+        network_frame,
+        {
+            "cable": cable_physical_uniform,
+            "corridor": corridor_physical_uniform,
+        },
+    )
     cable_quadrants = build_quadrant_summary(cable_mismatch, "cable")
     corridor_quadrants = build_quadrant_summary(corridor_mismatch, "corridor")
     quadrant_summary = pd.concat([cable_quadrants, corridor_quadrants], ignore_index=True)
-    candidate_space_profile = build_candidate_space_profile(candidate_frame, corridor_candidate_col)
+    candidate_space_profile = build_candidate_space_profile(feasible_frame, corridor_candidate_col)
     weighted_vs_conservative = build_weighted_vs_conservative_diversity(
-        network_frame,
-        corridor_physical,
-        corridor_physical_uniform,
+        {
+            "cable": cable_physical,
+            "corridor": corridor_physical,
+        },
+        {
+            "cable": cable_physical_uniform,
+            "corridor": corridor_physical_uniform,
+        },
     )
-    unit_ambiguity_profile = build_unit_ambiguity_profile(candidate_frame)
-    ambiguity_summary = build_ambiguity_summary(candidate_frame)
+    unit_ambiguity_profile = build_unit_ambiguity_profile(feasible_frame if not feasible_frame.empty else candidate_frame)
+    ambiguity_summary = build_ambiguity_summary(feasible_frame if not feasible_frame.empty else candidate_frame)
     ambiguity_taxonomy = build_ambiguity_taxonomy()
-    core_agreement_summary = build_core_agreement_summary(candidate_frame)
-    as_reranking_effect = build_as_reranking_effect(candidate_frame)
+    core_agreement_summary = build_core_agreement_summary(feasible_frame if not feasible_frame.empty else candidate_frame)
+    as_reranking_effect = build_as_reranking_effect(candidate_frame if not candidate_frame.empty else feasible_frame)
     cable_corridor_comparison = build_cable_corridor_comparison(
         cable_physical,
         corridor_physical,
@@ -1772,9 +2017,11 @@ def main() -> None:
         corridor_mismatch,
     )
     method_manifest = build_method_manifest()
+    conservative_manifest = build_conservative_candidate_audit_manifest()
     filtering_breakdown = build_filtering_breakdown(args.output)
+    summary_source_frame = candidate_frame if not candidate_frame.empty else feasible_frame
     summary_frame = build_dataset_summary(
-        candidate_frame,
+        summary_source_frame,
         cable_physical,
         corridor_physical,
         network_frame,
@@ -1786,12 +2033,16 @@ def main() -> None:
     cable_physical_path = os.path.join(args.output, "unit_physical_candidate_diversity_cable.csv")
     corridor_physical_path = os.path.join(args.output, "unit_physical_candidate_diversity_corridor.csv")
     legacy_physical_path = os.path.join(args.output, "unit_physical_candidate_diversity.csv")
+    cable_set_physical_path = os.path.join(args.output, "unit_physical_candidate_set_diversity_cable.csv")
+    corridor_set_physical_path = os.path.join(args.output, "unit_physical_candidate_set_diversity_corridor.csv")
     network_path = os.path.join(args.output, "unit_network_layer_diversity.csv")
     legacy_network_path = os.path.join(args.output, "unit_logical_diversity.csv")
     cable_mismatch_path = os.path.join(args.output, "unit_network_physical_mismatch.csv")
     corridor_mismatch_path = os.path.join(args.output, "unit_network_physical_mismatch_corridor.csv")
     upper_bound_physical_path = os.path.join(args.output, "unit_physical_candidate_upper_bound.csv")
     upper_bound_mismatch_path = os.path.join(args.output, "unit_network_physical_upper_bound_mismatch.csv")
+    paper_physical_path = os.path.join(args.output, "paper_unit_physical_candidate_diversity.csv")
+    paper_mismatch_path = os.path.join(args.output, "paper_unit_network_physical_mismatch.csv")
     legacy_mismatch_path = os.path.join(args.output, "unit_mismatch.csv")
     quadrant_summary_path = os.path.join(args.output, "network_physical_quadrants.csv")
     cable_corridor_path = os.path.join(args.output, "cable_vs_corridor_physical_diversity.csv")
@@ -1804,17 +2055,24 @@ def main() -> None:
     as_reranking_effect_path = os.path.join(args.output, "as_reranking_effect.csv")
     filtering_breakdown_path = os.path.join(args.output, "filtering_breakdown.csv")
     method_manifest_path = os.path.join(args.output, "method_manifest.json")
+    conservative_manifest_path = os.path.join(args.output, "conservative_candidate_audit_manifest.json")
     summary_path = os.path.join(args.output, "dataset_summary.csv")
 
     cable_physical.to_csv(cable_physical_path, index=False, encoding="utf-8-sig")
     corridor_physical.to_csv(corridor_physical_path, index=False, encoding="utf-8-sig")
     cable_physical.to_csv(legacy_physical_path, index=False, encoding="utf-8-sig")
+    cable_physical_uniform.to_csv(cable_set_physical_path, index=False, encoding="utf-8-sig")
+    corridor_physical_uniform.to_csv(corridor_set_physical_path, index=False, encoding="utf-8-sig")
     network_frame.to_csv(network_path, index=False, encoding="utf-8-sig")
     network_frame.to_csv(legacy_network_path, index=False, encoding="utf-8-sig")
     cable_mismatch.to_csv(cable_mismatch_path, index=False, encoding="utf-8-sig")
     corridor_mismatch.to_csv(corridor_mismatch_path, index=False, encoding="utf-8-sig")
     upper_bound_physical.to_csv(upper_bound_physical_path, index=False, encoding="utf-8-sig")
     upper_bound_mismatch.to_csv(upper_bound_mismatch_path, index=False, encoding="utf-8-sig")
+    corridor_physical_uniform.to_csv(paper_physical_path, index=False, encoding="utf-8-sig")
+    upper_bound_mismatch.loc[
+        upper_bound_mismatch["physical_level"].astype(str) == "corridor"
+    ].to_csv(paper_mismatch_path, index=False, encoding="utf-8-sig")
     cable_mismatch.to_csv(legacy_mismatch_path, index=False, encoding="utf-8-sig")
     quadrant_summary.to_csv(quadrant_summary_path, index=False, encoding="utf-8-sig")
     cable_corridor_comparison.to_csv(cable_corridor_path, index=False, encoding="utf-8-sig")
@@ -1829,6 +2087,8 @@ def main() -> None:
     summary_frame.to_csv(summary_path, index=False, encoding="utf-8-sig")
     with open(method_manifest_path, "w", encoding="utf-8") as handle:
         json.dump(method_manifest, handle, indent=2, ensure_ascii=False)
+    with open(conservative_manifest_path, "w", encoding="utf-8") as handle:
+        json.dump(conservative_manifest, handle, indent=2, ensure_ascii=False)
 
     write_quadrant_scatter_svg(
         cable_mismatch,
@@ -1856,13 +2116,18 @@ def main() -> None:
     )
 
     print(f"Saved trace candidate table to {trace_output}")
+    print(f"Saved feasible candidate-space table to {trace_feasible_output}")
     print(f"Saved network-layer diversity table to {network_path}")
     print(f"Saved cable-level physical diversity table to {cable_physical_path}")
     print(f"Saved corridor-level physical diversity table to {corridor_physical_path}")
+    print(f"Saved cable-level feasible-set diversity table to {cable_set_physical_path}")
+    print(f"Saved corridor-level feasible-set diversity table to {corridor_set_physical_path}")
     print(f"Saved network-physical mismatch table to {cable_mismatch_path}")
     print(f"Saved corridor-level mismatch table to {corridor_mismatch_path}")
     print(f"Saved physical upper-bound table to {upper_bound_physical_path}")
     print(f"Saved upper-bound mismatch table to {upper_bound_mismatch_path}")
+    print(f"Saved paper-ready physical diversity alias to {paper_physical_path}")
+    print(f"Saved paper-ready mismatch alias to {paper_mismatch_path}")
     print(f"Saved cable-vs-corridor comparison table to {cable_corridor_path}")
     print(f"Saved candidate-space profile to {candidate_space_profile_path}")
     print(f"Saved weighted-vs-conservative diversity table to {weighted_vs_conservative_path}")
@@ -1873,6 +2138,7 @@ def main() -> None:
     print(f"Saved AS reranking effect to {as_reranking_effect_path}")
     print(f"Saved filtering breakdown to {filtering_breakdown_path}")
     print(f"Saved method manifest to {method_manifest_path}")
+    print(f"Saved conservative candidate-audit manifest to {conservative_manifest_path}")
     print(f"Saved quadrant summary table to {quadrant_summary_path}")
     print(f"Saved dataset summary table to {summary_path}")
 

@@ -810,3 +810,45 @@ Bar chart showing shared `network_high_physical_low` units across robustness set
 - The expected shared source of truth is `origin/main`.
 - Runtime data files remain local inputs; code and documentation are tracked in Git.
 - For agent-side collaboration rules, see `AGENTS.md`.
+
+## Latest Conservative Candidate Audit Additions
+
+The repository now distinguishes two Stage 1 candidate views:
+
+- `all_feasible_segments`: the infeasibility-first feasible candidate space retained before support thresholding.
+- `all_segments`: the legacy support-thresholded view kept for backward compatibility.
+
+Additional Stage 1 `match_summary` fields include:
+
+- `num_feasible_candidates_total`
+- `num_feasible_corridors_total`
+- `feasible_candidate_retention_mode`
+- `support_threshold_used_for_legacy_all_segments`
+- `support_threshold_value`
+
+Additional candidate-level fields include:
+
+- `hard_feasible`
+- `infeasibility_filter_passed`
+- `support_above_threshold`
+- `support_filter_reason`
+- `geo_entry_support`
+- `geo_exit_support`
+- `geo_spatial_support`
+
+New post-processing outputs:
+
+- `output/result/trace_feasible_candidate_space.csv`: flattened feasible candidate-space table derived from `all_feasible_segments`, with automatic fallback to `all_segments` for old JSON files.
+- `output/result/unit_physical_candidate_set_diversity_cable.csv`: cable-level conservative feasible-set diversity.
+- `output/result/unit_physical_candidate_set_diversity_corridor.csv`: corridor-level conservative feasible-set diversity and the primary paper-ready physical diversity view.
+- `output/result/unit_network_physical_upper_bound_mismatch.csv`: long-form mismatch table comparing network diversity with conservative upper-bound physical diversity across all network definitions and both cable/corridor levels.
+- `output/result/paper_unit_physical_candidate_diversity.csv`: paper-ready alias of the corridor-level conservative feasible-set diversity output.
+- `output/result/paper_unit_network_physical_mismatch.csv`: paper-ready alias of the corridor-level conservative upper-bound mismatch output.
+- `output/result/conservative_candidate_audit_manifest.json`: compact manifest describing infeasibility-first semantics and generated outputs.
+- `output/result/robustness_conservative_candidate_audit.csv`: robustness table comparing weighted support vs conservative feasible sets across network definitions, physical levels, and projection subsets.
+
+Interpretation boundary:
+
+- Geo/RTT/landing constraints are used primarily to exclude impossible or highly implausible candidates.
+- `candidate_support` is an evidence-support score inside the retained feasible set, not a ground-truth cable-usage probability.
+- Conservative set-based diversity treats all feasible candidates equally and should be interpreted as an upper bound on possible physical diversity.
