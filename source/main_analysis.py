@@ -975,6 +975,8 @@ class CableMatcher:
                 if not segment_cables:
                     continue
                 had_segment_candidates = True
+                corridor_id = " <-> ".join(segment_key)
+                parallel_group_id = corridor_id
 
                 geo_score_info = self.compute_geo_spatial_score(d_in=d_in, d_out=d_out)
 
@@ -1017,6 +1019,11 @@ class CableMatcher:
                         "cable_id": cable_info["cable_id"],
                         "segment": f"{ls_a_id} -> {ls_b_id}",
                         "landing_pair": f"{ls_a_id} -> {ls_b_id}",
+                        "corridor_id": corridor_id,
+                        "corridor_type": "exact_landing_pair",
+                        "parallel_group_id": parallel_group_id,
+                        "parallel_group_size": len(segment_cables),
+                        "is_parallel_ambiguous": len(segment_cables) > 1,
                         "candidate_support": float(fused_candidate_support),
                         "fused_candidate_support": float(fused_candidate_support),
                         "normalized_candidate_support": 0.0,

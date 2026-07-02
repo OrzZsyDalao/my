@@ -2,6 +2,18 @@
 
 This repository now keeps its implementation under `source/`, while preserving root-level entrypoints so the project can still be run with the original commands.
 
+## Research Focus
+
+This codebase is organized around **uncertainty-aware cross-layer diversity auditing**.
+
+The main goal is **not** per-path submarine cable attribution. Instead, the project audits whether diversity observed at the network layer remains diverse in the **physical-candidate space**. In other words, it asks:
+
+- given observed network-layer diversity, how broad is the candidate physical-support distribution?
+- does logical or network diversity remain diverse after projection into cable or corridor candidates?
+- where do we observe a mismatch between network-layer diversity and physical-candidate diversity?
+
+The primary research artifact is therefore a set of candidate-support, diversity, mismatch, ambiguity, and robustness outputs rather than a claim that one traceroute definitely used one ground-truth cable.
+
 ## Pipeline Layout
 
 ### Stage 1: `main_analysis.py` / `source/main_analysis.py`
@@ -32,8 +44,24 @@ This script reads the stage-1 JSON output and generates:
 
 - `output/result/trace_candidate_support.csv`
 - `output/result/unit_physical_candidate_diversity.csv`
+- `output/result/unit_physical_candidate_diversity_cable.csv`
+- `output/result/unit_physical_candidate_diversity_corridor.csv`
+- `output/result/unit_network_layer_diversity.csv`
 - `output/result/unit_logical_diversity.csv`
+- `output/result/unit_network_physical_mismatch.csv`
+- `output/result/unit_network_physical_mismatch_corridor.csv`
 - `output/result/unit_mismatch.csv`
+- `output/result/network_physical_quadrants.csv`
+- `output/result/cable_vs_corridor_physical_diversity.csv`
+- `output/result/unit_ambiguity_profile.csv`
+- `output/result/ambiguity_summary.csv`
+- `output/result/ambiguity_taxonomy.csv`
+- `output/result/method_manifest.json`
+- `output/result/network_physical_quadrant_scatter_cable.svg`
+- `output/result/network_physical_quadrant_scatter_corridor.svg`
+- `output/result/network_physical_quadrant_counts_cable.svg`
+- `output/result/network_physical_quadrant_counts_corridor.svg`
+- `output/result/cable_vs_corridor_physical_diversity.svg`
 - `output/result/dataset_summary.csv`
 
 ### Robustness: `robustness_compare.py`
@@ -41,6 +69,10 @@ This script reads the stage-1 JSON output and generates:
 This script compares evidence settings over the post-processed candidate table and writes:
 
 - `output/result/robustness_summary.csv`
+- `output/result/robustness_mismatch_stability.csv`
+- `output/result/robustness_quadrant_summary.csv`
+- `output/result/robustness_profile_table.csv`
+- `output/result/robustness_network_high_physical_low_stability.svg`
 
 ## Source Organization
 
@@ -104,6 +136,13 @@ python .\concerntration_analysis.py
 python .\postprocess_candidate_output.py --input .\output\result\cable_matching_output.json --output .\output\result
 python .\robustness_compare.py --input .\output\result\trace_candidate_support.csv --output .\output\result
 ```
+
+## Interpretation Boundary
+
+- `candidate_support`, `fused_candidate_support`, and `normalized_candidate_support` are **evidence scores** over candidate physical support.
+- They should **not** be interpreted as ground-truth cable utilization.
+- A top candidate is a dominant candidate-support explanation under the current evidence model, not a claim that the route truly used that cable.
+- Cable-level and corridor-level outputs are both retained because parallel infrastructure can affect the granularity of interpretation.
 
 If you want to choose a specific probe metadata file for stage 2:
 

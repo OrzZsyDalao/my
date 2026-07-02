@@ -12,6 +12,7 @@ try:
         build_unit_network_layer_diversity,
         build_unit_network_physical_mismatch,
         build_unit_physical_candidate_diversity,
+        ensure_corridor_columns,
     )
 except ModuleNotFoundError:
     import sys
@@ -26,6 +27,7 @@ except ModuleNotFoundError:
         build_unit_network_layer_diversity,
         build_unit_network_physical_mismatch,
         build_unit_physical_candidate_diversity,
+        ensure_corridor_columns,
     )
 
 
@@ -184,6 +186,28 @@ def quadrant_agreement_rate(baseline: pd.DataFrame, candidate: pd.DataFrame) -> 
     )
 
 
+def infer_evidence_view(setting: str) -> str:
+    """Map an internal setting name to a compact evidence-view label."""
+    if setting.startswith("geo_only"):
+        return "geo_only"
+    if setting.startswith("as_only"):
+        return "as_only"
+    if setting.startswith("high_confidence_subset"):
+        return "high_confidence_subset"
+    if setting.startswith("fused_dual_core"):
+        return "fused_dual_core"
+    return "custom"
+
+
+def build_robustness_interpretation(row: pd.Series) -> str:
+    """Generate a concise interpretation for one robustness setting."""
+    if float(row["target_quadrant_jaccard"]) >= 0.85 and float(row["quadrant_agreement_rate"]) >= 0.95:
+        return "Target-quadrant units remain highly stable under this evidence view."
+    if float(row["target_quadrant_jaccard"]) >= 0.5:
+        return "Target-quadrant units remain moderately stable, with limited reassignment."
+    return "This setting meaningfully changes the target-quadrant membership and should be interpreted as a sensitivity view."
+
+
 def main() -> None:
     """Compare evidence settings and their network-physical mismatch stability."""
     args = parse_args()
@@ -196,6 +220,7 @@ def main() -> None:
     frame["geo_spatial_score"] = frame["geo_spatial_score"].fillna(0.0)
     frame["as_economic_score"] = frame["as_economic_score"].fillna(0.0)
     frame["normalized_candidate_support"] = frame["normalized_candidate_support"].fillna(0.0)
+    frame = ensure_corridor_columns(frame)
 
     network_frame = build_unit_network_layer_diversity(frame)
     geo_frame = normalize_within_links(frame, "geo_spatial_score", "geo_only_support")
@@ -215,14 +240,14 @@ def main() -> None:
             "cable_id",
             "cable",
         ),
-        ("fused_dual_core_corridor", frame, "normalized_candidate_support", "segment", "corridor"),
-        ("geo_only_corridor", geo_frame, "geo_only_support", "segment", "corridor"),
-        ("as_only_corridor", as_frame, "as_only_support", "segment", "corridor"),
+        ("fused_dual_core_corridor", frame, "normalized_candidate_support", "corridor_id_fallback", "corridor"),
+        ("geo_only_corridor", geo_frame, "geo_only_support", "corridor_id_fallback", "corridor"),
+        ("as_only_corridor", as_frame, "as_only_support", "corridor_id_fallback", "corridor"),
         (
             "high_confidence_subset_corridor",
             high_conf_frame if not high_conf_frame.empty else frame.iloc[0:0],
             "normalized_candidate_support",
-            "segment",
+            "corridor_id_fallback",
             "corridor",
         ),
     ]
@@ -304,14 +329,56 @@ def main() -> None:
     robustness_summary = pd.DataFrame(robustness_rows).sort_values(["physical_level", "mode"])
     mismatch_stability = pd.DataFrame(stability_rows).sort_values(["physical_level", "mode"])
     quadrant_summary_frame = pd.concat(quadrant_summaries, ignore_index=True) if quadrant_summaries else pd.DataFrame()
+    robustness_profile_table = (
+        mismatch_stability.merge(
+            robustness_summary[
+                [
+                    "mode",
+                    "physical_level",
+                    "spearman_dominant_candidate_support_share",
+                    "spearman_effective_num_candidates",
+                ]
+            ],
+            on=["mode", "physical_level"],
+            how="left",
+        )
+        .rename(
+            columns={
+                "mode": "setting",
+                "spearman_dominant_candidate_support_share": "rank_corr_dominant_support",
+                "spearman_effective_num_candidates": "rank_corr_effective_num",
+                "target_jaccard_vs_baseline": "target_quadrant_jaccard",
+                "target_recall_vs_baseline": "target_quadrant_recall",
+            }
+        )
+        .assign(
+            evidence_view=lambda df: df["setting"].map(infer_evidence_view),
+        )
+    )
+    robustness_profile_table["interpretation"] = robustness_profile_table.apply(build_robustness_interpretation, axis=1)
+    robustness_profile_table = robustness_profile_table[
+        [
+            "setting",
+            "evidence_view",
+            "physical_level",
+            "rank_corr_dominant_support",
+            "rank_corr_effective_num",
+            "target_quadrant_jaccard",
+            "target_quadrant_recall",
+            "quadrant_agreement_rate",
+            "interpretation",
+        ]
+    ].sort_values(["physical_level", "setting"])
 
     robustness_summary_path = os.path.join(args.output, "robustness_summary.csv")
     mismatch_stability_path = os.path.join(args.output, "robustness_mismatch_stability.csv")
     quadrant_summary_path = os.path.join(args.output, "robustness_quadrant_summary.csv")
+    robustness_profile_path = os.path.join(args.output, "robustness_profile_table.csv")
 
     robustness_summary.to_csv(robustness_summary_path, index=False, encoding="utf-8-sig")
     mismatch_stability.to_csv(mismatch_stability_path, index=False, encoding="utf-8-sig")
     quadrant_summary_frame.to_csv(quadrant_summary_path, index=False, encoding="utf-8-sig")
+    robustness_profile_table.to_csv(robustness_profile_path, index=False, encoding="utf-8-sig")
 
     if not mismatch_stability.empty:
         write_named_bar_svg(
@@ -323,6 +390,7 @@ def main() -> None:
     print(f"Saved robustness summary to {robustness_summary_path}")
     print(f"Saved mismatch stability summary to {mismatch_stability_path}")
     print(f"Saved robustness quadrant summary to {quadrant_summary_path}")
+    print(f"Saved robustness profile table to {robustness_profile_path}")
 
 
 if __name__ == "__main__":

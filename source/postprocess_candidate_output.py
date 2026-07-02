@@ -27,6 +27,66 @@ QUADRANT_COLORS = {
     "network_low_physical_low": "#af7ac5",
     "network_low_physical_high": "#52be80",
 }
+KNOWN_AMBIGUITY_TAGS = [
+    "parallel_candidate_corridor",
+    "many_candidates",
+    "large_landing_radius",
+    "rtt_inconclusive",
+    "geo_dominant_as_weak",
+    "as_dominant_geo_ambiguous",
+    "domestic_submarine_candidate",
+    "multi_segment_possible",
+]
+AMBIGUITY_TAXONOMY_ROWS = [
+    {
+        "ambiguity_class": "parallel_candidate_corridor",
+        "reviewer_concern": "Parallel cables on the same landing-pair corridor may be over-separated.",
+        "treatment": "Report both cable-level and corridor-level diversity and preserve corridor_id in outputs.",
+        "interpretation_boundary": "A cable-level split is candidate-support evidence, not a claim about unique cable utilization.",
+    },
+    {
+        "ambiguity_class": "many_candidates",
+        "reviewer_concern": "A large candidate set may indicate diffuse evidence rather than strong path specificity.",
+        "treatment": "Keep normalized support across all retained candidates and expose ambiguity support shares per unit.",
+        "interpretation_boundary": "High candidate multiplicity reflects uncertainty in physical-candidate support, not routing error.",
+    },
+    {
+        "ambiguity_class": "large_landing_radius",
+        "reviewer_concern": "Wide landing-station radii weaken fine-grained spatial interpretation.",
+        "treatment": "Retain the candidate with an explicit ambiguity tag and expose its support contribution.",
+        "interpretation_boundary": "Spatial proximity is only one evidence core and does not by itself identify a used cable.",
+    },
+    {
+        "ambiguity_class": "rtt_inconclusive",
+        "reviewer_concern": "Tight RTT margins reduce the discriminative value of latency feasibility.",
+        "treatment": "Keep feasible candidates but tag their RTT evidence as inconclusive for downstream interpretation.",
+        "interpretation_boundary": "Feasibility indicates consistency with a candidate, not proof of cable traversal.",
+    },
+    {
+        "ambiguity_class": "geo_dominant_as_weak",
+        "reviewer_concern": "Spatial evidence may dominate while AS-economic evidence stays weak.",
+        "treatment": "Expose dual-core disagreement through ambiguity tags and core-agreement summaries.",
+        "interpretation_boundary": "A geo-dominant candidate remains a candidate-support hypothesis, not a ground-truth route label.",
+    },
+    {
+        "ambiguity_class": "as_dominant_geo_ambiguous",
+        "reviewer_concern": "AS-economic support may be stronger than the geo-spatial signal.",
+        "treatment": "Retain the candidate with explicit disagreement labeling instead of forcing a single interpretation.",
+        "interpretation_boundary": "AS proximity alone is insufficient to assert physical cable use.",
+    },
+    {
+        "ambiguity_class": "domestic_submarine_candidate",
+        "reviewer_concern": "Domestic links can still map to submarine candidates and complicate naive filtering assumptions.",
+        "treatment": "Keep tagged candidates visible so domestic-submarine support remains auditable rather than silently removed.",
+        "interpretation_boundary": "A domestic submarine candidate is a feasible support candidate, not a certainty claim.",
+    },
+    {
+        "ambiguity_class": "multi_segment_possible",
+        "reviewer_concern": "Long corridors with slack RTT headroom may hide multi-segment infrastructure possibilities.",
+        "treatment": "Preserve the candidate but tag the interpretation as potentially multi-segment.",
+        "interpretation_boundary": "Single-segment cable identifiers should not be read as exact physical path recovery.",
+    },
+]
 
 
 def parse_args() -> argparse.Namespace:
@@ -80,6 +140,48 @@ def normalize_token(value: Any, prefix: str = "") -> str:
     if prefix and text.upper().startswith(prefix.upper()):
         return text.upper()
     return text
+
+
+def normalize_tag_list(value: Any) -> List[str]:
+    """Normalize ambiguity-tag fields into a deterministic list."""
+    if isinstance(value, list):
+        tags = value
+    elif value is None:
+        tags = []
+    else:
+        text = str(value).strip()
+        if not text or text.lower() == "nan":
+            tags = []
+        else:
+            try:
+                parsed = json.loads(text)
+                tags = parsed if isinstance(parsed, list) else [text]
+            except json.JSONDecodeError:
+                tags = [part.strip() for part in text.split(",") if part.strip()]
+    unique_tags = []
+    for tag in tags:
+        tag_text = str(tag).strip()
+        if tag_text and tag_text not in unique_tags:
+            unique_tags.append(tag_text)
+    return unique_tags
+
+
+def ensure_corridor_columns(frame: pd.DataFrame) -> pd.DataFrame:
+    """Ensure corridor-level identifiers exist and gracefully fall back to segment."""
+    result = frame.copy()
+    if "corridor_id" not in result.columns:
+        result["corridor_id"] = np.nan
+    if "parallel_group_id" not in result.columns:
+        result["parallel_group_id"] = np.nan
+    result["corridor_id_fallback"] = result["corridor_id"].where(
+        result["corridor_id"].notna() & (result["corridor_id"].astype(str).str.strip() != ""),
+        result["segment"],
+    )
+    result["parallel_group_id_fallback"] = result["parallel_group_id"].where(
+        result["parallel_group_id"].notna() & (result["parallel_group_id"].astype(str).str.strip() != ""),
+        result["corridor_id_fallback"],
+    )
+    return result
 
 
 def read_candidate_output(path: str) -> List[Dict[str, Any]]:
@@ -249,17 +351,29 @@ def build_unit_network_layer_diversity(frame: pd.DataFrame) -> pd.DataFrame:
         num_dst_asns = int(group["dst_asn_norm"].replace("NA", np.nan).dropna().nunique())
         num_src_dst_as_pairs = int(group["src_dst_as_pair"].replace("NA->NA", np.nan).dropna().nunique())
 
-        network_layer_diversity_score = (
-            country_entropy
-            + as_pair_entropy
-            + 0.5 * dst_as_entropy
+        network_score_component_as_pair = as_pair_entropy + 0.5 * safe_log1p(num_src_dst_as_pairs)
+        network_score_component_country_pair = country_entropy + 0.25 * safe_log1p(num_dst_countries)
+        network_score_component_endpoint_asn = (
+            0.5 * dst_as_entropy
             + 0.25 * src_as_entropy
             + 0.5 * safe_log1p(num_dst_asns)
-            + 0.5 * safe_log1p(num_src_dst_as_pairs)
-            + 0.5 * safe_log1p(num_probes)
+            + 0.25 * safe_log1p(num_src_asns)
+        )
+        network_score_component_probe_target = (
+            0.5 * safe_log1p(num_probes)
             + 0.5 * safe_log1p(num_files_or_targets)
             + 0.25 * safe_log1p(num_measurements)
-            + 0.25 * safe_log1p(num_dst_countries)
+        )
+
+        network_layer_diversity_score_as_only = (
+            network_score_component_as_pair + network_score_component_endpoint_asn
+        )
+        network_layer_diversity_score_country_only = network_score_component_country_pair
+        network_layer_diversity_score = (
+            network_score_component_as_pair
+            + network_score_component_country_pair
+            + network_score_component_endpoint_asn
+            + network_score_component_probe_target
         )
 
         rows.append(
@@ -278,6 +392,12 @@ def build_unit_network_layer_diversity(frame: pd.DataFrame) -> pd.DataFrame:
                 "dst_asn_entropy": dst_as_entropy,
                 "as_pair_entropy": as_pair_entropy,
                 "src_dst_as_pair_entropy": as_pair_entropy,
+                "network_score_component_as_pair": float(network_score_component_as_pair),
+                "network_score_component_country_pair": float(network_score_component_country_pair),
+                "network_score_component_endpoint_asn": float(network_score_component_endpoint_asn),
+                "network_score_component_probe_target": float(network_score_component_probe_target),
+                "network_layer_diversity_score_as_only": float(network_layer_diversity_score_as_only),
+                "network_layer_diversity_score_country_only": float(network_layer_diversity_score_country_only),
                 "network_layer_diversity_score": float(network_layer_diversity_score),
                 "logical_diversity_score": float(network_layer_diversity_score),
             }
@@ -421,6 +541,160 @@ def build_cable_corridor_comparison(
         == merged["corridor_network_physical_mismatch_category"].astype(str)
     )
     return merged.sort_values("unit_id").reset_index(drop=True)
+
+
+def build_unit_ambiguity_profile(frame: pd.DataFrame) -> pd.DataFrame:
+    """Aggregate ambiguity-tag support shares per unit."""
+    if frame.empty:
+        return pd.DataFrame(
+            columns=[
+                "unit_id",
+                "ambiguity_tag",
+                "ambiguity_support",
+                "ambiguity_support_share",
+                "num_candidates_with_tag",
+                "num_links_with_tag",
+            ]
+        )
+
+    working = frame.copy()
+    working["ambiguity_tags_list"] = working["ambiguity_tags"].apply(normalize_tag_list)
+    expanded_rows: List[Dict[str, Any]] = []
+    for row in working.itertuples(index=False):
+        tags = list(getattr(row, "ambiguity_tags_list", []))
+        for tag in tags:
+            expanded_rows.append(
+                {
+                    "unit_id": getattr(row, "unit_id"),
+                    "link_id": getattr(row, "link_id"),
+                    "ambiguity_tag": tag,
+                    "normalized_candidate_support": float(getattr(row, "normalized_candidate_support", 0.0) or 0.0),
+                }
+            )
+
+    if not expanded_rows:
+        return pd.DataFrame(
+            columns=[
+                "unit_id",
+                "ambiguity_tag",
+                "ambiguity_support",
+                "ambiguity_support_share",
+                "num_candidates_with_tag",
+                "num_links_with_tag",
+            ]
+        )
+
+    expanded = pd.DataFrame(expanded_rows)
+    totals = (
+        working.groupby("unit_id", dropna=False)["normalized_candidate_support"]
+        .sum()
+        .reset_index(name="unit_total_support")
+    )
+    summary = (
+        expanded.groupby(["unit_id", "ambiguity_tag"], dropna=False)
+        .agg(
+            ambiguity_support=("normalized_candidate_support", "sum"),
+            num_candidates_with_tag=("ambiguity_tag", "size"),
+            num_links_with_tag=("link_id", pd.Series.nunique),
+        )
+        .reset_index()
+    )
+    summary = summary.merge(totals, on="unit_id", how="left")
+    summary["ambiguity_support_share"] = np.where(
+        summary["unit_total_support"] > 0,
+        summary["ambiguity_support"] / summary["unit_total_support"],
+        0.0,
+    )
+    return summary.sort_values(["unit_id", "ambiguity_tag"]).reset_index(drop=True)
+
+
+def build_ambiguity_summary(frame: pd.DataFrame) -> pd.DataFrame:
+    """Aggregate ambiguity-tag counts and support shares globally."""
+    if frame.empty:
+        return pd.DataFrame(
+            columns=[
+                "ambiguity_tag",
+                "candidate_count",
+                "link_count",
+                "unit_count",
+                "ambiguity_support",
+                "ambiguity_support_share",
+            ]
+        )
+
+    working = frame.copy()
+    working["ambiguity_tags_list"] = working["ambiguity_tags"].apply(normalize_tag_list)
+    total_support = float(working["normalized_candidate_support"].sum())
+    expanded_rows: List[Dict[str, Any]] = []
+    for row in working.itertuples(index=False):
+        tags = list(getattr(row, "ambiguity_tags_list", []))
+        for tag in tags:
+            expanded_rows.append(
+                {
+                    "ambiguity_tag": tag,
+                    "unit_id": getattr(row, "unit_id"),
+                    "link_id": getattr(row, "link_id"),
+                    "normalized_candidate_support": float(getattr(row, "normalized_candidate_support", 0.0) or 0.0),
+                }
+            )
+
+    if not expanded_rows:
+        return pd.DataFrame(
+            columns=[
+                "ambiguity_tag",
+                "candidate_count",
+                "link_count",
+                "unit_count",
+                "ambiguity_support",
+                "ambiguity_support_share",
+            ]
+        )
+
+    expanded = pd.DataFrame(expanded_rows)
+    summary = (
+        expanded.groupby("ambiguity_tag", dropna=False)
+        .agg(
+            candidate_count=("ambiguity_tag", "size"),
+            link_count=("link_id", pd.Series.nunique),
+            unit_count=("unit_id", pd.Series.nunique),
+            ambiguity_support=("normalized_candidate_support", "sum"),
+        )
+        .reset_index()
+    )
+    summary["ambiguity_support_share"] = np.where(
+        total_support > 0,
+        summary["ambiguity_support"] / total_support,
+        0.0,
+    )
+    return summary.sort_values("ambiguity_tag").reset_index(drop=True)
+
+
+def build_ambiguity_taxonomy() -> pd.DataFrame:
+    """Return a fixed ambiguity taxonomy for interpretation guidance."""
+    return pd.DataFrame(AMBIGUITY_TAXONOMY_ROWS)
+
+
+def build_method_manifest() -> Dict[str, Any]:
+    """Return a compact method manifest for downstream interpretation."""
+    return {
+        "method_name": "network_physical_diversity_auditing",
+        "claim_boundary": "candidate_support_not_ground_truth_cable_attribution",
+        "main_question": (
+            "Given observed network-layer diversity, does that diversity remain present in the physical-candidate space?"
+        ),
+        "evidence_cores": [
+            "Geo-spatial Core",
+            "AS-economic Core",
+            "RTT/Physical Feasibility Core",
+        ],
+        "fusion_model": "dual_core_candidate_support_with_rtt_feasibility",
+        "primary_target_quadrant": TARGET_MISMATCH_CATEGORY,
+        "physical_levels": ["cable", "corridor"],
+        "ambiguity_classes": list(KNOWN_AMBIGUITY_TAGS),
+        "interpretation": (
+            "Candidate support is an evidence score for physical-candidate support consistency, not a ground-truth cable attribution."
+        ),
+    }
 
 
 def scale_series(values: Sequence[float], low: float, high: float) -> List[float]:
@@ -726,23 +1000,29 @@ def main() -> None:
     if candidate_frame.empty:
         raise ValueError("No candidate rows were found in the input output JSON.")
 
+    candidate_frame = ensure_corridor_columns(candidate_frame)
+
     trace_output = os.path.join(args.output, "trace_candidate_support.csv")
     candidate_frame.to_csv(trace_output, index=False, encoding="utf-8-sig")
 
     cable_physical = build_unit_physical_candidate_diversity(candidate_frame, "cable_id", "cable")
-    corridor_physical = build_unit_physical_candidate_diversity(candidate_frame, "segment", "corridor")
+    corridor_physical = build_unit_physical_candidate_diversity(candidate_frame, "corridor_id_fallback", "corridor")
     network_frame = build_unit_network_layer_diversity(candidate_frame)
     cable_mismatch = build_unit_network_physical_mismatch(network_frame, cable_physical, "cable")
     corridor_mismatch = build_unit_network_physical_mismatch(network_frame, corridor_physical, "corridor")
     cable_quadrants = build_quadrant_summary(cable_mismatch, "cable")
     corridor_quadrants = build_quadrant_summary(corridor_mismatch, "corridor")
     quadrant_summary = pd.concat([cable_quadrants, corridor_quadrants], ignore_index=True)
+    unit_ambiguity_profile = build_unit_ambiguity_profile(candidate_frame)
+    ambiguity_summary = build_ambiguity_summary(candidate_frame)
+    ambiguity_taxonomy = build_ambiguity_taxonomy()
     cable_corridor_comparison = build_cable_corridor_comparison(
         cable_physical,
         corridor_physical,
         cable_mismatch,
         corridor_mismatch,
     )
+    method_manifest = build_method_manifest()
     summary_frame = build_dataset_summary(
         candidate_frame,
         cable_physical,
@@ -763,6 +1043,10 @@ def main() -> None:
     legacy_mismatch_path = os.path.join(args.output, "unit_mismatch.csv")
     quadrant_summary_path = os.path.join(args.output, "network_physical_quadrants.csv")
     cable_corridor_path = os.path.join(args.output, "cable_vs_corridor_physical_diversity.csv")
+    unit_ambiguity_profile_path = os.path.join(args.output, "unit_ambiguity_profile.csv")
+    ambiguity_summary_path = os.path.join(args.output, "ambiguity_summary.csv")
+    ambiguity_taxonomy_path = os.path.join(args.output, "ambiguity_taxonomy.csv")
+    method_manifest_path = os.path.join(args.output, "method_manifest.json")
     summary_path = os.path.join(args.output, "dataset_summary.csv")
 
     cable_physical.to_csv(cable_physical_path, index=False, encoding="utf-8-sig")
@@ -775,7 +1059,12 @@ def main() -> None:
     cable_mismatch.to_csv(legacy_mismatch_path, index=False, encoding="utf-8-sig")
     quadrant_summary.to_csv(quadrant_summary_path, index=False, encoding="utf-8-sig")
     cable_corridor_comparison.to_csv(cable_corridor_path, index=False, encoding="utf-8-sig")
+    unit_ambiguity_profile.to_csv(unit_ambiguity_profile_path, index=False, encoding="utf-8-sig")
+    ambiguity_summary.to_csv(ambiguity_summary_path, index=False, encoding="utf-8-sig")
+    ambiguity_taxonomy.to_csv(ambiguity_taxonomy_path, index=False, encoding="utf-8-sig")
     summary_frame.to_csv(summary_path, index=False, encoding="utf-8-sig")
+    with open(method_manifest_path, "w", encoding="utf-8") as handle:
+        json.dump(method_manifest, handle, indent=2, ensure_ascii=False)
 
     write_quadrant_scatter_svg(
         cable_mismatch,
@@ -809,6 +1098,10 @@ def main() -> None:
     print(f"Saved network-physical mismatch table to {cable_mismatch_path}")
     print(f"Saved corridor-level mismatch table to {corridor_mismatch_path}")
     print(f"Saved cable-vs-corridor comparison table to {cable_corridor_path}")
+    print(f"Saved unit ambiguity profile to {unit_ambiguity_profile_path}")
+    print(f"Saved ambiguity summary to {ambiguity_summary_path}")
+    print(f"Saved ambiguity taxonomy to {ambiguity_taxonomy_path}")
+    print(f"Saved method manifest to {method_manifest_path}")
     print(f"Saved quadrant summary table to {quadrant_summary_path}")
     print(f"Saved dataset summary table to {summary_path}")
 
