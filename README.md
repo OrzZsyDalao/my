@@ -439,6 +439,7 @@ Flattened candidate-level table derived from `cable_matching_output.json`. It co
 | `corridor_id_fallback`, `parallel_group_id_fallback` | Graceful fallback identifiers used when explicit corridor fields are missing |
 | `physical_candidate_group_id`, `physical_candidate_group_type`, `physical_candidate_group_id_fallback` | SRLG-like physical grouping columns retained for corridor / bundle analysis |
 | `link_physical_projection_class` | Link-level projection class used by downstream mismatch and robustness analysis |
+| `projection_class` | Projection-quality label: `strong`, `moderate`, `weak`, or `ambiguous` |
 
 #### `output/result/unit_physical_candidate_diversity_cable.csv`
 #### `output/result/unit_physical_candidate_diversity_corridor.csv`
@@ -457,10 +458,28 @@ Physical-candidate diversity tables. The legacy file `unit_physical_candidate_di
 | `effective_num_candidates` | `exp(entropy)` |
 | `gini_candidate_support` | Gini coefficient over candidate shares |
 | `num_candidates_with_support` | Number of candidates with non-zero support |
+| `feasible_candidate_count` | Number of distinct feasible candidates retained for the unit |
+| `candidate_entropy_uniform` | Uniform entropy over the feasible candidate set, ignoring support weights |
+| `effective_candidate_count_uniform` | Uniform effective candidate count, equal to the feasible-set size |
 | `num_matched_links` | Number of matched links in the unit |
 | `num_probes` | Number of probes represented in the unit |
 | `physical_candidate_diversity_score` | Primary physical diversity score, currently `effective_num_candidates` |
 | `candidate_identifier_column` | Column actually used for aggregation, such as `cable_id`, `corridor_id`, or `segment` |
+
+#### `output/result/unit_physical_candidate_upper_bound.csv`
+
+Conservative upper-bound physical diversity derived only from feasible candidate-set size, without candidate weights.
+
+| Column | Meaning |
+| --- | --- |
+| `unit_id` | Aggregation unit |
+| `num_feasible_candidates` | Distinct feasible cable candidates in the unit |
+| `num_feasible_corridors` | Distinct feasible corridors in the unit |
+| `candidate_entropy_uniform` | Uniform entropy over feasible cable candidates |
+| `corridor_entropy_uniform` | Uniform entropy over feasible corridors |
+| `effective_candidate_count_uniform` | Uniform effective cable count |
+| `effective_corridor_count_uniform` | Uniform effective corridor count |
+| `physical_candidate_diversity_upper_bound` | Conservative upper-bound physical diversity score, currently the feasible cable-count view |
 
 #### `output/result/unit_network_layer_diversity.csv`
 #### `output/result/unit_logical_diversity.csv`
@@ -512,6 +531,23 @@ These files contain all unit-level network-layer columns plus all physical-diver
 | `mismatch_category` | Legacy alias of `network_physical_mismatch_category` |
 | `is_target_quadrant` | Whether the unit is in `network_high_physical_low` |
 
+#### `output/result/unit_network_physical_upper_bound_mismatch.csv`
+
+Mismatch table that compares network diversity against the conservative feasible candidate-space upper bound instead of the weighted candidate-support view.
+
+| Column | Meaning |
+| --- | --- |
+| `unit_id` | Aggregation unit |
+| `network_diversity_combined` | Composite network-layer diversity score |
+| `network_diversity_as_only` | AS-only network diversity score |
+| `network_diversity_country_only` | Country-only network diversity score |
+| `network_diversity_target_probe` | Probe/target multiplicity score |
+| `physical_candidate_diversity_upper_bound` | Conservative upper-bound physical diversity score |
+| `network_percentile` | Percentile position of the combined network diversity score |
+| `physical_upper_percentile` | Percentile position of the physical upper-bound score |
+| `rank_gap_upper_bound` | Rank-gap mismatch between upper-bound physical diversity and network diversity |
+| `strict_upper_bound_mismatch` | Whether the unit is high in network diversity but low even under the conservative physical upper bound |
+
 #### `output/result/network_physical_quadrants.csv`
 
 | Column | Meaning |
@@ -533,6 +569,35 @@ Compares cable-level and corridor-level physical diversity for each unit.
 | `corridor_vs_cable_effective_num_ratio` | Effective number ratio |
 | `target_quadrant_preserved` | Whether the unit stays in the target quadrant at both levels |
 | `quadrant_label_stable` | Whether cable-level and corridor-level quadrant labels agree |
+
+#### `output/result/candidate_space_profile.csv`
+
+Profiles how broad and ambiguous the feasible candidate space remains for each unit.
+
+| Column | Meaning |
+| --- | --- |
+| `unit_id` | Aggregation unit |
+| `avg_candidates_per_link`, `max_candidates_per_link` | Average / maximum number of feasible cable candidates per link |
+| `avg_corridors_per_link`, `max_corridors_per_link` | Average / maximum number of feasible corridors per link |
+| `share_parallel_ambiguity` | Share of links carrying parallel-corridor ambiguity |
+| `share_multi_segment_possible` | Share of links tagged as potentially multi-segment |
+| `share_domestic_submarine` | Share of links tagged as domestic submarine candidates |
+| `share_large_radius` | Share of links with large landing-radius ambiguity |
+| `share_low_confidence_projection` | Share of links whose `projection_class` is `weak` or `ambiguous` |
+
+#### `output/result/weighted_vs_conservative_diversity.csv`
+
+Corridor-first comparison between weighted diversity and uniform feasible-set diversity.
+
+| Column | Meaning |
+| --- | --- |
+| `unit_id` | Aggregation unit |
+| `weighted_effective_corridors` | Corridor-level effective diversity using weighted candidate support |
+| `uniform_effective_corridors` | Corridor-level effective diversity using the uniform feasible corridor set |
+| `weighted_entropy` | Weighted corridor entropy |
+| `uniform_entropy` | Uniform corridor entropy |
+| `weighted_rank`, `uniform_rank` | Unit ranks under the weighted and uniform corridor views |
+| `weighted_gap`, `uniform_gap` | Gap between network diversity and the weighted / uniform corridor diversity view |
 
 #### `output/result/unit_ambiguity_profile.csv`
 
@@ -715,6 +780,25 @@ Paper-facing robustness table.
 | `target_quadrant_recall` | Recall of target-quadrant units relative to baseline |
 | `quadrant_agreement_rate` | Overall quadrant-label agreement |
 | `interpretation` | Human-readable description of the robustness setting |
+
+#### `output/result/robustness_candidate_space.csv`
+
+Candidate-space robustness table comparing weighted vs uniform diversity, cable vs corridor aggregation, and all links vs strong projections only.
+
+| Column | Meaning |
+| --- | --- |
+| `network_definition` | Network diversity definition used in the comparison |
+| `setting` | Robustness setting label |
+| `weighting_view` | `weighted` or `uniform` feasible-set physical diversity |
+| `physical_level` | `cable` or `corridor` |
+| `physical_projection_setting` | Cable-candidate or corridor-grouped physical projection setting |
+| `projection_subset` | Whether the view uses all projections or only `strong` projections |
+| `num_units_compared` | Number of units compared under the setting |
+| `rank_corr_physical_diversity` | Spearman correlation of physical-diversity rankings relative to the corridor-weighted baseline |
+| `target_quadrant_jaccard` | Jaccard overlap of `network_high_physical_low` units relative to the corridor-weighted baseline |
+| `target_quadrant_recall` | Recall of target-quadrant units relative to the corridor-weighted baseline |
+| `quadrant_agreement_rate` | Overall quadrant agreement rate relative to the corridor-weighted baseline |
+| `baseline_setting` | Baseline used for the comparison, currently `weighted_all_corridor` |
 
 #### `output/result/robustness_network_high_physical_low_stability.svg`
 

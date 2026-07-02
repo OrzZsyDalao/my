@@ -732,3 +732,93 @@ evidence core 一致性统计。
 - 默认共享主线是 `origin/main`。
 - 运行时数据文件仍然是本地输入；代码与文档通过 Git 跟踪。
 - 面向 Codex/agent 的协作规则见 `AGENTS.md`。
+
+## 本轮新增内容补充
+
+### 新增字段
+
+#### `trace_candidate_support.csv` 补充字段
+
+| 字段 | 含义 |
+| --- | --- |
+| `projection_class` | 投影质量分级：`strong`、`moderate`、`weak`、`ambiguous` |
+
+#### `unit_physical_candidate_diversity_cable.csv` / `unit_physical_candidate_diversity_corridor.csv` 补充字段
+
+| 字段 | 含义 |
+| --- | --- |
+| `feasible_candidate_count` | 该聚合层级下可行候选集合大小 |
+| `candidate_entropy_uniform` | 忽略 support 权重、将可行候选视为均匀分布时的熵 |
+| `effective_candidate_count_uniform` | 均匀可行候选集合对应的等效候选数 |
+
+### 新增输出文件
+
+#### `output/result/unit_physical_candidate_upper_bound.csv`
+
+| 字段 | 含义 |
+| --- | --- |
+| `unit_id` | 聚合单元 |
+| `num_feasible_candidates` | 不同可行 cable 候选数量 |
+| `num_feasible_corridors` | 不同可行 corridor 数量 |
+| `candidate_entropy_uniform` | cable 候选集合的均匀熵 |
+| `corridor_entropy_uniform` | corridor 集合的均匀熵 |
+| `effective_candidate_count_uniform` | 均匀 cable 等效候选数 |
+| `effective_corridor_count_uniform` | 均匀 corridor 等效候选数 |
+| `physical_candidate_diversity_upper_bound` | 保守物理多样性上界分数，当前采用可行 cable 数视角 |
+
+#### `output/result/unit_network_physical_upper_bound_mismatch.csv`
+
+| 字段 | 含义 |
+| --- | --- |
+| `unit_id` | 聚合单元 |
+| `network_diversity_combined` | 组合 network-layer diversity 分数 |
+| `network_diversity_as_only` | AS-only network diversity 分数 |
+| `network_diversity_country_only` | country-only network diversity 分数 |
+| `network_diversity_target_probe` | probe/target multiplicity 分数 |
+| `physical_candidate_diversity_upper_bound` | 保守物理多样性上界分数 |
+| `network_percentile` | 组合 network diversity 的百分位 |
+| `physical_upper_percentile` | 物理上界分数的百分位 |
+| `rank_gap_upper_bound` | 物理上界与 network diversity 的 rank-gap |
+| `strict_upper_bound_mismatch` | 即使在保守物理上界下仍然是 “network 高、physical 低” 的单元 |
+
+#### `output/result/candidate_space_profile.csv`
+
+| 字段 | 含义 |
+| --- | --- |
+| `unit_id` | 聚合单元 |
+| `avg_candidates_per_link`, `max_candidates_per_link` | 每条 link 的平均 / 最大可行 cable 候选数 |
+| `avg_corridors_per_link`, `max_corridors_per_link` | 每条 link 的平均 / 最大可行 corridor 数 |
+| `share_parallel_ambiguity` | 含平行走廊歧义的 link 占比 |
+| `share_multi_segment_possible` | 含多段可能性的 link 占比 |
+| `share_domestic_submarine` | 含 domestic submarine candidate 的 link 占比 |
+| `share_large_radius` | 含 large landing-radius 歧义的 link 占比 |
+| `share_low_confidence_projection` | `projection_class` 为 `weak` 或 `ambiguous` 的 link 占比 |
+
+#### `output/result/weighted_vs_conservative_diversity.csv`
+
+| 字段 | 含义 |
+| --- | --- |
+| `unit_id` | 聚合单元 |
+| `weighted_effective_corridors` | 基于 weighted candidate support 的 corridor 等效多样性 |
+| `uniform_effective_corridors` | 基于均匀可行 corridor 集合的等效多样性 |
+| `weighted_entropy` | weighted corridor 熵 |
+| `uniform_entropy` | uniform corridor 熵 |
+| `weighted_rank`, `uniform_rank` | weighted / uniform corridor 视图下的 unit 排名 |
+| `weighted_gap`, `uniform_gap` | network diversity 与 weighted / uniform corridor 多样性之间的差值 |
+
+#### `output/result/robustness_candidate_space.csv`
+
+| 字段 | 含义 |
+| --- | --- |
+| `network_definition` | 本次比较使用的 network diversity 定义 |
+| `setting` | robustness setting 名称 |
+| `weighting_view` | `weighted` 或 `uniform` 物理多样性视图 |
+| `physical_level` | `cable` 或 `corridor` |
+| `physical_projection_setting` | 直接 cable 候选或 corridor-grouped 候选 |
+| `projection_subset` | 使用全部投影还是仅使用 `strong` 投影 |
+| `num_units_compared` | 参与比较的 unit 数量 |
+| `rank_corr_physical_diversity` | 相对 corridor-weighted baseline 的物理多样性排名相关 |
+| `target_quadrant_jaccard` | 相对 corridor-weighted baseline 的目标象限 Jaccard 重合度 |
+| `target_quadrant_recall` | 相对 corridor-weighted baseline 的目标象限召回率 |
+| `quadrant_agreement_rate` | 相对 corridor-weighted baseline 的整体象限一致率 |
+| `baseline_setting` | 当前 baseline，现为 `weighted_all_corridor` |

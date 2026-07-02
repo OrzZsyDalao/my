@@ -12,7 +12,9 @@ try:
         build_quadrant_summary,
         build_unit_network_layer_diversity,
         build_unit_network_physical_mismatch,
+        build_unit_physical_feasible_set_diversity,
         build_unit_physical_candidate_diversity,
+        annotate_projection_quality,
         ensure_corridor_columns,
         resolve_corridor_candidate_column,
     )
@@ -29,7 +31,9 @@ except ModuleNotFoundError:
         build_quadrant_summary,
         build_unit_network_layer_diversity,
         build_unit_network_physical_mismatch,
+        build_unit_physical_feasible_set_diversity,
         build_unit_physical_candidate_diversity,
+        annotate_projection_quality,
         ensure_corridor_columns,
         resolve_corridor_candidate_column,
     )
@@ -170,6 +174,36 @@ def build_mode_result(
     }
 
 
+def build_candidate_space_mode_result(
+    mode_name: str,
+    physical_frame: pd.DataFrame,
+    physical_level: str,
+    network_frame: pd.DataFrame,
+    network_definition: str,
+    network_score_column: str,
+) -> Dict[str, pd.DataFrame]:
+    """Build mismatch output for a precomputed weighted or uniform physical-diversity view."""
+    if physical_frame.empty:
+        mismatch = pd.DataFrame()
+    else:
+        mismatch = build_unit_network_physical_mismatch(
+            network_frame,
+            physical_frame,
+            physical_level,
+            network_score_column=network_score_column,
+            network_definition=network_definition,
+        )
+        mismatch["mode"] = mode_name
+    return {
+        "mode": mode_name,
+        "physical_level": physical_level,
+        "network_definition": network_definition,
+        "network_score_column": network_score_column,
+        "physical": physical_frame.copy(),
+        "mismatch": mismatch,
+    }
+
+
 def target_unit_set(mismatch_frame: pd.DataFrame) -> Set[str]:
     """Return the set of units in the target mismatch quadrant."""
     if mismatch_frame.empty:
@@ -184,6 +218,11 @@ def target_unit_set(mismatch_frame: pd.DataFrame) -> Set[str]:
 
 def quadrant_agreement_rate(baseline: pd.DataFrame, candidate: pd.DataFrame) -> float:
     """Compute the fraction of units with the same quadrant label."""
+    required_columns = {"unit_id", "network_physical_mismatch_category"}
+    if baseline.empty or candidate.empty:
+        return 0.0
+    if not required_columns.issubset(baseline.columns) or not required_columns.issubset(candidate.columns):
+        return 0.0
     merged = baseline[["unit_id", "network_physical_mismatch_category"]].merge(
         candidate[["unit_id", "network_physical_mismatch_category"]],
         on="unit_id",
@@ -210,6 +249,10 @@ def infer_evidence_view(setting: str) -> str:
         return "high_confidence_subset"
     if setting.startswith("fused_dual_core"):
         return "fused_dual_core"
+    if setting.startswith("weighted"):
+        return "weighted"
+    if setting.startswith("uniform"):
+        return "uniform"
     return "custom"
 
 
@@ -218,6 +261,13 @@ def infer_physical_projection_setting(setting: str, physical_level: str) -> str:
     if str(physical_level) == "corridor" or setting.endswith("_corridor"):
         return "corridor_grouped_candidates"
     return "cable_candidates"
+
+
+def infer_projection_subset(setting: str) -> str:
+    """Map a setting to an all-links vs strong-projection subset label."""
+    if "_strong_" in setting or setting.endswith("_strong") or "strong_projection" in setting:
+        return "strong_only"
+    return "all_projections"
 
 
 def build_robustness_interpretation(row: pd.Series) -> str:
@@ -257,6 +307,7 @@ def main() -> None:
     frame["as_economic_score"] = frame["as_economic_score"].fillna(0.0)
     frame["normalized_candidate_support"] = frame["normalized_candidate_support"].fillna(0.0)
     frame = ensure_corridor_columns(frame)
+    frame = annotate_projection_quality(frame)
     corridor_candidate_col = resolve_corridor_candidate_column(frame)
 
     network_frame = build_unit_network_layer_diversity(frame)
@@ -265,6 +316,7 @@ def main() -> None:
     high_conf_frame = frame[
         (frame["confidence_bucket"] == "high") | (frame["core_agreement"] == "dual_core_agreement")
     ].copy()
+    strong_projection_frame = frame[frame["projection_class"].astype(str) == "strong"].copy()
 
     mode_specs = [
         ("fused_dual_core_cable", frame, "normalized_candidate_support", "cable_id", "cable"),
@@ -292,6 +344,7 @@ def main() -> None:
     robustness_rows: List[Dict[str, float]] = []
     stability_rows: List[Dict[str, float]] = []
     quadrant_summaries: List[pd.DataFrame] = []
+    candidate_space_rows: List[Dict[str, float]] = []
     for network_definition, network_score_column in NETWORK_DEFINITION_COLUMNS.items():
         mode_results = [
             build_mode_result(
@@ -375,6 +428,116 @@ def main() -> None:
                 }
             )
 
+        candidate_space_specs = [
+            (
+                "weighted_all_cable",
+                build_unit_physical_candidate_diversity(frame, "cable_id", "cable"),
+                "cable",
+            ),
+            (
+                "weighted_all_corridor",
+                build_unit_physical_candidate_diversity(frame, corridor_candidate_col, "corridor"),
+                "corridor",
+            ),
+            (
+                "uniform_all_cable",
+                build_unit_physical_feasible_set_diversity(frame, "cable_id", "cable"),
+                "cable",
+            ),
+            (
+                "uniform_all_corridor",
+                build_unit_physical_feasible_set_diversity(frame, corridor_candidate_col, "corridor"),
+                "corridor",
+            ),
+            (
+                "weighted_strong_projection_cable",
+                build_unit_physical_candidate_diversity(
+                    strong_projection_frame if not strong_projection_frame.empty else frame.iloc[0:0],
+                    "cable_id",
+                    "cable",
+                ),
+                "cable",
+            ),
+            (
+                "weighted_strong_projection_corridor",
+                build_unit_physical_candidate_diversity(
+                    strong_projection_frame if not strong_projection_frame.empty else frame.iloc[0:0],
+                    corridor_candidate_col,
+                    "corridor",
+                ),
+                "corridor",
+            ),
+            (
+                "uniform_strong_projection_cable",
+                build_unit_physical_feasible_set_diversity(
+                    strong_projection_frame if not strong_projection_frame.empty else frame.iloc[0:0],
+                    "cable_id",
+                    "cable",
+                ),
+                "cable",
+            ),
+            (
+                "uniform_strong_projection_corridor",
+                build_unit_physical_feasible_set_diversity(
+                    strong_projection_frame if not strong_projection_frame.empty else frame.iloc[0:0],
+                    corridor_candidate_col,
+                    "corridor",
+                ),
+                "corridor",
+            ),
+        ]
+        candidate_space_results = [
+            build_candidate_space_mode_result(
+                mode_name=mode_name,
+                physical_frame=physical_frame,
+                physical_level=physical_level,
+                network_frame=network_frame,
+                network_definition=network_definition,
+                network_score_column=network_score_column,
+            )
+            for mode_name, physical_frame, physical_level in candidate_space_specs
+        ]
+        candidate_space_baseline = next(result for result in candidate_space_results if result["mode"] == "weighted_all_corridor")
+        baseline_physical_candidate_space = candidate_space_baseline["physical"]
+        baseline_mismatch_candidate_space = candidate_space_baseline["mismatch"]
+        baseline_target_candidate_space = target_unit_set(baseline_mismatch_candidate_space)
+
+        for result in candidate_space_results:
+            physical = result["physical"]
+            mismatch = result["mismatch"]
+            merged = baseline_physical_candidate_space.merge(
+                physical,
+                on="unit_id",
+                suffixes=("_baseline", "_mode"),
+                how="inner",
+            )
+            mode_target = target_unit_set(mismatch)
+            intersection = baseline_target_candidate_space & mode_target
+            union = baseline_target_candidate_space | mode_target
+            if merged.empty:
+                rank_corr = 0.0
+            else:
+                rank_corr = spearman_corr(
+                    merged["physical_candidate_diversity_score_baseline"],
+                    merged["physical_candidate_diversity_score_mode"],
+                )
+            candidate_space_rows.append(
+                {
+                    "network_definition": network_definition,
+                    "setting": str(result["mode"]),
+                    "weighting_view": "uniform" if str(result["mode"]).startswith("uniform") else "weighted",
+                    "physical_level": str(result["physical_level"]),
+                    "physical_projection_setting": infer_physical_projection_setting(str(result["mode"]), str(result["physical_level"])),
+                    "projection_subset": infer_projection_subset(str(result["mode"])),
+                    "num_units_compared": int(len(mismatch)),
+                    "rank_corr_physical_diversity": rank_corr,
+                    "target_quadrant_jaccard": float(len(intersection) / len(union)) if union else 1.0,
+                    "target_quadrant_recall": float(len(intersection) / len(baseline_target_candidate_space)) if baseline_target_candidate_space else 0.0,
+                    "quadrant_agreement_rate": quadrant_agreement_rate(baseline_mismatch_candidate_space, mismatch),
+                    "baseline_setting": "weighted_all_corridor",
+                }
+            )
+
     robustness_summary = pd.DataFrame(robustness_rows).sort_values(["network_definition", "physical_level", "mode"])
     mismatch_stability = pd.DataFrame(stability_rows).sort_values(["network_definition", "physical_level", "mode"])
     quadrant_summary_frame = pd.concat(quadrant_summaries, ignore_index=True) if quadrant_summaries else pd.DataFrame()
@@ -430,11 +593,16 @@ def main() -> None:
     mismatch_stability_path = os.path.join(args.output, "robustness_mismatch_stability.csv")
     quadrant_summary_path = os.path.join(args.output, "robustness_quadrant_summary.csv")
     robustness_profile_path = os.path.join(args.output, "robustness_profile_table.csv")
+    candidate_space_path = os.path.join(args.output, "robustness_candidate_space.csv")
+    candidate_space_frame = pd.DataFrame(candidate_space_rows).sort_values(
+        ["network_definition", "projection_subset", "physical_level", "setting"]
+    )
 
     robustness_summary.to_csv(robustness_summary_path, index=False, encoding="utf-8-sig")
     mismatch_stability.to_csv(mismatch_stability_path, index=False, encoding="utf-8-sig")
     quadrant_summary_frame.to_csv(quadrant_summary_path, index=False, encoding="utf-8-sig")
     robustness_profile_table.to_csv(robustness_profile_path, index=False, encoding="utf-8-sig")
+    candidate_space_frame.to_csv(candidate_space_path, index=False, encoding="utf-8-sig")
 
     chart_source = mismatch_stability[mismatch_stability["network_definition"] == "composite"].copy()
     if chart_source.empty:
@@ -450,6 +618,7 @@ def main() -> None:
     print(f"Saved mismatch stability summary to {mismatch_stability_path}")
     print(f"Saved robustness quadrant summary to {quadrant_summary_path}")
     print(f"Saved robustness profile table to {robustness_profile_path}")
+    print(f"Saved candidate-space robustness table to {candidate_space_path}")
 
 
 if __name__ == "__main__":

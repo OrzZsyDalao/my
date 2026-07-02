@@ -918,6 +918,54 @@ class CableMatcher:
             return "multi_corridor_projection"
         return "mixed_or_unknown_projection"
 
+    def classify_projection_quality(
+        self,
+        candidates: List[Dict[str, Any]],
+        confidence_bucket: str,
+        link_physical_projection_class: str,
+        top1_top2_gap: float,
+    ) -> str:
+        """Classify projection quality without forcing deterministic physical attribution."""
+        if not candidates:
+            return "ambiguous"
+
+        candidate_count = len(candidates)
+        has_parallel = any(
+            bool(candidate.get("is_parallel_ambiguous"))
+            or int(candidate.get("parallel_group_size", 0) or 0) > 1
+            or "parallel_candidate_corridor" in candidate.get("ambiguity_tags", [])
+            for candidate in candidates
+        )
+        has_many_candidates = any("many_candidates" in candidate.get("ambiguity_tags", []) for candidate in candidates) or candidate_count > 4
+        has_large_radius = any(
+            max(float(candidate.get("d_in", 0.0) or 0.0), float(candidate.get("d_out", 0.0) or 0.0)) > 80.0
+            for candidate in candidates
+        )
+        min_rtt_margin = min(float(candidate.get("rtt_margin_ms", 0.0) or 0.0) for candidate in candidates)
+        has_dual_core = any(candidate.get("core_agreement") == "dual_core_agreement" for candidate in candidates)
+
+        if (
+            candidate_count == 1
+            and confidence_bucket == "high"
+            and top1_top2_gap >= self.HIGH_GAP_THRESHOLD
+            and not has_parallel
+            and link_physical_projection_class == "single_cable_single_corridor"
+            and not has_large_radius
+            and min_rtt_margin >= 5.0
+            and has_dual_core
+        ):
+            return "strong"
+        if (
+            candidate_count <= 2
+            and confidence_bucket in {"high", "medium"}
+            and not has_many_candidates
+            and link_physical_projection_class not in {"multi_corridor_projection", "mixed_or_unknown_projection"}
+        ):
+            return "moderate"
+        if has_parallel or has_many_candidates or link_physical_projection_class == "multi_corridor_projection" or confidence_bucket == "ambiguous":
+            return "ambiguous"
+        return "weak"
+
     def _link_info_summary(self, filtered_candidates: List[Dict[str, Any]]) -> None:
         if not filtered_candidates:
             return
@@ -964,6 +1012,7 @@ class CableMatcher:
                     "core_agreement_summary": {"dominant_core_agreement": "none"},
                     "ambiguity_summary": {"tags_present": [], "tag_counts": {}, "num_ambiguous_candidates": 0},
                     "link_physical_projection_class": "no_physical_candidate",
+                    "projection_class": "ambiguous",
                     "top1_score": 0.0,
                     "top2_score": 0.0,
                 },
@@ -1142,6 +1191,7 @@ class CableMatcher:
                     "core_agreement_summary": {"dominant_core_agreement": "none"},
                     "ambiguity_summary": {"tags_present": [], "tag_counts": {}, "num_ambiguous_candidates": 0},
                     "link_physical_projection_class": "no_physical_candidate",
+                    "projection_class": "ambiguous",
                     "top1_score": 0.0,
                     "top2_score": 0.0,
                 },
@@ -1196,9 +1246,16 @@ class CableMatcher:
         core_agreement_summary = self.build_core_agreement_summary(filtered_candidates)
         ambiguity_summary = self.build_ambiguity_summary(filtered_candidates)
         link_physical_projection_class = self.classify_link_physical_projection(filtered_candidates)
+        projection_class = self.classify_projection_quality(
+            filtered_candidates,
+            confidence_bucket=bucket,
+            link_physical_projection_class=link_physical_projection_class,
+            top1_top2_gap=gap,
+        )
 
         for candidate in filtered_candidates:
             candidate["link_physical_projection_class"] = link_physical_projection_class
+            candidate["projection_class"] = projection_class
 
         return {
             "all_segments": filtered_candidates,
@@ -1214,6 +1271,7 @@ class CableMatcher:
                 "core_agreement_summary": core_agreement_summary,
                 "ambiguity_summary": ambiguity_summary,
                 "link_physical_projection_class": link_physical_projection_class,
+                "projection_class": projection_class,
                 "top1_score": float(top1),  # deprecated compatibility
                 "top2_score": float(top2),  # deprecated compatibility
             },
