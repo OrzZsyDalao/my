@@ -53,6 +53,51 @@ KNOWN_AMBIGUITY_TAGS = [
     "multi_segment_possible",
 ]
 PROJECTION_QUALITY_CLASSES = ["strong", "moderate", "weak", "ambiguous"]
+ABSOLUTE_COMPRESSION_TIER_ORDER = [
+    "no_compression",
+    "weak_compression",
+    "moderate_compression",
+    "severe_compression",
+]
+PRIMARY_CROSS_LAYER_COLUMNS = [
+    "unit_id",
+    "src_country",
+    "service_id",
+    "msm_id",
+    "file_name",
+    "num_measurements",
+    "num_probes",
+    "num_probe_asns",
+    "num_files_or_targets",
+    "num_egress_links",
+    "num_egress_asns",
+    "num_next_asns_after_egress",
+    "num_egress_transitions",
+    "egress_transition_entropy",
+    "effective_egress_transitions",
+    "num_src_dst_as_pairs",
+    "src_dst_as_pair_entropy",
+    "effective_as_pair_transitions",
+    "network_effective_diversity",
+    "physical_level",
+    "num_feasible_candidates",
+    "num_feasible_corridors",
+    "effective_feasible_candidates",
+    "effective_feasible_corridors",
+    "physical_candidate_diversity_upper_bound",
+    "network_to_physical_compression_ratio",
+    "log_network_physical_compression_gap",
+    "physical_coverage_ratio",
+    "absolute_compression_tier",
+    "network_percentile",
+    "physical_upper_bound_percentile",
+    "rank_gap_upper_bound",
+    "strict_upper_bound_mismatch_75_25",
+    "upper_bound_mismatch_category",
+    "pdb_interconnection_footprint_score",
+    "pdb_interconnection_footprint_percentile",
+    "pdb_interconnection_footprint_tier",
+]
 AMBIGUITY_TAXONOMY_ROWS = [
     {
         "ambiguity_class": "parallel_candidate_corridor",
@@ -164,6 +209,24 @@ def dominant_non_missing_value(series: pd.Series, default: str = "NA") -> str:
     return str(modes.iloc[0])
 
 
+def summarize_identifier_value(series: pd.Series, default: str = "NA") -> str:
+    """Return a stable identifier summary for grouped outputs."""
+    if series.empty:
+        return default
+    values = (
+        series.fillna("")
+        .astype(str)
+        .str.strip()
+    )
+    values = values[(values != "") & (values.str.lower() != "nan") & (values != "NA")]
+    if values.empty:
+        return default
+    unique_values = pd.Index(values.unique().tolist())
+    if len(unique_values) == 1:
+        return str(unique_values[0])
+    return "MULTI"
+
+
 def normalize_token(value: Any, prefix: str = "") -> str:
     """Normalize identifiers while keeping missing values explicit."""
     if value is None:
@@ -174,6 +237,79 @@ def normalize_token(value: Any, prefix: str = "") -> str:
     if prefix and text.upper().startswith(prefix.upper()):
         return text.upper()
     return text
+
+
+def effective_count_from_entropy(entropy_value: float, category_count: int) -> float:
+    """Convert entropy back to an effective count with a zero-data safeguard."""
+    return float(math.exp(entropy_value)) if category_count > 0 else 0.0
+
+
+def derive_service_id_value(service_value: Any, file_name: Any, msm_id: Any) -> str:
+    """Build a stable service identifier from explicit service_id, file_name, or msm_id."""
+    explicit = normalize_token(service_value)
+    if explicit != "NA":
+        return explicit
+    file_token = normalize_token(file_name)
+    msm_token = normalize_token(msm_id)
+    if file_token != "NA":
+        base_name = os.path.splitext(os.path.basename(file_token))[0]
+        if base_name and base_name.lower() != "nan":
+            return base_name
+    if msm_token != "NA":
+        return f"msm_{msm_token}"
+    return "NA"
+
+
+def attach_service_id(frame: pd.DataFrame) -> pd.DataFrame:
+    """Attach a service_id column using explicit identifiers when available, else file_name/msm_id."""
+    result = frame.copy()
+    existing_service = (
+        "service_id" in result.columns
+        and result["service_id"].fillna("").astype(str).str.strip().ne("").any()
+    )
+    if existing_service:
+        result["service_id"] = result["service_id"].apply(lambda value: normalize_token(value))
+        return result
+
+    file_name_values = (
+        result.get("file_name", pd.Series(index=result.index, dtype=object))
+        .fillna("")
+        .astype(str)
+        .str.strip()
+    )
+    msm_values = (
+        result.get("msm_id", pd.Series(index=result.index, dtype=object))
+        .fillna("")
+        .astype(str)
+        .str.strip()
+    )
+    use_file_name = file_name_values[file_name_values.ne("") & file_name_values.str.lower().ne("nan")].nunique() > 1
+    result["service_id"] = [
+        derive_service_id_value(
+            None,
+            file_value if use_file_name else None,
+            msm_value,
+        )
+        for file_value, msm_value in zip(file_name_values.tolist(), msm_values.tolist())
+    ]
+    return result
+
+
+def normalize_link_level_frame(frame: pd.DataFrame) -> pd.DataFrame:
+    """Prepare a de-duplicated link-level frame with normalized AS and service identifiers."""
+    link_level = frame.drop_duplicates(subset=["link_id"]).copy()
+    link_level = attach_service_id(link_level)
+    link_level["src_country"] = link_level.get("src_country", pd.Series(index=link_level.index, dtype=object)).fillna("NA").astype(str)
+    link_level["dst_country"] = link_level.get("dst_country", pd.Series(index=link_level.index, dtype=object)).fillna("NA").astype(str)
+    link_level["country_pair"] = link_level["src_country"] + "->" + link_level["dst_country"]
+    link_level["src_asn_norm"] = link_level.get("src_asn", pd.Series(index=link_level.index, dtype=object)).apply(
+        lambda value: normalize_token(value, prefix="AS")
+    )
+    link_level["dst_asn_norm"] = link_level.get("dst_asn", pd.Series(index=link_level.index, dtype=object)).apply(
+        lambda value: normalize_token(value, prefix="AS")
+    )
+    link_level["src_dst_as_pair"] = link_level["src_asn_norm"] + "->" + link_level["dst_asn_norm"]
+    return link_level
 
 
 def safe_parse_tags(value: Any) -> List[str]:
@@ -540,6 +676,374 @@ def aggregate_candidate_support(frame: pd.DataFrame, candidate_id_col: str, supp
         lambda values: values / values.sum() if values.sum() > 0 else 0.0
     )
     return aggregated
+
+
+def group_key_to_dict(group_fields: Sequence[str], group_key: Any) -> Dict[str, Any]:
+    """Convert a pandas groupby key into a field-to-value dictionary."""
+    if len(group_fields) == 1:
+        if isinstance(group_key, tuple):
+            values = group_key
+        else:
+            values = (group_key,)
+    else:
+        values = tuple(group_key)
+    return {field: values[index] for index, field in enumerate(group_fields)}
+
+
+def build_group_identifier_frame(frame: pd.DataFrame, group_fields: Sequence[str]) -> pd.DataFrame:
+    """Build stable identifier columns for cross-layer audit outputs."""
+    columns = ["unit_id", "src_country", "service_id", "msm_id", "file_name"]
+    if frame.empty:
+        return pd.DataFrame(columns=columns)
+
+    working = attach_service_id(frame.copy())
+    rows: List[Dict[str, Any]] = []
+    for group_key, group in working.groupby(list(group_fields), dropna=False):
+        row = {column: "NA" for column in columns}
+        row.update(group_key_to_dict(group_fields, group_key))
+        row["unit_id"] = str(row["unit_id"]) if row.get("unit_id", "NA") != "NA" else "NA"
+        row["src_country"] = (
+            str(row["src_country"])
+            if "src_country" in group_fields
+            else summarize_identifier_value(group.get("src_country", pd.Series(dtype=object)))
+        )
+        row["service_id"] = (
+            str(row["service_id"])
+            if "service_id" in group_fields
+            else summarize_identifier_value(group.get("service_id", pd.Series(dtype=object)))
+        )
+        row["msm_id"] = summarize_identifier_value(group.get("msm_id", pd.Series(dtype=object)))
+        row["file_name"] = summarize_identifier_value(group.get("file_name", pd.Series(dtype=object)))
+        rows.append(row)
+    return pd.DataFrame(rows, columns=columns)
+
+
+def build_group_network_metrics(frame: pd.DataFrame, group_fields: Sequence[str]) -> pd.DataFrame:
+    """Compute application-layer richness and network effective diversity for arbitrary groupings."""
+    identifier_columns = ["unit_id", "src_country", "service_id", "msm_id", "file_name"]
+    if frame.empty:
+        return pd.DataFrame(columns=identifier_columns + [
+            "num_measurements",
+            "num_probes",
+            "num_probe_asns",
+            "num_files_or_targets",
+            "num_egress_links",
+            "num_egress_asns",
+            "num_next_asns_after_egress",
+            "num_egress_transitions",
+            "egress_transition_entropy",
+            "effective_egress_transitions",
+            "num_src_dst_as_pairs",
+            "src_dst_as_pair_entropy",
+            "effective_as_pair_transitions",
+            "network_effective_diversity",
+        ])
+
+    link_level = normalize_link_level_frame(frame)
+    identifier_frame = build_group_identifier_frame(link_level, group_fields)
+    rows: List[Dict[str, Any]] = []
+    for group_key, group in link_level.groupby(list(group_fields), dropna=False):
+        row = group_key_to_dict(group_fields, group_key)
+        source_country = (
+            str(row["src_country"])
+            if "src_country" in row
+            else dominant_non_missing_value(group["src_country"], default="NA")
+        )
+        num_measurements = int(group.get("msm_id", pd.Series(index=group.index, dtype=object)).replace("", np.nan).dropna().nunique())
+        num_probes = int(group.get("probe_id", pd.Series(index=group.index, dtype=object)).replace("", np.nan).dropna().nunique())
+        num_probe_asns = int(group["src_asn_norm"].replace("NA", np.nan).dropna().nunique())
+        num_files_or_targets = int(group.get("file_name", pd.Series(index=group.index, dtype=object)).replace("", np.nan).dropna().nunique())
+        num_src_dst_as_pairs = int(group["src_dst_as_pair"].replace("NA->NA", np.nan).dropna().nunique())
+        as_pair_entropy = shannon_entropy(group["src_dst_as_pair"].value_counts().tolist())
+        effective_as_pair_transitions = effective_count_from_entropy(as_pair_entropy, num_src_dst_as_pairs)
+
+        egress_group = group[
+            (group["src_country"].astype(str) == source_country)
+            & (group["dst_country"].astype(str) != source_country)
+            & (group["src_asn_norm"].astype(str) != "NA")
+            & (group["dst_asn_norm"].astype(str) != "NA")
+        ].copy()
+        if not egress_group.empty:
+            egress_group["egress_asn"] = egress_group["src_asn_norm"].astype(str)
+            egress_group["next_asn_after_egress"] = egress_group["dst_asn_norm"].astype(str)
+            egress_group["egress_transition"] = egress_group["egress_asn"] + "->" + egress_group["next_asn_after_egress"]
+        num_egress_links = int(len(egress_group))
+        num_egress_asns = int(egress_group["egress_asn"].nunique()) if not egress_group.empty else 0
+        num_next_asns_after_egress = int(egress_group["next_asn_after_egress"].nunique()) if not egress_group.empty else 0
+        num_egress_transitions = int(egress_group["egress_transition"].nunique()) if not egress_group.empty else 0
+        egress_transition_entropy = (
+            shannon_entropy(egress_group["egress_transition"].value_counts().tolist())
+            if not egress_group.empty
+            else 0.0
+        )
+        effective_egress_transitions = (
+            effective_count_from_entropy(egress_transition_entropy, num_egress_transitions)
+            if num_egress_links > 0
+            else 0.0
+        )
+        network_effective_diversity = (
+            effective_egress_transitions
+            if num_egress_links > 0
+            else effective_as_pair_transitions
+        )
+
+        rows.append(
+            {
+                **row,
+                "num_measurements": num_measurements,
+                "num_probes": num_probes,
+                "num_probe_asns": num_probe_asns,
+                "num_files_or_targets": num_files_or_targets,
+                "num_egress_links": num_egress_links,
+                "num_egress_asns": num_egress_asns,
+                "num_next_asns_after_egress": num_next_asns_after_egress,
+                "num_egress_transitions": num_egress_transitions,
+                "egress_transition_entropy": float(egress_transition_entropy),
+                "effective_egress_transitions": float(effective_egress_transitions),
+                "num_src_dst_as_pairs": num_src_dst_as_pairs,
+                "src_dst_as_pair_entropy": float(as_pair_entropy),
+                "effective_as_pair_transitions": float(effective_as_pair_transitions),
+                "network_effective_diversity": float(network_effective_diversity),
+            }
+        )
+
+    result = identifier_frame.merge(pd.DataFrame(rows), on=list(group_fields), how="inner")
+    ordered = identifier_columns + [
+        "num_measurements",
+        "num_probes",
+        "num_probe_asns",
+        "num_files_or_targets",
+        "num_egress_links",
+        "num_egress_asns",
+        "num_next_asns_after_egress",
+        "num_egress_transitions",
+        "egress_transition_entropy",
+        "effective_egress_transitions",
+        "num_src_dst_as_pairs",
+        "src_dst_as_pair_entropy",
+        "effective_as_pair_transitions",
+        "network_effective_diversity",
+    ]
+    return result[ordered]
+
+
+def build_group_physical_metrics(
+    frame: pd.DataFrame,
+    group_fields: Sequence[str],
+    physical_level: str,
+    corridor_candidate_col: str,
+) -> pd.DataFrame:
+    """Compute feasible physical-candidate upper-bound metrics for arbitrary groupings."""
+    identifier_columns = ["unit_id", "src_country", "service_id", "msm_id", "file_name"]
+    columns = identifier_columns + [
+        "physical_level",
+        "num_feasible_candidates",
+        "num_feasible_corridors",
+        "effective_feasible_candidates",
+        "effective_feasible_corridors",
+        "physical_candidate_diversity_upper_bound",
+    ]
+    if frame.empty:
+        return pd.DataFrame(columns=columns)
+
+    working = ensure_corridor_columns(attach_service_id(frame.copy()))
+    identifier_frame = build_group_identifier_frame(working, group_fields)
+    rows: List[Dict[str, Any]] = []
+    for group_key, group in working.groupby(list(group_fields), dropna=False):
+        row = group_key_to_dict(group_fields, group_key)
+        candidate_ids = (
+            group.get("cable_id", pd.Series(index=group.index, dtype=object))
+            .astype(str)
+            .str.strip()
+            .replace({"": np.nan, "nan": np.nan, "NA": np.nan})
+            .dropna()
+            .unique()
+            .tolist()
+        )
+        corridor_ids = (
+            group.get(corridor_candidate_col, pd.Series(index=group.index, dtype=object))
+            .astype(str)
+            .str.strip()
+            .replace({"": np.nan, "nan": np.nan, "NA": np.nan})
+            .dropna()
+            .unique()
+            .tolist()
+        )
+        num_feasible_candidates = int(len(candidate_ids))
+        num_feasible_corridors = int(len(corridor_ids))
+        effective_feasible_candidates = float(num_feasible_candidates)
+        effective_feasible_corridors = float(num_feasible_corridors)
+        physical_candidate_diversity_upper_bound = (
+            effective_feasible_corridors if physical_level == "corridor" else effective_feasible_candidates
+        )
+        rows.append(
+            {
+                **row,
+                "physical_level": physical_level,
+                "num_feasible_candidates": num_feasible_candidates,
+                "num_feasible_corridors": num_feasible_corridors,
+                "effective_feasible_candidates": effective_feasible_candidates,
+                "effective_feasible_corridors": effective_feasible_corridors,
+                "physical_candidate_diversity_upper_bound": float(physical_candidate_diversity_upper_bound),
+            }
+        )
+
+    result = identifier_frame.merge(pd.DataFrame(rows), on=list(group_fields), how="inner")
+    return result[columns]
+
+
+def classify_absolute_compression_tier(log_gap: float) -> str:
+    """Classify the absolute network-to-physical compression magnitude."""
+    if pd.isna(log_gap) or log_gap <= 0:
+        return "no_compression"
+    if log_gap < math.log(2):
+        return "weak_compression"
+    if log_gap < math.log(4):
+        return "moderate_compression"
+    return "severe_compression"
+
+
+def add_cross_layer_relative_metrics(frame: pd.DataFrame) -> pd.DataFrame:
+    """Attach optional relative rank/percentile comparison metrics to a cross-layer audit table."""
+    result = frame.copy()
+    if result.empty:
+        return result
+
+    result["network_percentile"] = np.nan
+    result["physical_upper_bound_percentile"] = np.nan
+    result["rank_gap_upper_bound"] = np.nan
+    result["strict_upper_bound_mismatch_75_25"] = False
+    result["upper_bound_mismatch_category"] = "network_low_physical_upper_high"
+
+    for physical_level, group in result.groupby("physical_level", dropna=False):
+        current = pd.to_numeric(group["network_effective_diversity"], errors="coerce").fillna(0.0)
+        physical = pd.to_numeric(group["physical_candidate_diversity_upper_bound"], errors="coerce").fillna(0.0)
+        result.loc[group.index, "network_percentile"] = current.rank(method="average", pct=True, ascending=True)
+        result.loc[group.index, "physical_upper_bound_percentile"] = physical.rank(method="average", pct=True, ascending=True)
+        network_rank = current.rank(method="dense", ascending=False)
+        physical_rank = physical.rank(method="dense", ascending=False)
+        result.loc[group.index, "rank_gap_upper_bound"] = physical_rank - network_rank
+
+        network_high = result.loc[group.index, "network_percentile"] >= 0.5
+        physical_low = result.loc[group.index, "physical_upper_bound_percentile"] <= 0.5
+        categories = np.where(
+            network_high & physical_low,
+            "network_high_physical_upper_low",
+            np.where(
+                network_high & ~physical_low,
+                "network_high_physical_upper_high",
+                np.where(
+                    ~network_high & physical_low,
+                    "network_low_physical_upper_low",
+                    "network_low_physical_upper_high",
+                ),
+            ),
+        )
+        result.loc[group.index, "upper_bound_mismatch_category"] = categories
+        result.loc[group.index, "strict_upper_bound_mismatch_75_25"] = (
+            (result.loc[group.index, "network_percentile"] >= 0.75)
+            & (result.loc[group.index, "physical_upper_bound_percentile"] <= 0.25)
+        )
+    return result
+
+
+def build_cross_layer_audit_frame(
+    feasible_frame: pd.DataFrame,
+    group_fields: Sequence[str],
+    corridor_candidate_col: str,
+    peeringdb_frame: pd.DataFrame,
+) -> pd.DataFrame:
+    """Build a first-class cross-layer audit table with non-rank and optional relative metrics."""
+    if feasible_frame.empty:
+        return pd.DataFrame(columns=PRIMARY_CROSS_LAYER_COLUMNS)
+
+    network_frame = build_group_network_metrics(feasible_frame, group_fields)
+    physical_frames = [
+        build_group_physical_metrics(feasible_frame, group_fields, "cable", corridor_candidate_col),
+        build_group_physical_metrics(feasible_frame, group_fields, "corridor", corridor_candidate_col),
+    ]
+    combined_physical = pd.concat(physical_frames, ignore_index=True)
+    audit_frame = network_frame.merge(
+        combined_physical,
+        on=["unit_id", "src_country", "service_id", "msm_id", "file_name"],
+        how="inner",
+    )
+    if audit_frame.empty:
+        return pd.DataFrame(columns=PRIMARY_CROSS_LAYER_COLUMNS)
+
+    audit_frame["network_to_physical_compression_ratio"] = np.where(
+        pd.to_numeric(audit_frame["physical_candidate_diversity_upper_bound"], errors="coerce").fillna(0.0) > 0,
+        pd.to_numeric(audit_frame["network_effective_diversity"], errors="coerce").fillna(0.0)
+        / pd.to_numeric(audit_frame["physical_candidate_diversity_upper_bound"], errors="coerce").fillna(0.0),
+        np.nan,
+    )
+    audit_frame["log_network_physical_compression_gap"] = (
+        pd.to_numeric(audit_frame["network_effective_diversity"], errors="coerce").fillna(0.0).apply(safe_log1p)
+        - pd.to_numeric(audit_frame["physical_candidate_diversity_upper_bound"], errors="coerce").fillna(0.0).apply(safe_log1p)
+    )
+    audit_frame["physical_coverage_ratio"] = np.where(
+        pd.to_numeric(audit_frame["network_effective_diversity"], errors="coerce").fillna(0.0) > 0,
+        pd.to_numeric(audit_frame["physical_candidate_diversity_upper_bound"], errors="coerce").fillna(0.0)
+        / pd.to_numeric(audit_frame["network_effective_diversity"], errors="coerce").fillna(0.0),
+        np.nan,
+    )
+    audit_frame["absolute_compression_tier"] = audit_frame["log_network_physical_compression_gap"].apply(
+        classify_absolute_compression_tier
+    )
+    audit_frame = add_cross_layer_relative_metrics(audit_frame)
+    audit_frame = merge_peeringdb_descriptors(audit_frame, peeringdb_frame)
+
+    for column in PRIMARY_CROSS_LAYER_COLUMNS:
+        if column not in audit_frame.columns:
+            audit_frame[column] = np.nan if column not in {"unit_id", "src_country", "service_id", "msm_id", "file_name", "physical_level", "absolute_compression_tier", "upper_bound_mismatch_category", "pdb_interconnection_footprint_tier"} else "NA"
+    return audit_frame[PRIMARY_CROSS_LAYER_COLUMNS].sort_values(
+        ["src_country", "service_id", "msm_id", "file_name", "physical_level", "unit_id"]
+    ).reset_index(drop=True)
+
+
+def build_cross_layer_metric_summary(named_frames: Dict[str, pd.DataFrame]) -> pd.DataFrame:
+    """Build a compact summary of first-class cross-layer metrics across output tables."""
+    columns = [
+        "output_name",
+        "physical_level",
+        "rows",
+        "median_network_effective_diversity",
+        "median_physical_candidate_diversity_upper_bound",
+        "median_network_to_physical_compression_ratio",
+        "median_log_network_physical_compression_gap",
+        "median_physical_coverage_ratio",
+        "strict_upper_bound_mismatch_rate",
+        "no_compression_rows",
+        "weak_compression_rows",
+        "moderate_compression_rows",
+        "severe_compression_rows",
+    ]
+    rows: List[Dict[str, Any]] = []
+    for output_name, frame in named_frames.items():
+        if frame.empty:
+            continue
+        for physical_level, group in frame.groupby("physical_level", dropna=False):
+            tier_counts = group["absolute_compression_tier"].astype(str).value_counts()
+            rows.append(
+                {
+                    "output_name": output_name,
+                    "physical_level": physical_level,
+                    "rows": int(len(group)),
+                    "median_network_effective_diversity": float(pd.to_numeric(group["network_effective_diversity"], errors="coerce").median()),
+                    "median_physical_candidate_diversity_upper_bound": float(pd.to_numeric(group["physical_candidate_diversity_upper_bound"], errors="coerce").median()),
+                    "median_network_to_physical_compression_ratio": float(pd.to_numeric(group["network_to_physical_compression_ratio"], errors="coerce").median()),
+                    "median_log_network_physical_compression_gap": float(pd.to_numeric(group["log_network_physical_compression_gap"], errors="coerce").median()),
+                    "median_physical_coverage_ratio": float(pd.to_numeric(group["physical_coverage_ratio"], errors="coerce").median()),
+                    "strict_upper_bound_mismatch_rate": float(
+                        pd.Series(group["strict_upper_bound_mismatch_75_25"]).fillna(False).astype(bool).mean()
+                    ),
+                    "no_compression_rows": int(tier_counts.get("no_compression", 0)),
+                    "weak_compression_rows": int(tier_counts.get("weak_compression", 0)),
+                    "moderate_compression_rows": int(tier_counts.get("moderate_compression", 0)),
+                    "severe_compression_rows": int(tier_counts.get("severe_compression", 0)),
+                }
+            )
+    return pd.DataFrame(rows, columns=columns).sort_values(["output_name", "physical_level"]).reset_index(drop=True)
 
 
 def build_unit_physical_candidate_diversity(
@@ -1632,6 +2136,9 @@ def build_method_manifest() -> Dict[str, Any]:
         "main_question": "whether network-layer diversity survives in the physical-candidate infrastructure space",
         "primary_target_quadrant": "network_high_physical_low",
         "primary_network_definition": PAPER_PRIMARY_NETWORK_DEFINITION,
+        "primary_cross_layer_metrics": "non-rank compression and coverage metrics over application, network, and feasible physical-candidate layers",
+        "relative_comparison_metrics": "rank and percentile outputs remain optional corpus-relative comparison views",
+        "analysis_scope_note": "the same non-rank metrics support both global datasets and single-country datasets",
         "evidence_cores": [
             "geo_spatial_core",
             "as_economic_core",
@@ -1652,6 +2159,12 @@ def build_method_manifest() -> Dict[str, Any]:
         "primary_outputs": [
             "unit_network_layer_diversity.csv",
             "trace_feasible_candidate_space.csv",
+            "unit_cross_layer_audit.csv",
+            "country_cross_layer_audit.csv",
+            "service_country_cross_layer_audit.csv",
+            "paper_country_cross_layer_audit.csv",
+            "paper_service_country_cross_layer_audit.csv",
+            "cross_layer_metric_summary.csv",
             "unit_physical_candidate_diversity_cable.csv",
             "unit_physical_candidate_diversity_corridor.csv",
             "unit_physical_candidate_set_diversity_cable.csv",
@@ -1686,12 +2199,21 @@ def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
         "support_semantics": "evidence support, not ground-truth probability",
         "weighted_view_description": "support-thresholded candidate-support view used for backward-compatible weighted expectation analysis",
         "conservative_set_view_description": "all hard-feasible candidates retained before support thresholding and treated uniformly for upper-bound physical diversity",
+        "primary_cross_layer_metrics": "non-rank network-to-physical compression and coverage metrics are first-class outputs",
+        "relative_comparison_metrics": "rank and percentile mismatch outputs remain optional relative comparison views over the chosen corpus",
+        "single_country_and_global_support": "the same non-rank metrics apply to both single-country studies and multi-country corpora",
         "primary_physical_level": "corridor",
         "primary_network_definition": PAPER_PRIMARY_NETWORK_DEFINITION,
         "legacy_all_segments_semantics": "support-thresholded legacy candidate list",
         "all_feasible_segments_semantics": "all hard-feasible candidates preserved before support thresholding",
         "generated_outputs": [
             "trace_feasible_candidate_space.csv",
+            "unit_cross_layer_audit.csv",
+            "country_cross_layer_audit.csv",
+            "service_country_cross_layer_audit.csv",
+            "paper_country_cross_layer_audit.csv",
+            "paper_service_country_cross_layer_audit.csv",
+            "cross_layer_metric_summary.csv",
             "unit_physical_candidate_set_diversity_cable.csv",
             "unit_physical_candidate_set_diversity_corridor.csv",
             "unit_network_physical_upper_bound_mismatch.csv",
@@ -2271,6 +2793,47 @@ def main() -> None:
     )
     peeringdb_descriptors = load_peeringdb_descriptors(args.output)
     upper_bound_mismatch = merge_peeringdb_descriptors(upper_bound_mismatch, peeringdb_descriptors)
+    unit_cross_layer_audit = build_cross_layer_audit_frame(
+        feasible_frame,
+        ["unit_id"],
+        corridor_candidate_col,
+        peeringdb_descriptors,
+    )
+    country_cross_layer_audit = build_cross_layer_audit_frame(
+        feasible_frame,
+        ["src_country"],
+        corridor_candidate_col,
+        peeringdb_descriptors,
+    )
+    service_country_cross_layer_audit = build_cross_layer_audit_frame(
+        feasible_frame,
+        ["src_country", "service_id"],
+        corridor_candidate_col,
+        peeringdb_descriptors,
+    )
+    paper_country_cross_layer_audit = (
+        country_cross_layer_audit.loc[
+            country_cross_layer_audit["physical_level"].astype(str) == PAPER_PRIMARY_PHYSICAL_LEVEL
+        ].reset_index(drop=True)
+        if not country_cross_layer_audit.empty
+        else pd.DataFrame(columns=PRIMARY_CROSS_LAYER_COLUMNS)
+    )
+    paper_service_country_cross_layer_audit = (
+        service_country_cross_layer_audit.loc[
+            service_country_cross_layer_audit["physical_level"].astype(str) == PAPER_PRIMARY_PHYSICAL_LEVEL
+        ].reset_index(drop=True)
+        if not service_country_cross_layer_audit.empty
+        else pd.DataFrame(columns=PRIMARY_CROSS_LAYER_COLUMNS)
+    )
+    cross_layer_metric_summary = build_cross_layer_metric_summary(
+        {
+            "unit_cross_layer_audit": unit_cross_layer_audit,
+            "country_cross_layer_audit": country_cross_layer_audit,
+            "service_country_cross_layer_audit": service_country_cross_layer_audit,
+            "paper_country_cross_layer_audit": paper_country_cross_layer_audit,
+            "paper_service_country_cross_layer_audit": paper_service_country_cross_layer_audit,
+        }
+    )
     cable_quadrants = build_quadrant_summary(cable_mismatch, "cable")
     corridor_quadrants = build_quadrant_summary(corridor_mismatch, "corridor")
     quadrant_summary = pd.concat([cable_quadrants, corridor_quadrants], ignore_index=True)
@@ -2327,6 +2890,12 @@ def main() -> None:
     paper_mismatch_path = os.path.join(args.output, "paper_unit_network_physical_mismatch.csv")
     network_metric_catalog_path = os.path.join(args.output, "network_diversity_metric_catalog.csv")
     peeringdb_summary_path = os.path.join(args.output, "peeringdb_footprint_mismatch_summary.csv")
+    unit_cross_layer_audit_path = os.path.join(args.output, "unit_cross_layer_audit.csv")
+    country_cross_layer_audit_path = os.path.join(args.output, "country_cross_layer_audit.csv")
+    service_country_cross_layer_audit_path = os.path.join(args.output, "service_country_cross_layer_audit.csv")
+    paper_country_cross_layer_audit_path = os.path.join(args.output, "paper_country_cross_layer_audit.csv")
+    paper_service_country_cross_layer_audit_path = os.path.join(args.output, "paper_service_country_cross_layer_audit.csv")
+    cross_layer_metric_summary_path = os.path.join(args.output, "cross_layer_metric_summary.csv")
     legacy_mismatch_path = os.path.join(args.output, "unit_mismatch.csv")
     quadrant_summary_path = os.path.join(args.output, "network_physical_quadrants.csv")
     cable_corridor_path = os.path.join(args.output, "cable_vs_corridor_physical_diversity.csv")
@@ -2360,6 +2929,16 @@ def main() -> None:
     ].to_csv(paper_mismatch_path, index=False, encoding="utf-8-sig")
     network_metric_catalog.to_csv(network_metric_catalog_path, index=False, encoding="utf-8-sig")
     peeringdb_footprint_summary.to_csv(peeringdb_summary_path, index=False, encoding="utf-8-sig")
+    unit_cross_layer_audit.to_csv(unit_cross_layer_audit_path, index=False, encoding="utf-8-sig")
+    country_cross_layer_audit.to_csv(country_cross_layer_audit_path, index=False, encoding="utf-8-sig")
+    service_country_cross_layer_audit.to_csv(service_country_cross_layer_audit_path, index=False, encoding="utf-8-sig")
+    paper_country_cross_layer_audit.to_csv(paper_country_cross_layer_audit_path, index=False, encoding="utf-8-sig")
+    paper_service_country_cross_layer_audit.to_csv(
+        paper_service_country_cross_layer_audit_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    cross_layer_metric_summary.to_csv(cross_layer_metric_summary_path, index=False, encoding="utf-8-sig")
     cable_mismatch.to_csv(legacy_mismatch_path, index=False, encoding="utf-8-sig")
     quadrant_summary.to_csv(quadrant_summary_path, index=False, encoding="utf-8-sig")
     cable_corridor_comparison.to_csv(cable_corridor_path, index=False, encoding="utf-8-sig")
@@ -2417,6 +2996,12 @@ def main() -> None:
     print(f"Saved paper-ready mismatch alias to {paper_mismatch_path}")
     print(f"Saved network-diversity metric catalog to {network_metric_catalog_path}")
     print(f"Saved PeeringDB footprint mismatch summary to {peeringdb_summary_path}")
+    print(f"Saved unit cross-layer audit table to {unit_cross_layer_audit_path}")
+    print(f"Saved country cross-layer audit table to {country_cross_layer_audit_path}")
+    print(f"Saved service-country cross-layer audit table to {service_country_cross_layer_audit_path}")
+    print(f"Saved paper country cross-layer audit alias to {paper_country_cross_layer_audit_path}")
+    print(f"Saved paper service-country cross-layer audit alias to {paper_service_country_cross_layer_audit_path}")
+    print(f"Saved cross-layer metric summary to {cross_layer_metric_summary_path}")
     print(f"Saved cable-vs-corridor comparison table to {cable_corridor_path}")
     print(f"Saved candidate-space profile to {candidate_space_profile_path}")
     print(f"Saved weighted-vs-conservative diversity table to {weighted_vs_conservative_path}")

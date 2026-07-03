@@ -935,3 +935,35 @@ PeeringDB remains external-only:
 - it is not used for candidate-support scoring,
 - it is not used for corridor assignment,
 - and it is not used to compute `network_diversity_as_egress_primary`.
+
+## Latest Cross-Layer Audit Update
+
+Non-rank cross-layer metrics are now first-class outputs rather than a fallback interpretation layer.
+
+- Primary non-rank metrics:
+  - `network_effective_diversity`
+  - `physical_candidate_diversity_upper_bound`
+  - `network_to_physical_compression_ratio`
+  - `log_network_physical_compression_gap`
+  - `physical_coverage_ratio`
+  - `absolute_compression_tier`
+- Relative rank/percentile metrics remain available in the same tables:
+  - `network_percentile`
+  - `physical_upper_bound_percentile`
+  - `rank_gap_upper_bound`
+  - `strict_upper_bound_mismatch_75_25`
+  - `upper_bound_mismatch_category`
+
+New output files:
+
+- `output/result/unit_cross_layer_audit.csv`: unit-level cross-layer audit table with application, network, physical, non-rank compression, optional relative, and PeeringDB descriptor columns.
+- `output/result/country_cross_layer_audit.csv`: country-level cross-layer audit recomputed directly from link-level observations and feasible candidate rows.
+- `output/result/service_country_cross_layer_audit.csv`: source-country plus service-level cross-layer audit; `service_id` prefers explicit `service_id`, then falls back to `file_name`, then `msm_id`.
+- `output/result/paper_country_cross_layer_audit.csv`: corridor-level paper alias of the country audit output.
+- `output/result/paper_service_country_cross_layer_audit.csv`: corridor-level paper alias of the service-country audit output.
+- `output/result/cross_layer_metric_summary.csv`: compact summary of non-rank compression tiers and relative mismatch rates across the new audit tables.
+
+Interpretation update:
+
+- The same non-rank compression/coverage metrics support both global multi-country corpora and single-country datasets.
+- Rank-based mismatch remains a relative comparison view over the chosen corpus, not the only cross-layer interpretation.

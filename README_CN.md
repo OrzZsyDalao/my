@@ -948,3 +948,35 @@ PeeringDB 继续保持 external-only：
 - 不参与 corridor assignment
 - 不参与 `network_diversity_as_egress_primary` 计算
 - 只用于 mismatch / robustness 分层解释
+
+## 最新 cross-layer audit 更新
+
+现在将**非 rank 的跨层压缩/覆盖指标**作为一等输出，而不是单独的 fallback 视图。
+
+- 主要非 rank 指标：
+  - `network_effective_diversity`
+  - `physical_candidate_diversity_upper_bound`
+  - `network_to_physical_compression_ratio`
+  - `log_network_physical_compression_gap`
+  - `physical_coverage_ratio`
+  - `absolute_compression_tier`
+- 相对比较型指标继续保留在同一批表中：
+  - `network_percentile`
+  - `physical_upper_bound_percentile`
+  - `rank_gap_upper_bound`
+  - `strict_upper_bound_mismatch_75_25`
+  - `upper_bound_mismatch_category`
+
+新增输出文件：
+
+- `output/result/unit_cross_layer_audit.csv`：unit 级 cross-layer 审计表，包含 application / network / physical / 非 rank 压缩指标 / 可选相对指标 / PeeringDB 描述符。
+- `output/result/country_cross_layer_audit.csv`：country 级 cross-layer 审计表，直接从 link 观测与 feasible candidate 行重算，不是对 unit 结果做平均。
+- `output/result/service_country_cross_layer_audit.csv`：`src_country + service_id` 级 cross-layer 审计表；`service_id` 优先使用显式字段，否则回退到 `file_name`，再回退到 `msm_id`。
+- `output/result/paper_country_cross_layer_audit.csv`：country 审计表的 corridor-level 论文别名。
+- `output/result/paper_service_country_cross_layer_audit.csv`：service-country 审计表的 corridor-level 论文别名。
+- `output/result/cross_layer_metric_summary.csv`：对新 cross-layer audit 表中非 rank 压缩层级与相对 mismatch 比例做汇总。
+
+解释更新：
+
+- 同一套非 rank compression / coverage 指标同时适用于多国全局数据集和单国数据集。
+- rank-based mismatch 继续保留，但它只是所选语料范围内的相对比较视图，不再是唯一的跨层解释方式。

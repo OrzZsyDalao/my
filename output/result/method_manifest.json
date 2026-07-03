@@ -4,6 +4,9 @@
   "main_question": "whether network-layer diversity survives in the physical-candidate infrastructure space",
   "primary_target_quadrant": "network_high_physical_low",
   "primary_network_definition": "as_egress_primary",
+  "primary_cross_layer_metrics": "non-rank compression and coverage metrics over application, network, and feasible physical-candidate layers",
+  "relative_comparison_metrics": "rank and percentile outputs remain optional corpus-relative comparison views",
+  "analysis_scope_note": "the same non-rank metrics support both global datasets and single-country datasets",
   "evidence_cores": [
     "geo_spatial_core",
     "as_economic_core",
@@ -27,6 +30,12 @@
   "primary_outputs": [
     "unit_network_layer_diversity.csv",
     "trace_feasible_candidate_space.csv",
+    "unit_cross_layer_audit.csv",
+    "country_cross_layer_audit.csv",
+    "service_country_cross_layer_audit.csv",
+    "paper_country_cross_layer_audit.csv",
+    "paper_service_country_cross_layer_audit.csv",
+    "cross_layer_metric_summary.csv",
     "unit_physical_candidate_diversity_cable.csv",
     "unit_physical_candidate_diversity_corridor.csv",
     "unit_physical_candidate_set_diversity_cable.csv",
