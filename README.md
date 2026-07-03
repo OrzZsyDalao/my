@@ -909,3 +909,29 @@ PeeringDB descriptors are merged into:
 - `output/result/unit_network_physical_upper_bound_mismatch.csv`
 - `output/result/paper_unit_network_physical_mismatch.csv`
 - `output/result/robustness_conservative_candidate_audit.csv` when descriptor context is available
+
+## Latest Network-Diversity Update
+
+The paper-primary network definition is now `as_egress_primary`.
+
+- `as_egress_primary`: source-country AS-egress transition diversity across cross-border traceroute links
+- `as_pair_primary`: AS-pair and endpoint-AS diversity fallback when explicit egress observations are sparse
+- `dst_asn_primary`: destination-AS diversity view
+- `geographic_transition_supplementary`: country-transition descriptor kept as a supplementary geographic view
+- `application_observation_supplementary`: probe/measurement/target richness descriptor
+- `combined_supplementary`: historical composite score retained as a supplementary summary
+
+Country-only remains available for backward compatibility, but it is now a supplementary descriptor rather than the recommended main-text network diversity metric.
+
+Additional outputs:
+
+- `output/result/network_diversity_metric_catalog.csv`: documents each network diversity definition, its score column, metric role, interpretation, and whether it is recommended for the paper main text.
+- `output/result/paper_unit_network_physical_mismatch.csv`: now defaults to the `as_egress_primary` + `corridor` + conservative upper-bound view.
+
+PeeringDB remains external-only:
+
+- it is merged into mismatch and robustness outputs for stratification,
+- it is not used for feasible candidate filtering,
+- it is not used for candidate-support scoring,
+- it is not used for corridor assignment,
+- and it is not used to compute `network_diversity_as_egress_primary`.

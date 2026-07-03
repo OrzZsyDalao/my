@@ -922,3 +922,29 @@ PeeringDB 描述符会并入：
 - `output/result/unit_network_physical_upper_bound_mismatch.csv`
 - `output/result/paper_unit_network_physical_mismatch.csv`
 - `output/result/robustness_conservative_candidate_audit.csv`（当描述符上下文可用时）
+
+## Latest network diversity update
+
+当前论文主定义的 network definition 是 `as_egress_primary`。
+
+- `as_egress_primary`：基于跨境 traceroute 链路中的 source-country AS egress transition
+- `as_pair_primary`：当显式 egress 观测不足时的 AS-pair / endpoint-AS 主备定义
+- `dst_asn_primary`：目的端 ASN 多样性
+- `geographic_transition_supplementary`：补充性的 country transition 描述
+- `application_observation_supplementary`：probe / measurement / target 丰富度描述
+- `combined_supplementary`：保留的历史 composite 补充定义
+
+`country_only` 继续保留用于兼容旧输出，但现在是 supplementary descriptor，不再是正文主定义。
+
+新增输出：
+
+- `output/result/network_diversity_metric_catalog.csv`
+- `output/result/paper_unit_network_physical_mismatch.csv` 现在默认对应 `as_egress_primary` + `corridor` + conservative upper-bound 视图
+
+PeeringDB 继续保持 external-only：
+
+- 不参与 feasible candidate filtering
+- 不参与 candidate support scoring
+- 不参与 corridor assignment
+- 不参与 `network_diversity_as_egress_primary` 计算
+- 只用于 mismatch / robustness 分层解释

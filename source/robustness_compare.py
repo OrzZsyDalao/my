@@ -9,6 +9,7 @@ try:
     from source.postprocess_candidate_output import (
         TARGET_MISMATCH_CATEGORY,
         NETWORK_DEFINITION_COLUMNS,
+        PAPER_PRIMARY_NETWORK_DEFINITION,
         build_quadrant_summary,
         build_unit_network_layer_diversity,
         build_unit_network_physical_mismatch,
@@ -31,6 +32,7 @@ except ModuleNotFoundError:
     from source.postprocess_candidate_output import (  # type: ignore
         TARGET_MISMATCH_CATEGORY,
         NETWORK_DEFINITION_COLUMNS,
+        PAPER_PRIMARY_NETWORK_DEFINITION,
         build_quadrant_summary,
         build_unit_network_layer_diversity,
         build_unit_network_physical_mismatch,
@@ -697,7 +699,7 @@ def main() -> None:
         {"corridor": baseline_physical},
     )
     baseline_corridor = baseline_upper[
-        (baseline_upper["network_definition"].astype(str) == "composite")
+        (baseline_upper["network_definition"].astype(str) == PAPER_PRIMARY_NETWORK_DEFINITION)
         & (baseline_upper["physical_level"].astype(str) == "corridor")
     ].copy()
     baseline_target_units: Set[str] = set(
@@ -886,7 +888,11 @@ def main() -> None:
     candidate_space_frame.to_csv(candidate_space_path, index=False, encoding="utf-8-sig")
     conservative_audit_frame.to_csv(conservative_audit_path, index=False, encoding="utf-8-sig")
 
-    chart_source = mismatch_stability[mismatch_stability["network_definition"] == "composite"].copy()
+    chart_source = mismatch_stability[
+        mismatch_stability["network_definition"] == PAPER_PRIMARY_NETWORK_DEFINITION
+    ].copy()
+    if chart_source.empty:
+        chart_source = mismatch_stability[mismatch_stability["network_definition"] == "composite"].copy()
     if chart_source.empty:
         chart_source = mismatch_stability.copy()
     if not chart_source.empty:

@@ -16,6 +16,8 @@ DEFAULT_OUTPUT = os.path.join(BASE_DIR, "output", "result")
 PEERINGDB_DESCRIPTOR_PATH = os.path.join(DEFAULT_OUTPUT, "country_peeringdb_descriptors.csv")
 DEFAULT_UNIT_FIELDS = ["src_country", "msm_id", "file_name"]
 TARGET_MISMATCH_CATEGORY = "network_high_physical_low"
+PAPER_PRIMARY_NETWORK_DEFINITION = "as_egress_primary"
+PAPER_PRIMARY_PHYSICAL_LEVEL = "corridor"
 QUADRANT_ORDER = [
     "network_high_physical_low",
     "network_high_physical_high",
@@ -33,6 +35,12 @@ NETWORK_DEFINITION_COLUMNS = {
     "as_only": "network_layer_diversity_score_as_only",
     "country_only": "network_layer_diversity_score_country_only",
     "probe_target_only": "network_layer_diversity_score_probe_target_only",
+    "as_egress_primary": "network_diversity_as_egress_primary",
+    "as_pair_primary": "network_layer_diversity_score_as_only",
+    "dst_asn_primary": "network_diversity_dst_asn_primary",
+    "geographic_transition_supplementary": "network_layer_diversity_score_country_only",
+    "application_observation_supplementary": "network_layer_diversity_score_probe_target_only",
+    "combined_supplementary": "network_layer_diversity_score",
 }
 KNOWN_AMBIGUITY_TAGS = [
     "parallel_candidate_corridor",
@@ -136,6 +144,24 @@ def gini_coefficient(values: Iterable[float]) -> float:
 def safe_log1p(value: float) -> float:
     """Compute log1p on non-negative inputs."""
     return float(math.log1p(max(value, 0.0)))
+
+
+def dominant_non_missing_value(series: pd.Series, default: str = "NA") -> str:
+    """Return the dominant non-missing token from a Series with a stable fallback."""
+    if series.empty:
+        return default
+    values = (
+        series.fillna("")
+        .astype(str)
+        .str.strip()
+    )
+    values = values[(values != "") & (values.str.lower() != "nan") & (values != "NA")]
+    if values.empty:
+        return default
+    modes = values.mode()
+    if modes.empty:
+        return default
+    return str(modes.iloc[0])
 
 
 def normalize_token(value: Any, prefix: str = "") -> str:
@@ -711,6 +737,9 @@ def build_unit_physical_candidate_upper_bound(
 
 def build_unit_network_layer_diversity(frame: pd.DataFrame) -> pd.DataFrame:
     """Compute network-layer diversity metrics per unit."""
+    if frame.empty:
+        return pd.DataFrame()
+
     link_level = frame.drop_duplicates(subset=["unit_id", "link_id"]).copy()
     link_level["src_country"] = link_level["src_country"].fillna("NA")
     link_level["dst_country"] = link_level["dst_country"].fillna("NA")
@@ -721,6 +750,7 @@ def build_unit_network_layer_diversity(frame: pd.DataFrame) -> pd.DataFrame:
 
     rows: List[Dict[str, Any]] = []
     for unit_id, group in link_level.groupby("unit_id"):
+        unit_source_country = dominant_non_missing_value(group["src_country"], default="NA")
         country_counts = group["country_pair"].value_counts().tolist()
         src_as_counts = group["src_asn_norm"].value_counts().tolist()
         dst_as_counts = group["dst_asn_norm"].value_counts().tolist()
@@ -739,6 +769,34 @@ def build_unit_network_layer_diversity(frame: pd.DataFrame) -> pd.DataFrame:
         num_src_asns = int(group["src_asn_norm"].replace("NA", np.nan).dropna().nunique())
         num_dst_asns = int(group["dst_asn_norm"].replace("NA", np.nan).dropna().nunique())
         num_src_dst_as_pairs = int(group["src_dst_as_pair"].replace("NA->NA", np.nan).dropna().nunique())
+        egress_group = group[
+            (group["src_country"].astype(str) == unit_source_country)
+            & (group["dst_country"].astype(str) != unit_source_country)
+            & (group["src_asn_norm"].astype(str) != "NA")
+            & (group["dst_asn_norm"].astype(str) != "NA")
+        ].copy()
+        if not egress_group.empty:
+            egress_group["egress_asn"] = egress_group["src_asn_norm"].astype(str)
+            egress_group["next_asn_after_egress"] = egress_group["dst_asn_norm"].astype(str)
+            egress_group["egress_transition"] = (
+                egress_group["egress_asn"] + "->" + egress_group["next_asn_after_egress"]
+            )
+            egress_group["egress_country_transition"] = (
+                egress_group["src_country"].astype(str) + "->" + egress_group["dst_country"].astype(str)
+            )
+        num_egress_links = int(len(egress_group))
+        num_egress_asns = int(egress_group["egress_asn"].nunique()) if not egress_group.empty else 0
+        num_next_asns_after_egress = int(egress_group["next_asn_after_egress"].nunique()) if not egress_group.empty else 0
+        num_egress_transitions = int(egress_group["egress_transition"].nunique()) if not egress_group.empty else 0
+        egress_asn_entropy = shannon_entropy(
+            egress_group["egress_asn"].value_counts().tolist()
+        ) if not egress_group.empty else 0.0
+        next_asn_after_egress_entropy = shannon_entropy(
+            egress_group["next_asn_after_egress"].value_counts().tolist()
+        ) if not egress_group.empty else 0.0
+        egress_transition_entropy = shannon_entropy(
+            egress_group["egress_transition"].value_counts().tolist()
+        ) if not egress_group.empty else 0.0
 
         network_score_component_as_pair = as_pair_entropy + 0.5 * safe_log1p(num_src_dst_as_pairs)
         network_score_component_country_pair = country_entropy + 0.25 * safe_log1p(num_dst_countries)
@@ -752,6 +810,16 @@ def build_unit_network_layer_diversity(frame: pd.DataFrame) -> pd.DataFrame:
             + 0.5 * safe_log1p(num_files_or_targets)
             + 0.25 * safe_log1p(num_measurements)
         )
+        network_diversity_dst_asn_primary = dst_as_entropy + safe_log1p(num_dst_asns)
+        if num_egress_links > 0:
+            network_diversity_as_egress_primary = (
+                egress_transition_entropy
+                + 0.5 * safe_log1p(num_egress_transitions)
+                + 0.5 * safe_log1p(num_egress_asns)
+                + 0.25 * safe_log1p(num_next_asns_after_egress)
+            )
+        else:
+            network_diversity_as_egress_primary = as_pair_entropy + 0.5 * safe_log1p(num_src_dst_as_pairs)
 
         network_layer_diversity_score_as_only = (
             network_score_component_as_pair + network_score_component_endpoint_asn
@@ -768,7 +836,7 @@ def build_unit_network_layer_diversity(frame: pd.DataFrame) -> pd.DataFrame:
         rows.append(
             {
                 "unit_id": unit_id,
-                "src_country": str(group["src_country"].iloc[0]) if "src_country" in group.columns and not group.empty else "NA",
+                "src_country": unit_source_country,
                 "num_probes": num_probes,
                 "num_dst_countries": num_dst_countries,
                 "num_src_dst_country_pairs": num_country_pairs,
@@ -777,19 +845,32 @@ def build_unit_network_layer_diversity(frame: pd.DataFrame) -> pd.DataFrame:
                 "num_src_asns": num_src_asns,
                 "num_dst_asns": num_dst_asns,
                 "num_src_dst_as_pairs": num_src_dst_as_pairs,
+                "num_egress_links": num_egress_links,
+                "num_egress_asns": num_egress_asns,
+                "num_next_asns_after_egress": num_next_asns_after_egress,
+                "num_egress_transitions": num_egress_transitions,
                 "link_country_sequence_entropy": country_entropy,
                 "src_asn_entropy": src_as_entropy,
                 "dst_asn_entropy": dst_as_entropy,
                 "as_pair_entropy": as_pair_entropy,
                 "src_dst_as_pair_entropy": as_pair_entropy,
+                "egress_asn_entropy": float(egress_asn_entropy),
+                "next_asn_after_egress_entropy": float(next_asn_after_egress_entropy),
+                "egress_transition_entropy": float(egress_transition_entropy),
                 "network_score_component_as_pair": float(network_score_component_as_pair),
                 "network_score_component_country_pair": float(network_score_component_country_pair),
                 "network_score_component_endpoint_asn": float(network_score_component_endpoint_asn),
                 "network_score_component_probe_target": float(network_score_component_probe_target),
+                "network_diversity_as_egress_primary": float(network_diversity_as_egress_primary),
+                "network_diversity_dst_asn_primary": float(network_diversity_dst_asn_primary),
                 "network_layer_diversity_score_as_only": float(network_layer_diversity_score_as_only),
                 "network_layer_diversity_score_country_only": float(network_layer_diversity_score_country_only),
                 "network_layer_diversity_score_probe_target_only": float(network_layer_diversity_score_probe_target_only),
                 "network_layer_diversity_score": float(network_layer_diversity_score),
+                "network_diversity_combined": float(network_layer_diversity_score),
+                "network_diversity_as_only": float(network_layer_diversity_score_as_only),
+                "network_diversity_country_only": float(network_layer_diversity_score_country_only),
+                "network_diversity_target_probe": float(network_layer_diversity_score_probe_target_only),
                 "logical_diversity_score": float(network_layer_diversity_score),
             }
         )
@@ -805,6 +886,83 @@ def classify_network_physical_quadrant(network_high: bool, physical_low: bool) -
     if not network_high and physical_low:
         return "network_low_physical_low"
     return "network_low_physical_high"
+
+
+def build_network_diversity_metric_catalog() -> pd.DataFrame:
+    """Document the supported network-diversity definitions and their paper-facing roles."""
+    rows = [
+        {
+            "network_definition": "as_egress_primary",
+            "score_column": "network_diversity_as_egress_primary",
+            "metric_role": "primary_network_path_diversity",
+            "interpretation": "Source-country AS-egress transition diversity across cross-border traceroute observations.",
+            "recommended_for_main_text": True,
+        },
+        {
+            "network_definition": "as_pair_primary",
+            "score_column": "network_layer_diversity_score_as_only",
+            "metric_role": "primary_network_path_diversity",
+            "interpretation": "AS-pair and endpoint-AS diversity when explicit egress observations are sparse.",
+            "recommended_for_main_text": True,
+        },
+        {
+            "network_definition": "dst_asn_primary",
+            "score_column": "network_diversity_dst_asn_primary",
+            "metric_role": "endpoint_network_diversity",
+            "interpretation": "Destination-side ASN diversity of observed network endpoints.",
+            "recommended_for_main_text": True,
+        },
+        {
+            "network_definition": "geographic_transition_supplementary",
+            "score_column": "network_layer_diversity_score_country_only",
+            "metric_role": "supplementary_geographic_descriptor",
+            "interpretation": "Country-transition diversity used as a supplementary geographic descriptor, not the main network-path measure.",
+            "recommended_for_main_text": False,
+        },
+        {
+            "network_definition": "application_observation_supplementary",
+            "score_column": "network_layer_diversity_score_probe_target_only",
+            "metric_role": "application_observation_richness",
+            "interpretation": "Probe/measurement/target multiplicity summarizing application-observation breadth.",
+            "recommended_for_main_text": False,
+        },
+        {
+            "network_definition": "combined_supplementary",
+            "score_column": "network_layer_diversity_score",
+            "metric_role": "supplementary_composite_score",
+            "interpretation": "Composite diversity view combining AS, country, endpoint, and probe-target components.",
+            "recommended_for_main_text": False,
+        },
+        {
+            "network_definition": "composite",
+            "score_column": "network_layer_diversity_score",
+            "metric_role": "legacy_compatibility_alias",
+            "interpretation": "Backward-compatible alias for the historical composite network diversity score.",
+            "recommended_for_main_text": False,
+        },
+        {
+            "network_definition": "as_only",
+            "score_column": "network_layer_diversity_score_as_only",
+            "metric_role": "legacy_compatibility_alias",
+            "interpretation": "Backward-compatible alias for the historical AS-only network diversity score.",
+            "recommended_for_main_text": False,
+        },
+        {
+            "network_definition": "country_only",
+            "score_column": "network_layer_diversity_score_country_only",
+            "metric_role": "legacy_compatibility_alias",
+            "interpretation": "Backward-compatible alias for the historical country-only network diversity score.",
+            "recommended_for_main_text": False,
+        },
+        {
+            "network_definition": "probe_target_only",
+            "score_column": "network_layer_diversity_score_probe_target_only",
+            "metric_role": "legacy_compatibility_alias",
+            "interpretation": "Backward-compatible alias for the historical probe-target-only observation score.",
+            "recommended_for_main_text": False,
+        },
+    ]
+    return pd.DataFrame(rows)
 
 
 def build_unit_network_physical_mismatch(
@@ -977,7 +1135,11 @@ def build_unit_network_physical_upper_bound_mismatch(
             current = merged.copy()
             current["network_definition"] = network_definition
             current["physical_level"] = physical_level
+            current["candidate_view"] = "conservative_set"
+            current["physical_diversity_view"] = "upper_bound"
             current["network_diversity_score"] = pd.to_numeric(current[network_score_column], errors="coerce").fillna(0.0)
+            current["selected_network_diversity_score"] = current["network_diversity_score"]
+            current["network_score_column"] = network_score_column
             current["network_percentile"] = current["network_diversity_score"].rank(method="average", pct=True, ascending=True)
             current["physical_upper_bound_percentile"] = current["physical_candidate_diversity_upper_bound"].rank(
                 method="average", pct=True, ascending=True
@@ -1014,7 +1176,17 @@ def build_unit_network_physical_upper_bound_mismatch(
                         "src_country",
                         "network_definition",
                         "physical_level",
+                        "candidate_view",
+                        "physical_diversity_view",
+                        "network_score_column",
+                        "selected_network_diversity_score",
                         "network_diversity_score",
+                        "network_diversity_combined",
+                        "network_diversity_as_only",
+                        "network_diversity_country_only",
+                        "network_diversity_target_probe",
+                        "network_diversity_as_egress_primary",
+                        "network_diversity_dst_asn_primary",
                         "physical_candidate_diversity_upper_bound",
                         "network_percentile",
                         "physical_upper_bound_percentile",
@@ -1042,7 +1214,17 @@ def build_unit_network_physical_upper_bound_mismatch(
                 "src_country",
                 "network_definition",
                 "physical_level",
+                "candidate_view",
+                "physical_diversity_view",
+                "network_score_column",
+                "selected_network_diversity_score",
                 "network_diversity_score",
+                "network_diversity_combined",
+                "network_diversity_as_only",
+                "network_diversity_country_only",
+                "network_diversity_target_probe",
+                "network_diversity_as_egress_primary",
+                "network_diversity_dst_asn_primary",
                 "physical_candidate_diversity_upper_bound",
                 "network_percentile",
                 "physical_upper_bound_percentile",
@@ -1449,6 +1631,7 @@ def build_method_manifest() -> Dict[str, Any]:
         "claim_boundary": "candidate_support_not_ground_truth_cable_attribution",
         "main_question": "whether network-layer diversity survives in the physical-candidate infrastructure space",
         "primary_target_quadrant": "network_high_physical_low",
+        "primary_network_definition": PAPER_PRIMARY_NETWORK_DEFINITION,
         "evidence_cores": [
             "geo_spatial_core",
             "as_economic_core",
@@ -1479,6 +1662,7 @@ def build_method_manifest() -> Dict[str, Any]:
             "unit_network_physical_upper_bound_mismatch.csv",
             "paper_unit_physical_candidate_diversity.csv",
             "paper_unit_network_physical_mismatch.csv",
+            "network_diversity_metric_catalog.csv",
             "country_peeringdb_descriptors.csv",
             "peeringdb_footprint_mismatch_summary.csv",
             "network_physical_quadrants.csv",
@@ -1503,6 +1687,7 @@ def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
         "weighted_view_description": "support-thresholded candidate-support view used for backward-compatible weighted expectation analysis",
         "conservative_set_view_description": "all hard-feasible candidates retained before support thresholding and treated uniformly for upper-bound physical diversity",
         "primary_physical_level": "corridor",
+        "primary_network_definition": PAPER_PRIMARY_NETWORK_DEFINITION,
         "legacy_all_segments_semantics": "support-thresholded legacy candidate list",
         "all_feasible_segments_semantics": "all hard-feasible candidates preserved before support thresholding",
         "generated_outputs": [
@@ -1512,6 +1697,7 @@ def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
             "unit_network_physical_upper_bound_mismatch.csv",
             "paper_unit_physical_candidate_diversity.csv",
             "paper_unit_network_physical_mismatch.csv",
+            "network_diversity_metric_catalog.csv",
             "candidate_space_profile.csv",
             "weighted_vs_conservative_diversity.csv",
         ],
@@ -2111,6 +2297,7 @@ def main() -> None:
         cable_mismatch,
         corridor_mismatch,
     )
+    network_metric_catalog = build_network_diversity_metric_catalog()
     method_manifest = build_method_manifest()
     conservative_manifest = build_conservative_candidate_audit_manifest()
     filtering_breakdown = build_filtering_breakdown(args.output)
@@ -2138,6 +2325,7 @@ def main() -> None:
     upper_bound_mismatch_path = os.path.join(args.output, "unit_network_physical_upper_bound_mismatch.csv")
     paper_physical_path = os.path.join(args.output, "paper_unit_physical_candidate_diversity.csv")
     paper_mismatch_path = os.path.join(args.output, "paper_unit_network_physical_mismatch.csv")
+    network_metric_catalog_path = os.path.join(args.output, "network_diversity_metric_catalog.csv")
     peeringdb_summary_path = os.path.join(args.output, "peeringdb_footprint_mismatch_summary.csv")
     legacy_mismatch_path = os.path.join(args.output, "unit_mismatch.csv")
     quadrant_summary_path = os.path.join(args.output, "network_physical_quadrants.csv")
@@ -2167,8 +2355,10 @@ def main() -> None:
     upper_bound_mismatch.to_csv(upper_bound_mismatch_path, index=False, encoding="utf-8-sig")
     corridor_physical_uniform.to_csv(paper_physical_path, index=False, encoding="utf-8-sig")
     upper_bound_mismatch.loc[
-        upper_bound_mismatch["physical_level"].astype(str) == "corridor"
+        (upper_bound_mismatch["physical_level"].astype(str) == PAPER_PRIMARY_PHYSICAL_LEVEL)
+        & (upper_bound_mismatch["network_definition"].astype(str) == PAPER_PRIMARY_NETWORK_DEFINITION)
     ].to_csv(paper_mismatch_path, index=False, encoding="utf-8-sig")
+    network_metric_catalog.to_csv(network_metric_catalog_path, index=False, encoding="utf-8-sig")
     peeringdb_footprint_summary.to_csv(peeringdb_summary_path, index=False, encoding="utf-8-sig")
     cable_mismatch.to_csv(legacy_mismatch_path, index=False, encoding="utf-8-sig")
     quadrant_summary.to_csv(quadrant_summary_path, index=False, encoding="utf-8-sig")
@@ -2225,6 +2415,7 @@ def main() -> None:
     print(f"Saved upper-bound mismatch table to {upper_bound_mismatch_path}")
     print(f"Saved paper-ready physical diversity alias to {paper_physical_path}")
     print(f"Saved paper-ready mismatch alias to {paper_mismatch_path}")
+    print(f"Saved network-diversity metric catalog to {network_metric_catalog_path}")
     print(f"Saved PeeringDB footprint mismatch summary to {peeringdb_summary_path}")
     print(f"Saved cable-vs-corridor comparison table to {cable_corridor_path}")
     print(f"Saved candidate-space profile to {candidate_space_profile_path}")
