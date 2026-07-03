@@ -1,0 +1,27 @@
+{
+  "output_file": "output\\preprocessed\\as_graph_owner_reachability.pkl.gz",
+  "owner_group_count": 312,
+  "graph_node_count": 78643,
+  "graph_edge_count": 1141392,
+  "reachable_entries": 10353257,
+  "config": {
+    "max_hops_unknown": 2,
+    "search_max_hops": 2,
+    "peer_cost": 1.0,
+    "provider_customer_cost": 2.0,
+    "limit_owner_groups": null
+  },
+  "source_files": {
+    "asrel_file": {
+      "path": "data\\asrelationship\\20250901.as-rel2.txt",
+      "size_bytes": 10511124,
+      "mtime_epoch": 1782874212.6699498
+    },
+    "owner2asn_file": {
+      "path": "data\\owner2asn\\owner_to_asn.csv",
+      "size_bytes": 240514,
+      "mtime_epoch": 1782874291.3022773
+    },
+    "cable_dir": "data\\cable"
+  }
+}
