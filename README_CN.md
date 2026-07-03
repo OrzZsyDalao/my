@@ -980,3 +980,17 @@ PeeringDB 继续保持 external-only：
 
 - 同一套非 rank compression / coverage 指标同时适用于多国全局数据集和单国数据集。
 - rank-based mismatch 继续保留，但它只是所选语料范围内的相对比较视图，不再是唯一的跨层解释方式。
+
+## 5051 全量运行结果说明
+
+仓库同样支持 RIPE Atlas `msm_id = 5051` 的全量运行。
+
+- 建议将全量运行输出写到 `output/result_5051/`
+- 体量适中的 summary / audit 结果可以直接提交到仓库供检查
+- 超大的 link-level 结果文件可能因为 GitHub 体积限制而只保留在本地
+
+典型的超大本地文件包括：
+
+- `output/result_5051/cable_matching_output.json`
+- `output/result_5051/trace_feasible_candidate_space.csv`
+- `output/result_5051/trace_candidate_support.csv`

@@ -1,0 +1,19 @@
+{
+  "traceroute_file_paths": [
+    "data\\traceroute\\ripe_atlas_5051_20251201.json"
+  ],
+  "total_files_processed": 1,
+  "total_traces_processed": 1268530,
+  "empty_trace_count": 0,
+  "matched_links_above_threshold": 104772,
+  "links_with_feasible_candidates": 293715,
+  "match_output_file": "output\\result_5051\\cable_matching_output.json",
+  "match_stats_file": "output\\result_5051\\cable_matching_stats_5051.json",
+  "as_precompute_file": "output\\preprocessed\\as_graph_owner_reachability.pkl.gz",
+  "method_profile": "dual_core_cross_layer_evidence_fusion",
+  "interpretation": "infeasibility_first_conservative_candidate_audit",
+  "support_semantics": "candidate support is evidence support, not ground-truth probability",
+  "legacy_all_segments_semantics": "support-thresholded legacy candidate view",
+  "all_feasible_segments_semantics": "all hard-feasible candidates retained before support thresholding",
+  "support_threshold_value": 0.5
+}

@@ -1,0 +1,31 @@
+{
+  "pipeline_version": "infeasibility_first_conservative_candidate_audit_v1",
+  "interpretation": "infeasibility_first_conservative_candidate_audit",
+  "support_semantics": "evidence support, not ground-truth probability",
+  "weighted_view_description": "support-thresholded candidate-support view used for backward-compatible weighted expectation analysis",
+  "conservative_set_view_description": "all hard-feasible candidates retained before support thresholding and treated uniformly for upper-bound physical diversity",
+  "primary_cross_layer_metrics": "non-rank network-to-physical compression and coverage metrics are first-class outputs",
+  "relative_comparison_metrics": "rank and percentile mismatch outputs remain optional relative comparison views over the chosen corpus",
+  "single_country_and_global_support": "the same non-rank metrics apply to both single-country studies and multi-country corpora",
+  "primary_physical_level": "corridor",
+  "primary_network_definition": "as_egress_primary",
+  "legacy_all_segments_semantics": "support-thresholded legacy candidate list",
+  "all_feasible_segments_semantics": "all hard-feasible candidates preserved before support thresholding",
+  "generated_outputs": [
+    "trace_feasible_candidate_space.csv",
+    "unit_cross_layer_audit.csv",
+    "country_cross_layer_audit.csv",
+    "service_country_cross_layer_audit.csv",
+    "paper_country_cross_layer_audit.csv",
+    "paper_service_country_cross_layer_audit.csv",
+    "cross_layer_metric_summary.csv",
+    "unit_physical_candidate_set_diversity_cable.csv",
+    "unit_physical_candidate_set_diversity_corridor.csv",
+    "unit_network_physical_upper_bound_mismatch.csv",
+    "paper_unit_physical_candidate_diversity.csv",
+    "paper_unit_network_physical_mismatch.csv",
+    "network_diversity_metric_catalog.csv",
+    "candidate_space_profile.csv",
+    "weighted_vs_conservative_diversity.csv"
+  ]
+}

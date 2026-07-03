@@ -23,6 +23,9 @@ data/**
 output/result/**
 !output/result/
 !output/result/.gitkeep
+output/result_5051/cable_matching_output.json
+output/result_5051/trace_candidate_support.csv
+output/result_5051/trace_feasible_candidate_space.csv
 output/preprocessed/**
 !output/preprocessed/
 !output/preprocessed/.gitkeep

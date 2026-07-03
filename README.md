@@ -967,3 +967,17 @@ Interpretation update:
 
 - The same non-rank compression/coverage metrics support both global multi-country corpora and single-country datasets.
 - Rank-based mismatch remains a relative comparison view over the chosen corpus, not the only cross-layer interpretation.
+
+## Large-Scale 5051 Run Artifacts
+
+The repository also supports a full-scale RIPE Atlas `msm_id = 5051` run.
+
+- Recommended output directory for the large-scale run: `output/result_5051/`
+- Small and medium summary artifacts from that run can be committed for inspection.
+- Extremely large link-level artifacts may remain local-only because they exceed practical GitHub size limits.
+
+Typical large local-only files from a full `5051` run:
+
+- `output/result_5051/cable_matching_output.json`
+- `output/result_5051/trace_feasible_candidate_space.csv`
+- `output/result_5051/trace_candidate_support.csv`

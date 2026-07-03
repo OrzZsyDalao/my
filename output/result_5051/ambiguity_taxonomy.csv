@@ -1,0 +1,9 @@
+﻿ambiguity_class,reviewer_concern,treatment,interpretation_boundary
+parallel_candidate_corridor,parallel cables cannot be reliably distinguished,corridor-level aggregation,no per-cable ground-truth claim
+multi_segment_possible,hop transition may hide multiple submarine segments,tag and inspect through robustness/profile,aggregate-only interpretation
+domestic_submarine_candidate,same-country paths may still use submarine cable infrastructure,separate ambiguity tag and profile,not treated as purely terrestrial
+large_landing_radius,IP geolocation uncertainty,weaker confidence and high-confidence subset/profile,not a high-confidence per-path attribution
+rtt_inconclusive,RTT feasibility boundary is weak,ambiguity tag,no strong candidate attribution
+many_candidates,underdetermined candidate set,preserve candidate-support distribution,no forced top-1 attribution
+geo_dominant_as_weak,spatial evidence and AS-economic evidence disagree,core-disagreement tag,evidence disagreement retained
+as_dominant_geo_ambiguous,AS-economic evidence stronger than spatial evidence,core-disagreement tag,evidence disagreement retained
