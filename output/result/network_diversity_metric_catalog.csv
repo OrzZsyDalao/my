@@ -1,0 +1,11 @@
+﻿network_definition,score_column,metric_role,interpretation,recommended_for_main_text
+as_egress_primary,network_diversity_as_egress_primary,primary_network_path_diversity,Source-country AS-egress transition diversity across cross-border traceroute observations.,True
+as_pair_primary,network_layer_diversity_score_as_only,primary_network_path_diversity,AS-pair and endpoint-AS diversity when explicit egress observations are sparse.,True
+dst_asn_primary,network_diversity_dst_asn_primary,endpoint_network_diversity,Destination-side ASN diversity of observed network endpoints.,True
+geographic_transition_supplementary,network_layer_diversity_score_country_only,supplementary_geographic_descriptor,"Country-transition diversity used as a supplementary geographic descriptor, not the main network-path measure.",False
+application_observation_supplementary,network_layer_diversity_score_probe_target_only,application_observation_richness,Probe/measurement/target multiplicity summarizing application-observation breadth.,False
+combined_supplementary,network_layer_diversity_score,supplementary_composite_score,"Composite diversity view combining AS, country, endpoint, and probe-target components.",False
+composite,network_layer_diversity_score,legacy_compatibility_alias,Backward-compatible alias for the historical composite network diversity score.,False
+as_only,network_layer_diversity_score_as_only,legacy_compatibility_alias,Backward-compatible alias for the historical AS-only network diversity score.,False
+country_only,network_layer_diversity_score_country_only,legacy_compatibility_alias,Backward-compatible alias for the historical country-only network diversity score.,False
+probe_target_only,network_layer_diversity_score_probe_target_only,legacy_compatibility_alias,Backward-compatible alias for the historical probe-target-only observation score.,False

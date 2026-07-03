@@ -1,0 +1,21 @@
+{
+  "raw_traces_file": "./data/traceroute_rundnsroot/root_dns_traces.json",
+  "resolved_raw_trace_files": [
+    "./data/traceroute_rundnsroot/root_dns_traces.json"
+  ],
+  "match_output_file": "./output/result/cable_matching_output.json",
+  "probe_meta_file": "D:\\Workspace\\infocom26\\data\\probe\\20251201.json",
+  "mmdb_path": "D:\\Workspace\\infocom26\\data\\ipinfo\\ipinfo_location.mmdb",
+  "pfx2as_file": "D:\\Workspace\\infocom26\\data\\pfx2as\\202512.pfx2as",
+  "cable_dir": "D:\\Workspace\\infocom26\\data\\cable",
+  "output_csv": "./output/result/country_root_cable_dependency_hybrid.csv",
+  "aggregation_mode": "weighted",
+  "collapse_roots": false,
+  "match_threshold": 0.5,
+  "confidence_bucket": null,
+  "cross_country": true,
+  "owner_multi_entity_mode": "full",
+  "rows": 2324,
+  "countries": 179,
+  "roots": 13
+}

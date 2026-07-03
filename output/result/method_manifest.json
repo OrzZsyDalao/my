@@ -1,0 +1,64 @@
+{
+  "method_name": "network_physical_diversity_auditing",
+  "claim_boundary": "candidate_support_not_ground_truth_cable_attribution",
+  "main_question": "whether network-layer diversity survives in the physical-candidate infrastructure space",
+  "primary_target_quadrant": "network_high_physical_low",
+  "primary_network_definition": "as_egress_primary",
+  "evidence_cores": [
+    "geo_spatial_core",
+    "as_economic_core",
+    "rtt_physical_feasibility_core"
+  ],
+  "fusion_model": "product_of_experts",
+  "physical_levels": [
+    "corridor",
+    "cable"
+  ],
+  "ambiguity_classes": [
+    "parallel_candidate_corridor",
+    "many_candidates",
+    "large_landing_radius",
+    "rtt_inconclusive",
+    "domestic_submarine_candidate",
+    "multi_segment_possible",
+    "geo_dominant_as_weak",
+    "as_dominant_geo_ambiguous"
+  ],
+  "primary_outputs": [
+    "unit_network_layer_diversity.csv",
+    "trace_feasible_candidate_space.csv",
+    "unit_physical_candidate_diversity_cable.csv",
+    "unit_physical_candidate_diversity_corridor.csv",
+    "unit_physical_candidate_set_diversity_cable.csv",
+    "unit_physical_candidate_set_diversity_corridor.csv",
+    "unit_physical_candidate_upper_bound.csv",
+    "unit_network_physical_mismatch.csv",
+    "unit_network_physical_mismatch_corridor.csv",
+    "unit_network_physical_upper_bound_mismatch.csv",
+    "paper_unit_physical_candidate_diversity.csv",
+    "paper_unit_network_physical_mismatch.csv",
+    "network_diversity_metric_catalog.csv",
+    "country_peeringdb_descriptors.csv",
+    "peeringdb_footprint_mismatch_summary.csv",
+    "network_physical_quadrants.csv",
+    "cable_vs_corridor_physical_diversity.csv",
+    "candidate_space_profile.csv",
+    "weighted_vs_conservative_diversity.csv",
+    "ambiguity_taxonomy.csv",
+    "ambiguity_summary.csv",
+    "unit_ambiguity_profile.csv"
+  ],
+  "network_definitions": [
+    "composite",
+    "as_only",
+    "country_only",
+    "probe_target_only",
+    "as_egress_primary",
+    "as_pair_primary",
+    "dst_asn_primary",
+    "geographic_transition_supplementary",
+    "application_observation_supplementary",
+    "combined_supplementary"
+  ],
+  "interpretation": "aggregate candidate-support distribution, not per-path physical ground truth"
+}

@@ -1,0 +1,9 @@
+﻿physical_level,network_physical_mismatch_category,unit_count,unit_share
+cable,network_high_physical_low,100,0.18552875695732837
+cable,network_high_physical_high,170,0.31539888682745826
+cable,network_low_physical_low,170,0.31539888682745826
+cable,network_low_physical_high,99,0.1836734693877551
+corridor,network_high_physical_low,56,0.1038961038961039
+corridor,network_high_physical_high,214,0.3970315398886827
+corridor,network_low_physical_low,214,0.3970315398886827
+corridor,network_low_physical_high,55,0.10204081632653061
