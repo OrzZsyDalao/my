@@ -868,3 +868,57 @@ evidence core 一致性统计。
 - Geo / RTT / landing / country 等约束主要用于排除不可能或高度不可信的候选。
 - `candidate_support` 是保留后的可行候选集合内部的 evidence support，不是 ground-truth 海缆使用概率。
 - conservative set-based diversity 把所有可行候选等权看待，因此应解释为“可能物理多样性上界”。
+
+## PeeringDB 外部互联描述符补充
+
+PeeringDB 在本仓库中只作为**外部网络层互联足迹描述符**使用：
+
+- 不参与 feasible candidate filtering
+- 不参与 candidate support scoring
+- 不参与 corridor assignment
+
+本地输入目录：
+
+- `data/peeringdb/`
+
+支持的本地 dump 文件：
+
+- `ix.json`
+- `fac.json`
+- `net.json`
+- `netfac.json`
+- `netixlan.json`
+
+新增脚本：
+
+- `python .\build_peeringdb_descriptors.py`
+
+主输出：
+
+- `output/result/country_peeringdb_descriptors.csv`
+
+主要字段：
+
+| 字段 | 含义 |
+| --- | --- |
+| `country` | 用于与 `src_country` 连接的国家键 |
+| `pdb_num_ixps` | 该国的 PeeringDB IXP 数量 |
+| `pdb_num_facilities` | 该国的 PeeringDB facility 数量 |
+| `pdb_num_networks` | 在该国有 facility presence 或 IXP participation 的唯一网络数 |
+| `pdb_num_network_facility_presence` | 该国 `netfac` 记录数 |
+| `pdb_num_ixp_participants` | 该国唯一 network-to-IXP participation 数 |
+| `pdb_ixp_participant_entropy` | 该国各 IXP 参与者数量分布的熵 |
+| `pdb_facility_participant_entropy` | 该国各 facility presence 数量分布的熵 |
+| `pdb_interconnection_footprint_score` | 透明、对数缩放的外部互联足迹描述符 |
+| `pdb_interconnection_footprint_percentile` | 在可用国家中的百分位 |
+| `pdb_interconnection_footprint_tier` | 按三分位划分的 `low` / `medium` / `high` |
+
+新增分层输出：
+
+- `output/result/peeringdb_footprint_mismatch_summary.csv`
+
+PeeringDB 描述符会并入：
+
+- `output/result/unit_network_physical_upper_bound_mismatch.csv`
+- `output/result/paper_unit_network_physical_mismatch.csv`
+- `output/result/robustness_conservative_candidate_audit.csv`（当描述符上下文可用时）

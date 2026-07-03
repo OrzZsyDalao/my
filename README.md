@@ -58,6 +58,9 @@ Root-level scripts such as `main_analysis.py` are thin wrappers that call the co
 5. `robustness_compare.py`  
    Reads the flattened candidate-support table and compares mismatch stability under different evidence views.
 
+6. `build_peeringdb_descriptors.py`
+   Reads local PeeringDB dump files from `data/peeringdb/` and builds country-level external interconnection footprint descriptors. These descriptors are only used for stratification and interpretation, not for feasible candidate filtering or candidate support scoring.
+
 ## Input File Reference
 
 ### Shared Input Files
@@ -147,6 +150,13 @@ Root-level scripts such as `main_analysis.py` are thin wrappers that call the co
 | `--input` | `output/result/trace_candidate_support.csv` | Flattened candidate-support table |
 | `--output` | `output/result/` | Directory for robustness outputs |
 
+### `python build_peeringdb_descriptors.py`
+
+| Parameter | Default | Meaning |
+| --- | --- | --- |
+| `--input-dir` | `data/peeringdb` | Directory containing local PeeringDB dumps such as `ix.json`, `fac.json`, `net.json`, `netfac.json`, and `netixlan.json` |
+| `--output` | `output/result/country_peeringdb_descriptors.csv` | Output descriptor CSV |
+
 ## Recommended Run Order
 
 ```powershell
@@ -155,6 +165,7 @@ python .\main_analysis.py
 python .\concerntration_analysis.py
 python .\postprocess_candidate_output.py --input .\output\result\cable_matching_output.json --output .\output\result
 python .\robustness_compare.py --input .\output\result\trace_candidate_support.csv --output .\output\result
+python .\build_peeringdb_descriptors.py
 ```
 
 ## Output File Reference
@@ -852,3 +863,49 @@ Interpretation boundary:
 - Geo/RTT/landing constraints are used primarily to exclude impossible or highly implausible candidates.
 - `candidate_support` is an evidence-support score inside the retained feasible set, not a ground-truth cable-usage probability.
 - Conservative set-based diversity treats all feasible candidates equally and should be interpreted as an upper bound on possible physical diversity.
+
+## PeeringDB Descriptor Additions
+
+PeeringDB is treated only as an external network-layer interconnection footprint descriptor. It is not used in feasible candidate filtering, candidate support scoring, or corridor assignment.
+
+Input directory:
+
+- `data/peeringdb/`
+
+Supported local dump files when present:
+
+- `ix.json`
+- `fac.json`
+- `net.json`
+- `netfac.json`
+- `netixlan.json`
+
+Primary descriptor output:
+
+- `output/result/country_peeringdb_descriptors.csv`
+
+Columns:
+
+| Column | Meaning |
+| --- | --- |
+| `country` | Source-country join key |
+| `pdb_num_ixps` | Number of PeeringDB IXPs in the country |
+| `pdb_num_facilities` | Number of PeeringDB facilities in the country |
+| `pdb_num_networks` | Number of unique networks with facility presence or IXP participation in the country |
+| `pdb_num_network_facility_presence` | Number of network-to-facility presence records in the country |
+| `pdb_num_ixp_participants` | Number of unique network-to-IXP participation pairs in the country |
+| `pdb_ixp_participant_entropy` | Shannon entropy of participant counts across IXPs |
+| `pdb_facility_participant_entropy` | Shannon entropy of facility-presence counts across facilities |
+| `pdb_interconnection_footprint_score` | Log-scaled external interconnection footprint descriptor |
+| `pdb_interconnection_footprint_percentile` | Percentile rank of the descriptor across available countries |
+| `pdb_interconnection_footprint_tier` | `low`, `medium`, or `high`, based on tertiles |
+
+Additional outputs:
+
+- `output/result/peeringdb_footprint_mismatch_summary.csv`
+
+PeeringDB descriptors are merged into:
+
+- `output/result/unit_network_physical_upper_bound_mismatch.csv`
+- `output/result/paper_unit_network_physical_mismatch.csv`
+- `output/result/robustness_conservative_candidate_audit.csv` when descriptor context is available

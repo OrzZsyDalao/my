@@ -17,6 +17,8 @@ try:
         build_unit_physical_candidate_diversity,
         annotate_projection_quality,
         ensure_corridor_columns,
+        load_peeringdb_descriptors,
+        merge_peeringdb_descriptors,
         resolve_corridor_candidate_column,
     )
 except ModuleNotFoundError:
@@ -37,6 +39,8 @@ except ModuleNotFoundError:
         build_unit_physical_candidate_diversity,
         annotate_projection_quality,
         ensure_corridor_columns,
+        load_peeringdb_descriptors,
+        merge_peeringdb_descriptors,
         resolve_corridor_candidate_column,
     )
 
@@ -339,6 +343,24 @@ def numeric_series_or_default(frame: pd.DataFrame, column: str, default: float =
     return pd.Series(np.full(len(frame), default, dtype=float), index=frame.index, dtype=float)
 
 
+def summarize_peeringdb_context(frame: pd.DataFrame) -> Dict[str, object]:
+    """Summarize optional PeeringDB descriptor coverage for an aggregate robustness slice."""
+    if frame.empty or "pdb_interconnection_footprint_percentile" not in frame.columns:
+        return {
+            "pdb_country_coverage": 0,
+            "median_pdb_interconnection_footprint_percentile": np.nan,
+            "dominant_pdb_interconnection_footprint_tier": "",
+        }
+    percentile_series = pd.to_numeric(frame["pdb_interconnection_footprint_percentile"], errors="coerce").dropna()
+    tier_series = frame.get("pdb_interconnection_footprint_tier", pd.Series(index=frame.index, dtype=object)).dropna().astype(str)
+    dominant_tier = tier_series.mode().iloc[0] if not tier_series.empty else ""
+    return {
+        "pdb_country_coverage": int(frame["src_country"].replace("", np.nan).dropna().nunique()) if "src_country" in frame.columns else 0,
+        "median_pdb_interconnection_footprint_percentile": float(percentile_series.median()) if not percentile_series.empty else np.nan,
+        "dominant_pdb_interconnection_footprint_tier": dominant_tier,
+    }
+
+
 def main() -> None:
     """Compare evidence settings and their network-physical mismatch stability."""
     args = parse_args()
@@ -375,6 +397,7 @@ def main() -> None:
     feasible_corridor_candidate_col = resolve_corridor_candidate_column(feasible_frame)
 
     network_frame = build_unit_network_layer_diversity(feasible_frame if not feasible_frame.empty else frame)
+    peeringdb_descriptors = load_peeringdb_descriptors(args.output)
     geo_frame = normalize_within_links(frame, "geo_spatial_score", "geo_only_support")
     as_frame = normalize_within_links(frame, "as_economic_score", "as_only_support")
     high_conf_frame = frame[
@@ -728,6 +751,7 @@ def main() -> None:
                     network_score_column=network_score_column,
                     network_definition=network_definition,
                 )
+                weighted_mismatch = merge_peeringdb_descriptors(weighted_mismatch, peeringdb_descriptors)
 
                 conservative_physical = build_unit_physical_feasible_set_diversity(
                     feasible_subset,
@@ -742,6 +766,7 @@ def main() -> None:
                     (conservative_upper["network_definition"].astype(str) == network_definition)
                     & (conservative_upper["physical_level"].astype(str) == physical_level)
                 ].copy()
+                conservative_mismatch = merge_peeringdb_descriptors(conservative_mismatch, peeringdb_descriptors)
 
                 views = [
                     ("weighted_support", weighted_mismatch),
@@ -823,6 +848,7 @@ def main() -> None:
                             }
                         ).dropna()
                         rank_gap_corr = spearman_corr(aligned["baseline"], aligned["current"]) if not aligned.empty else 0.0
+                    peeringdb_context = summarize_peeringdb_context(mismatch)
 
                     conservative_rows.append(
                         {
@@ -836,6 +862,9 @@ def main() -> None:
                             "target_recall_vs_baseline": float(len(intersection) / len(baseline_target_units)) if baseline_target_units else 0.0,
                             "quadrant_agreement_rate": agreement_rate,
                             "rank_gap_spearman_vs_baseline": rank_gap_corr,
+                            "pdb_country_coverage": peeringdb_context["pdb_country_coverage"],
+                            "median_pdb_interconnection_footprint_percentile": peeringdb_context["median_pdb_interconnection_footprint_percentile"],
+                            "dominant_pdb_interconnection_footprint_tier": peeringdb_context["dominant_pdb_interconnection_footprint_tier"],
                             "interpretation": build_conservative_audit_interpretation(
                                 candidate_view,
                                 physical_level,

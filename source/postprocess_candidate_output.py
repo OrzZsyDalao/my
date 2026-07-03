@@ -13,6 +13,7 @@ SOURCE_DIR = os.path.dirname(os.path.abspath(__file__)) if "__file__" in locals(
 BASE_DIR = os.path.dirname(SOURCE_DIR)
 DEFAULT_INPUT = os.path.join(BASE_DIR, "output", "result", "cable_matching_output.json")
 DEFAULT_OUTPUT = os.path.join(BASE_DIR, "output", "result")
+PEERINGDB_DESCRIPTOR_PATH = os.path.join(DEFAULT_OUTPUT, "country_peeringdb_descriptors.csv")
 DEFAULT_UNIT_FIELDS = ["src_country", "msm_id", "file_name"]
 TARGET_MISMATCH_CATEGORY = "network_high_physical_low"
 QUADRANT_ORDER = [
@@ -369,6 +370,35 @@ def read_candidate_output(path: str) -> List[Dict[str, Any]]:
     if not isinstance(payload, list):
         raise ValueError("Expected cable_matching_output.json to be a JSON array.")
     return payload
+
+
+def load_peeringdb_descriptors(output_dir: str) -> pd.DataFrame:
+    """Load optional country-level PeeringDB descriptors from the standard result location."""
+    path = os.path.join(output_dir, "country_peeringdb_descriptors.csv")
+    if not os.path.exists(path):
+        return pd.DataFrame()
+    try:
+        frame = pd.read_csv(path)
+    except Exception:
+        return pd.DataFrame()
+    if "country" not in frame.columns:
+        return pd.DataFrame()
+    frame["country"] = frame["country"].fillna("").astype(str).str.upper()
+    return frame
+
+
+def merge_peeringdb_descriptors(frame: pd.DataFrame, peeringdb_frame: pd.DataFrame) -> pd.DataFrame:
+    """Attach optional PeeringDB country descriptors to a unit-level frame via src_country."""
+    if frame.empty or peeringdb_frame.empty or "src_country" not in frame.columns:
+        return frame
+    result = frame.copy()
+    descriptor_columns = [column for column in peeringdb_frame.columns if column != "country"]
+    result["src_country"] = result["src_country"].fillna("").astype(str).str.upper()
+    return result.merge(
+        peeringdb_frame.rename(columns={"country": "src_country"})[["src_country", *descriptor_columns]],
+        on="src_country",
+        how="left",
+    )
 
 
 def build_unit_id(link_info: Dict[str, Any], unit_fields: List[str]) -> str:
@@ -738,6 +768,7 @@ def build_unit_network_layer_diversity(frame: pd.DataFrame) -> pd.DataFrame:
         rows.append(
             {
                 "unit_id": unit_id,
+                "src_country": str(group["src_country"].iloc[0]) if "src_country" in group.columns and not group.empty else "NA",
                 "num_probes": num_probes,
                 "num_dst_countries": num_dst_countries,
                 "num_src_dst_country_pairs": num_country_pairs,
@@ -951,6 +982,9 @@ def build_unit_network_physical_upper_bound_mismatch(
             current["physical_upper_bound_percentile"] = current["physical_candidate_diversity_upper_bound"].rank(
                 method="average", pct=True, ascending=True
             )
+            current["network_rank_upper_bound"] = current["network_diversity_score"].rank(method="dense", ascending=False)
+            current["physical_upper_rank"] = current["physical_candidate_diversity_upper_bound"].rank(method="dense", ascending=False)
+            current["rank_gap_upper_bound"] = current["physical_upper_rank"] - current["network_rank_upper_bound"]
             current["network_physical_upper_bound_percentile_gap"] = (
                 current["network_percentile"] - current["physical_upper_bound_percentile"]
             )
@@ -977,17 +1011,26 @@ def build_unit_network_physical_upper_bound_mismatch(
                 current[
                     [
                         "unit_id",
+                        "src_country",
                         "network_definition",
                         "physical_level",
                         "network_diversity_score",
                         "physical_candidate_diversity_upper_bound",
                         "network_percentile",
                         "physical_upper_bound_percentile",
+                        "network_rank_upper_bound",
+                        "physical_upper_rank",
+                        "rank_gap_upper_bound",
                         "network_physical_upper_bound_percentile_gap",
                         "network_high",
                         "physical_upper_low",
                         "upper_bound_mismatch_category",
                         "strict_upper_bound_mismatch_75_25",
+                        *[
+                            column
+                            for column in current.columns
+                            if column.startswith("pdb_")
+                        ],
                     ]
                 ]
             )
@@ -996,12 +1039,16 @@ def build_unit_network_physical_upper_bound_mismatch(
         return pd.DataFrame(
             columns=[
                 "unit_id",
+                "src_country",
                 "network_definition",
                 "physical_level",
                 "network_diversity_score",
                 "physical_candidate_diversity_upper_bound",
                 "network_percentile",
                 "physical_upper_bound_percentile",
+                "network_rank_upper_bound",
+                "physical_upper_rank",
+                "rank_gap_upper_bound",
                 "network_physical_upper_bound_percentile_gap",
                 "network_high",
                 "physical_upper_low",
@@ -1219,6 +1266,49 @@ def build_weighted_vs_conservative_diversity(
     return pd.concat(frames, ignore_index=True).sort_values(["physical_level", "unit_id"]).reset_index(drop=True)
 
 
+def build_peeringdb_footprint_mismatch_summary(upper_bound_mismatch: pd.DataFrame) -> pd.DataFrame:
+    """Summarize strict upper-bound mismatch rates by PeeringDB footprint tier."""
+    columns = [
+        "pdb_interconnection_footprint_tier",
+        "physical_level",
+        "network_definition",
+        "num_units",
+        "strict_upper_bound_mismatch_units",
+        "strict_upper_bound_mismatch_share",
+        "median_network_percentile",
+        "median_physical_upper_bound_percentile",
+        "median_rank_gap",
+    ]
+    if upper_bound_mismatch.empty or "pdb_interconnection_footprint_tier" not in upper_bound_mismatch.columns:
+        return pd.DataFrame(columns=columns)
+
+    working = upper_bound_mismatch.copy()
+    working["pdb_interconnection_footprint_tier"] = (
+        working["pdb_interconnection_footprint_tier"].fillna("unknown").astype(str)
+    )
+    if "rank_gap_upper_bound" not in working.columns:
+        working["rank_gap_upper_bound"] = 0.0
+    grouped = (
+        working.groupby(["pdb_interconnection_footprint_tier", "physical_level", "network_definition"], dropna=False)
+        .agg(
+            num_units=("unit_id", "nunique"),
+            strict_upper_bound_mismatch_units=("strict_upper_bound_mismatch_75_25", "sum"),
+            median_network_percentile=("network_percentile", "median"),
+            median_physical_upper_bound_percentile=("physical_upper_bound_percentile", "median"),
+            median_rank_gap=("rank_gap_upper_bound", "median"),
+        )
+        .reset_index()
+    )
+    grouped["strict_upper_bound_mismatch_share"] = np.where(
+        grouped["num_units"] > 0,
+        grouped["strict_upper_bound_mismatch_units"] / grouped["num_units"],
+        0.0,
+    )
+    return grouped[columns].sort_values(
+        ["pdb_interconnection_footprint_tier", "physical_level", "network_definition"]
+    ).reset_index(drop=True)
+
+
 def build_unit_ambiguity_profile(frame: pd.DataFrame) -> pd.DataFrame:
     """Aggregate per-unit ambiguity support shares into a wide profile table."""
     columns = [
@@ -1389,6 +1479,8 @@ def build_method_manifest() -> Dict[str, Any]:
             "unit_network_physical_upper_bound_mismatch.csv",
             "paper_unit_physical_candidate_diversity.csv",
             "paper_unit_network_physical_mismatch.csv",
+            "country_peeringdb_descriptors.csv",
+            "peeringdb_footprint_mismatch_summary.csv",
             "network_physical_quadrants.csv",
             "cable_vs_corridor_physical_diversity.csv",
             "candidate_space_profile.csv",
@@ -1991,6 +2083,8 @@ def main() -> None:
             "corridor": corridor_physical_uniform,
         },
     )
+    peeringdb_descriptors = load_peeringdb_descriptors(args.output)
+    upper_bound_mismatch = merge_peeringdb_descriptors(upper_bound_mismatch, peeringdb_descriptors)
     cable_quadrants = build_quadrant_summary(cable_mismatch, "cable")
     corridor_quadrants = build_quadrant_summary(corridor_mismatch, "corridor")
     quadrant_summary = pd.concat([cable_quadrants, corridor_quadrants], ignore_index=True)
@@ -2010,6 +2104,7 @@ def main() -> None:
     ambiguity_taxonomy = build_ambiguity_taxonomy()
     core_agreement_summary = build_core_agreement_summary(feasible_frame if not feasible_frame.empty else candidate_frame)
     as_reranking_effect = build_as_reranking_effect(candidate_frame if not candidate_frame.empty else feasible_frame)
+    peeringdb_footprint_summary = build_peeringdb_footprint_mismatch_summary(upper_bound_mismatch)
     cable_corridor_comparison = build_cable_corridor_comparison(
         cable_physical,
         corridor_physical,
@@ -2043,6 +2138,7 @@ def main() -> None:
     upper_bound_mismatch_path = os.path.join(args.output, "unit_network_physical_upper_bound_mismatch.csv")
     paper_physical_path = os.path.join(args.output, "paper_unit_physical_candidate_diversity.csv")
     paper_mismatch_path = os.path.join(args.output, "paper_unit_network_physical_mismatch.csv")
+    peeringdb_summary_path = os.path.join(args.output, "peeringdb_footprint_mismatch_summary.csv")
     legacy_mismatch_path = os.path.join(args.output, "unit_mismatch.csv")
     quadrant_summary_path = os.path.join(args.output, "network_physical_quadrants.csv")
     cable_corridor_path = os.path.join(args.output, "cable_vs_corridor_physical_diversity.csv")
@@ -2073,6 +2169,7 @@ def main() -> None:
     upper_bound_mismatch.loc[
         upper_bound_mismatch["physical_level"].astype(str) == "corridor"
     ].to_csv(paper_mismatch_path, index=False, encoding="utf-8-sig")
+    peeringdb_footprint_summary.to_csv(peeringdb_summary_path, index=False, encoding="utf-8-sig")
     cable_mismatch.to_csv(legacy_mismatch_path, index=False, encoding="utf-8-sig")
     quadrant_summary.to_csv(quadrant_summary_path, index=False, encoding="utf-8-sig")
     cable_corridor_comparison.to_csv(cable_corridor_path, index=False, encoding="utf-8-sig")
@@ -2128,6 +2225,7 @@ def main() -> None:
     print(f"Saved upper-bound mismatch table to {upper_bound_mismatch_path}")
     print(f"Saved paper-ready physical diversity alias to {paper_physical_path}")
     print(f"Saved paper-ready mismatch alias to {paper_mismatch_path}")
+    print(f"Saved PeeringDB footprint mismatch summary to {peeringdb_summary_path}")
     print(f"Saved cable-vs-corridor comparison table to {cable_corridor_path}")
     print(f"Saved candidate-space profile to {candidate_space_profile_path}")
     print(f"Saved weighted-vs-conservative diversity table to {weighted_vs_conservative_path}")
