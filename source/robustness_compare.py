@@ -8,6 +8,7 @@ import pandas as pd
 try:
     from source.postprocess_candidate_output import (
         TARGET_MISMATCH_CATEGORY,
+        LEGACY_WEIGHTED_TARGET_MISMATCH_CATEGORY,
         NETWORK_DEFINITION_COLUMNS,
         PAPER_PRIMARY_NETWORK_DEFINITION,
         build_quadrant_summary,
@@ -31,6 +32,7 @@ except ModuleNotFoundError:
         sys.path.append(BASE_DIR)
     from source.postprocess_candidate_output import (  # type: ignore
         TARGET_MISMATCH_CATEGORY,
+        LEGACY_WEIGHTED_TARGET_MISMATCH_CATEGORY,
         NETWORK_DEFINITION_COLUMNS,
         PAPER_PRIMARY_NETWORK_DEFINITION,
         build_quadrant_summary,
@@ -218,7 +220,7 @@ def target_unit_set(mismatch_frame: pd.DataFrame) -> Set[str]:
         return set()
     return set(
         mismatch_frame.loc[
-            mismatch_frame["network_physical_mismatch_category"].astype(str) == TARGET_MISMATCH_CATEGORY,
+            mismatch_frame["network_physical_mismatch_category"].astype(str) == LEGACY_WEIGHTED_TARGET_MISMATCH_CATEGORY,
             "unit_id",
         ]
     )

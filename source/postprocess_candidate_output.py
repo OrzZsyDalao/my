@@ -15,7 +15,9 @@ DEFAULT_INPUT = os.path.join(BASE_DIR, "output", "result", "cable_matching_outpu
 DEFAULT_OUTPUT = os.path.join(BASE_DIR, "output", "result")
 PEERINGDB_DESCRIPTOR_PATH = os.path.join(DEFAULT_OUTPUT, "country_peeringdb_descriptors.csv")
 DEFAULT_UNIT_FIELDS = ["src_country", "msm_id", "file_name"]
-TARGET_MISMATCH_CATEGORY = "network_high_physical_low"
+# Paper-primary relative target for the upper-bound mismatch view.
+TARGET_MISMATCH_CATEGORY = "network_high_physical_upper_low"
+LEGACY_WEIGHTED_TARGET_MISMATCH_CATEGORY = "network_high_physical_low"
 PAPER_PRIMARY_NETWORK_DEFINITION = "as_egress_primary"
 PAPER_PRIMARY_PHYSICAL_LEVEL = "corridor"
 QUADRANT_ORDER = [
@@ -30,6 +32,12 @@ QUADRANT_COLORS = {
     "network_low_physical_low": "#af7ac5",
     "network_low_physical_high": "#52be80",
 }
+# `as_egress_primary` is the paper-primary network diversity view.
+# `geographic_transition_supplementary` is a supplementary geographic descriptor, not
+# the primary network diversity measure.
+# `application_observation_supplementary` captures coverage/richness rather than
+# effective network-path diversity.
+# Rank/percentile mismatch outputs remain auxiliary relative views over the chosen corpus.
 NETWORK_DEFINITION_COLUMNS = {
     "composite": "network_layer_diversity_score",
     "as_only": "network_layer_diversity_score_as_only",
@@ -85,10 +93,21 @@ PRIMARY_CROSS_LAYER_COLUMNS = [
     "effective_feasible_candidates",
     "effective_feasible_corridors",
     "physical_candidate_diversity_upper_bound",
+    "best_case_physical_candidate_diversity_upper_bound",
+    "physical_candidate_concentration_tier",
+    "is_physical_candidate_concentrated",
+    "physical_candidate_exposure_class",
+    "sufficient_observation_for_physical_concentration",
+    "concentration_interpretation",
     "network_to_physical_compression_ratio",
     "log_network_physical_compression_gap",
     "physical_coverage_ratio",
     "absolute_compression_tier",
+    "network_physical_compression_tier",
+    "joint_cross_layer_risk_class",
+    "is_network_physical_mismatch",
+    "is_physical_candidate_concentration_only",
+    "is_joint_physical_concentration_and_mismatch",
     "network_percentile",
     "physical_upper_bound_percentile",
     "rank_gap_upper_bound",
@@ -903,6 +922,127 @@ def classify_absolute_compression_tier(log_gap: float) -> str:
     return "severe_compression"
 
 
+def classify_physical_candidate_concentration_tier(d_phys: Any) -> str:
+    """Classify how narrow the best-case feasible physical-candidate space is."""
+    numeric = pd.to_numeric(pd.Series([d_phys]), errors="coerce").iloc[0]
+    if pd.isna(numeric):
+        return "unknown_physical_candidate_concentration"
+    if numeric <= 1:
+        return "severe_physical_candidate_concentration"
+    if numeric <= 2:
+        return "moderate_physical_candidate_concentration"
+    if numeric <= 4:
+        return "weak_physical_candidate_concentration"
+    return "broad_physical_candidate_space"
+
+
+def classify_network_physical_compression_tier(log_gap: Any) -> str:
+    """Classify whether network effective diversity exceeds the best-case physical upper bound."""
+    numeric = pd.to_numeric(pd.Series([log_gap]), errors="coerce").iloc[0]
+    if pd.isna(numeric):
+        return "unknown_network_physical_compression"
+    if numeric <= 0:
+        return "no_network_physical_compression"
+    if numeric < math.log(2):
+        return "weak_network_physical_compression"
+    if numeric < math.log(4):
+        return "moderate_network_physical_compression"
+    return "severe_network_physical_compression"
+
+
+def add_best_case_physical_candidate_audit_metrics(frame: pd.DataFrame) -> pd.DataFrame:
+    """Attach best-case physical-candidate concentration and joint cross-layer risk metrics."""
+    result = frame.copy()
+    if result.empty:
+        return result
+
+    result["best_case_physical_candidate_diversity_upper_bound"] = pd.to_numeric(
+        result.get("physical_candidate_diversity_upper_bound", pd.Series(index=result.index, dtype=float)),
+        errors="coerce",
+    )
+    result["physical_candidate_concentration_tier"] = result[
+        "best_case_physical_candidate_diversity_upper_bound"
+    ].apply(classify_physical_candidate_concentration_tier)
+    concentrated_tiers = {
+        "severe_physical_candidate_concentration",
+        "moderate_physical_candidate_concentration",
+        "weak_physical_candidate_concentration",
+    }
+    result["is_physical_candidate_concentrated"] = result["physical_candidate_concentration_tier"].isin(concentrated_tiers)
+    result["physical_candidate_exposure_class"] = np.where(
+        result["is_physical_candidate_concentrated"],
+        "concentrated_best_case_physical_candidate_space",
+        np.where(
+            result["physical_candidate_concentration_tier"] == "broad_physical_candidate_space",
+            "broad_best_case_physical_candidate_space",
+            "unknown_best_case_physical_candidate_space",
+        ),
+    )
+    num_probes = pd.to_numeric(result.get("num_probes", pd.Series(index=result.index, dtype=float)), errors="coerce").fillna(0.0)
+    num_egress_links = pd.to_numeric(
+        result.get("num_egress_links", pd.Series(index=result.index, dtype=float)),
+        errors="coerce",
+    ).fillna(0.0)
+    num_measurements = pd.to_numeric(
+        result.get("num_measurements", pd.Series(index=result.index, dtype=float)),
+        errors="coerce",
+    ).fillna(0.0)
+    result["sufficient_observation_for_physical_concentration"] = (
+        (num_probes >= 3) | (num_egress_links >= 3) | (num_measurements >= 2)
+    )
+    result["concentration_interpretation"] = np.where(
+        result["physical_candidate_concentration_tier"] == "broad_physical_candidate_space",
+        "broad_physical_candidate_space",
+        np.where(
+            result["is_physical_candidate_concentrated"] & result["sufficient_observation_for_physical_concentration"],
+            "auditable_physical_candidate_concentration",
+            np.where(
+                result["is_physical_candidate_concentrated"],
+                "low_observation_concentration_signal",
+                "unknown_physical_candidate_concentration",
+            ),
+        ),
+    )
+    result["network_physical_compression_tier"] = result["log_network_physical_compression_gap"].apply(
+        classify_network_physical_compression_tier
+    )
+    compression_tiers = {
+        "weak_network_physical_compression",
+        "moderate_network_physical_compression",
+        "severe_network_physical_compression",
+    }
+    result["is_network_physical_mismatch"] = result["network_physical_compression_tier"].isin(compression_tiers)
+    result["joint_cross_layer_risk_class"] = np.where(
+        result["is_physical_candidate_concentrated"] & result["is_network_physical_mismatch"],
+        "physical_concentration_with_network_physical_compression",
+        np.where(
+            result["is_physical_candidate_concentrated"]
+            & (result["network_physical_compression_tier"] == "no_network_physical_compression"),
+            "physical_concentration_without_compression",
+            np.where(
+                (~result["is_physical_candidate_concentrated"])
+                & (result["physical_candidate_concentration_tier"] == "broad_physical_candidate_space")
+                & result["is_network_physical_mismatch"],
+                "compression_without_physical_concentration",
+                np.where(
+                    (~result["is_physical_candidate_concentrated"])
+                    & (result["physical_candidate_concentration_tier"] == "broad_physical_candidate_space")
+                    & (result["network_physical_compression_tier"] == "no_network_physical_compression"),
+                    "broad_physical_candidate_space_no_compression",
+                    "unknown_joint_cross_layer_risk",
+                ),
+            ),
+        ),
+    )
+    result["is_physical_candidate_concentration_only"] = (
+        result["joint_cross_layer_risk_class"] == "physical_concentration_without_compression"
+    )
+    result["is_joint_physical_concentration_and_mismatch"] = (
+        result["joint_cross_layer_risk_class"] == "physical_concentration_with_network_physical_compression"
+    )
+    return result
+
+
 def add_cross_layer_relative_metrics(frame: pd.DataFrame) -> pd.DataFrame:
     """Attach optional relative rank/percentile comparison metrics to a cross-layer audit table."""
     result = frame.copy()
@@ -990,12 +1130,28 @@ def build_cross_layer_audit_frame(
     audit_frame["absolute_compression_tier"] = audit_frame["log_network_physical_compression_gap"].apply(
         classify_absolute_compression_tier
     )
+    audit_frame = add_best_case_physical_candidate_audit_metrics(audit_frame)
     audit_frame = add_cross_layer_relative_metrics(audit_frame)
     audit_frame = merge_peeringdb_descriptors(audit_frame, peeringdb_frame)
 
     for column in PRIMARY_CROSS_LAYER_COLUMNS:
         if column not in audit_frame.columns:
-            audit_frame[column] = np.nan if column not in {"unit_id", "src_country", "service_id", "msm_id", "file_name", "physical_level", "absolute_compression_tier", "upper_bound_mismatch_category", "pdb_interconnection_footprint_tier"} else "NA"
+            audit_frame[column] = np.nan if column not in {
+                "unit_id",
+                "src_country",
+                "service_id",
+                "msm_id",
+                "file_name",
+                "physical_level",
+                "absolute_compression_tier",
+                "physical_candidate_concentration_tier",
+                "physical_candidate_exposure_class",
+                "concentration_interpretation",
+                "network_physical_compression_tier",
+                "joint_cross_layer_risk_class",
+                "upper_bound_mismatch_category",
+                "pdb_interconnection_footprint_tier",
+            } else "NA"
     return audit_frame[PRIMARY_CROSS_LAYER_COLUMNS].sort_values(
         ["src_country", "service_id", "msm_id", "file_name", "physical_level", "unit_id"]
     ).reset_index(drop=True)
@@ -1013,10 +1169,25 @@ def build_cross_layer_metric_summary(named_frames: Dict[str, pd.DataFrame]) -> p
         "median_log_network_physical_compression_gap",
         "median_physical_coverage_ratio",
         "strict_upper_bound_mismatch_rate",
+        "severe_physical_concentration_rows",
+        "moderate_physical_concentration_rows",
+        "weak_physical_concentration_rows",
+        "broad_physical_candidate_space_rows",
+        "physical_concentration_rows",
+        "physical_concentration_share",
+        "auditable_physical_concentration_rows",
         "no_compression_rows",
         "weak_compression_rows",
         "moderate_compression_rows",
         "severe_compression_rows",
+        "no_network_physical_compression_rows",
+        "weak_network_physical_compression_rows",
+        "moderate_network_physical_compression_rows",
+        "severe_network_physical_compression_rows",
+        "physical_concentration_with_network_physical_compression_rows",
+        "physical_concentration_without_compression_rows",
+        "compression_without_physical_concentration_rows",
+        "broad_physical_candidate_space_no_compression_rows",
     ]
     rows: List[Dict[str, Any]] = []
     for output_name, frame in named_frames.items():
@@ -1024,6 +1195,10 @@ def build_cross_layer_metric_summary(named_frames: Dict[str, pd.DataFrame]) -> p
             continue
         for physical_level, group in frame.groupby("physical_level", dropna=False):
             tier_counts = group["absolute_compression_tier"].astype(str).value_counts()
+            concentration_counts = group["physical_candidate_concentration_tier"].astype(str).value_counts()
+            network_compression_counts = group["network_physical_compression_tier"].astype(str).value_counts()
+            joint_counts = group["joint_cross_layer_risk_class"].astype(str).value_counts()
+            physical_concentration_rows = int(pd.Series(group["is_physical_candidate_concentrated"]).fillna(False).astype(bool).sum())
             rows.append(
                 {
                     "output_name": output_name,
@@ -1037,13 +1212,228 @@ def build_cross_layer_metric_summary(named_frames: Dict[str, pd.DataFrame]) -> p
                     "strict_upper_bound_mismatch_rate": float(
                         pd.Series(group["strict_upper_bound_mismatch_75_25"]).fillna(False).astype(bool).mean()
                     ),
+                    "severe_physical_concentration_rows": int(concentration_counts.get("severe_physical_candidate_concentration", 0)),
+                    "moderate_physical_concentration_rows": int(concentration_counts.get("moderate_physical_candidate_concentration", 0)),
+                    "weak_physical_concentration_rows": int(concentration_counts.get("weak_physical_candidate_concentration", 0)),
+                    "broad_physical_candidate_space_rows": int(concentration_counts.get("broad_physical_candidate_space", 0)),
+                    "physical_concentration_rows": physical_concentration_rows,
+                    "physical_concentration_share": float(physical_concentration_rows / len(group)) if len(group) > 0 else 0.0,
+                    "auditable_physical_concentration_rows": int(
+                        (group["concentration_interpretation"].astype(str) == "auditable_physical_candidate_concentration").sum()
+                    ),
                     "no_compression_rows": int(tier_counts.get("no_compression", 0)),
                     "weak_compression_rows": int(tier_counts.get("weak_compression", 0)),
                     "moderate_compression_rows": int(tier_counts.get("moderate_compression", 0)),
                     "severe_compression_rows": int(tier_counts.get("severe_compression", 0)),
+                    "no_network_physical_compression_rows": int(network_compression_counts.get("no_network_physical_compression", 0)),
+                    "weak_network_physical_compression_rows": int(network_compression_counts.get("weak_network_physical_compression", 0)),
+                    "moderate_network_physical_compression_rows": int(network_compression_counts.get("moderate_network_physical_compression", 0)),
+                    "severe_network_physical_compression_rows": int(network_compression_counts.get("severe_network_physical_compression", 0)),
+                    "physical_concentration_with_network_physical_compression_rows": int(
+                        joint_counts.get("physical_concentration_with_network_physical_compression", 0)
+                    ),
+                    "physical_concentration_without_compression_rows": int(
+                        joint_counts.get("physical_concentration_without_compression", 0)
+                    ),
+                    "compression_without_physical_concentration_rows": int(
+                        joint_counts.get("compression_without_physical_concentration", 0)
+                    ),
+                    "broad_physical_candidate_space_no_compression_rows": int(
+                        joint_counts.get("broad_physical_candidate_space_no_compression", 0)
+                    ),
                 }
             )
     return pd.DataFrame(rows, columns=columns).sort_values(["output_name", "physical_level"]).reset_index(drop=True)
+
+
+def build_physical_candidate_concentration_summary(named_frames: Dict[str, pd.DataFrame]) -> pd.DataFrame:
+    """Summarize best-case physical-candidate concentration across cross-layer audit outputs."""
+    columns = [
+        "output_scope",
+        "physical_level",
+        "rows",
+        "severe_physical_concentration_rows",
+        "moderate_physical_concentration_rows",
+        "weak_physical_concentration_rows",
+        "broad_physical_candidate_space_rows",
+        "physical_concentration_rows",
+        "physical_concentration_share",
+        "auditable_physical_concentration_rows",
+        "low_observation_concentration_signal_rows",
+        "median_physical_candidate_diversity_upper_bound",
+        "p25_physical_candidate_diversity_upper_bound",
+        "p75_physical_candidate_diversity_upper_bound",
+        "median_num_feasible_corridors",
+        "median_network_effective_diversity",
+        "median_network_to_physical_compression_ratio",
+        "median_log_network_physical_compression_gap",
+        "median_physical_coverage_ratio",
+    ]
+    rows: List[Dict[str, Any]] = []
+    for output_scope, frame in named_frames.items():
+        if frame.empty:
+            continue
+        for physical_level, group in frame.groupby("physical_level", dropna=False):
+            concentration_counts = group["physical_candidate_concentration_tier"].astype(str).value_counts()
+            physical_concentration_rows = int(pd.Series(group["is_physical_candidate_concentrated"]).fillna(False).astype(bool).sum())
+            rows.append(
+                {
+                    "output_scope": output_scope,
+                    "physical_level": physical_level,
+                    "rows": int(len(group)),
+                    "severe_physical_concentration_rows": int(concentration_counts.get("severe_physical_candidate_concentration", 0)),
+                    "moderate_physical_concentration_rows": int(concentration_counts.get("moderate_physical_candidate_concentration", 0)),
+                    "weak_physical_concentration_rows": int(concentration_counts.get("weak_physical_candidate_concentration", 0)),
+                    "broad_physical_candidate_space_rows": int(concentration_counts.get("broad_physical_candidate_space", 0)),
+                    "physical_concentration_rows": physical_concentration_rows,
+                    "physical_concentration_share": float(physical_concentration_rows / len(group)) if len(group) > 0 else 0.0,
+                    "auditable_physical_concentration_rows": int(
+                        (group["concentration_interpretation"].astype(str) == "auditable_physical_candidate_concentration").sum()
+                    ),
+                    "low_observation_concentration_signal_rows": int(
+                        (group["concentration_interpretation"].astype(str) == "low_observation_concentration_signal").sum()
+                    ),
+                    "median_physical_candidate_diversity_upper_bound": float(pd.to_numeric(group["physical_candidate_diversity_upper_bound"], errors="coerce").median()),
+                    "p25_physical_candidate_diversity_upper_bound": float(pd.to_numeric(group["physical_candidate_diversity_upper_bound"], errors="coerce").quantile(0.25)),
+                    "p75_physical_candidate_diversity_upper_bound": float(pd.to_numeric(group["physical_candidate_diversity_upper_bound"], errors="coerce").quantile(0.75)),
+                    "median_num_feasible_corridors": float(pd.to_numeric(group["num_feasible_corridors"], errors="coerce").median()),
+                    "median_network_effective_diversity": float(pd.to_numeric(group["network_effective_diversity"], errors="coerce").median()),
+                    "median_network_to_physical_compression_ratio": float(pd.to_numeric(group["network_to_physical_compression_ratio"], errors="coerce").median()),
+                    "median_log_network_physical_compression_gap": float(pd.to_numeric(group["log_network_physical_compression_gap"], errors="coerce").median()),
+                    "median_physical_coverage_ratio": float(pd.to_numeric(group["physical_coverage_ratio"], errors="coerce").median()),
+                }
+            )
+    return pd.DataFrame(rows, columns=columns).sort_values(["output_scope", "physical_level"]).reset_index(drop=True)
+
+
+def build_joint_cross_layer_risk_summary(named_frames: Dict[str, pd.DataFrame]) -> pd.DataFrame:
+    """Summarize joint physical concentration and network-to-physical compression risk classes."""
+    columns = [
+        "output_scope",
+        "physical_level",
+        "joint_cross_layer_risk_class",
+        "rows",
+        "row_share_within_scope_physical_level",
+        "median_network_effective_diversity",
+        "median_physical_candidate_diversity_upper_bound",
+        "median_network_to_physical_compression_ratio",
+        "median_log_network_physical_compression_gap",
+        "median_physical_coverage_ratio",
+        "median_pdb_interconnection_footprint_percentile",
+    ]
+    rows: List[Dict[str, Any]] = []
+    for output_scope, frame in named_frames.items():
+        if frame.empty:
+            continue
+        for physical_level, group in frame.groupby("physical_level", dropna=False):
+            total_rows = max(len(group), 1)
+            for risk_class, risk_group in group.groupby("joint_cross_layer_risk_class", dropna=False):
+                rows.append(
+                    {
+                        "output_scope": output_scope,
+                        "physical_level": physical_level,
+                        "joint_cross_layer_risk_class": str(risk_class),
+                        "rows": int(len(risk_group)),
+                        "row_share_within_scope_physical_level": float(len(risk_group) / total_rows),
+                        "median_network_effective_diversity": float(pd.to_numeric(risk_group["network_effective_diversity"], errors="coerce").median()),
+                        "median_physical_candidate_diversity_upper_bound": float(pd.to_numeric(risk_group["physical_candidate_diversity_upper_bound"], errors="coerce").median()),
+                        "median_network_to_physical_compression_ratio": float(pd.to_numeric(risk_group["network_to_physical_compression_ratio"], errors="coerce").median()),
+                        "median_log_network_physical_compression_gap": float(pd.to_numeric(risk_group["log_network_physical_compression_gap"], errors="coerce").median()),
+                        "median_physical_coverage_ratio": float(pd.to_numeric(risk_group["physical_coverage_ratio"], errors="coerce").median()),
+                        "median_pdb_interconnection_footprint_percentile": float(
+                            pd.to_numeric(risk_group.get("pdb_interconnection_footprint_percentile", pd.Series(dtype=float)), errors="coerce").median()
+                        ),
+                    }
+                )
+    return pd.DataFrame(rows, columns=columns).sort_values(
+        ["output_scope", "physical_level", "joint_cross_layer_risk_class"]
+    ).reset_index(drop=True)
+
+
+def combine_paper_case_frames(
+    paper_country_cross_layer_audit: pd.DataFrame,
+    paper_service_country_cross_layer_audit: pd.DataFrame,
+) -> pd.DataFrame:
+    """Combine paper-ready country and service-country audit frames for case selection."""
+    frames: List[pd.DataFrame] = []
+    if not paper_country_cross_layer_audit.empty:
+        country_frame = paper_country_cross_layer_audit.copy()
+        country_frame["paper_case_scope"] = "paper_country_cross_layer_audit"
+        frames.append(country_frame)
+    if not paper_service_country_cross_layer_audit.empty:
+        service_frame = paper_service_country_cross_layer_audit.copy()
+        service_frame["paper_case_scope"] = "paper_service_country_cross_layer_audit"
+        frames.append(service_frame)
+    if not frames:
+        return pd.DataFrame(columns=["paper_case_scope", *PRIMARY_CROSS_LAYER_COLUMNS])
+    return pd.concat(frames, ignore_index=True, sort=False)
+
+
+def build_paper_physical_concentration_cases(frame: pd.DataFrame) -> pd.DataFrame:
+    """Select paper-ready cases where the best-case corridor candidate space remains narrow."""
+    if frame.empty:
+        return frame.copy()
+    filtered = frame.loc[
+        (frame["physical_level"].astype(str) == PAPER_PRIMARY_PHYSICAL_LEVEL)
+        & frame["physical_candidate_concentration_tier"].astype(str).isin(
+            [
+                "severe_physical_candidate_concentration",
+                "moderate_physical_candidate_concentration",
+                "weak_physical_candidate_concentration",
+            ]
+        )
+    ].copy()
+    return filtered.sort_values(
+        [
+            "physical_candidate_diversity_upper_bound",
+            "num_probes",
+            "num_egress_links",
+            "network_effective_diversity",
+        ],
+        ascending=[True, False, False, False],
+    ).reset_index(drop=True)
+
+
+def build_paper_joint_mismatch_cases(frame: pd.DataFrame) -> pd.DataFrame:
+    """Select paper-ready corridor cases with both concentration and network-to-physical compression."""
+    if frame.empty:
+        return frame.copy()
+    filtered = frame.loc[
+        (frame["physical_level"].astype(str) == PAPER_PRIMARY_PHYSICAL_LEVEL)
+        & (
+            frame["joint_cross_layer_risk_class"].astype(str)
+            == "physical_concentration_with_network_physical_compression"
+        )
+    ].copy()
+    return filtered.sort_values(
+        [
+            "log_network_physical_compression_gap",
+            "network_to_physical_compression_ratio",
+            "physical_candidate_diversity_upper_bound",
+        ],
+        ascending=[False, False, True],
+    ).reset_index(drop=True)
+
+
+def build_paper_broad_physical_space_cases(frame: pd.DataFrame) -> pd.DataFrame:
+    """Select counterexample cases with broad best-case corridor space and no compression."""
+    if frame.empty:
+        return frame.copy()
+    corridor_rows = frame.loc[frame["physical_level"].astype(str) == PAPER_PRIMARY_PHYSICAL_LEVEL].copy()
+    if corridor_rows.empty:
+        return corridor_rows
+    network_threshold = pd.to_numeric(corridor_rows["network_effective_diversity"], errors="coerce").quantile(0.75)
+    filtered = corridor_rows.loc[
+        (corridor_rows["joint_cross_layer_risk_class"].astype(str) == "broad_physical_candidate_space_no_compression")
+        & (pd.to_numeric(corridor_rows["network_effective_diversity"], errors="coerce") >= network_threshold)
+    ].copy()
+    return filtered.sort_values(
+        [
+            "network_effective_diversity",
+            "physical_candidate_diversity_upper_bound",
+        ],
+        ascending=[False, False],
+    ).reset_index(drop=True)
 
 
 def build_unit_physical_candidate_diversity(
@@ -1518,7 +1908,9 @@ def build_unit_network_physical_mismatch(
     merged["physical_level"] = physical_level
     merged["network_definition"] = network_definition
     merged["network_score_column"] = network_score_column
-    merged["is_target_quadrant"] = merged["network_physical_mismatch_category"] == TARGET_MISMATCH_CATEGORY
+    merged["is_target_quadrant"] = (
+        merged["network_physical_mismatch_category"] == LEGACY_WEIGHTED_TARGET_MISMATCH_CATEGORY
+    )
 
     merged["network_physical_mismatch_category"] = pd.Categorical(
         merged["network_physical_mismatch_category"],
@@ -2133,12 +2525,17 @@ def build_method_manifest() -> Dict[str, Any]:
     return {
         "method_name": "network_physical_diversity_auditing",
         "claim_boundary": "candidate_support_not_ground_truth_cable_attribution",
-        "main_question": "whether network-layer diversity survives in the physical-candidate infrastructure space",
-        "primary_target_quadrant": "network_high_physical_low",
+        "main_question": "whether network-layer diversity remains broad after projection into the best-case feasible physical-candidate space",
+        "primary_target_quadrant": TARGET_MISMATCH_CATEGORY,
         "primary_network_definition": PAPER_PRIMARY_NETWORK_DEFINITION,
-        "primary_cross_layer_metrics": "non-rank compression and coverage metrics over application, network, and feasible physical-candidate layers",
-        "relative_comparison_metrics": "rank and percentile outputs remain optional corpus-relative comparison views",
-        "analysis_scope_note": "the same non-rank metrics support both global datasets and single-country datasets",
+        "primary_cross_layer_metrics": "best-case physical-candidate space width, physical-candidate concentration, and network-to-physical compression over application, network, and feasible physical-candidate layers",
+        "relative_comparison_metrics": "rank and percentile outputs remain auxiliary corpus-relative comparison views",
+        "analysis_scope_note": "the same non-rank best-case physical-candidate audit metrics support both global datasets and single-country datasets",
+        "best_case_physical_candidate_audit": "physical_candidate_diversity_upper_bound reports the upper-bound width of the best-case feasible physical-candidate space under hard feasibility constraints",
+        "physical_candidate_concentration_interpretation": "physical-candidate concentration means the best-case feasible candidate space itself is narrow",
+        "network_physical_compression_interpretation": "network-to-physical compression means network effective diversity exceeds the best-case physical-candidate upper bound",
+        "physical_exposure_note": "no network-to-physical compression does not imply no physical-candidate exposure",
+        "peeringdb_descriptor_note": "PeeringDB descriptors are external interconnection-footprint descriptors only and are not used for physical-candidate construction or candidate-support scoring",
         "evidence_cores": [
             "geo_spatial_core",
             "as_economic_core",
@@ -2165,6 +2562,11 @@ def build_method_manifest() -> Dict[str, Any]:
             "paper_country_cross_layer_audit.csv",
             "paper_service_country_cross_layer_audit.csv",
             "cross_layer_metric_summary.csv",
+            "physical_candidate_concentration_summary.csv",
+            "joint_cross_layer_risk_summary.csv",
+            "paper_physical_concentration_cases.csv",
+            "paper_joint_mismatch_cases.csv",
+            "paper_broad_physical_space_cases.csv",
             "unit_physical_candidate_diversity_cable.csv",
             "unit_physical_candidate_diversity_corridor.csv",
             "unit_physical_candidate_set_diversity_cable.csv",
@@ -2187,7 +2589,7 @@ def build_method_manifest() -> Dict[str, Any]:
             "unit_ambiguity_profile.csv",
         ],
         "network_definitions": list(NETWORK_DEFINITION_COLUMNS.keys()),
-        "interpretation": "aggregate candidate-support distribution, not per-path physical ground truth",
+        "interpretation": "best-case feasible physical-candidate audit with non-rank concentration and compression metrics as the primary interpretation",
     }
 
 
@@ -2195,13 +2597,17 @@ def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
     """Return a compact manifest for the infeasibility-first conservative candidate audit view."""
     return {
         "pipeline_version": "infeasibility_first_conservative_candidate_audit_v1",
-        "interpretation": "infeasibility_first_conservative_candidate_audit",
+        "interpretation": "best_case_physical_candidate_audit",
         "support_semantics": "evidence support, not ground-truth probability",
         "weighted_view_description": "support-thresholded candidate-support view used for backward-compatible weighted expectation analysis",
-        "conservative_set_view_description": "all hard-feasible candidates retained before support thresholding and treated uniformly for upper-bound physical diversity",
-        "primary_cross_layer_metrics": "non-rank network-to-physical compression and coverage metrics are first-class outputs",
-        "relative_comparison_metrics": "rank and percentile mismatch outputs remain optional relative comparison views over the chosen corpus",
-        "single_country_and_global_support": "the same non-rank metrics apply to both single-country studies and multi-country corpora",
+        "conservative_set_view_description": "all hard-feasible candidates are retained before support thresholding to audit the width of the best-case feasible physical-candidate space",
+        "primary_cross_layer_metrics": "best-case physical-candidate concentration and network-to-physical compression are first-class outputs",
+        "relative_comparison_metrics": "rank and percentile mismatch outputs remain auxiliary relative comparison views over the chosen corpus",
+        "single_country_and_global_support": "the same best-case physical-candidate audit metrics apply to both single-country studies and multi-country corpora",
+        "physical_candidate_concentration_interpretation": "physical-candidate concentration means the best-case feasible candidate space itself is narrow",
+        "network_physical_compression_interpretation": "network-to-physical compression means network effective diversity exceeds the best-case physical-candidate upper bound",
+        "physical_exposure_note": "no network-to-physical compression does not imply no physical-candidate exposure",
+        "peeringdb_descriptor_note": "PeeringDB descriptors are external interconnection-footprint descriptors only and are not used for physical-candidate construction or candidate-support scoring",
         "primary_physical_level": "corridor",
         "primary_network_definition": PAPER_PRIMARY_NETWORK_DEFINITION,
         "legacy_all_segments_semantics": "support-thresholded legacy candidate list",
@@ -2214,6 +2620,11 @@ def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
             "paper_country_cross_layer_audit.csv",
             "paper_service_country_cross_layer_audit.csv",
             "cross_layer_metric_summary.csv",
+            "physical_candidate_concentration_summary.csv",
+            "joint_cross_layer_risk_summary.csv",
+            "paper_physical_concentration_cases.csv",
+            "paper_joint_mismatch_cases.csv",
+            "paper_broad_physical_space_cases.csv",
             "unit_physical_candidate_set_diversity_cable.csv",
             "unit_physical_candidate_set_diversity_corridor.csv",
             "unit_network_physical_upper_bound_mismatch.csv",
@@ -2527,8 +2938,8 @@ def write_quadrant_scatter_svg(
         mismatch_frame["network_physical_mismatch_category"].astype(str).tolist(),
     ):
         color = QUADRANT_COLORS.get(category, "#95a5a6")
-        radius = 5.0 if category == TARGET_MISMATCH_CATEGORY else 3.8
-        opacity = 0.9 if category == TARGET_MISMATCH_CATEGORY else 0.68
+        radius = 5.0 if category == LEGACY_WEIGHTED_TARGET_MISMATCH_CATEGORY else 3.8
+        opacity = 0.9 if category == LEGACY_WEIGHTED_TARGET_MISMATCH_CATEGORY else 0.68
         body_parts.append(
             f"<circle cx='{x_pos:.2f}' cy='{y_pos:.2f}' r='{radius}' fill='{color}' fill-opacity='{opacity}'/>"
         )
@@ -2550,7 +2961,7 @@ def write_quadrant_scatter_svg(
             f"<text x='{legend_x}' y='302' font-size='13' font-family='Arial'>vertical = network median</text>",
             f"<text x='{legend_x}' y='322' font-size='13' font-family='Arial'>horizontal = physical median</text>",
             f"<text x='{legend_x}' y='372' font-size='14' font-family='Arial'>Focus quadrant:</text>",
-            f"<text x='{legend_x}' y='394' font-size='14' font-family='Arial' fill='{QUADRANT_COLORS[TARGET_MISMATCH_CATEGORY]}'>{TARGET_MISMATCH_CATEGORY}</text>",
+            f"<text x='{legend_x}' y='394' font-size='14' font-family='Arial' fill='{QUADRANT_COLORS[LEGACY_WEIGHTED_TARGET_MISMATCH_CATEGORY]}'>{LEGACY_WEIGHTED_TARGET_MISMATCH_CATEGORY}</text>",
         ]
     )
 
@@ -2825,15 +3236,23 @@ def main() -> None:
         if not service_country_cross_layer_audit.empty
         else pd.DataFrame(columns=PRIMARY_CROSS_LAYER_COLUMNS)
     )
-    cross_layer_metric_summary = build_cross_layer_metric_summary(
-        {
-            "unit_cross_layer_audit": unit_cross_layer_audit,
-            "country_cross_layer_audit": country_cross_layer_audit,
-            "service_country_cross_layer_audit": service_country_cross_layer_audit,
-            "paper_country_cross_layer_audit": paper_country_cross_layer_audit,
-            "paper_service_country_cross_layer_audit": paper_service_country_cross_layer_audit,
-        }
+    named_cross_layer_frames = {
+        "unit_cross_layer_audit": unit_cross_layer_audit,
+        "country_cross_layer_audit": country_cross_layer_audit,
+        "service_country_cross_layer_audit": service_country_cross_layer_audit,
+        "paper_country_cross_layer_audit": paper_country_cross_layer_audit,
+        "paper_service_country_cross_layer_audit": paper_service_country_cross_layer_audit,
+    }
+    cross_layer_metric_summary = build_cross_layer_metric_summary(named_cross_layer_frames)
+    physical_candidate_concentration_summary = build_physical_candidate_concentration_summary(named_cross_layer_frames)
+    joint_cross_layer_risk_summary = build_joint_cross_layer_risk_summary(named_cross_layer_frames)
+    combined_paper_case_frame = combine_paper_case_frames(
+        paper_country_cross_layer_audit,
+        paper_service_country_cross_layer_audit,
     )
+    paper_physical_concentration_cases = build_paper_physical_concentration_cases(combined_paper_case_frame)
+    paper_joint_mismatch_cases = build_paper_joint_mismatch_cases(combined_paper_case_frame)
+    paper_broad_physical_space_cases = build_paper_broad_physical_space_cases(combined_paper_case_frame)
     cable_quadrants = build_quadrant_summary(cable_mismatch, "cable")
     corridor_quadrants = build_quadrant_summary(corridor_mismatch, "corridor")
     quadrant_summary = pd.concat([cable_quadrants, corridor_quadrants], ignore_index=True)
@@ -2896,6 +3315,11 @@ def main() -> None:
     paper_country_cross_layer_audit_path = os.path.join(args.output, "paper_country_cross_layer_audit.csv")
     paper_service_country_cross_layer_audit_path = os.path.join(args.output, "paper_service_country_cross_layer_audit.csv")
     cross_layer_metric_summary_path = os.path.join(args.output, "cross_layer_metric_summary.csv")
+    physical_candidate_concentration_summary_path = os.path.join(args.output, "physical_candidate_concentration_summary.csv")
+    joint_cross_layer_risk_summary_path = os.path.join(args.output, "joint_cross_layer_risk_summary.csv")
+    paper_physical_concentration_cases_path = os.path.join(args.output, "paper_physical_concentration_cases.csv")
+    paper_joint_mismatch_cases_path = os.path.join(args.output, "paper_joint_mismatch_cases.csv")
+    paper_broad_physical_space_cases_path = os.path.join(args.output, "paper_broad_physical_space_cases.csv")
     legacy_mismatch_path = os.path.join(args.output, "unit_mismatch.csv")
     quadrant_summary_path = os.path.join(args.output, "network_physical_quadrants.csv")
     cable_corridor_path = os.path.join(args.output, "cable_vs_corridor_physical_diversity.csv")
@@ -2921,12 +3345,17 @@ def main() -> None:
     cable_mismatch.to_csv(cable_mismatch_path, index=False, encoding="utf-8-sig")
     corridor_mismatch.to_csv(corridor_mismatch_path, index=False, encoding="utf-8-sig")
     upper_bound_physical.to_csv(upper_bound_physical_path, index=False, encoding="utf-8-sig")
+    if upper_bound_mismatch.empty:
+        print("Warning: upper-bound mismatch table is empty; writing a header-only CSV.")
     upper_bound_mismatch.to_csv(upper_bound_mismatch_path, index=False, encoding="utf-8-sig")
     corridor_physical_uniform.to_csv(paper_physical_path, index=False, encoding="utf-8-sig")
-    upper_bound_mismatch.loc[
+    paper_unit_network_physical_mismatch = upper_bound_mismatch.loc[
         (upper_bound_mismatch["physical_level"].astype(str) == PAPER_PRIMARY_PHYSICAL_LEVEL)
         & (upper_bound_mismatch["network_definition"].astype(str) == PAPER_PRIMARY_NETWORK_DEFINITION)
-    ].to_csv(paper_mismatch_path, index=False, encoding="utf-8-sig")
+    ].copy()
+    if upper_bound_mismatch.empty and not paper_unit_network_physical_mismatch.empty:
+        raise RuntimeError("paper_unit_network_physical_mismatch has rows while the full upper-bound mismatch table is empty.")
+    paper_unit_network_physical_mismatch.to_csv(paper_mismatch_path, index=False, encoding="utf-8-sig")
     network_metric_catalog.to_csv(network_metric_catalog_path, index=False, encoding="utf-8-sig")
     peeringdb_footprint_summary.to_csv(peeringdb_summary_path, index=False, encoding="utf-8-sig")
     unit_cross_layer_audit.to_csv(unit_cross_layer_audit_path, index=False, encoding="utf-8-sig")
@@ -2939,6 +3368,31 @@ def main() -> None:
         encoding="utf-8-sig",
     )
     cross_layer_metric_summary.to_csv(cross_layer_metric_summary_path, index=False, encoding="utf-8-sig")
+    physical_candidate_concentration_summary.to_csv(
+        physical_candidate_concentration_summary_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    joint_cross_layer_risk_summary.to_csv(
+        joint_cross_layer_risk_summary_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    paper_physical_concentration_cases.to_csv(
+        paper_physical_concentration_cases_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    paper_joint_mismatch_cases.to_csv(
+        paper_joint_mismatch_cases_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    paper_broad_physical_space_cases.to_csv(
+        paper_broad_physical_space_cases_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
     cable_mismatch.to_csv(legacy_mismatch_path, index=False, encoding="utf-8-sig")
     quadrant_summary.to_csv(quadrant_summary_path, index=False, encoding="utf-8-sig")
     cable_corridor_comparison.to_csv(cable_corridor_path, index=False, encoding="utf-8-sig")
@@ -3002,6 +3456,11 @@ def main() -> None:
     print(f"Saved paper country cross-layer audit alias to {paper_country_cross_layer_audit_path}")
     print(f"Saved paper service-country cross-layer audit alias to {paper_service_country_cross_layer_audit_path}")
     print(f"Saved cross-layer metric summary to {cross_layer_metric_summary_path}")
+    print(f"Saved physical-candidate concentration summary to {physical_candidate_concentration_summary_path}")
+    print(f"Saved joint cross-layer risk summary to {joint_cross_layer_risk_summary_path}")
+    print(f"Saved paper physical concentration cases to {paper_physical_concentration_cases_path}")
+    print(f"Saved paper joint mismatch cases to {paper_joint_mismatch_cases_path}")
+    print(f"Saved paper broad physical-space cases to {paper_broad_physical_space_cases_path}")
     print(f"Saved cable-vs-corridor comparison table to {cable_corridor_path}")
     print(f"Saved candidate-space profile to {candidate_space_profile_path}")
     print(f"Saved weighted-vs-conservative diversity table to {weighted_vs_conservative_path}")

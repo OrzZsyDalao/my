@@ -981,3 +981,22 @@ Typical large local-only files from a full `5051` run:
 - `output/result_5051/cable_matching_output.json`
 - `output/result_5051/trace_feasible_candidate_space.csv`
 - `output/result_5051/trace_candidate_support.csv`
+
+## Best-Case Physical-Candidate Audit Update
+
+The primary paper interpretation is now a best-case physical-candidate audit.
+
+- `physical_candidate_diversity_upper_bound` is the upper-bound width of the best-case feasible physical-candidate space under hard feasibility constraints.
+- Physical-candidate concentration means the best-case feasible candidate space itself is narrow.
+- Network-to-physical compression means `network_effective_diversity` exceeds the best-case physical-candidate upper bound.
+- No network-to-physical compression does not imply no physical-candidate exposure.
+- PeeringDB descriptors remain external interconnection-footprint descriptors only and are not used for physical-candidate construction or candidate-support scoring.
+- Rank/percentile metrics remain auxiliary relative views.
+
+Additional outputs:
+
+- `output/result/physical_candidate_concentration_summary.csv`
+- `output/result/joint_cross_layer_risk_summary.csv`
+- `output/result/paper_physical_concentration_cases.csv`
+- `output/result/paper_joint_mismatch_cases.csv`
+- `output/result/paper_broad_physical_space_cases.csv`

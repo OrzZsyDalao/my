@@ -994,3 +994,22 @@ PeeringDB 继续保持 external-only：
 - `output/result_5051/cable_matching_output.json`
 - `output/result_5051/trace_feasible_candidate_space.csv`
 - `output/result_5051/trace_candidate_support.csv`
+
+## best-case physical-candidate audit 更新
+
+当前论文主解释已经升级为 best-case physical-candidate audit。
+
+- `physical_candidate_diversity_upper_bound` 表示在 hard feasibility constraints 下，best-case feasible physical-candidate space 的上界宽度。
+- physical-candidate concentration 表示 best-case feasible candidate space 本身就很窄。
+- network-to-physical compression 表示 `network_effective_diversity` 超过了 best-case physical-candidate upper bound。
+- 没有 network-to-physical compression 并不等于没有 physical-candidate exposure。
+- PeeringDB 继续只作为外部 interconnection-footprint descriptor，不参与 physical-candidate construction，也不参与 candidate-support scoring。
+- rank / percentile 指标继续保留，但只是辅助性的相对比较视图。
+
+新增输出：
+
+- `output/result/physical_candidate_concentration_summary.csv`
+- `output/result/joint_cross_layer_risk_summary.csv`
+- `output/result/paper_physical_concentration_cases.csv`
+- `output/result/paper_joint_mismatch_cases.csv`
+- `output/result/paper_broad_physical_space_cases.csv`

@@ -1,12 +1,17 @@
 {
   "method_name": "network_physical_diversity_auditing",
   "claim_boundary": "candidate_support_not_ground_truth_cable_attribution",
-  "main_question": "whether network-layer diversity survives in the physical-candidate infrastructure space",
-  "primary_target_quadrant": "network_high_physical_low",
+  "main_question": "whether network-layer diversity remains broad after projection into the best-case feasible physical-candidate space",
+  "primary_target_quadrant": "network_high_physical_upper_low",
   "primary_network_definition": "as_egress_primary",
-  "primary_cross_layer_metrics": "non-rank compression and coverage metrics over application, network, and feasible physical-candidate layers",
-  "relative_comparison_metrics": "rank and percentile outputs remain optional corpus-relative comparison views",
-  "analysis_scope_note": "the same non-rank metrics support both global datasets and single-country datasets",
+  "primary_cross_layer_metrics": "best-case physical-candidate space width, physical-candidate concentration, and network-to-physical compression over application, network, and feasible physical-candidate layers",
+  "relative_comparison_metrics": "rank and percentile outputs remain auxiliary corpus-relative comparison views",
+  "analysis_scope_note": "the same non-rank best-case physical-candidate audit metrics support both global datasets and single-country datasets",
+  "best_case_physical_candidate_audit": "physical_candidate_diversity_upper_bound reports the upper-bound width of the best-case feasible physical-candidate space under hard feasibility constraints",
+  "physical_candidate_concentration_interpretation": "physical-candidate concentration means the best-case feasible candidate space itself is narrow",
+  "network_physical_compression_interpretation": "network-to-physical compression means network effective diversity exceeds the best-case physical-candidate upper bound",
+  "physical_exposure_note": "no network-to-physical compression does not imply no physical-candidate exposure",
+  "peeringdb_descriptor_note": "PeeringDB descriptors are external interconnection-footprint descriptors only and are not used for physical-candidate construction or candidate-support scoring",
   "evidence_cores": [
     "geo_spatial_core",
     "as_economic_core",
@@ -36,6 +41,11 @@
     "paper_country_cross_layer_audit.csv",
     "paper_service_country_cross_layer_audit.csv",
     "cross_layer_metric_summary.csv",
+    "physical_candidate_concentration_summary.csv",
+    "joint_cross_layer_risk_summary.csv",
+    "paper_physical_concentration_cases.csv",
+    "paper_joint_mismatch_cases.csv",
+    "paper_broad_physical_space_cases.csv",
     "unit_physical_candidate_diversity_cable.csv",
     "unit_physical_candidate_diversity_corridor.csv",
     "unit_physical_candidate_set_diversity_cable.csv",
@@ -69,5 +79,5 @@
     "application_observation_supplementary",
     "combined_supplementary"
   ],
-  "interpretation": "aggregate candidate-support distribution, not per-path physical ground truth"
+  "interpretation": "best-case feasible physical-candidate audit with non-rank concentration and compression metrics as the primary interpretation"
 }

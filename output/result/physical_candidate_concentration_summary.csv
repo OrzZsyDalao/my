@@ -1,0 +1,9 @@
+﻿output_scope,physical_level,rows,severe_physical_concentration_rows,moderate_physical_concentration_rows,weak_physical_concentration_rows,broad_physical_candidate_space_rows,physical_concentration_rows,physical_concentration_share,auditable_physical_concentration_rows,low_observation_concentration_signal_rows,median_physical_candidate_diversity_upper_bound,p25_physical_candidate_diversity_upper_bound,p75_physical_candidate_diversity_upper_bound,median_num_feasible_corridors,median_network_effective_diversity,median_network_to_physical_compression_ratio,median_log_network_physical_compression_gap,median_physical_coverage_ratio
+country_cross_layer_audit,cable,87,8,16,17,46,41,0.47126436781609193,40,1,5.0,2.0,8.5,5.0,2.1381434306651115,0.5,-0.5108256237659905,2.0
+country_cross_layer_audit,corridor,87,9,11,16,51,36,0.41379310344827586,35,1,5.0,3.0,16.0,5.0,2.1381434306651115,0.4192943835776706,-0.6931471805599453,2.3849592056716844
+paper_country_cross_layer_audit,corridor,87,9,11,16,51,36,0.41379310344827586,35,1,5.0,3.0,16.0,5.0,2.1381434306651115,0.4192943835776706,-0.6931471805599453,2.3849592056716844
+paper_service_country_cross_layer_audit,corridor,880,194,128,200,358,522,0.5931818181818181,276,246,3.0,2.0,10.0,3.0,1.0,0.4433801694204285,-0.6257903065795406,2.2554062620700797
+service_country_cross_layer_audit,cable,880,157,173,183,367,513,0.5829545454545455,271,242,4.0,2.0,6.0,3.0,1.0,0.4724703937105774,-0.5907638086415128,2.1165347359575994
+service_country_cross_layer_audit,corridor,880,194,128,200,358,522,0.5931818181818181,276,246,3.0,2.0,10.0,3.0,1.0,0.4433801694204285,-0.6257903065795406,2.2554062620700797
+unit_cross_layer_audit,cable,880,157,173,183,367,513,0.5829545454545455,271,242,4.0,2.0,6.0,3.0,1.0,0.4724703937105774,-0.5907638086415128,2.1165347359575994
+unit_cross_layer_audit,corridor,880,194,128,200,358,522,0.5931818181818181,276,246,3.0,2.0,10.0,3.0,1.0,0.4433801694204285,-0.6257903065795406,2.2554062620700797
