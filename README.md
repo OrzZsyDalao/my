@@ -968,6 +968,38 @@ Interpretation update:
 - The same non-rank compression/coverage metrics support both global multi-country corpora and single-country datasets.
 - Rank-based mismatch remains a relative comparison view over the chosen corpus, not the only cross-layer interpretation.
 
+## Latest Corridor Observation Concentration Update
+
+The paper-primary physical concentration view is now based on **corridor observation distributions** over independently mappable path-transition segments.
+
+- A traceroute is decomposed into independently mappable hop-pair / country-transition segments.
+- Each segment is anchored to the near-side country of the transition.
+- Multiple feasible cable rows belonging to the same corridor are deduplicated within the same atomic segment.
+- Each atomic segment contributes one unit of observation mass, split uniformly across its distinct feasible corridors in the paper-primary view.
+- Observation mass reflects measurement-observed path-transition segments, not byte or packet traffic volume.
+- Unique feasible corridor count remains a candidate-breadth descriptor, not the paper-primary concentration metric.
+
+New or newly promoted outputs:
+
+- `output/result/atomic_segment_id_diagnostics.json`: records the stable field bundle used to construct atomic segment IDs.
+- `output/result/country_corridor_observation_distribution.csv`: country-level corridor observation-mass distribution. Key columns include `observation_mass`, `share_of_country_observation_mass`, and `rank_within_country`.
+- `output/result/service_country_corridor_observation_distribution.csv`: service-country corridor observation-mass distribution. Key columns include `observation_mass`, `share_of_unit_observation_mass`, and `rank_within_unit`.
+- `output/result/country_corridor_concentration_summary.csv`: paper-facing country summary with `top1_corridor_share`, `top3_corridor_share`, `effective_corridor_count`, `corridor_concentration_tier`, and `auditable_corridor_concentration`.
+- `output/result/service_country_corridor_concentration_summary.csv`: service-country version of the same concentration summary and the main paper-ready unit table for corridor observation concentration.
+- `output/result/country_network_transition_concentration_summary.csv`: network-transition concentration over the same mappable segment population, using AS transitions first and country-transition fallback when ASNs are missing.
+- `output/result/service_country_network_transition_concentration_summary.csv`: service-country network-transition concentration summary.
+- `output/result/country_cross_layer_distribution_audit.csv`: country-level cross-layer distribution-shape audit joining network transition concentration and corridor observation concentration.
+- `output/result/service_country_cross_layer_distribution_audit.csv`: service-country cross-layer distribution-shape audit with `cross_layer_distribution_class` as the main interpretation field.
+- `output/result/paper_corridor_observation_concentration_cases.csv`: auditable severe or moderate corridor observation concentration cases.
+- `output/result/paper_network_broad_physical_concentrated_cases.csv`: main paper cases where network observations remain broad but corridor observations are concentrated.
+- `output/result/paper_broad_corridor_distribution_cases.csv`: broad-corridor counterexamples showing the framework does not force concentration findings.
+
+Interpretation update:
+
+- Candidate breadth asks how many unique feasible corridors appear in a unit.
+- Observation concentration asks how measurement-observed path-transition segments distribute over those feasible corridors.
+- The cross-layer distribution audit compares concentration patterns over the same observed segment population; it does not equate AS-transition counts with corridor counts as identical units.
+
 ## Large-Scale 5051 Run Artifacts
 
 The repository also supports a full-scale RIPE Atlas `msm_id = 5051` run.

@@ -981,6 +981,38 @@ PeeringDB 继续保持 external-only：
 - 同一套非 rank compression / coverage 指标同时适用于多国全局数据集和单国数据集。
 - rank-based mismatch 继续保留，但它只是所选语料范围内的相对比较视图，不再是唯一的跨层解释方式。
 
+## 最新 corridor observation concentration 更新
+
+现在论文主物理集中度视图改为基于**corridor observation distribution** 的 path-transition segment 审计。
+
+- 一条 traceroute 会被拆成多个可独立映射的 hop-pair / country-transition segment。
+- 每个 segment 按 near-side country 归属。
+- 同一个 atomic segment 内，如果多条 cable candidate 属于同一个 corridor，会先做 corridor 去重。
+- 在论文主视图里，每个 atomic segment 贡献 1 单位 observation mass；若存在多个 feasible corridor，则在这些 corridor 之间做均匀分配。
+- 这里的 observation mass 表示 measurement-observed path-transition segments，不表示真实流量字节数或报文数。
+- unique feasible corridor count 继续保留，但它只表示 candidate breadth，不再是论文主集中度指标。
+
+新增或提升为主输出的文件：
+
+- `output/result/atomic_segment_id_diagnostics.json`：记录 atomic segment ID 的稳定字段构造方式。
+- `output/result/country_corridor_observation_distribution.csv`：country 级 corridor observation mass 分布表。关键字段包括 `observation_mass`、`share_of_country_observation_mass`、`rank_within_country`。
+- `output/result/service_country_corridor_observation_distribution.csv`：service-country 级 corridor observation mass 分布表。关键字段包括 `observation_mass`、`share_of_unit_observation_mass`、`rank_within_unit`。
+- `output/result/country_corridor_concentration_summary.csv`：country 级 corridor 集中度汇总，核心字段包括 `top1_corridor_share`、`top3_corridor_share`、`effective_corridor_count`、`corridor_concentration_tier`、`auditable_corridor_concentration`。
+- `output/result/service_country_corridor_concentration_summary.csv`：service-country 级 corridor 集中度汇总，也是论文主用的 corridor observation concentration 单元表。
+- `output/result/country_network_transition_concentration_summary.csv`：在同一批可映射 segment 上计算的 network transition 集中度，优先使用 AS transition，缺失 ASN 时回退到 country transition。
+- `output/result/service_country_network_transition_concentration_summary.csv`：service-country 级 network transition 集中度汇总。
+- `output/result/country_cross_layer_distribution_audit.csv`：country 级 cross-layer distribution-shape 审计表，联合 network transition concentration 与 corridor observation concentration。
+- `output/result/service_country_cross_layer_distribution_audit.csv`：service-country 级 cross-layer distribution-shape 审计表，`cross_layer_distribution_class` 是主解释字段。
+- `output/result/paper_corridor_observation_concentration_cases.csv`：auditable 的 severe / moderate corridor observation concentration 案例。
+- `output/result/paper_network_broad_physical_concentrated_cases.csv`：论文主案例，表示 network 观测仍较宽而 corridor 观测已经集中。
+- `output/result/paper_broad_corridor_distribution_cases.csv`：broad corridor 分布的反例表，用来说明框架不会强行得出集中结论。
+
+解释更新：
+
+- candidate breadth 回答的是“一个 unit 里出现了多少个 unique feasible corridors”。
+- observation concentration 回答的是“这些 measurement-observed path-transition segments 在 feasible corridors 上如何分布”。
+- cross-layer distribution audit 比较的是同一批 segment 上的分布形态，而不是把 AS-transition 数量和 corridor 数量当作同一种计量单位直接比较。
+
 ## 5051 全量运行结果说明
 
 仓库同样支持 RIPE Atlas `msm_id = 5051` 的全量运行。
