@@ -1,0 +1,44 @@
+{
+  "api_key": "",
+  "bill_to": "",
+  "request_name": "infocom26-ripe-atlas-traceroute",
+  "dry_run": true,
+  "probe_selection": {
+    "mode": "all_public_active",
+    "status": 1,
+    "is_public": true,
+    "include_anchors": false,
+    "batch_size": 500,
+    "page_size": 500,
+    "limit": null,
+    "country_allowlist": [],
+    "asn_allowlist": []
+  },
+  "measurement_defaults": {
+    "is_oneoff": true,
+    "af": 4,
+    "protocol": "ICMP",
+    "packets": 3,
+    "paris": 16,
+    "size": 48,
+    "timeout": 4000,
+    "resolve_on_probe": true,
+    "include_probe_id": true,
+    "skip_dns_check": false,
+    "spread": 0,
+    "is_public": false,
+    "tags": [
+      "infocom26",
+      "ripe-atlas",
+      "traceroute"
+    ]
+  },
+  "targets": [
+    {
+      "target": "8.8.8.8",
+      "description": "example-google-dns",
+      "af": 4,
+      "protocol": "ICMP"
+    }
+  ]
+}

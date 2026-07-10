@@ -24,6 +24,11 @@ source/
   robustness_compare.py
   precompute_as_graph.py
 
+probe/
+  run_ripe_atlas_traceroute.py
+  atlas_traceroute_config.example.json
+  results/
+
 data/
   asrelationship/
   cable/
@@ -61,6 +66,9 @@ Root-level scripts such as `main_analysis.py` are thin wrappers that call the co
 6. `build_peeringdb_descriptors.py`
    Reads local PeeringDB dump files from `data/peeringdb/` and builds country-level external interconnection footprint descriptors. These descriptors are only used for stratification and interpretation, not for feasible candidate filtering or candidate support scoring.
 
+7. `probe/run_ripe_atlas_traceroute.py`
+   Auxiliary experiment helper. Reads a local RIPE Atlas config JSON, selects active public probes, chunks them into batches, and creates one-off traceroute measurements toward configured targets. It does not modify the main analysis pipeline.
+
 ## Input File Reference
 
 ### Shared Input Files
@@ -88,6 +96,14 @@ Root-level scripts such as `main_analysis.py` are thin wrappers that call the co
 | Path | Used By | Expected Content | Purpose |
 | --- | --- | --- | --- |
 | `output/preprocessed/as_graph_owner_reachability.pkl.gz` | Stage 1 | Gzipped Python pickle with owner-group reachability payload | Speeds up the AS-economic support computation |
+
+### Probe Helper Local Files
+
+| Path | Used By | Expected Content | Purpose |
+| --- | --- | --- | --- |
+| `probe/atlas_traceroute_config.example.json` | Probe helper | JSON config template with `api_key`, `targets`, `probe_selection`, and `measurement_defaults` | Template for RIPE Atlas measurement creation |
+| `probe/atlas_traceroute_config.local.json` | Probe helper, optional | Same schema as the example config | Recommended local config file for real API keys and experiment-specific targets |
+| `probe/results/*.json` | Probe helper output | Submission receipts and returned measurement IDs | Local bookkeeping for later data collection |
 
 ## Command-Line Parameters
 
@@ -157,6 +173,16 @@ Root-level scripts such as `main_analysis.py` are thin wrappers that call the co
 | `--input-dir` | `data/peeringdb` | Directory containing local PeeringDB dumps such as `ix.json`, `fac.json`, `net.json`, `netfac.json`, and `netixlan.json` |
 | `--output` | `output/result/country_peeringdb_descriptors.csv` | Output descriptor CSV |
 
+### `python probe/run_ripe_atlas_traceroute.py`
+
+| Parameter | Default | Meaning |
+| --- | --- | --- |
+| `--config` | auto-detect | Config path. The helper tries `probe/atlas_traceroute_config.local.json`, then `probe/atlas_traceroute_config.json`, then `probe/atlas_traceroute_config.example.json` |
+| `--output` | `probe/results/` | Directory where submission receipts are written |
+| `--dry-run` | `False` | Preview selected probes and measurement payloads without real submission |
+| `--limit-probes` | `None` | Optional CLI override limiting the number of selected probes |
+| `--list-only` | `False` | Fetch and preview the selected probes without building or submitting measurements |
+
 ## Recommended Run Order
 
 ```powershell
@@ -166,7 +192,34 @@ python .\concerntration_analysis.py
 python .\postprocess_candidate_output.py --input .\output\result\cable_matching_output.json --output .\output\result
 python .\robustness_compare.py --input .\output\result\trace_candidate_support.csv --output .\output\result
 python .\build_peeringdb_descriptors.py
+python .\probe\run_ripe_atlas_traceroute.py --config .\probe\atlas_traceroute_config.local.json --dry-run
 ```
+
+## RIPE Atlas Probe Helper Config
+
+Edit one local JSON config file and the helper can create world-wide traceroute measurements toward your chosen targets.
+
+Key fields:
+
+| Field | Meaning |
+| --- | --- |
+| `api_key` | RIPE Atlas API key used for real submission |
+| `bill_to` | Optional RIPE Atlas billing handle |
+| `request_name` | Prefix used in measurement descriptions and receipt filenames |
+| `dry_run` | Whether preview-only mode should be enabled by default |
+| `probe_selection.mode` | Current helper mode. `all_public_active` means fetch active public probes and then apply local filters |
+| `probe_selection.status` | Probe status filter passed to the RIPE Atlas probes endpoint. `1` targets connected probes |
+| `probe_selection.is_public` | Whether only public probes should be selected |
+| `probe_selection.include_anchors` | Whether Atlas anchors should also be included |
+| `probe_selection.batch_size` | Number of probe IDs placed into each measurement batch |
+| `probe_selection.page_size` | Page size used when fetching probes from the public probes endpoint |
+| `probe_selection.limit` | Optional config-level cap on the selected probe count |
+| `probe_selection.country_allowlist` | Optional country-code filter applied after fetching probes |
+| `probe_selection.asn_allowlist` | Optional ASN filter applied after fetching probes |
+| `measurement_defaults.*` | Default traceroute definition fields such as `af`, `protocol`, `packets`, `paris`, `size`, `timeout`, `resolve_on_probe`, `include_probe_id`, `skip_dns_check`, `spread`, `is_public`, and `tags` |
+| `targets[]` | Target list. Each entry must define `target` and may override traceroute fields such as `description`, `af`, `protocol`, `packets`, or `port` |
+
+The helper creates measurements and stores submission receipts. It does not download the resulting traceroute dataset by itself.
 
 ## Output File Reference
 
@@ -194,6 +247,37 @@ Manifest for the precompute payload. Main keys:
 | `graph_edge_count` | Number of directed AS edges |
 | `reachable_entry_count` | Number of stored bounded reachability entries |
 | `config` | The precompute configuration used to build the file |
+
+### A0. Probe Helper Outputs
+
+#### `probe/results/ripe_atlas_traceroute_request_*.json`
+
+Local submission receipt written by the RIPE Atlas probe helper. Main fields:
+
+| Field | Meaning |
+| --- | --- |
+| `request_name` | Human-readable request prefix from the config |
+| `config_path` | Config file actually used |
+| `submitted_at_utc` | UTC timestamp when the helper ran |
+| `dry_run` | Whether the helper only previewed payloads instead of submitting |
+| `probe_selection_summary` | Summary of the selected probe population, batch size, and batch count |
+| `targets` | Target list copied from the config used in this run |
+| `probe_preview` | Compact preview of the selected probes, including probe ID, country, ASN, anchor flag, and status |
+| `submissions[]` | One record per target per probe batch |
+
+Fields inside `submissions[]`:
+
+| Field | Meaning |
+| --- | --- |
+| `target` | Measurement destination hostname or IP |
+| `description` | Description used for the traceroute definition |
+| `batch_index` | Probe-batch index |
+| `probe_count` | Number of probes in the batch |
+| `probe_id_min`, `probe_id_max` | Minimum and maximum probe IDs in the batch for quick sanity checks |
+| `payload_preview` | JSON payload prepared for the RIPE Atlas measurement creation API |
+| `status` | `dry_run_only` or `submitted` |
+| `api_response` | Raw RIPE Atlas response when a real submission occurs |
+| `measurement_ids` | Returned RIPE Atlas measurement IDs when available |
 
 ### B. Stage 1 Outputs
 

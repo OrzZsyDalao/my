@@ -31,3 +31,7 @@ output/preprocessed/**
 !output/preprocessed/.gitkeep
 
 cable_loading_debug.json
+
+probe/atlas_traceroute_config.json
+probe/atlas_traceroute_config.local.json
+probe/results/*.json

@@ -30,6 +30,11 @@ source/
   robustness_compare.py
   precompute_as_graph.py
 
+probe/
+  run_ripe_atlas_traceroute.py
+  atlas_traceroute_config.example.json
+  results/
+
 data/
   asrelationship/
   cable/
@@ -64,6 +69,9 @@ output/
 5. `robustness_compare.py`  
    基于展开后的 candidate-support 表，比较不同 evidence view 下 mismatch 的稳定性。
 
+6. `probe/run_ripe_atlas_traceroute.py`
+   辅助实验脚本。读取本地 RIPE Atlas 配置 JSON，选择活跃公开探针，按批次创建指向指定目标的一次性 traceroute 测量。它不会改动主分析流程，只负责补充实验测量。
+
 ## 输入文件说明
 
 ### 通用输入文件
@@ -91,6 +99,14 @@ output/
 | 路径 | 被哪些流程使用 | 预期内容 | 作用 |
 | --- | --- | --- | --- |
 | `output/preprocessed/as_graph_owner_reachability.pkl.gz` | 第一阶段 | gzip pickle 格式的 owner-group reachability 结果 | 加速 AS-economic support 计算 |
+
+### probe 辅助脚本本地文件
+
+| 路径 | 被哪些流程使用 | 预期内容 | 作用 |
+| --- | --- | --- | --- |
+| `probe/atlas_traceroute_config.example.json` | probe 辅助脚本 | 包含 `api_key`、`targets`、`probe_selection`、`measurement_defaults` 的 JSON 模板 | RIPE Atlas 测量创建模板 |
+| `probe/atlas_traceroute_config.local.json` | probe 辅助脚本，可选 | 与示例模板相同的 JSON 结构 | 推荐本地保存真实 API key 和实验目标 |
+| `probe/results/*.json` | probe 辅助脚本输出 | 测量提交回执与返回的 measurement IDs | 后续数据采集前的本地实验记录 |
 
 ## 各脚本参数说明
 
@@ -153,6 +169,16 @@ output/
 | `--input` | `output/result/trace_candidate_support.csv` | 展开的 candidate-support 表 |
 | `--output` | `output/result/` | robustness 输出目录 |
 
+### `python probe/run_ripe_atlas_traceroute.py`
+
+| 参数 | 默认值 | 含义 |
+| --- | --- | --- |
+| `--config` | 自动检测 | 配置文件路径。脚本会依次尝试 `probe/atlas_traceroute_config.local.json`、`probe/atlas_traceroute_config.json`、`probe/atlas_traceroute_config.example.json` |
+| `--output` | `probe/results/` | 提交回执输出目录 |
+| `--dry-run` | `False` | 只预览选中的 probes 和测量 payload，不真正提交 |
+| `--limit-probes` | `None` | 可选 CLI 覆盖，用于限制选中的 probe 数量 |
+| `--list-only` | `False` | 仅拉取并预览选中的 probes，不构造也不提交测量 |
+
 ## 推荐运行顺序
 
 ```powershell
@@ -161,7 +187,34 @@ python .\main_analysis.py
 python .\concerntration_analysis.py
 python .\postprocess_candidate_output.py --input .\output\result\cable_matching_output.json --output .\output\result
 python .\robustness_compare.py --input .\output\result\trace_candidate_support.csv --output .\output\result
+python .\probe\run_ripe_atlas_traceroute.py --config .\probe\atlas_traceroute_config.local.json --dry-run
 ```
+
+## RIPE Atlas probe 辅助脚本配置说明
+
+这个辅助脚本的目标是：你只需要修改一个本地 JSON 配置文件，就可以对指定目标发起全局 probe traceroute 测量。
+
+关键配置项如下：
+
+| 字段 | 含义 |
+| --- | --- |
+| `api_key` | RIPE Atlas API key，真实提交时必需 |
+| `bill_to` | 可选的 RIPE Atlas 计费标识 |
+| `request_name` | 测量描述和回执文件名使用的前缀 |
+| `dry_run` | 是否默认启用仅预览模式 |
+| `probe_selection.mode` | 当前选择模式。`all_public_active` 表示先拉取活跃公开探针，再做本地过滤 |
+| `probe_selection.status` | 传给 RIPE Atlas probes 接口的状态过滤。`1` 通常表示已连接探针 |
+| `probe_selection.is_public` | 是否只选择公开探针 |
+| `probe_selection.include_anchors` | 是否把 Atlas anchors 也纳入探针集合 |
+| `probe_selection.batch_size` | 每个测量批次中放入多少个 probe ID |
+| `probe_selection.page_size` | 从公开 probes 接口拉取分页时使用的 page size |
+| `probe_selection.limit` | 配置级别的 probe 数量上限 |
+| `probe_selection.country_allowlist` | 拉取后按国家代码过滤的可选白名单 |
+| `probe_selection.asn_allowlist` | 拉取后按 ASN 过滤的可选白名单 |
+| `measurement_defaults.*` | traceroute 默认参数，如 `af`、`protocol`、`packets`、`paris`、`size`、`timeout`、`resolve_on_probe`、`include_probe_id`、`skip_dns_check`、`spread`、`is_public`、`tags` |
+| `targets[]` | 目标列表。每个目标至少需要定义 `target`，也可以单独覆盖 `description`、`af`、`protocol`、`packets`、`port` 等字段 |
+
+这个脚本只负责创建测量并保存提交回执，不会自动下载最终 traceroute 结果集。
 
 ## 输出文件说明
 
@@ -189,6 +242,37 @@ python .\robustness_compare.py --input .\output\result\trace_candidate_support.c
 | `graph_edge_count` | AS 图有向边数 |
 | `reachable_entry_count` | 存储的可达条目数 |
 | `config` | 预处理配置 |
+
+### A0. probe 辅助脚本输出
+
+#### `probe/results/ripe_atlas_traceroute_request_*.json`
+
+RIPE Atlas probe 辅助脚本生成的本地提交回执。主要字段如下：
+
+| 字段 | 含义 |
+| --- | --- |
+| `request_name` | 配置中定义的人类可读请求前缀 |
+| `config_path` | 本次实际使用的配置文件路径 |
+| `submitted_at_utc` | 脚本运行时间的 UTC 时间戳 |
+| `dry_run` | 本次是否只预览 payload 而没有真实提交 |
+| `probe_selection_summary` | 选中的 probe 总数、batch 大小、batch 数量等摘要 |
+| `targets` | 本次运行使用的目标列表 |
+| `probe_preview` | 选中 probes 的紧凑预览，包含 probe ID、国家、ASN、anchor 标记和状态 |
+| `submissions[]` | 每个目标、每个 probe batch 的一条提交记录 |
+
+`submissions[]` 内部字段：
+
+| 字段 | 含义 |
+| --- | --- |
+| `target` | 测量目标主机名或 IP |
+| `description` | traceroute definition 使用的描述 |
+| `batch_index` | 当前 probe 批次编号 |
+| `probe_count` | 当前批次中的 probe 数量 |
+| `probe_id_min`, `probe_id_max` | 当前批次 probe ID 的最小值和最大值，便于快速检查 |
+| `payload_preview` | 准备提交到 RIPE Atlas measurement create API 的 JSON payload |
+| `status` | `dry_run_only` 或 `submitted` |
+| `api_response` | 真实提交时 RIPE Atlas 返回的原始响应 |
+| `measurement_ids` | 返回的 RIPE Atlas measurement ID 列表（如果有） |
 
 ### B. 第一阶段输出
 
