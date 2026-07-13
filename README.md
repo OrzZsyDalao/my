@@ -29,6 +29,10 @@ probe/
   atlas_traceroute_config.example.json
   results/
 
+ripe_atlas_public_download/
+  download_public_traceroutes.py
+  manifests/
+
 data/
   asrelationship/
   cable/
@@ -69,6 +73,9 @@ Root-level scripts such as `main_analysis.py` are thin wrappers that call the co
 7. `probe/run_ripe_atlas_traceroute.py`
    Auxiliary experiment helper. Reads a local RIPE Atlas config JSON, selects active public probes, chunks them into batches, and creates one-off traceroute measurements toward configured targets. It does not modify the main analysis pipeline.
 
+8. `ripe_atlas_public_download/download_public_traceroutes.py`
+   Public dataset downloader. Downloads the first-round RIPE Atlas public IPv4 traceroute measurement set for the 2026-07-01 00:00:00 UTC to 01:00:00 UTC window. It validates measurement metadata first and writes pipeline-ready result arrays under `data/traceroute_rundnsroot/`.
+
 ## Input File Reference
 
 ### Shared Input Files
@@ -88,6 +95,7 @@ Root-level scripts such as `main_analysis.py` are thin wrappers that call the co
 | --- | --- | --- | --- |
 | `data/traceroute_rundnsroot/root_dns_traces.json` | Stage 1 default, Stage 2 default | RIPE Atlas traceroute results in JSON array format | Small routine test input |
 | `data/traceroute_rundnsroot/**/*.json` | Stage 1 | RIPE Atlas traceroute result files | Main traceroute source directory |
+| `data/traceroute_rundnsroot/ripe_atlas_public_20260701_0000_0100/*.json` | Stage 1 | Downloaded public RIPE Atlas traceroute result arrays with filenames containing dataset, service/root name, `msm_id`, and UTC window | First-round DNS Root, application, extension, and topology-baseline dataset |
 | `data/traceroute/ripe_atlas_5051_20251201.json` | Optional | Larger full-scale traceroute input | Full dataset run |
 | `data/probe/*.json` | Stage 2 | Probe metadata, typically with `objects[].id` and `objects[].country_code` | Maps probe IDs to source countries |
 
@@ -183,6 +191,21 @@ Root-level scripts such as `main_analysis.py` are thin wrappers that call the co
 | `--limit-probes` | `None` | Optional CLI override limiting the number of selected probes |
 | `--list-only` | `False` | Fetch and preview the selected probes without building or submitting measurements |
 
+### `python ripe_atlas_public_download/download_public_traceroutes.py`
+
+| Parameter | Default | Meaning |
+| --- | --- | --- |
+| `--output-dir` | `data/traceroute_rundnsroot/ripe_atlas_public_20260701_0000_0100` | Directory for pipeline-ready RIPE Atlas result JSON arrays |
+| `--manifest` | auto path under `ripe_atlas_public_download/manifests/` | Manifest path recording metadata validation, output files, byte counts, and record counts |
+| `--start` | `2026-07-01T00:00:00Z` | UTC download-window start time |
+| `--duration-minutes` | `60` | Download-window length |
+| `--measurement-id` | all 18 first-round IDs | Optional filter. Repeat this argument to download or test selected measurements only |
+| `--metadata-only` | `False` | Validate RIPE Atlas measurement metadata without downloading result data |
+| `--skip-existing` | `False` | Reuse existing output files instead of downloading them again |
+| `--no-count-records` | `False` | Skip streaming record counting after each download |
+| `--timeout` | `120` | HTTP timeout in seconds |
+| `--retries` | `3` | HTTP retry count |
+
 ## Recommended Run Order
 
 ```powershell
@@ -193,6 +216,32 @@ python .\postprocess_candidate_output.py --input .\output\result\cable_matching_
 python .\robustness_compare.py --input .\output\result\trace_candidate_support.csv --output .\output\result
 python .\build_peeringdb_descriptors.py
 python .\probe\run_ripe_atlas_traceroute.py --config .\probe\atlas_traceroute_config.local.json --dry-run
+python .\ripe_atlas_public_download\download_public_traceroutes.py --metadata-only
+```
+
+## Public RIPE Atlas Dataset Downloader
+
+The first-round public traceroute downloader covers 18 public IPv4 traceroute measurements:
+
+- 13 DNS Root measurements: A-Root through M-Root.
+- 2 primary application measurements: Wikipedia and Reddit.
+- 1 extension measurement: Netflix assets, interpreted only as `assets.nflxext.com` paths.
+- 2 topology baselines: `5151` ICMP as the primary baseline and `5051` UDP as the historical protocol baseline.
+
+The default window is `2026-07-01T00:00:00Z` for 60 minutes. Downloaded files are named with dataset, service/root label, `msm_id`, and the UTC window, for example:
+
+```text
+data/traceroute_rundnsroot/ripe_atlas_public_20260701_0000_0100/dns-root_a-root_msm5009_20260701T000000Z_010000Z.json
+```
+
+These result files preserve RIPE Atlas fields such as `dst_addr`; the application measurements must not be treated as a single fixed destination IP because probes may resolve or reach different service endpoints.
+
+Useful commands:
+
+```powershell
+python .\ripe_atlas_public_download\download_public_traceroutes.py --metadata-only
+python .\ripe_atlas_public_download\download_public_traceroutes.py --measurement-id 5009
+python .\ripe_atlas_public_download\download_public_traceroutes.py --skip-existing
 ```
 
 ## RIPE Atlas Probe Helper Config

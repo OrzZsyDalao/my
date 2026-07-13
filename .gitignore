@@ -35,3 +35,5 @@ cable_loading_debug.json
 probe/atlas_traceroute_config.json
 probe/atlas_traceroute_config.local.json
 probe/results/*.json
+
+ripe_atlas_public_download/manifests/*.json

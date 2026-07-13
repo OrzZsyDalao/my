@@ -35,6 +35,10 @@ probe/
   atlas_traceroute_config.example.json
   results/
 
+ripe_atlas_public_download/
+  download_public_traceroutes.py
+  manifests/
+
 data/
   asrelationship/
   cable/
@@ -72,6 +76,9 @@ output/
 6. `probe/run_ripe_atlas_traceroute.py`
    辅助实验脚本。读取本地 RIPE Atlas 配置 JSON，选择活跃公开探针，按批次创建指向指定目标的一次性 traceroute 测量。它不会改动主分析流程，只负责补充实验测量。
 
+7. `ripe_atlas_public_download/download_public_traceroutes.py`
+   公开数据下载脚本。下载第一轮 RIPE Atlas 公开 IPv4 traceroute measurement 数据，默认时间窗口为 2026-07-01 00:00:00 UTC 到 01:00:00 UTC。脚本会先校验 measurement metadata，再把可直接进入主流程的结果 JSON 数组写入 `data/traceroute_rundnsroot/`。
+
 ## 输入文件说明
 
 ### 通用输入文件
@@ -91,6 +98,7 @@ output/
 | --- | --- | --- | --- |
 | `data/traceroute_rundnsroot/root_dns_traces.json` | 第一阶段默认、第二阶段默认 | RIPE Atlas traceroute JSON 数组 | 小规模日常测试输入 |
 | `data/traceroute_rundnsroot/**/*.json` | 第一阶段 | RIPE Atlas traceroute 结果文件 | 第一阶段主输入目录 |
+| `data/traceroute_rundnsroot/ripe_atlas_public_20260701_0000_0100/*.json` | 第一阶段 | 下载得到的 RIPE Atlas traceroute result 数组，文件名包含 dataset、服务/root 名称、`msm_id` 和 UTC 时间窗口 | 第一轮 DNS Root、应用、扩展和 topology baseline 数据集 |
 | `data/traceroute/ripe_atlas_5051_20251201.json` | 可选 | 大规模 traceroute 输入 | 全量运行用 |
 | `data/probe/*.json` | 第二阶段 | probe 元数据，通常包含 `objects[].id` 与 `objects[].country_code` | 将 probe ID 映射到源国家 |
 
@@ -179,6 +187,21 @@ output/
 | `--limit-probes` | `None` | 可选 CLI 覆盖，用于限制选中的 probe 数量 |
 | `--list-only` | `False` | 仅拉取并预览选中的 probes，不构造也不提交测量 |
 
+### `python ripe_atlas_public_download/download_public_traceroutes.py`
+
+| 参数 | 默认值 | 含义 |
+| --- | --- | --- |
+| `--output-dir` | `data/traceroute_rundnsroot/ripe_atlas_public_20260701_0000_0100` | 可直接被主流程读取的 RIPE Atlas result JSON 数组输出目录 |
+| `--manifest` | `ripe_atlas_public_download/manifests/` 下自动生成 | manifest 路径，记录 metadata 校验、输出文件、字节数和记录数 |
+| `--start` | `2026-07-01T00:00:00Z` | UTC 下载窗口开始时间 |
+| `--duration-minutes` | `60` | 下载窗口长度 |
+| `--measurement-id` | 默认全部 18 个第一轮 measurement | 可选过滤项，可重复传入以只下载或测试指定 measurement |
+| `--metadata-only` | `False` | 只校验 RIPE Atlas measurement metadata，不下载结果数据 |
+| `--skip-existing` | `False` | 如果输出文件已存在，则复用已有文件 |
+| `--no-count-records` | `False` | 下载后跳过流式记录数统计 |
+| `--timeout` | `120` | HTTP 超时时间，单位秒 |
+| `--retries` | `3` | HTTP 重试次数 |
+
 ## 推荐运行顺序
 
 ```powershell
@@ -188,6 +211,32 @@ python .\concerntration_analysis.py
 python .\postprocess_candidate_output.py --input .\output\result\cable_matching_output.json --output .\output\result
 python .\robustness_compare.py --input .\output\result\trace_candidate_support.csv --output .\output\result
 python .\probe\run_ripe_atlas_traceroute.py --config .\probe\atlas_traceroute_config.local.json --dry-run
+python .\ripe_atlas_public_download\download_public_traceroutes.py --metadata-only
+```
+
+## RIPE Atlas 公开 traceroute 数据下载
+
+第一轮公开 traceroute 下载器覆盖 18 个公开 IPv4 traceroute measurements：
+
+- 13 个 DNS Root measurements：A-Root 到 M-Root。
+- 2 个主要应用 measurements：Wikipedia 和 Reddit。
+- 1 个扩展 measurement：Netflix assets，只解释为 `assets.nflxext.com` 的路径。
+- 2 个 topology baselines：`5151` ICMP 作为主要 baseline，`5051` UDP 作为历史协议 baseline。
+
+默认时间窗口是 `2026-07-01T00:00:00Z` 开始的 60 分钟。下载文件名会包含 dataset、服务/root 标签、`msm_id` 和 UTC 时间窗口，例如：
+
+```text
+data/traceroute_rundnsroot/ripe_atlas_public_20260701_0000_0100/dns-root_a-root_msm5009_20260701T000000Z_010000Z.json
+```
+
+这些文件会保留 RIPE Atlas 返回的 `dst_addr` 等字段；应用服务 measurement 不能假定所有 probes 都访问同一个固定目标 IP。
+
+常用命令：
+
+```powershell
+python .\ripe_atlas_public_download\download_public_traceroutes.py --metadata-only
+python .\ripe_atlas_public_download\download_public_traceroutes.py --measurement-id 5009
+python .\ripe_atlas_public_download\download_public_traceroutes.py --skip-existing
 ```
 
 ## RIPE Atlas probe 辅助脚本配置说明
