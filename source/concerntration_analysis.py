@@ -33,6 +33,7 @@ PFX2AS_DIR = os.path.join(DATA_DIR, 'pfx2as')
 PROBE_DIR = os.path.join(DATA_DIR, 'probe')
 
 DEFAULT_MMDB_PATH = os.path.join(IPINFO_DIR, 'ipinfo_location.mmdb')
+DEFAULT_ASN_MMDB_PATH = os.path.join(IPINFO_DIR, 'ipinfo_asn.mmdb')
 DEFAULT_CABLE_DIR = CABLE_DIR
 DEFAULT_PFX2AS_PATH = os.path.join(PFX2AS_DIR, '202512.pfx2as')
 DEFAULT_PROBE_DIR = PROBE_DIR
@@ -130,6 +131,33 @@ def get_geo_info(ip_address: str, mmdb_reader: maxminddb.Reader) -> Dict[str, An
     except Exception:
         pass
     return geo_data
+
+
+class IPInfoASNResolver:
+    """Resolve IP addresses to ASNs using the local IPinfo ASN MMDB database."""
+
+    def __init__(self, path: str):
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Missing IPinfo ASN MMDB at {path}")
+        self.path = path
+        self.reader = maxminddb.open_database(path)
+
+    def close(self) -> None:
+        self.reader.close()
+
+    def get(self, ip_address: str) -> Optional[str]:
+        if not ip_address or is_private_or_special_ip(ip_address):
+            return None
+        try:
+            record = self.reader.get(ip_address)
+        except Exception:
+            return None
+        if not record:
+            return None
+        asn = str(record.get('asn') or record.get('autonomous_system_number') or '').strip()
+        if not asn or asn == '-1':
+            return None
+        return asn if asn.startswith('AS') else f"AS{asn}"
 
 
 def safe_console_print(message: Any) -> None:
@@ -272,19 +300,11 @@ def load_pfx2as_mapping(path: str) -> Optional[Any]:
     return trie
 
 
-def ip_to_asn(ip_address: str, pfx2as_trie: Optional[Any]) -> Optional[str]:
-    if not ip_address or is_private_or_special_ip(ip_address) or pfx2as_trie is None:
+def ip_to_asn(ip_address: str, asn_resolver: Optional[IPInfoASNResolver]) -> Optional[str]:
+    """Resolve IP to ASN using IPinfo ASN MMDB; pfx2as is no longer the active source."""
+    if asn_resolver is None:
         return None
-    try:
-        asn = pfx2as_trie.get(ip_address)
-        if not asn:
-            return None
-        asn = str(asn).strip()
-        if not asn or asn == '-1':
-            return None
-        return asn if asn.startswith('AS') else f"AS{asn}"
-    except Exception:
-        return None
+    return asn_resolver.get(ip_address)
 
 
 def normalize_owners_field(raw_owners: Any) -> List[str]:
@@ -515,7 +535,7 @@ def aggregate_trace_owners(
 def extract_crossborder_as_pairs_from_trace(
     traceroute_item: Dict[str, Any],
     mmdb_reader: maxminddb.Reader,
-    pfx2as_trie: Optional[Any],
+    asn_resolver: Optional[IPInfoASNResolver],
 ) -> Set[Tuple[str, str]]:
     """
     Extract unique cross-border AS pairs from a single traceroute.
@@ -549,7 +569,7 @@ def extract_crossborder_as_pairs_from_trace(
 
         geo = get_geo_info(ip, mmdb_reader)
         country = geo.get('country')
-        asn = ip_to_asn(ip, pfx2as_trie)
+        asn = ip_to_asn(ip, asn_resolver)
         if not country or not asn:
             continue
 
@@ -634,7 +654,8 @@ def parse_args() -> argparse.Namespace:
         help="Optional flag to use the most recently modified JSON file under data/probe/.",
     )
     parser.add_argument("--mmdb-path", default=DEFAULT_MMDB_PATH, help="IP geolocation MMDB path.")
-    parser.add_argument("--pfx2as-file", default=DEFAULT_PFX2AS_PATH, help="pfx2as mapping file path.")
+    parser.add_argument("--asn-mmdb-path", default=DEFAULT_ASN_MMDB_PATH, help="IPinfo ASN MMDB path for IP-to-ASN lookup.")
+    parser.add_argument("--pfx2as-file", default=DEFAULT_PFX2AS_PATH, help="Legacy ignored option; IP-to-ASN uses --asn-mmdb-path.")
     parser.add_argument("--output-csv", default=DEFAULT_OUTPUT_CSV, help="Dependency output CSV path.")
     parser.add_argument("--summary-json", default=DEFAULT_SUMMARY_JSON, help="Optional summary JSON path.")
     parser.add_argument("--cable-dir", default=DEFAULT_CABLE_DIR, help="Cable metadata directory.")
@@ -746,7 +767,7 @@ def load_raw_trace_totals_and_logic_features(
     probe_geo_db: Dict[str, str],
     mmdb_path: str,
     flag_cross_country: bool,
-    pfx2as_trie: Optional[Any],
+    asn_resolver: Optional[IPInfoASNResolver],
     collapse_roots: bool = False,
 ):
     total_counts_raw = defaultdict(lambda: defaultdict(int))
@@ -798,7 +819,7 @@ def load_raw_trace_totals_and_logic_features(
                     as_pairs = extract_crossborder_as_pairs_from_trace(
                         traceroute_item=item,
                         mmdb_reader=mmdb_reader,
-                        pfx2as_trie=pfx2as_trie,
+                        asn_resolver=asn_resolver,
                     )
                     for pair in as_pairs:
                         as_pair_counts_raw[country][root_name][pair] += 1
@@ -1111,6 +1132,7 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
     probe_meta_file = args.probe_meta_file
     output_csv = args.output_csv
     mmdb_path = args.mmdb_path
+    asn_mmdb_path = args.asn_mmdb_path
     pfx2as_file = args.pfx2as_file
     aggregation_mode = args.aggregation_mode
     match_threshold = args.match_threshold
@@ -1130,17 +1152,22 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
 
     probe_geo_db = load_probe_metadata(probe_meta_file)
     cable_owner_meta = load_cable_owner_mapping(cable_dir)
-    pfx2as_trie = load_pfx2as_mapping(pfx2as_file)
+    if pfx2as_file:
+        print("NOTE: --pfx2as-file is retained for CLI compatibility but IP-to-ASN uses IPinfo ASN MMDB.")
+    asn_resolver = IPInfoASNResolver(asn_mmdb_path)
     raw_trace_files = resolve_raw_trace_files(raw_traces_file, match_output_file)
 
-    total_counts_raw, as_pair_counts_raw, cross_country = load_raw_trace_totals_and_logic_features(
-        raw_trace_files=raw_trace_files,
-        probe_geo_db=probe_geo_db,
-        mmdb_path=mmdb_path,
-        flag_cross_country=flag_cross_country,
-        pfx2as_trie=pfx2as_trie,
-        collapse_roots=collapse_roots,
-    )
+    try:
+        total_counts_raw, as_pair_counts_raw, cross_country = load_raw_trace_totals_and_logic_features(
+            raw_trace_files=raw_trace_files,
+            probe_geo_db=probe_geo_db,
+            mmdb_path=mmdb_path,
+            flag_cross_country=flag_cross_country,
+            asn_resolver=asn_resolver,
+            collapse_roots=collapse_roots,
+        )
+    finally:
+        asn_resolver.close()
     if flag_cross_country:
         print(f"Cross-border trace count: {cross_country} records.")
 
@@ -1301,7 +1328,10 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
                 "match_output_file": match_output_file,
                 "probe_meta_file": probe_meta_file,
                 "mmdb_path": mmdb_path,
+                "ip_to_asn_source": "ipinfo_asn_mmdb",
+                "asn_mmdb_path": asn_mmdb_path,
                 "pfx2as_file": pfx2as_file,
+                "pfx2as_file_semantics": "legacy CLI compatibility only; not used for IP-to-ASN lookup",
                 "cable_dir": cable_dir,
                 "output_csv": output_csv,
                 "output_total_table": True,
@@ -1350,7 +1380,10 @@ def analyze_dependency_hybrid(args: argparse.Namespace):
             "match_output_file": match_output_file,
             "probe_meta_file": probe_meta_file,
             "mmdb_path": mmdb_path,
+            "ip_to_asn_source": "ipinfo_asn_mmdb",
+            "asn_mmdb_path": asn_mmdb_path,
             "pfx2as_file": pfx2as_file,
+            "pfx2as_file_semantics": "legacy CLI compatibility only; not used for IP-to-ASN lookup",
             "cable_dir": cable_dir,
             "output_csv": output_csv,
             "aggregation_mode": aggregation_mode,

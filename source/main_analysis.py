@@ -39,6 +39,7 @@ PROBE_DIR = os.path.join(DATA_DIR, "probe")
 
 LS_GEO_PATH = os.path.join(CABLE_DIR, "landing-point-geo.json")
 MMDB_PATH = os.path.join(IPINFO_DIR, "ipinfo_location.mmdb")
+ASN_MMDB_PATH = os.path.join(IPINFO_DIR, "ipinfo_asn.mmdb")
 ASREL_PATH = os.path.join(ASREL_DIR, "20250901.as-rel2.txt")
 PFX2AS_PATH = os.path.join(PFX2AS_DIR, "202512.pfx2as")
 OWNER2ASN_PATH = os.path.join(OWNER2ASN_DIR, "owner_to_asn.csv")
@@ -500,8 +501,42 @@ def is_private_or_special_ip(ip_address: str) -> bool:
     )
 
 
-def get_geo_info(ip_address: str, mmdb_reader: maxminddb.Reader) -> Dict[str, Any]:
-    """Query IP geolocation data from the mmdb reader."""
+class IPInfoASNResolver:
+    """Resolve IP addresses to ASNs using the local IPinfo ASN MMDB database."""
+
+    def __init__(self, path: str):
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Missing IPinfo ASN MMDB at {path}")
+        self.path = path
+        self.reader = maxminddb.open_database(path)
+
+    def close(self) -> None:
+        """Close the underlying MMDB reader."""
+        self.reader.close()
+
+    def get(self, ip_address: str) -> str:
+        """Return a normalized ASN string from IPinfo ASN MMDB, or -1 if unavailable."""
+        if not ip_address or is_private_or_special_ip(ip_address):
+            return "-1"
+        try:
+            record = self.reader.get(ip_address)
+        except Exception:
+            return "-1"
+        if not record:
+            return "-1"
+        return normalize_asn_value(
+            record.get("asn")
+            or record.get("autonomous_system_number")
+            or record.get("autonomous_system_organization")
+        )
+
+
+def get_geo_info(
+    ip_address: str,
+    mmdb_reader: maxminddb.Reader,
+    asn_resolver: Optional[IPInfoASNResolver] = None,
+) -> Dict[str, Any]:
+    """Query IP geolocation data and attach ASN from the IPinfo ASN MMDB when available."""
     geo_data = {"lat": None, "lon": None, "asn": None, "country": None, "city": None}
     if not ip_address or is_private_or_special_ip(ip_address):
         return geo_data
@@ -513,10 +548,13 @@ def get_geo_info(ip_address: str, mmdb_reader: maxminddb.Reader) -> Dict[str, An
             geo_data["lon"] = record.get("longitude")
             geo_data["country"] = record.get("country_code")
             geo_data["city"] = record.get("city")
-            if "traits" in record and "autonomous_system_number" in record["traits"]:
+            if asn_resolver is None and "traits" in record and "autonomous_system_number" in record["traits"]:
                 geo_data["asn"] = f"AS{record['traits']['autonomous_system_number']}"
     except Exception:
         pass
+    if asn_resolver is not None:
+        asn = asn_resolver.get(ip_address)
+        geo_data["asn"] = f"AS{asn}" if asn != "-1" else None
     return geo_data
 
 
@@ -558,6 +596,7 @@ def parse_hops_to_links(
     timestamp: str,
     file_name: str,
     mmdb_reader: maxminddb.Reader,
+    asn_resolver: IPInfoASNResolver,
     trace_metadata: Optional[Dict[str, Any]] = None,
 ) -> List[Dict[str, Any]]:
     """Convert consecutive traceroute hops into adjacent hop-pair links."""
@@ -572,7 +611,7 @@ def parse_hops_to_links(
             hop_infos.append(None)
             continue
         ip = selected_reply["ip"]
-        geo = get_geo_info(ip, mmdb_reader)
+        geo = get_geo_info(ip, mmdb_reader, asn_resolver)
         hop_infos.append(
             {
                 "ip": ip,
@@ -642,7 +681,11 @@ def parse_hops_to_links(
     return parsed_links
 
 
-def process_single_traceroute_file(path: str, mmdb_reader: maxminddb.Reader) -> List[Dict[str, Any]]:
+def process_single_traceroute_file(
+    path: str,
+    mmdb_reader: maxminddb.Reader,
+    asn_resolver: IPInfoASNResolver,
+) -> List[Dict[str, Any]]:
     """Retained helper for file-level link extraction experiments."""
     all_links: List[Dict[str, Any]] = []
     file_name = os.path.basename(path)
@@ -657,6 +700,7 @@ def process_single_traceroute_file(path: str, mmdb_reader: maxminddb.Reader) -> 
             timestamp=result_data.get("timestamp", "N/A"),
             file_name=file_name,
             mmdb_reader=mmdb_reader,
+            asn_resolver=asn_resolver,
         )
         all_links.extend(links_from_run)
 
@@ -740,7 +784,7 @@ class CableMatcher:
         processed_cables: List[Dict[str, Any]],
         ls_coordinates: Dict[str, Tuple[float, float]],
         as_relationship: Dict[Tuple[str, str], int],
-        pfx2as_trie: Any,
+        asn_resolver: IPInfoASNResolver,
         owner2asn: Dict[str, Set[str]],
         as_graph_precompute: Optional[Dict[str, Any]] = None,
         rtt_tolerance_ms: float = 5.0,
@@ -750,7 +794,7 @@ class CableMatcher:
         self.all_cables = processed_cables
         self.ls_geo = ls_coordinates
         self.as_relationship = as_relationship
-        self.pfx2as_trie = pfx2as_trie
+        self.asn_resolver = asn_resolver
         self.owner2asn = owner2asn
         self.as_graph_precompute = as_graph_precompute or {}
         self.rtt_tolerance_ms = float(rtt_tolerance_ms)
@@ -801,6 +845,7 @@ class CableMatcher:
             "rtt_tolerance_ms": float(self.rtt_tolerance_ms),
             "landing_region_radius_km": float(self.landing_region_radius_km),
             "landing_region_count": len(set(self.landing_region_map.values())),
+            "ip_to_asn_source": getattr(self.asn_resolver, "path", "ipinfo_asn_mmdb"),
             "cable_availability_mode": self.cable_availability_mode,
             "candidates_filtered_by_cable_lifecycle": 0,
             "segments_filtered_by_cable_lifecycle": 0,
@@ -867,12 +912,8 @@ class CableMatcher:
         return finalized
 
     def IP2ASN(self, ip: str) -> str:
-        """Map an IP address to an origin ASN using pfx2as."""
-        try:
-            asn = self.pfx2as_trie.get(ip)
-        except Exception:
-            return "-1"
-        return normalize_asn_value(asn)
+        """Map an IP address to an ASN using the local IPinfo ASN MMDB."""
+        return self.asn_resolver.get(ip)
 
     def compute_geo_spatial_score(self, d_in: float, d_out: float) -> Dict[str, float]:
         """Geo-spatial Core: compute landing-proximity evidence support, not ground-truth cable probability."""
@@ -1719,6 +1760,7 @@ def write_match_manifest(
     valid_link_count: int,
     feasible_link_count: int,
     as_precompute_file: Optional[str],
+    asn_mmdb_path: str,
     path: str,
     match_output_file: str = OUTPUT_RESULTS_PATH,
     match_stats_file: str = MATCH_STATS_OUTPUT_PATH,
@@ -1734,6 +1776,8 @@ def write_match_manifest(
         "match_output_file": to_repo_relative_path(match_output_file),
         "match_stats_file": to_repo_relative_path(match_stats_file),
         "as_precompute_file": to_repo_relative_path(as_precompute_file) if as_precompute_file else None,
+        "ip_to_asn_source": "ipinfo_asn_mmdb",
+        "asn_mmdb_path": to_repo_relative_path(asn_mmdb_path),
         "method_profile": "dual_core_cross_layer_evidence_fusion",
         "interpretation": "infeasibility_first_conservative_candidate_audit",
         "support_semantics": "candidate support is evidence support, not ground-truth probability",
@@ -1806,6 +1850,11 @@ def parse_args() -> argparse.Namespace:
         help="Optional RIPE Atlas probe metadata JSON used for probe_country/probe_asn.",
     )
     parser.add_argument(
+        "--asn-mmdb-path",
+        default=ASN_MMDB_PATH,
+        help="IPinfo ASN MMDB used for every IP-to-ASN lookup.",
+    )
+    parser.add_argument(
         "--rtt-tolerance-ms",
         type=float,
         default=5.0,
@@ -1838,7 +1887,7 @@ def main() -> None:
         ls_coordinates = load_ls_coordinates(LS_GEO_PATH)
         all_cables = load_all_cables(CABLE_DIR)
         as_relationship = load_as_relationship(ASREL_PATH)
-        pfx2as_trie = load_pfx2as_mapping(PFX2AS_PATH)
+        asn_resolver = IPInfoASNResolver(args.asn_mmdb_path)
         owner2asn = load_owner2asn_mapping(OWNER2ASN_PATH)
         as_graph_precompute = load_as_graph_precompute(args.as_precompute_file)
         probe_metadata = load_probe_metadata(args.probe_meta_file)
@@ -1852,7 +1901,7 @@ def main() -> None:
         all_cables,
         ls_coordinates,
         as_relationship,
-        pfx2as_trie,
+        asn_resolver,
         owner2asn,
         as_graph_precompute=as_graph_precompute,
         rtt_tolerance_ms=args.rtt_tolerance_ms,
@@ -1956,6 +2005,7 @@ def main() -> None:
                                 timestamp=raw_timestamp,
                                 file_name=file_name,
                                 mmdb_reader=mmdb_reader,
+                                asn_resolver=asn_resolver,
                                 trace_metadata=trace_metadata,
                             )
 
@@ -2071,6 +2121,7 @@ def main() -> None:
             valid_link_count=valid_link_count,
             feasible_link_count=feasible_link_count,
             as_precompute_file=args.as_precompute_file if matcher.as_graph_precompute_loaded else None,
+            asn_mmdb_path=args.asn_mmdb_path,
             path=match_manifest_output_path,
             match_output_file=output_results_path,
             match_stats_file=match_stats_output_path,

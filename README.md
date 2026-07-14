@@ -90,7 +90,7 @@ Root-level scripts such as `main_analysis.py` are thin wrappers that call the co
 Recommended paper-facing run order:
 
 1. Download or prepare RIPE Atlas traceroute inputs.
-2. Prepare probe metadata, pfx2as, IP geolocation, AS relationship, owner-to-AS, and cable metadata.
+2. Prepare probe metadata, IPinfo geolocation, IPinfo ASN MMDB, AS relationship, owner-to-AS, and cable metadata.
 3. Run Stage 1 feasible corridor construction with landing-region grouping:
    `python source/main_analysis.py --landing-region-radius-km 50 --rtt-tolerance-ms 5`
 4. Run Stage 2 application/network/corridor distribution audit:
@@ -136,9 +136,10 @@ Script roles:
 | --- | --- | --- | --- |
 | `data/cable/landing-point-geo.json` | Stage 1 | GeoJSON features keyed by landing-station `id`, with coordinates | Landing-station coordinate lookup for spatial candidate generation |
 | `data/cable/*.json` | Stage 1, Stage 2, AS precompute | One JSON per cable, including `id`, `name`, `landing_points`, `owners` | Cable metadata, landing pairs, and owner metadata |
-| `data/ipinfo/ipinfo_location.mmdb` | Stage 1, Stage 2 | MMDB geolocation database | IP-to-country/city/ASN geolocation |
+| `data/ipinfo/ipinfo_location.mmdb` | Stage 1, Stage 2 | MMDB geolocation database | IP-to-country/city geolocation |
+| `data/ipinfo/ipinfo_asn.mmdb` | Stage 1, Stage 2 | IPinfo ASN MMDB database | Active IP-to-ASN lookup source for hop, endpoint, target, service-entry, and network-transition ASN fields |
 | `data/asrelationship/20250901.as-rel2.txt` | Stage 1, AS precompute | CAIDA-style AS relationships (`AS1|AS2|rel`) | AS-economic relationship model |
-| `data/pfx2as/202512.pfx2as` | Stage 1, Stage 2 | Prefix-to-origin-AS mapping | IP to origin ASN lookup |
+| `data/pfx2as/202512.pfx2as` | Legacy compatibility only | Prefix-to-origin-AS mapping | Retained for old experiments; current IP-to-ASN mapping uses `data/ipinfo/ipinfo_asn.mmdb` |
 | `data/owner2asn/owner_to_asn.csv` | Stage 1, AS precompute | CSV with `owner,asn` | Maps cable owners to ASNs |
 
 ### Traceroute and Probe Inputs
@@ -186,6 +187,7 @@ Script roles:
 | Parameter | Default | Meaning |
 | --- | --- | --- |
 | `--as-precompute-file` | `output/preprocessed/as_graph_owner_reachability.pkl.gz` | Optional precomputed owner-group reachability input |
+| `--asn-mmdb-path` | `data/ipinfo/ipinfo_asn.mmdb` | IPinfo ASN MMDB used for every IP-to-ASN lookup |
 
 ### `python concerntration_analysis.py`
 
@@ -197,7 +199,8 @@ Script roles:
 | `--probe-file-name` | `None` | Probe filename under `data/probe/` |
 | `--probe-use-latest` | `False` | Automatically select latest probe JSON |
 | `--mmdb-path` | `data/ipinfo/ipinfo_location.mmdb` | MMDB path |
-| `--pfx2as-file` | `data/pfx2as/202512.pfx2as` | pfx2as path |
+| `--asn-mmdb-path` | `data/ipinfo/ipinfo_asn.mmdb` | IPinfo ASN MMDB path for IP-to-ASN lookup |
+| `--pfx2as-file` | `data/pfx2as/202512.pfx2as` | Legacy ignored option; current IP-to-ASN lookup uses `--asn-mmdb-path` |
 | `--output-csv` | `output/result/country_root_cable_dependency_hybrid.csv` | Main Stage 2 output path |
 | `--summary-json` | `None` | Optional Stage 2 summary JSON path |
 | `--cable-dir` | `data/cable/` | Cable metadata directory |
@@ -639,7 +642,8 @@ Small run summaries for Stage 2. Main keys:
 | `raw_traces_file`, `resolved_raw_trace_files` | Stage 2 traceroute input path(s) |
 | `match_output_file` | Stage 1 output used |
 | `probe_meta_file` | Probe metadata file used |
-| `mmdb_path`, `pfx2as_file`, `cable_dir` | Reference input files |
+| `mmdb_path`, `asn_mmdb_path`, `ip_to_asn_source`, `cable_dir` | Reference input files and active IP-to-ASN source |
+| `pfx2as_file`, `pfx2as_file_semantics` | Legacy compatibility metadata; not used for current IP-to-ASN lookup |
 | `output_csv` | Main Stage 2 output path |
 | `aggregation_mode`, `collapse_roots`, `match_threshold`, `confidence_bucket`, `cross_country`, `owner_multi_entity_mode` | Stage 2 configuration |
 | `rows`, `countries`, `roots` | Output size summary |
@@ -1249,3 +1253,13 @@ Stage 1 now records additional paper-alignment metadata without changing the can
 - Traceroute link generation records a service-entry boundary when the actual target ASN is observed in the hop sequence. Downstream trace summaries expose whether the service-entry point was resolved, while the physical projection remains hop-pair based.
 - Candidate rows carry cable lifecycle fields such as `cable_status`, `cable_rfs_date`, `cable_retired_date`, `cable_availability_status`, and `availability_filter_passed`.
 - `output/result/supplementary_owner_concentration.csv` summarizes split owner exposure over feasible corridor observation mass. It is supplementary only: owners are not used as ground truth, and this table must not be read as per-owner traffic volume or per-cable utilization.
+
+## Latest IPinfo ASN Database Update
+
+All current IP-to-ASN lookups use `data/ipinfo/ipinfo_asn.mmdb`.
+
+- `source/main_analysis.py` resolves hop ASNs, link endpoint ASNs, target ASNs, and service-entry ASNs through the IPinfo ASN MMDB.
+- `source/concerntration_analysis.py` resolves ASNs for cross-border AS-pair features through the IPinfo ASN MMDB.
+- `data/ipinfo/ipinfo_location.mmdb` remains the geolocation source for country, city, latitude, and longitude; it is no longer the primary ASN source.
+- `data/pfx2as/202512.pfx2as` and `--pfx2as-file` are retained only for legacy compatibility notes; the current pipeline does not use them for IP-to-ASN lookup.
+- Use `--asn-mmdb-path` to point either stage at another IPinfo ASN MMDB file.

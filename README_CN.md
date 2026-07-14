@@ -138,9 +138,10 @@ output/
 | --- | --- | --- | --- |
 | `data/cable/landing-point-geo.json` | 第一阶段 | GeoJSON，`features[].properties.id` 为 landing station ID，geometry 为坐标 | landing station 坐标索引 |
 | `data/cable/*.json` | 第一阶段、第二阶段、AS 预处理 | 每根海缆一个 JSON，包含 `id`、`name`、`landing_points`、`owners` 等 | 海缆元数据、登陆站对、owner 信息 |
-| `data/ipinfo/ipinfo_location.mmdb` | 第一阶段、第二阶段 | MMDB geolocation 数据库 | IP 到国家 / 城市 / ASN 的地理映射 |
+| `data/ipinfo/ipinfo_location.mmdb` | 第一阶段、第二阶段 | MMDB geolocation 数据库 | IP 到国家 / 城市的地理映射 |
+| `data/ipinfo/ipinfo_asn.mmdb` | 第一阶段、第二阶段 | IPinfo ASN MMDB 数据库 | 当前所有 hop、endpoint、target、service-entry、network-transition 的 IP 到 ASN 映射来源 |
 | `data/asrelationship/20250901.as-rel2.txt` | 第一阶段、AS 预处理 | CAIDA 格式 AS 关系文件 | AS-economic core 的关系图输入 |
-| `data/pfx2as/202512.pfx2as` | 第一阶段、第二阶段 | prefix 到 origin ASN 的映射 | IP 到 ASN 解析 |
+| `data/pfx2as/202512.pfx2as` | 旧实验兼容 | prefix 到 origin ASN 的映射 | 保留给旧实验；当前 IP 到 ASN 解析使用 `data/ipinfo/ipinfo_asn.mmdb` |
 | `data/owner2asn/owner_to_asn.csv` | 第一阶段、AS 预处理 | `owner,asn` 两列 | cable owner 到 ASN 的映射 |
 
 ### traceroute 与 probe 输入
@@ -199,7 +200,8 @@ output/
 | `--probe-file-name` | `None` | 从 `data/probe/` 中按文件名选 probe 文件 |
 | `--probe-use-latest` | `False` | 自动选择最新 probe JSON |
 | `--mmdb-path` | `data/ipinfo/ipinfo_location.mmdb` | geolocation MMDB 路径 |
-| `--pfx2as-file` | `data/pfx2as/202512.pfx2as` | pfx2as 路径 |
+| `--asn-mmdb-path` | `data/ipinfo/ipinfo_asn.mmdb` | IPinfo ASN MMDB 路径，用于当前 IP 到 ASN 映射 |
+| `--pfx2as-file` | `data/pfx2as/202512.pfx2as` | 旧兼容参数；当前 IP 到 ASN 映射使用 `--asn-mmdb-path` |
 | `--output-csv` | `output/result/country_root_cable_dependency_hybrid.csv` | 第二阶段主输出路径 |
 | `--summary-json` | `None` | 可选第二阶段 summary JSON |
 | `--cable-dir` | `data/cable/` | 海缆元数据目录 |
@@ -1261,3 +1263,13 @@ Stage 1 现在补充记录与论文方法定义对齐的元数据，但不改变
 - traceroute link 生成阶段会在 hop 序列中观察到实际目标 ASN 时记录 service-entry 边界。后处理中的 trace summary 会输出该边界是否被解析，但物理投影仍然保持 hop-pair 粒度。
 - candidate 行新增海缆生命周期字段，例如 `cable_status`、`cable_rfs_date`、`cable_retired_date`、`cable_availability_status` 和 `availability_filter_passed`。
 - `output/result/supplementary_owner_concentration.csv` 汇总 feasible corridor observation mass 上的拆分 owner exposure。它只是补充描述表：owner 不作为 ground truth，也不能解释为真实流量体积或真实海缆使用量。
+
+## 最新 IPinfo ASN 数据库更新
+
+当前所有 IP 到 ASN 的映射统一使用 `data/ipinfo/ipinfo_asn.mmdb`。
+
+- `source/main_analysis.py` 中的 hop ASN、link endpoint ASN、target ASN、service-entry ASN 都通过 IPinfo ASN MMDB 查询。
+- `source/concerntration_analysis.py` 中用于 cross-border AS pair 的 ASN 也通过 IPinfo ASN MMDB 查询。
+- `data/ipinfo/ipinfo_location.mmdb` 继续用于国家、城市、经纬度 geolocation，不再作为主要 ASN 来源。
+- `data/pfx2as/202512.pfx2as` 和 `--pfx2as-file` 仅保留为旧实验兼容说明；当前主流程不再使用它进行 IP 到 ASN 映射。
+- 如需指定其他 IPinfo ASN 数据库，可以使用 `--asn-mmdb-path`。
