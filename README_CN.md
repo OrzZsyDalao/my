@@ -172,6 +172,8 @@ output/
 
 `ripe_atlas_public_download/package_paper_csv_results.py` 会从每个 `msm_id` 的结果目录中收集论文级的国家/服务-国家汇总、走廊观察分布、跨层审计与案例 CSV，输出到 `results/july1_public_atlas_20260701/`。`run_july1_pipeline_and_publish.ps1` 则在全部 pipeline 成功后打包、暂存该目录、提交并推送到 `main`。它不会提交原始 RIPE JSON、匹配 JSON 或 trace-level 大型表，并对单文件应用 95 MB GitHub 上限保护。
 
+若全量 pipeline 已以 Windows 计划任务的方式运行，可使用 `publish_july1_results_after_task.ps1`。它只会等待该任务成功结束后打包并推送，不会重复运行一遍测量 pipeline。
+
 ## 各脚本参数说明
 
 ### `python precompute_as_graph.py`

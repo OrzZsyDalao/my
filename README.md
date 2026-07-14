@@ -130,6 +130,7 @@ Script roles:
 
 10. `ripe_atlas_public_download/package_paper_csv_results.py` and `run_july1_pipeline_and_publish.ps1`
    Package only paper-facing country/service-country CSV summaries from the completed 2026-07-01 public Atlas runs into `results/july1_public_atlas_20260701/`. The PowerShell wrapper runs the full batch, applies a 95 MB per-file GitHub guard, then commits and pushes only this compact bundle; raw Atlas JSON, matching JSON, and trace-level tables remain local.
+   `publish_july1_results_after_task.ps1` is the non-duplicating variant for an already-running Windows scheduled pipeline task: it waits for successful completion before packaging and pushing the same bundle.
 
 ## Input File Reference
 
