@@ -37,6 +37,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--input-dir", default=str(DEFAULT_INPUT_DIR))
     parser.add_argument("--measurement-id", action="append", type=int, default=None)
     parser.add_argument("--run-id", default=None)
+    parser.add_argument(
+        "--resume-run-id",
+        default=None,
+        help="Resume a failed or interrupted isolated run, skipping measurements already marked completed.",
+    )
     parser.add_argument("--config", default=str(REPO_DIR / "config" / "default_experiment.json"))
     parser.add_argument("--as-precompute-file", default=str(DEFAULT_AS_PRECOMPUTE))
     parser.add_argument("--skip-robustness", action="store_true")
@@ -105,6 +110,22 @@ def load_json(path: Path) -> Dict[str, Any]:
     return value if isinstance(value, dict) else {}
 
 
+def read_csv(path: Path) -> List[Dict[str, str]]:
+    """Read a UTF-8 CSV into dictionaries, returning no rows for a missing file."""
+    if not path.exists():
+        return []
+    with path.open("r", encoding="utf-8-sig", newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
+def upsert_index_row(rows: List[Dict[str, Any]], replacement: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Replace the current measurement row while preserving all other run-index rows."""
+    msm_id = str(replacement["msm_id"])
+    retained = [row for row in rows if str(row.get("msm_id")) != msm_id]
+    retained.append(replacement)
+    return retained
+
+
 def trace_audit_value(path: Path, column: str) -> str:
     """Read one value from the stage-one trace denominator audit CSV."""
     if not path.exists():
@@ -139,58 +160,81 @@ def reference_input_descriptors(as_precompute_file: Path) -> List[Dict[str, Any]
 def main() -> None:
     """Run selected measurements in an isolated, manifest-bound directory."""
     args = parse_args()
+    if args.run_id and args.resume_run_id:
+        raise ValueError("Use either --run-id or --resume-run-id, not both.")
     input_dir = Path(args.input_dir).resolve()
     config_path = Path(args.config).resolve()
     config = load_config(config_path)
     commit_sha = git_commit_sha()
-    run_id = args.run_id or make_run_id(commit_sha)
+    run_id = args.resume_run_id or args.run_id or make_run_id(commit_sha)
     run_root = REPO_DIR / "runs" / run_id
     records = discover_measurements(input_dir, args.measurement_id)
     if args.dry_run:
         for record in records:
             print(f"Would run msm_id={record['msm_id']} from {record['input_file']}")
         return
-    if run_root.exists():
-        raise FileExistsError(f"Run directory already exists; refusing reuse: {run_root}")
-    (run_root / "measurements").mkdir(parents=True)
-    (run_root / "logs").mkdir()
-    (run_root / "inputs").mkdir()
-    (run_root / "paper").mkdir()
-    resolved_config_path = run_root / "inputs" / "resolved_config.json"
-    write_json(resolved_config_path, config)
-    config_digest = json_hash(config)
-    input_rows = [
-        {
-            "msm_id": record["msm_id"],
-            "label": record["label"],
-            "input_file": str(record["input_file"].relative_to(REPO_DIR)),
-            "input_sha256": sha256_file(record["input_file"]),
-            "input_bytes": record["input_file"].stat().st_size,
+    if args.resume_run_id:
+        manifest_path = run_root / "run_manifest.json"
+        resolved_config_path = run_root / "inputs" / "resolved_config.json"
+        if not manifest_path.exists() or not resolved_config_path.exists():
+            raise FileNotFoundError(f"Resume run is missing its manifest or resolved config: {run_root}")
+        run_manifest = load_json(manifest_path)
+        if run_manifest.get("status") == "completed":
+            raise RuntimeError(f"Run is already completed: {run_id}")
+        config = load_config(resolved_config_path)
+        config_digest = json_hash(config)
+        if config_digest != run_manifest.get("config_hash"):
+            raise RuntimeError("Resolved resume configuration does not match the run manifest.")
+        commit_sha = str(run_manifest.get("git_commit_sha") or commit_sha)
+        index_rows = read_csv(run_root / "run_index.csv")
+        run_manifest.update({"status": "running", "resumed_at_utc": datetime.now(timezone.utc).isoformat()})
+        write_json(manifest_path, run_manifest)
+    else:
+        if run_root.exists():
+            raise FileExistsError(f"Run directory already exists; refusing reuse: {run_root}")
+        (run_root / "measurements").mkdir(parents=True)
+        (run_root / "logs").mkdir()
+        (run_root / "inputs").mkdir()
+        (run_root / "paper").mkdir()
+        resolved_config_path = run_root / "inputs" / "resolved_config.json"
+        write_json(resolved_config_path, config)
+        config_digest = json_hash(config)
+        input_rows = [
+            {
+                "msm_id": record["msm_id"],
+                "label": record["label"],
+                "input_file": str(record["input_file"].relative_to(REPO_DIR)),
+                "input_sha256": sha256_file(record["input_file"]),
+                "input_bytes": record["input_file"].stat().st_size,
+            }
+            for record in records
+        ]
+        write_csv(run_root / "inputs" / "input_manifest.csv", input_rows)
+        reference_inputs = reference_input_descriptors(Path(args.as_precompute_file).resolve())
+        write_csv(run_root / "inputs" / "reference_input_manifest.csv", reference_inputs)
+        run_manifest = {
+            "run_id": run_id,
+            "created_at_utc": datetime.now(timezone.utc).isoformat(),
+            "git_commit_sha": commit_sha,
+            "config_hash": config_digest,
+            "config_file": str(resolved_config_path.relative_to(REPO_DIR)),
+            "measurement_window": config.get("measurement_window"),
+            "reference_input_manifest": str((run_root / "inputs" / "reference_input_manifest.csv").relative_to(REPO_DIR)),
+            "interpretation": "measurement-observed feasible submarine corridor candidate audit; not traffic or ground-truth cable attribution",
+            "status": "running",
         }
-        for record in records
-    ]
-    write_csv(run_root / "inputs" / "input_manifest.csv", input_rows)
-    reference_inputs = reference_input_descriptors(Path(args.as_precompute_file).resolve())
-    write_csv(run_root / "inputs" / "reference_input_manifest.csv", reference_inputs)
-    run_manifest = {
-        "run_id": run_id,
-        "created_at_utc": datetime.now(timezone.utc).isoformat(),
-        "git_commit_sha": commit_sha,
-        "config_hash": config_digest,
-        "config_file": str(resolved_config_path.relative_to(REPO_DIR)),
-        "measurement_window": config.get("measurement_window"),
-        "reference_input_manifest": str((run_root / "inputs" / "reference_input_manifest.csv").relative_to(REPO_DIR)),
-        "interpretation": "measurement-observed feasible submarine corridor candidate audit; not traffic or ground-truth cable attribution",
-        "status": "running",
-    }
-    write_json(run_root / "run_manifest.json", run_manifest)
+        write_json(run_root / "run_manifest.json", run_manifest)
+        index_rows = []
 
-    index_rows: List[Dict[str, Any]] = []
     for record in records:
+        existing_row = next((row for row in index_rows if str(row.get("msm_id")) == str(record["msm_id"])), None)
+        if existing_row and existing_row.get("status") == "completed":
+            print(f"Skipping completed msm_id={record['msm_id']}")
+            continue
         directory_name = f"msm{record['msm_id']}_{re.sub(r'[^A-Za-z0-9]+', '-', record['label']).strip('-').lower()}"
-        measurement_dir = run_root / "measurements" / directory_name
-        measurement_dir.mkdir()
-        measurement_manifest = {
+        measurement_dir = REPO_DIR / existing_row["output_dir"] if existing_row else run_root / "measurements" / directory_name
+        measurement_dir.mkdir(parents=True, exist_ok=True)
+        measurement_manifest = load_json(measurement_dir / "measurement_manifest.json") or {
             "run_id": run_id,
             "git_commit_sha": commit_sha,
             "config_hash": config_digest,
@@ -199,8 +243,8 @@ def main() -> None:
             "input_file": str(record["input_file"].relative_to(REPO_DIR)),
             "input_sha256": sha256_file(record["input_file"]),
             "measurement_window": config.get("measurement_window"),
-            "status": "running",
         }
+        measurement_manifest.update({"status": "running", "error": ""})
         write_json(measurement_dir / "measurement_manifest.json", measurement_manifest)
         log_path = run_root / "logs" / f"{directory_name}.log"
         main_command = [
@@ -230,9 +274,18 @@ def main() -> None:
         status = "completed"
         error = ""
         try:
-            run_command(main_command, log_path, args.dry_run)
-            run_command(postprocess_command, log_path, args.dry_run)
-            if not args.skip_robustness:
+            stage_one_ready = all((measurement_dir / filename).exists() for filename in (
+                "cable_matching_output.json", "cable_matching_stats_5051.json", "trace_denominator_audit.csv",
+            ))
+            postprocess_ready = all((measurement_dir / filename).exists() for filename in (
+                "trace_candidate_support.csv", "dataset_summary.csv", "framework_alignment_report.json",
+            ))
+            robustness_ready = (measurement_dir / "robustness_conservative_candidate_audit.csv").exists()
+            if not stage_one_ready:
+                run_command(main_command, log_path, args.dry_run)
+            if not postprocess_ready:
+                run_command(postprocess_command, log_path, args.dry_run)
+            if not args.skip_robustness and not robustness_ready:
                 run_command(robustness_command, log_path, args.dry_run)
         except Exception as exc:
             status = "failed"
@@ -244,7 +297,7 @@ def main() -> None:
         indexed_unique_traces = trace_audit_value(trace_audit_path, "unique_traces_total")
         if status == "completed" and indexed_unique_traces and str(stage_stats.get("unique_traces_total", "")) != indexed_unique_traces:
             raise RuntimeError("Run index trace denominator does not match Stage 1 trace denominator audit.")
-        index_rows.append({
+        index_rows = upsert_index_row(index_rows, {
             "run_id": run_id, "msm_id": record["msm_id"], "label": record["label"], "status": status,
             "output_dir": str(measurement_dir.relative_to(REPO_DIR)), "input_sha256": measurement_manifest["input_sha256"],
             "raw_results_total": stage_stats.get("raw_results_total", ""),

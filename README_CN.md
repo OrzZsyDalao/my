@@ -6,6 +6,7 @@
 
 ```powershell
 python -m pipeline.run_experiment --measurement-id 5009
+python -m pipeline.run_experiment --resume-run-id <failed_run_id>
 python -m pipeline.package_paper_results --run-id <run_id>
 python -m pipeline.matched_comparison --run-id <run_id> --comparison-services Wikipedia,Reddit
 ```
