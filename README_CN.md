@@ -168,6 +168,10 @@ output/
 | `probe/atlas_traceroute_config.local.json` | probe 辅助脚本，可选 | 与示例模板相同的 JSON 结构 | 推荐本地保存真实 API key 和实验目标 |
 | `probe/results/*.json` | probe 辅助脚本输出 | 测量提交回执与返回的 measurement IDs | 后续数据采集前的本地实验记录 |
 
+### 2026-07-01 公开 Atlas 结果打包与同步
+
+`ripe_atlas_public_download/package_paper_csv_results.py` 会从每个 `msm_id` 的结果目录中收集论文级的国家/服务-国家汇总、走廊观察分布、跨层审计与案例 CSV，输出到 `results/july1_public_atlas_20260701/`。`run_july1_pipeline_and_publish.ps1` 则在全部 pipeline 成功后打包、暂存该目录、提交并推送到 `main`。它不会提交原始 RIPE JSON、匹配 JSON 或 trace-level 大型表，并对单文件应用 95 MB GitHub 上限保护。
+
 ## 各脚本参数说明
 
 ### `python precompute_as_graph.py`

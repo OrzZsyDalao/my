@@ -128,6 +128,9 @@ Script roles:
 9. `ripe_atlas_public_download/run_per_measurement_pipeline.py`
    Per-measurement batch runner. Discovers downloaded public traceroute files, creates one result folder per `msm_id`, and runs `main_analysis.py`, `postprocess_candidate_output.py`, and `robustness_compare.py` separately for each measurement.
 
+10. `ripe_atlas_public_download/package_paper_csv_results.py` and `run_july1_pipeline_and_publish.ps1`
+   Package only paper-facing country/service-country CSV summaries from the completed 2026-07-01 public Atlas runs into `results/july1_public_atlas_20260701/`. The PowerShell wrapper runs the full batch, applies a 95 MB per-file GitHub guard, then commits and pushes only this compact bundle; raw Atlas JSON, matching JSON, and trace-level tables remain local.
+
 ## Input File Reference
 
 ### Shared Input Files
