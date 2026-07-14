@@ -273,6 +273,7 @@ Script roles:
 | `--output-root` | `output/public_traceroute_by_msmid` | Root directory where one subfolder per `msm_id` is created |
 | `--as-precompute-file` | `output/preprocessed/as_graph_owner_reachability.pkl.gz` | AS-graph precompute file passed to Stage 1 |
 | `--measurement-id` | all discovered files | Optional filter. Repeat to run selected measurements only |
+| `--exclude-measurement-id` | none | Optional exclusion. Repeat to omit selected measurements, e.g. `--exclude-measurement-id 5051 --exclude-measurement-id 5151` |
 | `--skip-existing` | `False` | Skip a measurement if its `cable_matching_manifest.json` already exists |
 | `--skip-robustness` | `False` | Skip robustness comparison for faster smoke tests |
 | `--dry-run` | `False` | Print commands without executing them |

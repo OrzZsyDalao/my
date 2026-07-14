@@ -50,6 +50,13 @@ def parse_args() -> argparse.Namespace:
         help="Optional msm_id filter. Repeat to run only selected measurements.",
     )
     parser.add_argument(
+        "--exclude-measurement-id",
+        type=int,
+        action="append",
+        default=None,
+        help="Optional msm_id exclusion. Repeat to omit measurements from a batch run.",
+    )
+    parser.add_argument(
         "--skip-existing",
         action="store_true",
         help="Skip a measurement when the full postprocess output already exists in its output folder.",
@@ -85,15 +92,22 @@ def extract_dataset_label(path: Path) -> str:
     return path.name.split("_msm", 1)[0]
 
 
-def discover_measurement_files(input_dir: Path, selected_ids: Optional[Iterable[int]]) -> List[Dict[str, Any]]:
+def discover_measurement_files(
+    input_dir: Path,
+    selected_ids: Optional[Iterable[int]],
+    excluded_ids: Optional[Iterable[int]] = None,
+) -> List[Dict[str, Any]]:
     """Discover downloaded measurement result files."""
     selected = set(selected_ids or [])
+    excluded = set(excluded_ids or [])
     records: List[Dict[str, Any]] = []
     for path in sorted(input_dir.glob("*.json")):
         msm_id = extract_measurement_id(path)
         if msm_id is None:
             continue
         if selected and msm_id not in selected:
+            continue
+        if msm_id in excluded:
             continue
         label = extract_dataset_label(path)
         records.append(
@@ -200,7 +214,11 @@ def main() -> None:
     args = parse_args()
     input_dir = Path(args.input_dir).resolve()
     output_root = Path(args.output_root).resolve()
-    records = discover_measurement_files(input_dir, args.measurement_id)
+    records = discover_measurement_files(
+        input_dir,
+        args.measurement_id,
+        args.exclude_measurement_id,
+    )
     if not records:
         raise ValueError(f"No downloaded measurement JSON files found under {input_dir}")
 

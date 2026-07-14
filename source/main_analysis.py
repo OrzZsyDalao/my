@@ -17,7 +17,6 @@ try:
     import pytricia
 except ImportError:
     pytricia = None
-from geopy.distance import geodesic
 from sklearn.neighbors import BallTree
 from tqdm import tqdm
 
@@ -54,6 +53,20 @@ AS_GRAPH_PRECOMPUTE_PATH = os.path.join(PREPROCESSED_DIR, "as_graph_owner_reacha
 
 TRACEROUTE_EXCLUSIONS = ("_result.json", "_geo.json", "_analysis.json")
 CABLE_EXCLUSION_FILE = "landing-point-geo.json"
+EARTH_RADIUS_KM = 6371.0
+
+
+def haversine_km(point_a: Tuple[float, float], point_b: Tuple[float, float]) -> float:
+    """Return spherical great-circle distance in kilometres for pipeline filtering."""
+    lat_a, lon_a = math.radians(point_a[0]), math.radians(point_a[1])
+    lat_b, lon_b = math.radians(point_b[0]), math.radians(point_b[1])
+    delta_lat = lat_b - lat_a
+    delta_lon = lon_b - lon_a
+    haversine_term = (
+        math.sin(delta_lat / 2.0) ** 2
+        + math.cos(lat_a) * math.cos(lat_b) * math.sin(delta_lon / 2.0) ** 2
+    )
+    return float(2.0 * EARTH_RADIUS_KM * math.asin(min(1.0, math.sqrt(haversine_term))))
 
 
 class IPv4PrefixLookup:
@@ -157,15 +170,22 @@ def parse_trace_datetime(value: Any) -> Optional[datetime]:
         return None
 
 
-def is_cable_available_at(cable: Dict[str, Any], trace_timestamp: Any, mode: str = "confirmed_active_only") -> Dict[str, Any]:
+def is_cable_available_at(
+    cable: Dict[str, Any],
+    trace_timestamp: Any,
+    mode: str = "confirmed_active_only",
+    trace_datetime: Optional[datetime] = None,
+) -> Dict[str, Any]:
     """Evaluate cable lifecycle availability for a trace timestamp.
 
     Unknown lifecycle metadata is retained but explicitly marked so old cable
     datasets remain compatible.
     """
-    trace_dt = parse_trace_datetime(trace_timestamp)
-    rfs_date = parse_loose_date(cable.get("rfs_date") or cable.get("rfs") or cable.get("rfs_year"))
-    retired_date = parse_loose_date(cable.get("retired_date"))
+    trace_dt = trace_datetime if trace_datetime is not None else parse_trace_datetime(trace_timestamp)
+    rfs_date = cable.get("rfs_date_parsed") or parse_loose_date(
+        cable.get("rfs_date") or cable.get("rfs") or cable.get("rfs_year")
+    )
+    retired_date = cable.get("retired_date_parsed") or parse_loose_date(cable.get("retired_date"))
     is_planned = bool(cable.get("is_planned", False))
     retired = bool(cable.get("retired", False))
     status = str(cable.get("status") or "").strip().lower()
@@ -550,6 +570,7 @@ class IPInfoASNResolver:
             raise FileNotFoundError(f"Missing IPinfo ASN MMDB at {path}")
         self.path = path
         self.reader = maxminddb.open_database(path)
+        self._cache: Dict[str, str] = {}
 
     def close(self) -> None:
         """Close the underlying MMDB reader."""
@@ -557,29 +578,42 @@ class IPInfoASNResolver:
 
     def get(self, ip_address: str) -> str:
         """Return a normalized ASN string from IPinfo ASN MMDB, or -1 if unavailable."""
+        cached = self._cache.get(ip_address)
+        if cached is not None:
+            return cached
         if not ip_address or is_private_or_special_ip(ip_address):
+            self._cache[ip_address] = "-1"
             return "-1"
         try:
             record = self.reader.get(ip_address)
         except Exception:
+            self._cache[ip_address] = "-1"
             return "-1"
         if not record:
+            self._cache[ip_address] = "-1"
             return "-1"
-        return normalize_asn_value(
+        resolved = normalize_asn_value(
             record.get("asn")
             or record.get("autonomous_system_number")
             or record.get("autonomous_system_organization")
         )
+        self._cache[ip_address] = resolved
+        return resolved
 
 
 def get_geo_info(
     ip_address: str,
     mmdb_reader: maxminddb.Reader,
     asn_resolver: Optional[IPInfoASNResolver] = None,
+    geo_cache: Optional[Dict[str, Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
     """Query IP geolocation data and attach ASN from the IPinfo ASN MMDB when available."""
+    if geo_cache is not None and ip_address in geo_cache:
+        return geo_cache[ip_address]
     geo_data = {"lat": None, "lon": None, "asn": None, "country": None, "city": None}
     if not ip_address or is_private_or_special_ip(ip_address):
+        if geo_cache is not None:
+            geo_cache[ip_address] = geo_data
         return geo_data
 
     try:
@@ -596,6 +630,8 @@ def get_geo_info(
     if asn_resolver is not None:
         asn = asn_resolver.get(ip_address)
         geo_data["asn"] = f"AS{asn}" if asn != "-1" else None
+    if geo_cache is not None:
+        geo_cache[ip_address] = geo_data
     return geo_data
 
 
@@ -639,6 +675,7 @@ def parse_hops_to_links(
     mmdb_reader: maxminddb.Reader,
     asn_resolver: IPInfoASNResolver,
     trace_metadata: Optional[Dict[str, Any]] = None,
+    geo_cache: Optional[Dict[str, Dict[str, Any]]] = None,
 ) -> List[Dict[str, Any]]:
     """Convert consecutive traceroute hops into adjacent hop-pair links."""
     parsed_links: List[Dict[str, Any]] = []
@@ -652,7 +689,7 @@ def parse_hops_to_links(
             hop_infos.append(None)
             continue
         ip = selected_reply["ip"]
-        geo = get_geo_info(ip, mmdb_reader, asn_resolver)
+        geo = get_geo_info(ip, mmdb_reader, asn_resolver, geo_cache=geo_cache)
         hop_infos.append(
             {
                 "ip": ip,
@@ -806,7 +843,7 @@ class CableMatcher:
 
         for index, station_a in enumerate(station_ids):
             for station_b in station_ids[index + 1:]:
-                if geodesic(self.ls_geo[station_a], self.ls_geo[station_b]).km <= self.landing_region_radius_km:
+                if haversine_km(self.ls_geo[station_a], self.ls_geo[station_b]) <= self.landing_region_radius_km:
                     union(station_a, station_b)
 
         components: Dict[str, List[str]] = {}
@@ -943,7 +980,7 @@ class CableMatcher:
                         continue
                     segment = tuple(sorted((ls_a, ls_b)))
                     if segment not in self.gcd_cache:
-                        self.gcd_cache[segment] = geodesic(self.ls_geo[ls_a], self.ls_geo[ls_b]).km
+                        self.gcd_cache[segment] = haversine_km(self.ls_geo[ls_a], self.ls_geo[ls_b])
                     self.segment_to_cables.setdefault(segment, []).append(
                         {
                             "cable_id": cable["id"],
@@ -956,10 +993,14 @@ class CableMatcher:
                             "rfs": cable.get("rfs"),
                             "rfs_year": cable.get("rfs_year"),
                             "rfs_date": cable.get("rfs_date"),
+                            "rfs_date_parsed": parse_loose_date(
+                                cable.get("rfs_date") or cable.get("rfs") or cable.get("rfs_year")
+                            ),
                             "is_planned": cable.get("is_planned", False),
                             "status": cable.get("status"),
                             "retired": cable.get("retired", False),
                             "retired_date": cable.get("retired_date"),
+                            "retired_date_parsed": parse_loose_date(cable.get("retired_date")),
                         }
                     )
 
@@ -1514,17 +1555,18 @@ class CableMatcher:
         entries_a = []
         for index in idx_a_list:
             ls_id = self.ls_id_map[index]
-            d_in = geodesic((hop_a["geo"]["lat"], hop_a["geo"]["lon"]), self.ls_coord_map[ls_id]).km
+            d_in = haversine_km((hop_a["geo"]["lat"], hop_a["geo"]["lon"]), self.ls_coord_map[ls_id])
             entries_a.append((ls_id, d_in))
 
         entries_b = []
         for index in idx_b_list:
             ls_id = self.ls_id_map[index]
-            d_out = geodesic((hop_b["geo"]["lat"], hop_b["geo"]["lon"]), self.ls_coord_map[ls_id]).km
+            d_out = haversine_km((hop_b["geo"]["lat"], hop_b["geo"]["lon"]), self.ls_coord_map[ls_id])
             entries_b.append((ls_id, d_out))
 
-        asn_a = self.IP2ASN(link["ips"][0])
-        asn_b = self.IP2ASN(link["ips"][1])
+        asn_a = normalize_asn_value(hop_a.get("asn"))
+        asn_b = normalize_asn_value(hop_b.get("asn"))
+        trace_datetime = parse_trace_datetime(link.get("timestamp"))
 
         for ls_a_id, d_in in entries_a:
             for ls_b_id, d_out in entries_b:
@@ -1564,6 +1606,7 @@ class CableMatcher:
                         cable_info,
                         link.get("timestamp"),
                         mode=self.cable_availability_mode,
+                        trace_datetime=trace_datetime,
                     )
                     if availability_info["cable_availability_status"] == "unknown":
                         self.stats["candidates_with_unknown_cable_status"] += 1
@@ -2073,6 +2116,7 @@ def main() -> None:
     empty_trace_count = 0
     is_first_entry = True
     trace_summary_rows: List[Dict[str, Any]] = []
+    geo_cache: Dict[str, Dict[str, Any]] = {}
 
     try:
         os.makedirs(os.path.dirname(output_results_path), exist_ok=True)
@@ -2154,6 +2198,7 @@ def main() -> None:
                                 mmdb_reader=mmdb_reader,
                                 asn_resolver=asn_resolver,
                                 trace_metadata=trace_metadata,
+                                geo_cache=geo_cache,
                             )
 
                             trace_mappable_links = len(traceroute_links)
@@ -2208,8 +2253,8 @@ def main() -> None:
                                     "hop_range": f"Hop {link['source']['hop_num']} -> {link['destination']['hop_num']}",
                                     "src_ip": link["source"]["ip"],
                                     "dst_ip": link["destination"]["ip"],
-                                    "src_asn": matcher.IP2ASN(link["source"]["ip"]),
-                                    "dst_asn": matcher.IP2ASN(link["destination"]["ip"]),
+                                    "src_asn": normalize_asn_value(link["source"].get("asn")),
+                                    "dst_asn": normalize_asn_value(link["destination"].get("asn")),
                                     "src_city": link["source"]["geo"].get("city"),
                                     "dst_city": link["destination"]["geo"].get("city"),
                                     "transition_near_country": link["source"]["geo"]["country"],
