@@ -8,6 +8,18 @@ The main research question is:
 
 The goal is **not** per-path ground-truth submarine cable attribution. The pipeline produces candidate-support distributions, diversity metrics, mismatch diagnostics, ambiguity profiles, and robustness comparisons.
 
+## Run-Isolated Reproducibility
+
+Paper runs are isolated under `runs/<run_id>/`; historical `output/` folders are not paper result bundles. Each run records input checksums, configuration, Git commit, per-measurement status, logs, and trace denominators. Packaging reads only `status=completed` entries in the current run index, preventing historical measurements from contaminating a new result package.
+
+```powershell
+python -m pipeline.run_experiment --measurement-id 5009
+python -m pipeline.package_paper_results --run-id <run_id>
+python -m pipeline.matched_comparison --run-id <run_id> --comparison-services Wikipedia,Reddit
+```
+
+Defaults are versioned in `config/default_experiment.json`. `all_feasible_segments` is the infeasibility-first candidate set; `all_segments` is the legacy support-thresholded view. Candidate support is evidence support, not a probability of true cable use. Direct physical segments require explicit topology metadata: an unordered landing-point set is never silently expanded into a complete graph. Timeout gaps and same-city geolocation ambiguity are retained as fields. Observation mass is traceroute-observed path-transition mass, never traffic volume or actual cable utilisation.
+
 ## Current Paper-Primary Framework
 
 The paper-facing analysis is now an **application/network/corridor distribution audit**:

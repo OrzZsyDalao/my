@@ -863,12 +863,13 @@ def build_link_id(link_info: Dict[str, Any], record_index: int) -> str:
     """Build a stable link identifier used across weighted and feasible candidate views."""
     return "|".join(
         [
-            str(link_info.get("file_name", "NA")),
+            str(link_info.get("trace_id", "NA")),
             str(link_info.get("msm_id", "NA")),
             str(link_info.get("probe_id", "NA")),
             str(link_info.get("timestamp", "NA")),
             str(link_info.get("hop_range", "NA")),
-            str(record_index),
+            str(link_info.get("src_ip", "NA")),
+            str(link_info.get("dst_ip", "NA")),
         ]
     )
 
@@ -880,7 +881,7 @@ def build_atomic_segment_id(row: pd.Series) -> str:
         return explicit_link_id
 
     fields = [
-        "file_name",
+        "trace_id",
         "msm_id",
         "probe_id",
         "timestamp",
@@ -998,6 +999,13 @@ def explode_candidate_rows_from_field(
                 "src_asn": link_info.get("src_asn"),
                 "dst_asn": link_info.get("dst_asn"),
                 "rtt_delta_ms": link_info.get("rtt_delta_ms"),
+                "source_ttl": link_info.get("source_ttl"),
+                "destination_ttl": link_info.get("destination_ttl"),
+                "hop_gap": link_info.get("hop_gap"),
+                "hidden_hop_count": link_info.get("hidden_hop_count"),
+                "is_consecutive_visible_hop": link_info.get("is_consecutive_visible_hop"),
+                "crosses_timeout_gap": link_info.get("crosses_timeout_gap"),
+                "timeout_gap_policy": link_info.get("timeout_gap_policy"),
                 "hop_reply_ip_count": link_info.get("hop_reply_ip_count"),
                 "hop_selected_reply_rule": link_info.get("hop_selected_reply_rule"),
                 "confidence_bucket": match_summary.get("confidence_bucket"),
@@ -1047,10 +1055,10 @@ def explode_feasible_candidate_rows(records: List[Dict[str, Any]], unit_fields: 
 def build_traceroute_observation_id(frame: pd.DataFrame) -> pd.Series:
     """Construct a stable traceroute-level observation identifier for diagnostics and counts."""
     components = [
-        frame.get("file_name", pd.Series(index=frame.index, dtype=object)).fillna("NA").astype(str).str.strip(),
         frame.get("msm_id", pd.Series(index=frame.index, dtype=object)).fillna("NA").astype(str).str.strip(),
         frame.get("probe_id", pd.Series(index=frame.index, dtype=object)).fillna("NA").astype(str).str.strip(),
         frame.get("timestamp", pd.Series(index=frame.index, dtype=object)).fillna("NA").astype(str).str.strip(),
+        frame.get("target_ip", pd.Series(index=frame.index, dtype=object)).fillna("NA").astype(str).str.strip(),
     ]
     return components[0] + "|" + components[1] + "|" + components[2] + "|" + components[3]
 
@@ -3240,6 +3248,13 @@ def build_unit_network_physical_mismatch(
     network_definition: str = "composite",
 ) -> pd.DataFrame:
     """Join network-layer and physical diversity metrics and classify quadrants."""
+    if (
+        network_frame.empty
+        or physical_frame.empty
+        or "unit_id" not in network_frame.columns
+        or "unit_id" not in physical_frame.columns
+    ):
+        return pd.DataFrame(columns=["unit_id", "physical_level", "network_definition"])
     merged = network_frame.merge(physical_frame, on="unit_id", how="inner")
     if merged.empty:
         return merged
@@ -3319,6 +3334,8 @@ def build_cable_corridor_comparison(
     corridor_mismatch: pd.DataFrame,
 ) -> pd.DataFrame:
     """Compare cable-level and corridor-level diversity and quadrant labels."""
+    if cable_physical.empty or corridor_physical.empty or "unit_id" not in cable_physical.columns or "unit_id" not in corridor_physical.columns:
+        return pd.DataFrame(columns=["unit_id", "corridor_minus_cable_physical_diversity"])
     cable_named = cable_physical.rename(
         columns={
             "dominant_candidate_key": "cable_dominant_candidate_key",
@@ -3391,8 +3408,10 @@ def build_unit_network_physical_upper_bound_mismatch(
 ) -> pd.DataFrame:
     """Build long-form mismatch rows by comparing network diversity against conservative feasible-set upper bounds."""
     rows: List[pd.DataFrame] = []
+    if network_frame.empty or "unit_id" not in network_frame.columns:
+        return pd.DataFrame(columns=["unit_id", "network_definition", "physical_level", "candidate_view"])
     for physical_level, physical_frame in physical_frames.items():
-        if physical_frame.empty:
+        if physical_frame.empty or "unit_id" not in physical_frame.columns:
             continue
         merged = network_frame.merge(physical_frame, on="unit_id", how="inner")
         if merged.empty:
@@ -4616,7 +4635,50 @@ def main() -> None:
     feasible_frame = explode_feasible_candidate_rows(records, unit_fields)
 
     if candidate_frame.empty and feasible_frame.empty:
-        raise ValueError("No candidate rows were found in the input output JSON.")
+        # A strict infeasibility-first topology policy may legitimately retain no
+        # physical candidates.  Emit header-valid audit tables rather than
+        # converting this substantive result into a pipeline failure.
+        print("Warning: no feasible candidate rows were found; writing empty physical audit tables.")
+        empty_tables = {
+            "trace_candidate_support.csv": ["unit_id", "link_id", "trace_id", "candidate_support"],
+            "trace_feasible_candidate_space.csv": ["unit_id", "link_id", "trace_id", "hard_feasible"],
+            "dataset_summary.csv": ["metric", "value"],
+            "filtering_breakdown.csv": ["metric", "value"],
+            "candidate_space_profile.csv": ["unit_id", "num_links_with_feasible_candidates"],
+            "paper_service_country_physical_exposure.csv": ["probe_country", "service_id", "analysis_scope"],
+            "paper_service_country_corridor_concentration.csv": ["probe_country", "service_id", "analysis_scope"],
+            "paper_service_country_cross_layer_distribution.csv": ["probe_country", "service_id", "analysis_scope"],
+            "paper_corridor_observation_concentration_cases.csv": ["analysis_scope"],
+            "paper_network_broad_physical_concentrated_cases.csv": ["analysis_scope"],
+            "paper_broad_corridor_distribution_cases.csv": ["analysis_scope"],
+            "unit_network_layer_diversity.csv": ["unit_id"],
+            "unit_network_physical_upper_bound_mismatch.csv": ["unit_id", "network_definition", "physical_level"],
+        }
+        for filename, columns in empty_tables.items():
+            pd.DataFrame(columns=columns).to_csv(
+                os.path.join(args.output, filename), index=False, encoding="utf-8-sig"
+            )
+        with open(os.path.join(args.output, "method_manifest.json"), "w", encoding="utf-8") as handle:
+            json.dump(
+                {
+                    "method_name": "network_physical_diversity_auditing",
+                    "interpretation": "No feasible candidate rows were retained under this configured infeasibility-first projection.",
+                    "claim_boundary": "candidate_support_not_ground_truth_cable_attribution",
+                },
+                handle,
+                indent=2,
+            )
+        with open(os.path.join(args.output, "framework_alignment_report.json"), "w", encoding="utf-8") as handle:
+            json.dump(
+                {
+                    "status": "no_feasible_candidate_rows",
+                    "interpretation": "The configured infeasibility-first projection retained no feasible physical candidates. This is a reportable topology/data limitation, not evidence of cable use or absence of real traffic.",
+                    "paper_outputs_are_empty": True,
+                },
+                handle,
+                indent=2,
+            )
+        return
 
     if not candidate_frame.empty:
         candidate_frame = ensure_corridor_columns(candidate_frame)
@@ -4790,6 +4852,23 @@ def main() -> None:
         distribution_audit_cases
     )
     paper_physical_exposure_cases = build_paper_physical_exposure_cases(service_country_physical_exposure)
+    # Paper tables have one explicit scope per file.  Transition-country views
+    # remain supplementary because the main service access question is anchored
+    # at the RIPE Atlas probe country.
+    for frame in (
+        service_country_physical_exposure,
+        service_country_corridor_concentration_summary,
+        service_country_cross_layer_distribution_audit,
+    ):
+        if not frame.empty:
+            frame["analysis_scope"] = "probe_country_service"
+    for frame in (
+        country_corridor_concentration_summary,
+        country_network_transition_concentration_summary,
+        country_cross_layer_distribution_audit,
+    ):
+        if not frame.empty:
+            frame["analysis_scope"] = "transition_near_country"
     country_corridor_observation_distribution = country_corridor_distribution_internal.rename(
         columns={
             "share_of_observation_mass": "share_of_country_observation_mass",
@@ -4961,6 +5040,23 @@ def main() -> None:
                 "international_segment_share",
             ]
         ]
+    # Add scope after column selection so paper-facing CSVs cannot silently mix
+    # probe-country service access and transition-near-country aggregation.
+    for frame in (
+        service_country_physical_exposure,
+        service_country_corridor_concentration_summary,
+        service_country_cross_layer_distribution_audit,
+    ):
+        if not frame.empty:
+            frame["analysis_scope"] = "probe_country_service"
+    for frame in (
+        country_corridor_concentration_summary,
+        country_network_transition_concentration_summary,
+        country_cross_layer_distribution_audit,
+    ):
+        if not frame.empty:
+            frame["analysis_scope"] = "transition_near_country"
+
     cable_quadrants = build_quadrant_summary(cable_mismatch, "cable")
     corridor_quadrants = build_quadrant_summary(corridor_mismatch, "corridor")
     quadrant_summary = pd.concat([cable_quadrants, corridor_quadrants], ignore_index=True)
@@ -5034,6 +5130,15 @@ def main() -> None:
     paper_service_country_physical_exposure_path = os.path.join(args.output, "paper_service_country_physical_exposure.csv")
     paper_service_country_corridor_concentration_path = os.path.join(args.output, "paper_service_country_corridor_concentration.csv")
     paper_service_country_cross_layer_distribution_path = os.path.join(args.output, "paper_service_country_cross_layer_distribution.csv")
+    paper_transition_country_corridor_concentration_path = os.path.join(
+        args.output, "paper_transition_country_corridor_concentration.csv"
+    )
+    paper_transition_country_network_transition_concentration_path = os.path.join(
+        args.output, "paper_transition_country_network_transition_concentration.csv"
+    )
+    paper_transition_country_cross_layer_distribution_path = os.path.join(
+        args.output, "paper_transition_country_cross_layer_distribution.csv"
+    )
     cross_layer_metric_summary_path = os.path.join(args.output, "cross_layer_metric_summary.csv")
     atomic_segment_diagnostics_path = os.path.join(args.output, "atomic_segment_id_diagnostics.json")
     country_corridor_observation_distribution_path = os.path.join(
@@ -5208,6 +5313,21 @@ def main() -> None:
     )
     service_country_cross_layer_distribution_audit.to_csv(
         paper_service_country_cross_layer_distribution_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    country_corridor_concentration_summary.to_csv(
+        paper_transition_country_corridor_concentration_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    country_network_transition_concentration_summary.to_csv(
+        paper_transition_country_network_transition_concentration_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    country_cross_layer_distribution_audit.to_csv(
+        paper_transition_country_cross_layer_distribution_path,
         index=False,
         encoding="utf-8-sig",
     )

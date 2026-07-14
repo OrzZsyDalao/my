@@ -1,5 +1,17 @@
 # infocom26 项目说明
 
+## Run-isolated 可复现运行
+
+论文实验写入独立的 `runs/<run_id>/`；历史 `output/` 目录不能作为论文结果包。每个 run 记录输入校验和、参数配置、Git commit、measurement 状态、日志和 trace 分母。结果打包只读取当前 run index 中 `status=completed` 的 measurement，避免历史输出污染。
+
+```powershell
+python -m pipeline.run_experiment --measurement-id 5009
+python -m pipeline.package_paper_results --run-id <run_id>
+python -m pipeline.matched_comparison --run-id <run_id> --comparison-services Wikipedia,Reddit
+```
+
+默认参数受版本控制，位于 `config/default_experiment.json`。`all_feasible_segments` 是 infeasibility-first 候选集合；`all_segments` 仅是保留兼容性的 support-thresholded 视图。Candidate support 是证据分数，不是实际海缆使用概率。direct physical segment 必须有显式 topology metadata；无序 landing-point 集合不会再自动展开为完全图。timeout gap 和 same-city geolocation ambiguity 会保留为字段。observation mass 只表示 traceroute 观测到的路径转换，不表示流量、数据包或实际海缆利用率。
+
 ## 当前论文主框架
 
 当前 paper-facing 分析统一为 **application / network / corridor distribution audit**，核心问题是：

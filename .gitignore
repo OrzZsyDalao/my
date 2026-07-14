@@ -1,4 +1,12 @@
 __pycache__/
+*.py[cod]
+
+# Runtime-only isolated experiment products. Keep structure/documentation in
+# version control, but do not commit raw trace-derived runs or paper bundles.
+runs/*
+!runs/.gitkeep
+paper_results/*
+!paper_results/.gitkeep
 .pytest_cache/
 *.pyc
 

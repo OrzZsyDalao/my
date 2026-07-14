@@ -269,7 +269,7 @@ def load_ls_coordinates(path: str) -> Dict[str, Tuple[float, float]]:
 
 
 def load_all_cables(directory: str) -> List[Dict[str, Any]]:
-    """Load submarine cable metadata files."""
+    """Load cable metadata without inventing physical topology from landing sets."""
     all_cables: List[Dict[str, Any]] = []
     try:
         for filename in os.listdir(directory):
@@ -290,12 +290,52 @@ def load_all_cables(directory: str) -> List[Dict[str, Any]]:
                 for point in cable_data.get("landing_points", [])
                 if isinstance(point, dict) and point.get("id")
             ]
+            topology_edges: List[Tuple[str, str, str]] = []
+            topology_status = "unordered_landing_set"
+
+            # Only explicit ordered metadata can establish an adjacent physical
+            # segment.  The common ``landing_points`` list is treated as an
+            # unordered membership set because its order is not topology evidence.
+            ordered_points = (
+                cable_data.get("ordered_landing_points")
+                or cable_data.get("landing_point_path")
+                or (cable_data.get("topology") or {}).get("ordered_landing_points")
+            )
+            if isinstance(ordered_points, list):
+                ordered_ids = [
+                    str(point.get("id") if isinstance(point, dict) else point)
+                    for point in ordered_points
+                    if (point.get("id") if isinstance(point, dict) else point)
+                ]
+                for left, right in zip(ordered_ids, ordered_ids[1:]):
+                    if left != right:
+                        topology_edges.append((left, right, "adjacent_physical_segment"))
+                if topology_edges:
+                    topology_status = "ordered_landing_path"
+
+            explicit_segments = cable_data.get("segments") or (cable_data.get("topology") or {}).get("segments")
+            if isinstance(explicit_segments, list):
+                for segment in explicit_segments:
+                    if not isinstance(segment, dict):
+                        continue
+                    left = segment.get("from") or segment.get("source") or segment.get("landing_point_a")
+                    right = segment.get("to") or segment.get("destination") or segment.get("landing_point_b")
+                    if isinstance(left, dict):
+                        left = left.get("id")
+                    if isinstance(right, dict):
+                        right = right.get("id")
+                    if left and right and str(left) != str(right):
+                        topology_edges.append((str(left), str(right), "adjacent_physical_segment"))
+                if topology_edges:
+                    topology_status = "explicit_segment_metadata"
             all_cables.append(
                 {
                     "id": cable_id,
                     "name": cable_name,
                     "owners": owners,
                     "ls_points": ls_points,
+                    "topology_status": topology_status,
+                    "topology_edges": topology_edges,
                     "rfs": cable_data.get("rfs"),
                     "rfs_year": cable_data.get("rfs_year"),
                     "rfs_date": cable_data.get("rfs_date"),
@@ -662,8 +702,14 @@ def select_hop_reply(hop_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
 
 
 def build_trace_id(file_name: str, msm_id: Any, probe_id: Any, timestamp: Any, target_ip: Any) -> str:
-    """Build a stable trace identifier for client-to-service observation accounting."""
-    return f"{file_name}:{msm_id}:{probe_id}:{timestamp}:{target_ip}"
+    """Build a stable RIPE Atlas observation identifier.
+
+    ``file_name`` remains in the signature for old callers, but is intentionally
+    excluded from the identifier.  A file is only a transport container and must
+    not change the denominator of measurement-observed traces.
+    """
+    del file_name
+    return f"{msm_id}:{probe_id}:{timestamp}:{target_ip}"
 
 
 def parse_hops_to_links(
@@ -676,8 +722,14 @@ def parse_hops_to_links(
     asn_resolver: IPInfoASNResolver,
     trace_metadata: Optional[Dict[str, Any]] = None,
     geo_cache: Optional[Dict[str, Dict[str, Any]]] = None,
+    timeout_gap_policy: str = "allow_timeout_bridged",
 ) -> List[Dict[str, Any]]:
-    """Convert consecutive traceroute hops into adjacent hop-pair links."""
+    """Convert visible traceroute hops into explicitly auditable atomic segments.
+
+    A timeout no longer silently erases the preceding visible hop.  Callers can
+    restrict the analysis to consecutive visible hops, while the default retains
+    bridged observations and records the unobserved TTL gap as uncertainty.
+    """
     parsed_links: List[Dict[str, Any]] = []
     trace_metadata = trace_metadata or {}
     target_asn = normalize_asn_value(trace_metadata.get("target_asn"))
@@ -722,38 +774,48 @@ def parse_hops_to_links(
             }
         )
 
-    previous_rtt = 0.0
     previous_hop_info: Optional[Dict[str, Any]] = None
 
     for current_hop_info in hop_infos:
         if current_hop_info is None:
-            previous_hop_info = None
             continue
         if service_entry_hop is not None and int(current_hop_info["hop_num"]) > service_entry_hop:
             break
-        rtt = current_hop_info["rtt"]
-
         is_previous_geolocated = previous_hop_info and previous_hop_info["geo"]["lat"] is not None
         is_current_geolocated = current_hop_info["geo"]["lat"] is not None
 
         if is_previous_geolocated and is_current_geolocated:
-            rtt_delta = rtt - previous_rtt
-            parsed_links.append(
-                {
-                    "source": previous_hop_info,
-                    "destination": current_hop_info,
-                    "rtt_delta": rtt_delta,
-                    "ips": (previous_hop_info["ip"], current_hop_info["ip"]),
-                    "is_oceanic": rtt_delta > 15.0,
-                    "measurement_id": msm_id,
-                    "probe_id": prb_id,
-                    "timestamp": timestamp,
-                    "file_name": file_name,
-                    **link_trace_metadata,
-                }
-            )
+            source_ttl = int(previous_hop_info["hop_num"])
+            destination_ttl = int(current_hop_info["hop_num"])
+            hop_gap = max(destination_ttl - source_ttl, 1)
+            crosses_timeout_gap = hop_gap > 1
+            if timeout_gap_policy == "allow_timeout_bridged" or not crosses_timeout_gap:
+                rtt_delta = float(current_hop_info["rtt"]) - float(previous_hop_info["rtt"])
+                parsed_links.append(
+                    {
+                        "source": previous_hop_info,
+                        "destination": current_hop_info,
+                        "rtt_delta": rtt_delta,
+                        "ips": (previous_hop_info["ip"], current_hop_info["ip"]),
+                        # Deprecated compatibility heuristic.  It is not used by
+                        # paper-facing filtering, scoring, or concentration tables.
+                        "is_oceanic": rtt_delta > 15.0,
+                        "rtt_oceanic_heuristic_deprecated": rtt_delta > 15.0,
+                        "source_ttl": source_ttl,
+                        "destination_ttl": destination_ttl,
+                        "hop_gap": hop_gap,
+                        "hidden_hop_count": max(hop_gap - 1, 0),
+                        "is_consecutive_visible_hop": not crosses_timeout_gap,
+                        "crosses_timeout_gap": crosses_timeout_gap,
+                        "timeout_gap_policy": timeout_gap_policy,
+                        "measurement_id": msm_id,
+                        "probe_id": prb_id,
+                        "timestamp": timestamp,
+                        "file_name": file_name,
+                        **link_trace_metadata,
+                    }
+                )
 
-        previous_rtt = rtt
         previous_hop_info = current_hop_info
 
     return parsed_links
@@ -876,10 +938,15 @@ class CableMatcher:
         owner2asn: Dict[str, Set[str]],
         as_graph_precompute: Optional[Dict[str, Any]] = None,
         rtt_tolerance_ms: float = 5.0,
+        landing_catchment_radius_km: float = 50.0,
         landing_region_radius_km: float = 50.0,
         landing_region_override: Optional[Dict[str, Dict[str, str]]] = None,
         landing_region_override_file: Optional[str] = None,
         cable_availability_mode: str = "confirmed_active_only",
+        same_city_policy: str = "retain",
+        same_city_distance_threshold_km: float = 25.0,
+        cable_topology_policy: str = "adjacent_only",
+        candidate_support_threshold: float = 0.5,
     ):
         self.all_cables = processed_cables
         self.ls_geo = ls_coordinates
@@ -888,12 +955,17 @@ class CableMatcher:
         self.owner2asn = owner2asn
         self.as_graph_precompute = as_graph_precompute or {}
         self.rtt_tolerance_ms = float(rtt_tolerance_ms)
+        self.landing_catchment_radius_km = float(landing_catchment_radius_km)
         self.landing_region_radius_km = float(landing_region_radius_km)
         self.landing_region_override = landing_region_override or {}
         self.landing_region_override_file = landing_region_override_file
         self.landing_region_label_map: Dict[str, str] = {}
         self.landing_region_method_map: Dict[str, str] = {}
         self.cable_availability_mode = cable_availability_mode
+        self.same_city_policy = same_city_policy
+        self.same_city_distance_threshold_km = float(same_city_distance_threshold_km)
+        self.cable_topology_policy = cable_topology_policy
+        self.candidate_support_threshold = float(candidate_support_threshold)
         self.landing_region_map = self.build_landing_region_map()
         self.candidate_count_per_matched_link: List[int] = []
         self.owner_group_signatures: Dict[str, int] = self.as_graph_precompute.get("owner_group_signatures", {})
@@ -910,11 +982,24 @@ class CableMatcher:
         self.stats: Dict[str, Any] = {
             "total_links_seen": 0,
             "same_city_filtered": 0,
+            "same_city_retained": 0,
             "links_without_landing_candidates": 0,
             "links_without_segment_candidates": 0,
             "links_with_ls_candidates": 0,
             "links_with_geo_candidates": 0,
             "candidate_segments_considered": 0,
+            "candidate_rows_total": 0,
+            "candidates_with_valid_rtt": 0,
+            "candidates_with_inconclusive_rtt": 0,
+            "candidates_filtered_by_rtt": 0,
+            "candidates_retained": 0,
+            "atomic_segments_total": 0,
+            "atomic_segments_with_valid_rtt_evidence": 0,
+            "atomic_segments_with_inconclusive_rtt": 0,
+            "atomic_segments_with_network_transition": 0,
+            "atomic_segments_with_landing_candidates": 0,
+            "atomic_segments_with_feasible_corridor_candidates": 0,
+            "atomic_segments_without_feasible_corridor_candidates": 0,
             "rtt_infeasible_filtered": 0,
             "candidates_rtt_infeasible": 0,
             "candidates_rtt_feasible": 0,
@@ -941,7 +1026,12 @@ class CableMatcher:
             "links_with_many_candidates": 0,
             "links_with_domestic_candidates": 0,
             "rtt_tolerance_ms": float(self.rtt_tolerance_ms),
+            "landing_catchment_radius_km": float(self.landing_catchment_radius_km),
             "landing_region_radius_km": float(self.landing_region_radius_km),
+            "same_city_policy": self.same_city_policy,
+            "same_city_distance_threshold_km": self.same_city_distance_threshold_km,
+            "cable_topology_policy": self.cable_topology_policy,
+            "candidate_support_threshold": self.candidate_support_threshold,
             "landing_region_count": len(set(self.landing_region_map.values())),
             "landing_region_override_file": self.landing_region_override_file,
             "landing_region_override_hash": fingerprint_file(self.landing_region_override_file),
@@ -972,17 +1062,21 @@ class CableMatcher:
                 cable_owner_asns.update(self.owner2asn.get(owner, set()))
             owner_signature = owner_group_signature(cable_owner_asns)
             owner_group_id = self.owner_group_signatures.get(owner_signature) if owner_signature else None
-            for i in range(len(points)):
-                for j in range(i + 1, len(points)):
-                    ls_a = points[i]
-                    ls_b = points[j]
-                    if ls_a == ls_b or ls_a not in self.ls_geo or ls_b not in self.ls_geo:
-                        continue
-                    segment = tuple(sorted((ls_a, ls_b)))
-                    if segment not in self.gcd_cache:
-                        self.gcd_cache[segment] = haversine_km(self.ls_geo[ls_a], self.ls_geo[ls_b])
-                    self.segment_to_cables.setdefault(segment, []).append(
-                        {
+            topology_edges = list(cable.get("topology_edges") or [])
+            if not topology_edges and self.cable_topology_policy == "allow_unordered_reachability":
+                topology_edges = [
+                    (points[i], points[j], "unordered_cable_reachability")
+                    for i in range(len(points))
+                    for j in range(i + 1, len(points))
+                ]
+            for ls_a, ls_b, candidate_topology_type in topology_edges:
+                if ls_a == ls_b or ls_a not in self.ls_geo or ls_b not in self.ls_geo:
+                    continue
+                segment = tuple(sorted((ls_a, ls_b)))
+                if segment not in self.gcd_cache:
+                    self.gcd_cache[segment] = haversine_km(self.ls_geo[ls_a], self.ls_geo[ls_b])
+                self.segment_to_cables.setdefault(segment, []).append(
+                    {
                             "cable_id": cable["id"],
                             "cable_name": cable["name"],
                             "cable_owners": cable["owners"],
@@ -1001,8 +1095,10 @@ class CableMatcher:
                             "retired": cable.get("retired", False),
                             "retired_date": cable.get("retired_date"),
                             "retired_date_parsed": parse_loose_date(cable.get("retired_date")),
+                            "topology_status": cable.get("topology_status", "unordered_landing_set"),
+                            "candidate_topology_type": candidate_topology_type,
                         }
-                    )
+                )
 
     def finalize_stats(self) -> Dict[str, Any]:
         """Return stats with aggregate metrics computed from per-link counts."""
@@ -1026,6 +1122,22 @@ class CableMatcher:
             if considered > 0 and finalized["lifecycle_metadata_known_ratio"] < 0.5
             else ""
         )
+        total_segments = int(finalized.get("atomic_segments_total", 0) or 0)
+        for key in (
+            "atomic_segments_with_valid_rtt_evidence",
+            "atomic_segments_with_inconclusive_rtt",
+            "atomic_segments_with_network_transition",
+            "atomic_segments_with_landing_candidates",
+            "atomic_segments_with_feasible_corridor_candidates",
+            "atomic_segments_without_feasible_corridor_candidates",
+        ):
+            if int(finalized.get(key, 0) or 0) > total_segments:
+                raise RuntimeError(f"Invalid segment accounting: {key} exceeds atomic_segments_total")
+        finalized["counting_semantics"] = {
+            "candidate": "candidate rows evaluated independently",
+            "atomic_segment": "one visible hop-pair or timeout-bridged visible hop pair",
+            "trace": "unique msm_id:probe_id:timestamp:target_ip observation",
+        }
         return finalized
 
     def IP2ASN(self, ip: str) -> str:
@@ -1501,7 +1613,7 @@ class CableMatcher:
             "num_candidates_above_threshold": 0,
             "feasible_candidate_retention_mode": "infeasibility_first",
             "support_threshold_used_for_legacy_all_segments": True,
-            "support_threshold_value": float(self.MATCH_THRESHOLD),
+            "support_threshold_value": float(self.candidate_support_threshold),
             "support_sum": 0.0,
             "top1_candidate_support": 0.0,
             "top2_candidate_support": 0.0,
@@ -1518,28 +1630,66 @@ class CableMatcher:
     def match_link_to_cable(self, link: Dict[str, Any]) -> Dict[str, Any]:
         """Match a single hop-pair link to a candidate physical-support distribution."""
         self.stats["total_links_seen"] += 1
+        self.stats["atomic_segments_total"] += 1
 
         hop_a = link["source"]
         hop_b = link["destination"]
         measured_rtt_delta = link["rtt_delta"]
+        try:
+            has_valid_rtt = math.isfinite(float(measured_rtt_delta)) and float(measured_rtt_delta) > 0
+        except (TypeError, ValueError):
+            has_valid_rtt = False
+        if has_valid_rtt:
+            self.stats["atomic_segments_with_valid_rtt_evidence"] += 1
+            self.stats["segments_with_valid_rtt"] += 1  # legacy alias
+        else:
+            self.stats["atomic_segments_with_inconclusive_rtt"] += 1
+            self.stats["segments_with_inconclusive_rtt"] += 1  # legacy alias
 
         city_a = hop_a["geo"].get("city")
         city_b = hop_b["geo"].get("city")
         country_a = hop_a["geo"].get("country")
         country_b = hop_b["geo"].get("country")
 
-        if city_a and city_b and country_a and country_b and city_a == city_b and country_a == country_b:
-            self.stats["same_city_filtered"] += 1
-            return {
-                "all_feasible_segments": [],
-                "all_segments": [],
-                "match_summary": self._match_summary_stub("same_city"),
-            }
+        coordinates_equal = (
+            hop_a["geo"].get("lat") == hop_b["geo"].get("lat")
+            and hop_a["geo"].get("lon") == hop_b["geo"].get("lon")
+        )
+        if coordinates_equal:
+            geo_relation_class = "same_coordinate"
+        elif city_a and city_b and country_a and country_b and city_a == city_b and country_a == country_b:
+            geo_relation_class = "same_city"
+        elif country_a and country_b and country_a == country_b:
+            geo_relation_class = "same_country_different_city"
+        elif country_a and country_b:
+            geo_relation_class = "cross_country"
+        else:
+            geo_relation_class = "unknown"
+        same_city_geo_ambiguity = geo_relation_class in {"same_coordinate", "same_city"}
+        same_city_distance_km: Optional[float] = None
+        if same_city_geo_ambiguity:
+            same_city_distance_km = haversine_km(
+                (hop_a["geo"]["lat"], hop_a["geo"]["lon"]),
+                (hop_b["geo"]["lat"], hop_b["geo"]["lon"]),
+            )
+            should_exclude = self.same_city_policy == "exclude" or (
+                self.same_city_policy == "distance_threshold"
+                and same_city_distance_km <= self.same_city_distance_threshold_km
+            )
+            if should_exclude:
+                self.stats["same_city_filtered"] += 1
+                self.stats["atomic_segments_without_feasible_corridor_candidates"] += 1
+                return {
+                    "all_feasible_segments": [],
+                    "all_segments": [],
+                    "match_summary": self._match_summary_stub("same_city_policy_exclude"),
+                }
+            self.stats["same_city_retained"] += 1
 
         candidates: List[Dict[str, Any]] = []
         had_segment_candidates = False
         rtt_feasible_candidate_found = False
-        radius_rad = self.LS_CATCHMENT_RADIUS_KM / self.R_EARTH
+        radius_rad = self.landing_catchment_radius_km / self.R_EARTH
         hop_a_loc = (np.radians(hop_a["geo"]["lat"]), np.radians(hop_a["geo"]["lon"]))
         hop_b_loc = (np.radians(hop_b["geo"]["lat"]), np.radians(hop_b["geo"]["lon"]))
 
@@ -1551,6 +1701,7 @@ class CableMatcher:
         if len(idx_a_list) > 0 and len(idx_b_list) > 0:
             self.stats["links_with_ls_candidates"] += 1
             self.stats["links_with_geo_candidates"] += 1
+            self.stats["atomic_segments_with_landing_candidates"] += 1
 
         entries_a = []
         for index in idx_a_list:
@@ -1566,6 +1717,8 @@ class CableMatcher:
 
         asn_a = normalize_asn_value(hop_a.get("asn"))
         asn_b = normalize_asn_value(hop_b.get("asn"))
+        if asn_a != "-1" and asn_b != "-1":
+            self.stats["atomic_segments_with_network_transition"] += 1
         trace_datetime = parse_trace_datetime(link.get("timestamp"))
 
         for ls_a_id, d_in in entries_a:
@@ -1602,6 +1755,7 @@ class CableMatcher:
 
                 for cable_info in segment_cables:
                     self.stats["candidate_segments_considered"] += 1
+                    self.stats["candidate_rows_total"] += 1
                     availability_info = is_cable_available_at(
                         cable_info,
                         link.get("timestamp"),
@@ -1614,7 +1768,6 @@ class CableMatcher:
                         self.stats["confirmed_active_candidates"] += 1
                     if not availability_info["availability_filter_passed"]:
                         self.stats["candidates_filtered_by_cable_lifecycle"] += 1
-                        self.stats["segments_filtered_by_cable_lifecycle"] += 1
                         continue
 
                     gcd_dist = cable_info["gcd_dist"]
@@ -1622,18 +1775,20 @@ class CableMatcher:
                     min_rtt = (gcd_dist * 2) / self.SOL_FIBER_KM_MS
                     rtt_score_info = self.compute_rtt_feasibility_score(measured_rtt_delta=measured_rtt_delta, min_rtt=min_rtt)
                     if rtt_score_info["rtt_feasibility_status"] == "inconclusive":
-                        self.stats["segments_with_inconclusive_rtt"] += 1
+                        self.stats["candidates_with_inconclusive_rtt"] += 1
                         self.stats["candidates_retained_due_to_inconclusive_rtt"] += 1
                     elif rtt_score_info["rtt_feasibility_status"] in {"feasible", "infeasible"}:
-                        self.stats["segments_with_valid_rtt"] += 1
+                        self.stats["candidates_with_valid_rtt"] += 1
                     if not rtt_score_info["rtt_feasible"]:
                         self.stats["rtt_infeasible_filtered"] += 1
                         self.stats["candidates_rtt_infeasible"] += 1
+                        self.stats["candidates_filtered_by_rtt"] += 1
                         if rtt_score_info.get("rtt_filter_applied"):
                             self.stats["candidates_filtered_by_valid_rtt"] += 1
                         continue
                     rtt_feasible_candidate_found = True
                     self.stats["candidates_rtt_feasible"] += 1
+                    self.stats["candidates_retained"] += 1
 
                     cable_owner_asns: Set[str] = set(cable_info.get("cable_owner_asns", set()))
 
@@ -1668,6 +1823,8 @@ class CableMatcher:
                         "corridor_id": corridor_id,
                         "corridor_label": corridor_label,
                         "corridor_type": "landing_region_pair",
+                        "candidate_topology_type": cable_info.get("candidate_topology_type"),
+                        "cable_topology_status": cable_info.get("topology_status"),
                         "exact_corridor_id": exact_corridor_id,
                         "exact_landing_pair_id": exact_corridor_id,
                         "exact_landing_pair_label": f"{ls_a_id} -> {ls_b_id}",
@@ -1733,6 +1890,9 @@ class CableMatcher:
                         "city_b": city_b,
                         "country_a": country_a,
                         "country_b": country_b,
+                        "geo_relation_class": geo_relation_class,
+                        "same_city_geo_ambiguity": same_city_geo_ambiguity,
+                        "same_city_distance_km": same_city_distance_km,
                         "geo-a": (
                             float(f"{hop_a['geo']['lat']:.4f}"),
                             float(f"{hop_a['geo']['lon']:.4f}"),
@@ -1769,6 +1929,7 @@ class CableMatcher:
 
         if not candidates:
             self.stats["links_with_no_feasible_candidate"] += 1
+            self.stats["atomic_segments_without_feasible_corridor_candidates"] += 1
             return {
                 "all_feasible_segments": [],
                 "all_segments": [],
@@ -1789,7 +1950,9 @@ class CableMatcher:
         self.assign_candidate_ranks(feasible_candidates)
 
         for candidate in feasible_candidates:
-            candidate["support_above_threshold"] = bool(candidate.get("candidate_support", 0.0) >= self.MATCH_THRESHOLD)
+            candidate["support_above_threshold"] = bool(
+                candidate.get("candidate_support", 0.0) >= self.candidate_support_threshold
+            )
             candidate["support_filter_reason"] = (
                 "above_threshold" if candidate["support_above_threshold"] else "below_threshold_but_feasible"
             )
@@ -1807,6 +1970,7 @@ class CableMatcher:
         self.stats["total_candidates_after_threshold"] += len(filtered_candidates)
         if feasible_candidates:
             self.stats["links_with_feasible_candidates"] += 1
+            self.stats["atomic_segments_with_feasible_corridor_candidates"] += 1
         if filtered_candidates:
             self.stats["links_with_any_match"] += 1
             self.stats["links_with_filtered_candidates"] += 1
@@ -1877,7 +2041,7 @@ class CableMatcher:
                 "num_candidates_above_threshold": len(filtered_candidates),
                 "feasible_candidate_retention_mode": "infeasibility_first",
                 "support_threshold_used_for_legacy_all_segments": True,
-                "support_threshold_value": float(self.MATCH_THRESHOLD),
+                "support_threshold_value": float(self.candidate_support_threshold),
                 "support_sum": float(support_sum),
                 "feasible_support_sum": float(feasible_support_sum),
                 "top1_candidate_support": float(top1),
@@ -1913,6 +2077,57 @@ def output_debug_cable_info(ls_coords: Dict[str, Tuple[float, float]], cables: L
         print(f"Failed to write debug file: {exc}")
 
 
+def write_physical_catalogs(matcher: CableMatcher, output_dir: str) -> None:
+    """Write human-readable landing-region and candidate-corridor catalogs.
+
+    Catalog rows document the projection vocabulary.  They are metadata, not a
+    claim that any listed corridor carried a particular measurement.
+    """
+    with open(LS_GEO_PATH, "r", encoding="utf-8") as handle:
+        features = json.load(handle).get("features", [])
+    names = {
+        str(feature.get("properties", {}).get("id")): str(feature.get("properties", {}).get("name") or feature.get("properties", {}).get("id"))
+        for feature in features
+        if feature.get("properties", {}).get("id")
+    }
+    region_rows = []
+    for station_id, region_id in sorted(matcher.landing_region_map.items()):
+        lat, lon = matcher.ls_coord_map[station_id]
+        region_rows.append({
+            "landing_station_id": station_id,
+            "landing_station_name": names.get(station_id, station_id),
+            "landing_region_id": region_id,
+            "landing_region_label": matcher.landing_region_label_map.get(region_id, region_id),
+            "latitude": lat,
+            "longitude": lon,
+            "region_assignment_method": matcher.landing_region_method_map.get(station_id, "geographic_connected_component"),
+        })
+    pd.DataFrame(region_rows).to_csv(
+        os.path.join(output_dir, "landing_region_catalog.csv"), index=False, encoding="utf-8-sig"
+    )
+    corridor_rows = []
+    for (left, right), cable_rows in sorted(matcher.segment_to_cables.items()):
+        region_left = matcher.landing_region_map.get(left, left)
+        region_right = matcher.landing_region_map.get(right, right)
+        corridor_id = "::".join(sorted((region_left, region_right)))
+        label = " <-> ".join(sorted((matcher.landing_region_label_map.get(region_left, region_left), matcher.landing_region_label_map.get(region_right, region_right))))
+        corridor_rows.append({
+            "corridor_id": corridor_id,
+            "corridor_label": label,
+            "landing_station_a_id": left,
+            "landing_station_a_name": names.get(left, left),
+            "landing_station_b_id": right,
+            "landing_station_b_name": names.get(right, right),
+            "candidate_cable_count": len(cable_rows),
+            "candidate_cable_ids": json.dumps(sorted({str(item["cable_id"]) for item in cable_rows})),
+            "topology_types": json.dumps(sorted({str(item.get("candidate_topology_type")) for item in cable_rows})),
+            "interpretation": "feasible-candidate topology catalog; not observed cable use",
+        })
+    pd.DataFrame(corridor_rows).to_csv(
+        os.path.join(output_dir, "corridor_catalog.csv"), index=False, encoding="utf-8-sig"
+    )
+
+
 def to_repo_relative_path(path: str) -> str:
     try:
         return os.path.relpath(path, BASE_DIR)
@@ -1931,6 +2146,11 @@ def write_match_manifest(
     asn_mmdb_path: str,
     landing_region_override_file: Optional[str],
     path: str,
+    run_id: Optional[str] = None,
+    run_config_file: Optional[str] = None,
+    measurement_window: Optional[str] = None,
+    trace_level_stats: Optional[Dict[str, Any]] = None,
+    matcher_config: Optional[Dict[str, Any]] = None,
     match_output_file: str = OUTPUT_RESULTS_PATH,
     match_stats_file: str = MATCH_STATS_OUTPUT_PATH,
 ) -> None:
@@ -1965,7 +2185,13 @@ def write_match_manifest(
         "legacy_all_segments_semantics": "support-thresholded legacy candidate view",
         "all_segments_semantics": "legacy support-thresholded supplementary view",
         "all_feasible_segments_semantics": "all candidates passing hard infeasibility filters",
-        "support_threshold_value": float(CableMatcher.MATCH_THRESHOLD),
+        "support_threshold_value": (matcher_config or {}).get("candidate_support_threshold", float(CableMatcher.MATCH_THRESHOLD)),
+        "run_id": run_id,
+        "measurement_window": measurement_window,
+        "run_config_file": to_repo_relative_path(run_config_file) if run_config_file else None,
+        "run_config_hash": fingerprint_file(run_config_file),
+        "trace_denominator_audit": trace_level_stats or {},
+        "matcher_config": matcher_config or {},
     }
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as handle:
@@ -2043,6 +2269,12 @@ def parse_args() -> argparse.Namespace:
         help="Tolerance added to RTT lower-bound feasibility checks.",
     )
     parser.add_argument(
+        "--landing-catchment-radius-km",
+        type=float,
+        default=50.0,
+        help="Maximum hop-to-landing-station distance for feasibility candidate generation.",
+    )
+    parser.add_argument(
         "--landing-region-radius-km",
         type=float,
         default=50.0,
@@ -2059,6 +2291,39 @@ def parse_args() -> argparse.Namespace:
         default="confirmed_active_only",
         help="Cable lifecycle filter mode for the main feasible candidate set; use confirmed_active_plus_unknown for robustness.",
     )
+    parser.add_argument(
+        "--same-city-policy",
+        choices=["retain", "exclude", "distance_threshold"],
+        default="retain",
+        help="Whether same-city geolocation observations remain in the candidate audit.",
+    )
+    parser.add_argument(
+        "--same-city-distance-threshold-km",
+        type=float,
+        default=25.0,
+        help="Distance threshold used only when --same-city-policy=distance_threshold.",
+    )
+    parser.add_argument(
+        "--timeout-gap-policy",
+        choices=["consecutive_only", "allow_timeout_bridged"],
+        default="allow_timeout_bridged",
+        help="Whether visible hops separated by timeout TTLs form uncertainty-tagged atomic segments.",
+    )
+    parser.add_argument(
+        "--cable-topology-policy",
+        choices=["adjacent_only", "allow_unordered_reachability"],
+        default="adjacent_only",
+        help="Topology evidence allowed for candidate construction; unordered landing sets are never direct segments.",
+    )
+    parser.add_argument(
+        "--candidate-support-threshold",
+        type=float,
+        default=0.5,
+        help="Legacy all_segments threshold; it never removes all_feasible_segments candidates.",
+    )
+    parser.add_argument("--run-id", default=None, help="Optional isolated experiment run identifier recorded in manifests.")
+    parser.add_argument("--run-config-file", default=None, help="Optional JSON configuration fingerprint recorded in manifests.")
+    parser.add_argument("--measurement-window", default=None, help="Optional ISO-8601 measurement window recorded in manifests.")
     return parser.parse_args()
 
 
@@ -2084,7 +2349,7 @@ def main() -> None:
         print(str(exc))
         return
 
-    output_debug_cable_info(ls_coordinates, all_cables, CABLE_DEBUG_OUTPUT_PATH)
+    output_debug_cable_info(ls_coordinates, all_cables, os.path.join(output_dir, "cable_loading_debug.json"))
     matcher = CableMatcher(
         all_cables,
         ls_coordinates,
@@ -2093,11 +2358,18 @@ def main() -> None:
         owner2asn,
         as_graph_precompute=as_graph_precompute,
         rtt_tolerance_ms=args.rtt_tolerance_ms,
+        landing_catchment_radius_km=args.landing_catchment_radius_km,
         landing_region_radius_km=args.landing_region_radius_km,
         landing_region_override=landing_region_override,
         landing_region_override_file=args.landing_region_override_file,
         cable_availability_mode=args.cable_availability_mode,
+        same_city_policy=args.same_city_policy,
+        same_city_distance_threshold_km=args.same_city_distance_threshold_km,
+        cable_topology_policy=args.cable_topology_policy,
+        candidate_support_threshold=args.candidate_support_threshold,
     )
+    os.makedirs(output_dir, exist_ok=True)
+    write_physical_catalogs(matcher, output_dir)
     traceroute_file_paths = resolve_traceroute_input(args.traceroute_input)
 
     print("\n--- Candidate-support matching task started ---")
@@ -2112,8 +2384,13 @@ def main() -> None:
     valid_link_count = 0
     feasible_link_count = 0
     total_files_processed = 0
+    raw_results_total = 0
     total_traces_processed = 0
     empty_trace_count = 0
+    duplicate_results_removed = 0
+    missing_timestamp_count = 0
+    timestamp_fallback_count = 0
+    seen_trace_ids: Set[str] = set()
     is_first_entry = True
     trace_summary_rows: List[Dict[str, Any]] = []
     geo_cache: Dict[str, Dict[str, Any]] = {}
@@ -2137,7 +2414,7 @@ def main() -> None:
                         file_name = os.path.basename(traceroute_path)
 
                         for raw_result in iter_traceroute_results(traceroute_path):
-                            total_traces_processed += 1
+                            raw_results_total += 1
                             progress.update(1)
 
                             hops = raw_result.get("result", [])
@@ -2146,7 +2423,11 @@ def main() -> None:
                                 continue
                             raw_msm_id = raw_result.get("msm_id", "N/A")
                             raw_probe_id = raw_result.get("prb_id", "N/A")
-                            raw_timestamp = raw_result.get("endtime", raw_result.get("timestamp", "N/A"))
+                            raw_timestamp = raw_result.get("timestamp")
+                            if raw_timestamp in {None, "", "N/A"}:
+                                missing_timestamp_count += 1
+                                raw_timestamp = raw_result.get("endtime") or raw_result.get("starttime") or "N/A"
+                                timestamp_fallback_count += 1
                             target_ip = (
                                 raw_result.get("dst_addr")
                                 or raw_result.get("dst_ip")
@@ -2170,6 +2451,11 @@ def main() -> None:
                             probe_country = raw_probe_country or probe_meta.get("probe_country")
                             probe_asn = normalize_asn_value(raw_probe_asn or probe_meta.get("probe_asn"))
                             trace_id = build_trace_id(file_name, raw_msm_id, raw_probe_id, raw_timestamp, target_ip)
+                            if trace_id in seen_trace_ids:
+                                duplicate_results_removed += 1
+                                continue
+                            seen_trace_ids.add(trace_id)
+                            total_traces_processed += 1
                             trace_metadata = {
                                 "trace_id": trace_id,
                                 "service_id": service_meta["service_id"],
@@ -2199,6 +2485,7 @@ def main() -> None:
                                 asn_resolver=asn_resolver,
                                 trace_metadata=trace_metadata,
                                 geo_cache=geo_cache,
+                                timeout_gap_policy=args.timeout_gap_policy,
                             )
 
                             trace_mappable_links = len(traceroute_links)
@@ -2262,12 +2549,20 @@ def main() -> None:
                                     "src_country": link["source"]["geo"]["country"],
                                     "dst_country": link["destination"]["geo"]["country"],
                                     "rtt_delta_ms": link["rtt_delta"],
+                                    "source_ttl": link.get("source_ttl"),
+                                    "destination_ttl": link.get("destination_ttl"),
+                                    "hop_gap": link.get("hop_gap"),
+                                    "hidden_hop_count": link.get("hidden_hop_count"),
+                                    "is_consecutive_visible_hop": link.get("is_consecutive_visible_hop"),
+                                    "crosses_timeout_gap": link.get("crosses_timeout_gap"),
+                                    "timeout_gap_policy": link.get("timeout_gap_policy"),
                                     "hop_reply_ip_count": max(
                                         link["source"].get("hop_reply_ip_count", 0),
                                         link["destination"].get("hop_reply_ip_count", 0),
                                     ),
                                     "hop_selected_reply_rule": link["destination"].get("hop_selected_reply_rule"),
                                     "is_potential_oceanic": link["is_oceanic"],
+                                    "rtt_oceanic_heuristic_deprecated": link.get("rtt_oceanic_heuristic_deprecated"),
                                 }
                                 match_result = {
                                     "link_info": link_info,
@@ -2299,6 +2594,28 @@ def main() -> None:
                 output_file.write("\n]\n")
 
         finalized_stats = matcher.finalize_stats()
+        trace_level_stats = {
+            "raw_results_total": raw_results_total,
+            "unique_traces_total": len(seen_trace_ids),
+            "duplicate_results_removed": duplicate_results_removed,
+            "valid_traces_total": len(trace_summary_rows),
+            "traces_with_service_entry_resolved": int(
+                sum(bool(row.get("service_entry_resolved")) for row in trace_summary_rows)
+            ),
+            "traces_with_feasible_submarine_candidates": int(
+                sum(bool(row.get("has_at_least_one_feasible_submarine_corridor")) for row in trace_summary_rows)
+            ),
+            "missing_timestamp_count": missing_timestamp_count,
+            "timestamp_fallback_count": timestamp_fallback_count,
+        }
+        for key in (
+            "valid_traces_total",
+            "traces_with_service_entry_resolved",
+            "traces_with_feasible_submarine_candidates",
+        ):
+            if trace_level_stats[key] > trace_level_stats["unique_traces_total"]:
+                raise RuntimeError(f"Invalid trace accounting: {key} exceeds unique_traces_total")
+        finalized_stats.update(trace_level_stats)
         if finalized_stats.get("lifecycle_metadata_warning"):
             print(
                 "Warning: cable lifecycle metadata coverage is low "
@@ -2309,6 +2626,11 @@ def main() -> None:
 
         trace_summary_path = os.path.join(output_dir, "trace_observation_summary.csv")
         pd.DataFrame(trace_summary_rows).to_csv(trace_summary_path, index=False, encoding="utf-8-sig")
+        pd.DataFrame([trace_level_stats]).to_csv(
+            os.path.join(output_dir, "trace_denominator_audit.csv"),
+            index=False,
+            encoding="utf-8-sig",
+        )
 
         write_match_manifest(
             traceroute_file_paths=traceroute_file_paths,
@@ -2320,6 +2642,20 @@ def main() -> None:
             as_precompute_file=args.as_precompute_file if matcher.as_graph_precompute_loaded else None,
             asn_mmdb_path=args.asn_mmdb_path,
             landing_region_override_file=args.landing_region_override_file,
+            run_id=args.run_id,
+            run_config_file=args.run_config_file,
+            measurement_window=args.measurement_window,
+            trace_level_stats=trace_level_stats,
+            matcher_config={
+                "landing_catchment_radius_km": args.landing_catchment_radius_km,
+                "landing_region_radius_km": args.landing_region_radius_km,
+                "same_city_policy": args.same_city_policy,
+                "same_city_distance_threshold_km": args.same_city_distance_threshold_km,
+                "timeout_gap_policy": args.timeout_gap_policy,
+                "cable_topology_policy": args.cable_topology_policy,
+                "rtt_tolerance_ms": args.rtt_tolerance_ms,
+                "candidate_support_threshold": args.candidate_support_threshold,
+            },
             path=match_manifest_output_path,
             match_output_file=output_results_path,
             match_stats_file=match_stats_output_path,
@@ -2332,7 +2668,7 @@ def main() -> None:
     print(f"Processed {total_traces_processed} traceroute records.")
     print(f"Empty/invalid traceroute records: {empty_trace_count}")
     print(f"Retained {feasible_link_count} links with feasible candidates before thresholding.")
-    print(f"Matched {valid_link_count} links above threshold (>= {matcher.MATCH_THRESHOLD}) in legacy all_segments.")
+    print(f"Matched {valid_link_count} links above threshold (>= {matcher.candidate_support_threshold}) in legacy all_segments.")
     print(f"Results saved to: {output_results_path}")
     print(f"Stats saved to: {match_stats_output_path}")
 
