@@ -67,6 +67,11 @@ def parse_args() -> argparse.Namespace:
         help="Skip robustness_compare.py for faster smoke tests.",
     )
     parser.add_argument(
+        "--publish-paper-results",
+        action="store_true",
+        help="After a successful batch, package and push only the compact paper-facing CSV bundle.",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Print planned commands without running them.",
@@ -209,6 +214,31 @@ def write_run_index(output_root: Path, rows: List[Dict[str, Any]]) -> None:
         )
 
 
+def package_and_publish_results(dry_run: bool) -> None:
+    """Package and push only compact paper-facing CSVs after a successful run."""
+    commands = [
+        [sys.executable, "ripe_atlas_public_download/package_paper_csv_results.py"],
+        ["git", "add", "--", "results/july1_public_atlas_20260701"],
+    ]
+    for command in commands:
+        if run_command(command, REPO_DIR, dry_run) != 0:
+            raise RuntimeError(f"Result packaging command failed: {' '.join(command)}")
+    if dry_run:
+        return
+    has_staged_results = subprocess.run(
+        ["git", "diff", "--cached", "--quiet"], cwd=str(REPO_DIR), check=False
+    ).returncode != 0
+    if not has_staged_results:
+        print("No packaged result changes to publish.")
+        return
+    for command in [
+        ["git", "commit", "-m", "Add July 1 public Atlas audit CSV results"],
+        ["git", "push", "origin", "main"],
+    ]:
+        if run_command(command, REPO_DIR, dry_run) != 0:
+            raise RuntimeError(f"Result publishing command failed: {' '.join(command)}")
+
+
 def main() -> None:
     """Run per-measurement analysis jobs."""
     args = parse_args()
@@ -280,6 +310,8 @@ def main() -> None:
             raise RuntimeError(f"Pipeline failed for msm_id={record['msm_id']} with status={status}")
 
     print(f"Per-measurement run index written under {output_root}")
+    if args.publish_paper_results:
+        package_and_publish_results(args.dry_run)
 
 
 if __name__ == "__main__":

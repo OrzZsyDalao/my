@@ -174,6 +174,8 @@ output/
 
 全量批处理可以重复使用 `--exclude-measurement-id` 排除指定 `msm_id`，例如 `--exclude-measurement-id 5051 --exclude-measurement-id 5151`。
 
+`--publish-paper-results` 可以在所有已选 measurement 成功完成后，只打包并提交论文级 CSV 结果，不会暂存原始数据或 trace-level 大型表。
+
 若全量 pipeline 已以 Windows 计划任务的方式运行，可使用 `publish_july1_results_after_task.ps1`。它只会等待该任务成功结束后打包并推送，不会重复运行一遍测量 pipeline。
 
 ## 各脚本参数说明

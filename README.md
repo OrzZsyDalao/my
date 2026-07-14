@@ -276,6 +276,7 @@ Script roles:
 | `--exclude-measurement-id` | none | Optional exclusion. Repeat to omit selected measurements, e.g. `--exclude-measurement-id 5051 --exclude-measurement-id 5151` |
 | `--skip-existing` | `False` | Skip a measurement if its `cable_matching_manifest.json` already exists |
 | `--skip-robustness` | `False` | Skip robustness comparison for faster smoke tests |
+| `--publish-paper-results` | `False` | After all selected measurements succeed, package and push only the compact paper-facing CSV bundle |
 | `--dry-run` | `False` | Print commands without executing them |
 
 ## Recommended Run Order
