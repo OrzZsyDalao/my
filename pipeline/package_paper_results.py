@@ -53,7 +53,7 @@ def write_readme(path: Path, run_id: str) -> None:
         "## 2. Observation unit\nA traceroute is decomposed into measurement-observed atomic path-transition segments.",
         "## 3. Trace denominator\nTrace IDs use measurement, probe, timestamp, and actual target IP; transport filenames are excluded.",
         "## 4. Physical projection\nCandidates are feasible submarine corridor candidates, not observed cable use.",
-        "## 5. Topology\nDirect physical segments require explicit topology metadata; unordered landing sets are not treated as direct links.",
+        "## 5. Topology\nThe default policy enumerates valid landing-station pairs on the same cable when only unordered landing metadata is available. These are reachability candidates, labelled unordered_cable_reachability, not asserted direct physical links. Explicit topology can be evaluated separately with the adjacent_only policy.",
         "## 6. Candidate exposure\nExposure means a trace contains at least one atomic segment with a feasible corridor candidate.",
         "## 7. Observation mass\nMass counts traceroute-observed transitions, not traffic volume, packets, or bytes.",
         "## 8. Corridor concentration\nConcentration is measured over feasible corridor observation distributions.",
