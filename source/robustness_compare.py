@@ -372,7 +372,22 @@ def main() -> None:
 
     frame = pd.read_csv(args.input)
     if frame.empty:
-        raise ValueError("Input trace_candidate_support.csv is empty.")
+        # A strict direct-topology projection can legitimately produce no
+        # candidate rows. Preserve a header-valid robustness audit rather than
+        # treating that substantive limitation as a runtime error.
+        print("Warning: input candidate table is empty; writing empty robustness tables.")
+        for filename, columns in {
+            "robustness_summary.csv": ["setting", "physical_level"],
+            "robustness_mismatch_stability.csv": ["network_definition", "physical_level"],
+            "robustness_quadrant_summary.csv": ["setting", "quadrant"],
+            "robustness_profile_table.csv": ["setting", "evidence_view", "physical_level"],
+            "robustness_candidate_space.csv": ["network_definition", "physical_level", "candidate_view"],
+            "robustness_conservative_candidate_audit.csv": ["network_definition", "physical_level", "candidate_view"],
+        }.items():
+            pd.DataFrame(columns=columns).to_csv(
+                os.path.join(args.output, filename), index=False, encoding="utf-8-sig"
+            )
+        return
 
     feasible_input_path = os.path.join(os.path.dirname(args.input), "trace_feasible_candidate_space.csv")
     if os.path.exists(feasible_input_path):

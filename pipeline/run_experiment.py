@@ -145,10 +145,13 @@ def main() -> None:
     commit_sha = git_commit_sha()
     run_id = args.run_id or make_run_id(commit_sha)
     run_root = REPO_DIR / "runs" / run_id
+    records = discover_measurements(input_dir, args.measurement_id)
+    if args.dry_run:
+        for record in records:
+            print(f"Would run msm_id={record['msm_id']} from {record['input_file']}")
+        return
     if run_root.exists():
         raise FileExistsError(f"Run directory already exists; refusing reuse: {run_root}")
-
-    records = discover_measurements(input_dir, args.measurement_id)
     (run_root / "measurements").mkdir(parents=True)
     (run_root / "logs").mkdir()
     (run_root / "inputs").mkdir()

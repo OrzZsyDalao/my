@@ -18,7 +18,7 @@ python -m pipeline.package_paper_results --run-id <run_id>
 python -m pipeline.matched_comparison --run-id <run_id> --comparison-services Wikipedia,Reddit
 ```
 
-Defaults are versioned in `config/default_experiment.json`. `all_feasible_segments` is the infeasibility-first candidate set; `all_segments` is the legacy support-thresholded view. Candidate support is evidence support, not a probability of true cable use. Direct physical segments require explicit topology metadata: an unordered landing-point set is never silently expanded into a complete graph. Timeout gaps and same-city geolocation ambiguity are retained as fields. Observation mass is traceroute-observed path-transition mass, never traffic volume or actual cable utilisation.
+Defaults are versioned in `config/default_experiment.json`. `all_feasible_segments` is the infeasibility-first candidate set; `all_segments` is the legacy support-thresholded view. Candidate support is evidence support, not a probability of true cable use. Direct physical segments require explicit topology metadata: an unordered landing-point set is never silently expanded into a complete graph. Timeout gaps and same-city geolocation ambiguity are retained as fields. Observation mass is traceroute-observed path-transition mass, never traffic volume or actual cable utilisation. If strict topology retains no feasible candidates, postprocess and robustness emit header-valid empty audit tables: this is a reportable data/topology limitation, not evidence about real cable use.
 
 ## Current Paper-Primary Framework
 
