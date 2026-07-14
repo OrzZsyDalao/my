@@ -1065,10 +1065,10 @@ evidence core 一致性统计。
 | --- | --- |
 | `output/result/trace_feasible_candidate_space.csv` | 从 `all_feasible_segments` 展开的可行候选空间表；旧 JSON 若缺少该字段会自动 fallback 到 `all_segments` 并告警 |
 | `output/result/unit_physical_candidate_set_diversity_cable.csv` | cable-level 保守可行集合多样性 |
-| `output/result/unit_physical_candidate_set_diversity_corridor.csv` | corridor-level 保守可行集合多样性，也是论文主物理层视图 |
+| `output/result/unit_physical_candidate_set_diversity_corridor.csv` | corridor-level 保守可行集合多样性；它是 candidate-breadth 描述符，不是论文主 observation-concentration 指标 |
 | `output/result/unit_network_physical_upper_bound_mismatch.csv` | 使用 conservative feasible-set upper bound 的 long-form mismatch 表，覆盖全部 network definition 和 cable/corridor 两层 |
-| `output/result/paper_unit_physical_candidate_diversity.csv` | 论文默认使用的 corridor-level 保守可行集合多样性别名 |
-| `output/result/paper_unit_network_physical_mismatch.csv` | 论文默认使用的 corridor-level upper-bound mismatch 别名 |
+| `output/result/paper_unit_physical_candidate_diversity.csv` | corridor-level 保守可行集合多样性的 legacy / supplementary 别名 |
+| `output/result/paper_unit_network_physical_mismatch.csv` | corridor-level upper-bound mismatch 的 legacy / supplementary 别名 |
 | `output/result/conservative_candidate_audit_manifest.json` | 说明 infeasibility-first 语义、weighted view 与 conservative set view 的简明 manifest |
 | `output/result/robustness_conservative_candidate_audit.csv` | 对比 weighted support 与 conservative feasible set 的 robustness 表 |
 
@@ -1148,7 +1148,7 @@ PeeringDB 描述符会并入：
 新增输出：
 
 - `output/result/network_diversity_metric_catalog.csv`
-- `output/result/paper_unit_network_physical_mismatch.csv` 现在默认对应 `as_egress_primary` + `corridor` + conservative upper-bound 视图
+- `output/result/paper_unit_network_physical_mismatch.csv` 是 legacy / supplementary 别名，默认对应 `as_egress_primary` + `corridor` + conservative upper-bound 视图；它不是论文主 corridor observation concentration 表。
 
 PeeringDB 继续保持 external-only：
 
@@ -1181,8 +1181,8 @@ PeeringDB 继续保持 external-only：
 - `output/result/unit_cross_layer_audit.csv`：unit 级 cross-layer 审计表，包含 application / network / physical / 非 rank 压缩指标 / 可选相对指标 / PeeringDB 描述符。
 - `output/result/country_cross_layer_audit.csv`：country 级 cross-layer 审计表，直接从 link 观测与 feasible candidate 行重算，不是对 unit 结果做平均。
 - `output/result/service_country_cross_layer_audit.csv`：`src_country + service_id` 级 cross-layer 审计表；`service_id` 优先使用显式字段，否则回退到 `file_name`，再回退到 `msm_id`。
-- `output/result/paper_country_cross_layer_audit.csv`：country 审计表的 corridor-level 论文别名。
-- `output/result/paper_service_country_cross_layer_audit.csv`：service-country 审计表的 corridor-level 论文别名。
+- `output/result/paper_country_cross_layer_audit.csv`：country 审计表的 legacy / supplementary corridor-level 别名。
+- `output/result/paper_service_country_cross_layer_audit.csv`：service-country 审计表的 legacy / supplementary corridor-level 别名。
 - `output/result/cross_layer_metric_summary.csv`：对新 cross-layer audit 表中非 rank 压缩层级与相对 mismatch 比例做汇总。
 
 解释更新：
@@ -1259,7 +1259,9 @@ PeeringDB 继续保持 external-only：
 
 Stage 1 现在补充记录与论文方法定义对齐的元数据，但不改变候选匹配主流程。
 
-- `--cable-availability-mode` 用于控制海缆生命周期过滤。默认值 `confirmed_active_plus_unknown` 会排除在 traceroute 时间点已知为未来规划或已退役的候选，同时保留并标记生命周期未知的候选以保持兼容性。若需要更严格视图，可以使用 `confirmed_active_only`，它也会排除生命周期未知的候选。
+- `--cable-availability-mode` 用于控制海缆生命周期过滤。论文主视图默认值为 `confirmed_active_only`，会排除在 traceroute 时间点已知为未来规划、已退役或生命周期未知的候选。`confirmed_active_plus_unknown` 只作为 robustness / coverage 视图使用，用来保留并标记生命周期未知的候选。
+- 非正数或明显噪声 RTT delta 会标记为 `rtt_feasibility_status = inconclusive`：这些候选会保留在 feasible set 中，并带有 `rtt_inconclusive` ambiguity tag，不作为硬不可行证据。只有有效 RTT 观测在考虑 tolerance 后仍违反下界约束时，才会被 hard-filter。
+- 可以通过 `--landing-region-override-file` 提供 landing-region 手工覆盖文件。该 JSON 将 `landing_station_id` 映射到 `landing_region_id` / `landing_region_name`；手工覆盖优先于自动 geographic connected component，并会记录在 manifest 中。
 - traceroute link 生成阶段会在 hop 序列中观察到实际目标 ASN 时记录 service-entry 边界。后处理中的 trace summary 会输出该边界是否被解析，但物理投影仍然保持 hop-pair 粒度。
 - candidate 行新增海缆生命周期字段，例如 `cable_status`、`cable_rfs_date`、`cable_retired_date`、`cable_availability_status` 和 `availability_filter_passed`。
 - `output/result/supplementary_owner_concentration.csv` 汇总 feasible corridor observation mass 上的拆分 owner exposure。它只是补充描述表：owner 不作为 ground truth，也不能解释为真实流量体积或真实海缆使用量。

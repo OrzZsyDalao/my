@@ -1063,10 +1063,10 @@ New post-processing outputs:
 
 - `output/result/trace_feasible_candidate_space.csv`: flattened feasible candidate-space table derived from `all_feasible_segments`, with automatic fallback to `all_segments` for old JSON files.
 - `output/result/unit_physical_candidate_set_diversity_cable.csv`: cable-level conservative feasible-set diversity.
-- `output/result/unit_physical_candidate_set_diversity_corridor.csv`: corridor-level conservative feasible-set diversity and the primary paper-ready physical diversity view.
+- `output/result/unit_physical_candidate_set_diversity_corridor.csv`: corridor-level conservative feasible-set diversity. This is a candidate-breadth descriptor, not the paper-primary observation-concentration metric.
 - `output/result/unit_network_physical_upper_bound_mismatch.csv`: long-form mismatch table comparing network diversity with conservative upper-bound physical diversity across all network definitions and both cable/corridor levels.
-- `output/result/paper_unit_physical_candidate_diversity.csv`: paper-ready alias of the corridor-level conservative feasible-set diversity output.
-- `output/result/paper_unit_network_physical_mismatch.csv`: paper-ready alias of the corridor-level conservative upper-bound mismatch output.
+- `output/result/paper_unit_physical_candidate_diversity.csv`: legacy/supplementary alias of the corridor-level conservative feasible-set diversity output.
+- `output/result/paper_unit_network_physical_mismatch.csv`: legacy/supplementary alias of the corridor-level conservative upper-bound mismatch output.
 - `output/result/conservative_candidate_audit_manifest.json`: compact manifest describing infeasibility-first semantics and generated outputs.
 - `output/result/robustness_conservative_candidate_audit.csv`: robustness table comparing weighted support vs conservative feasible sets across network definitions, physical levels, and projection subsets.
 
@@ -1138,7 +1138,7 @@ Country-only remains available for backward compatibility, but it is now a suppl
 Additional outputs:
 
 - `output/result/network_diversity_metric_catalog.csv`: documents each network diversity definition, its score column, metric role, interpretation, and whether it is recommended for the paper main text.
-- `output/result/paper_unit_network_physical_mismatch.csv`: now defaults to the `as_egress_primary` + `corridor` + conservative upper-bound view.
+- `output/result/paper_unit_network_physical_mismatch.csv`: legacy/supplementary alias that defaults to the `as_egress_primary` + `corridor` + conservative upper-bound view. It is not the paper-primary corridor observation concentration table.
 
 PeeringDB remains external-only:
 
@@ -1171,8 +1171,8 @@ New output files:
 - `output/result/unit_cross_layer_audit.csv`: unit-level cross-layer audit table with application, network, physical, non-rank compression, optional relative, and PeeringDB descriptor columns.
 - `output/result/country_cross_layer_audit.csv`: country-level cross-layer audit recomputed directly from link-level observations and feasible candidate rows.
 - `output/result/service_country_cross_layer_audit.csv`: source-country plus service-level cross-layer audit; `service_id` prefers explicit `service_id`, then falls back to `file_name`, then `msm_id`.
-- `output/result/paper_country_cross_layer_audit.csv`: corridor-level paper alias of the country audit output.
-- `output/result/paper_service_country_cross_layer_audit.csv`: corridor-level paper alias of the service-country audit output.
+- `output/result/paper_country_cross_layer_audit.csv`: legacy/supplementary corridor-level alias of the country audit output.
+- `output/result/paper_service_country_cross_layer_audit.csv`: legacy/supplementary corridor-level alias of the service-country audit output.
 - `output/result/cross_layer_metric_summary.csv`: compact summary of non-rank compression tiers and relative mismatch rates across the new audit tables.
 
 Interpretation update:
@@ -1249,7 +1249,9 @@ Additional outputs:
 
 Stage 1 now records additional paper-alignment metadata without changing the candidate matching philosophy.
 
-- `--cable-availability-mode` controls conservative cable lifecycle filtering. The default `confirmed_active_plus_unknown` excludes candidates that are known to be future/planned or retired at the traceroute timestamp, while retaining and marking unknown lifecycle metadata for compatibility. Use `confirmed_active_only` for a stricter view that also excludes unknown lifecycle metadata.
+- `--cable-availability-mode` controls conservative cable lifecycle filtering. The paper-primary default is `confirmed_active_only`, which excludes candidates that are known to be future/planned, retired, or lifecycle-unknown at the traceroute timestamp. Use `confirmed_active_plus_unknown` only as a robustness/coverage view that retains and marks unknown lifecycle metadata.
+- Non-positive or otherwise noisy RTT deltas are treated as `rtt_feasibility_status = inconclusive`: they are retained in the feasible set with an `rtt_inconclusive` ambiguity tag and are not used as hard infeasibility evidence. Only valid RTT observations that violate the lower-bound constraint after tolerance are hard-filtered.
+- Optional landing-region overrides can be supplied with `--landing-region-override-file`. The file maps `landing_station_id` to `landing_region_id` / `landing_region_name`; manual overrides take precedence over automatic geographic connected components and are recorded in the manifest.
 - Traceroute link generation records a service-entry boundary when the actual target ASN is observed in the hop sequence. Downstream trace summaries expose whether the service-entry point was resolved, while the physical projection remains hop-pair based.
 - Candidate rows carry cable lifecycle fields such as `cable_status`, `cable_rfs_date`, `cable_retired_date`, `cable_availability_status`, and `availability_filter_passed`.
 - `output/result/supplementary_owner_concentration.csv` summarizes split owner exposure over feasible corridor observation mass. It is supplementary only: owners are not used as ground truth, and this table must not be read as per-owner traffic volume or per-cable utilization.

@@ -1,4 +1,5 @@
 __pycache__/
+.pytest_cache/
 *.pyc
 
 data/**
@@ -45,3 +46,4 @@ output/public_traceroute_by_msmid/**/trace_observation_summary.csv
 output/public_traceroute_by_msmid/**/*.tmp
 
 output/smoke_framework_alignment_*/
+output/result_smoke_*/

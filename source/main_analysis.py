@@ -1,5 +1,6 @@
 import argparse
 import gzip
+import hashlib
 import ipaddress
 import json
 import math
@@ -156,7 +157,7 @@ def parse_trace_datetime(value: Any) -> Optional[datetime]:
         return None
 
 
-def is_cable_available_at(cable: Dict[str, Any], trace_timestamp: Any, mode: str = "confirmed_active_plus_unknown") -> Dict[str, Any]:
+def is_cable_available_at(cable: Dict[str, Any], trace_timestamp: Any, mode: str = "confirmed_active_only") -> Dict[str, Any]:
     """Evaluate cable lifecycle availability for a trace timestamp.
 
     Unknown lifecycle metadata is retained but explicitly marked so old cable
@@ -404,6 +405,46 @@ def load_as_graph_precompute(path: str) -> Optional[Dict[str, Any]]:
     if missing_keys:
         raise ValueError(f"AS precompute file is missing required keys: {missing_keys}")
     return payload
+
+
+def fingerprint_file(path: Optional[str]) -> Optional[str]:
+    """Return a SHA256 hash for a local file when available."""
+    if not path or not os.path.exists(path):
+        return None
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def load_landing_region_override(path: Optional[str]) -> Dict[str, Dict[str, str]]:
+    """Load optional landing-station to landing-region manual overrides."""
+    if not path:
+        return {}
+    if not os.path.exists(path):
+        print(f"Warning: landing-region override file not found, using geographic clustering only: {path}")
+        return {}
+    with open(path, "r", encoding="utf-8") as handle:
+        payload = json.load(handle)
+    if not isinstance(payload, dict):
+        raise ValueError("Landing-region override file must be a JSON object keyed by landing_station_id.")
+    overrides: Dict[str, Dict[str, str]] = {}
+    for station_id, value in payload.items():
+        if isinstance(value, dict):
+            region_id = str(value.get("landing_region_id") or value.get("region_id") or "").strip()
+            region_name = str(value.get("landing_region_name") or value.get("region_name") or region_id).strip()
+        else:
+            region_id = str(value).strip()
+            region_name = region_id
+        if not station_id or not region_id:
+            continue
+        overrides[str(station_id)] = {
+            "landing_region_id": region_id,
+            "landing_region_name": region_name or region_id,
+        }
+    print(f"Loaded {len(overrides)} landing-region manual overrides from {path}")
+    return overrides
 
 
 def stream_json_array(path: str) -> Generator[Dict[str, Any], None, None]:
@@ -777,6 +818,16 @@ class CableMatcher:
             region_id = f"landing_region_{component_index:04d}"
             for station_id in members:
                 landing_region_map[station_id] = region_id
+                self.landing_region_method_map[station_id] = "geographic_connected_component"
+            self.landing_region_label_map.setdefault(region_id, region_id)
+
+        for station_id, override in self.landing_region_override.items():
+            if station_id not in self.ls_geo:
+                continue
+            region_id = override["landing_region_id"]
+            landing_region_map[station_id] = region_id
+            self.landing_region_label_map[region_id] = override.get("landing_region_name") or region_id
+            self.landing_region_method_map[station_id] = "manual_override"
         return landing_region_map
 
     def __init__(
@@ -789,7 +840,9 @@ class CableMatcher:
         as_graph_precompute: Optional[Dict[str, Any]] = None,
         rtt_tolerance_ms: float = 5.0,
         landing_region_radius_km: float = 50.0,
-        cable_availability_mode: str = "confirmed_active_plus_unknown",
+        landing_region_override: Optional[Dict[str, Dict[str, str]]] = None,
+        landing_region_override_file: Optional[str] = None,
+        cable_availability_mode: str = "confirmed_active_only",
     ):
         self.all_cables = processed_cables
         self.ls_geo = ls_coordinates
@@ -799,6 +852,10 @@ class CableMatcher:
         self.as_graph_precompute = as_graph_precompute or {}
         self.rtt_tolerance_ms = float(rtt_tolerance_ms)
         self.landing_region_radius_km = float(landing_region_radius_km)
+        self.landing_region_override = landing_region_override or {}
+        self.landing_region_override_file = landing_region_override_file
+        self.landing_region_label_map: Dict[str, str] = {}
+        self.landing_region_method_map: Dict[str, str] = {}
         self.cable_availability_mode = cable_availability_mode
         self.landing_region_map = self.build_landing_region_map()
         self.candidate_count_per_matched_link: List[int] = []
@@ -824,6 +881,10 @@ class CableMatcher:
             "rtt_infeasible_filtered": 0,
             "candidates_rtt_infeasible": 0,
             "candidates_rtt_feasible": 0,
+            "segments_with_valid_rtt": 0,
+            "segments_with_inconclusive_rtt": 0,
+            "candidates_filtered_by_valid_rtt": 0,
+            "candidates_retained_due_to_inconclusive_rtt": 0,
             "links_below_threshold": 0,
             "candidates_above_threshold": 0,
             "candidates_support_above_threshold": 0,
@@ -845,11 +906,15 @@ class CableMatcher:
             "rtt_tolerance_ms": float(self.rtt_tolerance_ms),
             "landing_region_radius_km": float(self.landing_region_radius_km),
             "landing_region_count": len(set(self.landing_region_map.values())),
+            "landing_region_override_file": self.landing_region_override_file,
+            "landing_region_override_hash": fingerprint_file(self.landing_region_override_file),
+            "landing_region_override_count": len(self.landing_region_override),
             "ip_to_asn_source": getattr(self.asn_resolver, "path", "ipinfo_asn_mmdb"),
             "cable_availability_mode": self.cable_availability_mode,
             "candidates_filtered_by_cable_lifecycle": 0,
             "segments_filtered_by_cable_lifecycle": 0,
             "candidates_with_unknown_cable_status": 0,
+            "confirmed_active_candidates": 0,
             "as_precompute_enabled": self.as_graph_precompute_loaded,
             "candidate_count_list": self.candidate_count_per_matched_link,
         }
@@ -909,6 +974,17 @@ class CableMatcher:
             float(median(candidate_counts)) if candidate_counts else 0.0
         )
         finalized["candidate_count_list"] = candidate_counts
+        considered = float(finalized.get("candidate_segments_considered", 0) or 0)
+        confirmed = float(finalized.get("confirmed_active_candidates", 0) or 0)
+        unknown = float(finalized.get("candidates_with_unknown_cable_status", 0) or 0)
+        finalized["lifecycle_known_candidate_count"] = int(max(considered - unknown, 0))
+        finalized["lifecycle_metadata_known_ratio"] = float((considered - unknown) / considered) if considered > 0 else 0.0
+        finalized["lifecycle_confirmed_active_ratio"] = float(confirmed / considered) if considered > 0 else 0.0
+        finalized["lifecycle_metadata_warning"] = (
+            "low_lifecycle_metadata_coverage"
+            if considered > 0 and finalized["lifecycle_metadata_known_ratio"] < 0.5
+            else ""
+        )
         return finalized
 
     def IP2ASN(self, ip: str) -> str:
@@ -940,17 +1016,29 @@ class CableMatcher:
             measured = float("nan")
         if not math.isfinite(measured) or measured <= 0:
             rtt_quality = "non_positive_or_noisy"
-            measured = 0.0
+            return {
+                "rtt_feasible": True,
+                "rtt_feasibility_status": "inconclusive",
+                "rtt_filter_applied": False,
+                "rtt_score": 1.0,
+                "rtt_margin_ms": None,
+                "rtt_margin_with_tolerance_ms": None,
+                "latency_penalty": 1.0,
+                "rtt_tolerance_ms": float(self.rtt_tolerance_ms),
+                "rtt_delta_quality": rtt_quality,
+            }
 
         if min_rtt <= 0:
             return {
-                "rtt_feasible": False,
-                "rtt_score": 0.0,
-                "rtt_margin_ms": float(measured - min_rtt),
-                "rtt_margin_with_tolerance_ms": float(measured + self.rtt_tolerance_ms - min_rtt),
-                "latency_penalty": 0.0,
+                "rtt_feasible": True,
+                "rtt_feasibility_status": "inconclusive",
+                "rtt_filter_applied": False,
+                "rtt_score": 1.0,
+                "rtt_margin_ms": None,
+                "rtt_margin_with_tolerance_ms": None,
+                "latency_penalty": 1.0,
                 "rtt_tolerance_ms": float(self.rtt_tolerance_ms),
-                "rtt_delta_quality": rtt_quality,
+                "rtt_delta_quality": "invalid_lower_bound",
             }
 
         rtt_margin_ms = measured - min_rtt
@@ -958,6 +1046,8 @@ class CableMatcher:
         if rtt_margin_with_tolerance_ms < 0:
             return {
                 "rtt_feasible": False,
+                "rtt_feasibility_status": "infeasible",
+                "rtt_filter_applied": True,
                 "rtt_score": 0.0,
                 "rtt_margin_ms": float(rtt_margin_ms),
                 "rtt_margin_with_tolerance_ms": float(rtt_margin_with_tolerance_ms),
@@ -975,6 +1065,8 @@ class CableMatcher:
 
         return {
             "rtt_feasible": True,
+            "rtt_feasibility_status": "feasible",
+            "rtt_filter_applied": True,
             "rtt_score": float(rtt_score),
             "rtt_margin_ms": float(rtt_margin_ms),
             "rtt_margin_with_tolerance_ms": float(rtt_margin_with_tolerance_ms),
@@ -1169,7 +1261,10 @@ class CableMatcher:
             tags.append("many_candidates")
         if candidate["d_in"] > self.LARGE_LANDING_RADIUS_KM or candidate["d_out"] > self.LARGE_LANDING_RADIUS_KM:
             tags.append("large_landing_radius")
-        if candidate["rtt_margin_ms"] < self.RTT_INCONCLUSIVE_MARGIN_MS:
+        rtt_margin = candidate.get("rtt_margin_ms")
+        if candidate.get("rtt_feasibility_status") == "inconclusive" or candidate.get("rtt_delta_quality") == "non_positive_or_noisy":
+            tags.append("rtt_inconclusive")
+        elif rtt_margin is not None and rtt_margin < self.RTT_INCONCLUSIVE_MARGIN_MS:
             tags.append("rtt_inconclusive")
         if candidate["core_agreement"] in {"geo_dominant_as_weak", "as_dominant_geo_ambiguous"}:
             tags.append(candidate["core_agreement"])
@@ -1177,7 +1272,8 @@ class CableMatcher:
             tags.append("domestic_submarine_candidate")
         if (
             candidate["ls_entry_to_ls_exit_gcd_km"] > self.MULTI_SEGMENT_GCD_THRESHOLD_KM
-            and candidate["rtt_margin_ms"] > self.MULTI_SEGMENT_MARGIN_THRESHOLD_MS
+            and rtt_margin is not None
+            and rtt_margin > self.MULTI_SEGMENT_MARGIN_THRESHOLD_MS
         ):
             tags.append("multi_segment_possible")
         return tags
@@ -1445,6 +1541,19 @@ class CableMatcher:
                 region_b = self.landing_region_map.get(ls_b_id, ls_b_id)
                 landing_region_pair = tuple(sorted((region_a, region_b)))
                 corridor_id = f"{landing_region_pair[0]}::{landing_region_pair[1]}"
+                region_label_pair = tuple(
+                    self.landing_region_label_map.get(region_id, region_id)
+                    for region_id in landing_region_pair
+                )
+                corridor_label = f"{region_label_pair[0]} -> {region_label_pair[1]}"
+                landing_region_method = (
+                    "manual_override"
+                    if "manual_override" in {
+                        self.landing_region_method_map.get(ls_a_id),
+                        self.landing_region_method_map.get(ls_b_id),
+                    }
+                    else "geographic_connected_component"
+                )
                 parallel_group_id = corridor_id
 
                 geo_score_info = self.compute_geo_spatial_score(d_in=d_in, d_out=d_out)
@@ -1458,6 +1567,8 @@ class CableMatcher:
                     )
                     if availability_info["cable_availability_status"] == "unknown":
                         self.stats["candidates_with_unknown_cable_status"] += 1
+                    if availability_info["cable_availability_status"] == "confirmed_active_at_trace_time":
+                        self.stats["confirmed_active_candidates"] += 1
                     if not availability_info["availability_filter_passed"]:
                         self.stats["candidates_filtered_by_cable_lifecycle"] += 1
                         self.stats["segments_filtered_by_cable_lifecycle"] += 1
@@ -1467,9 +1578,16 @@ class CableMatcher:
                     legacy_slack_lower_bound_ms = ((gcd_dist * self.SLACK_FACTOR) * 2) / self.SOL_FIBER_KM_MS
                     min_rtt = (gcd_dist * 2) / self.SOL_FIBER_KM_MS
                     rtt_score_info = self.compute_rtt_feasibility_score(measured_rtt_delta=measured_rtt_delta, min_rtt=min_rtt)
+                    if rtt_score_info["rtt_feasibility_status"] == "inconclusive":
+                        self.stats["segments_with_inconclusive_rtt"] += 1
+                        self.stats["candidates_retained_due_to_inconclusive_rtt"] += 1
+                    elif rtt_score_info["rtt_feasibility_status"] in {"feasible", "infeasible"}:
+                        self.stats["segments_with_valid_rtt"] += 1
                     if not rtt_score_info["rtt_feasible"]:
                         self.stats["rtt_infeasible_filtered"] += 1
                         self.stats["candidates_rtt_infeasible"] += 1
+                        if rtt_score_info.get("rtt_filter_applied"):
+                            self.stats["candidates_filtered_by_valid_rtt"] += 1
                         continue
                     rtt_feasible_candidate_found = True
                     self.stats["candidates_rtt_feasible"] += 1
@@ -1505,13 +1623,18 @@ class CableMatcher:
                         "segment": f"{ls_a_id} -> {ls_b_id}",
                         "landing_pair": f"{ls_a_id} -> {ls_b_id}",
                         "corridor_id": corridor_id,
+                        "corridor_label": corridor_label,
                         "corridor_type": "landing_region_pair",
                         "exact_corridor_id": exact_corridor_id,
                         "exact_landing_pair_id": exact_corridor_id,
+                        "exact_landing_pair_label": f"{ls_a_id} -> {ls_b_id}",
                         "landing_region_pair_id": corridor_id,
                         "landing_region_entry_id": region_a,
                         "landing_region_exit_id": region_b,
-                        "landing_region_method": f"connected_component_{self.landing_region_radius_km:g}km",
+                        "landing_region_entry_label": self.landing_region_label_map.get(region_a, region_a),
+                        "landing_region_exit_label": self.landing_region_label_map.get(region_b, region_b),
+                        "landing_region_method": landing_region_method,
+                        "landing_region_radius_km": float(self.landing_region_radius_km),
                         "parallel_group_id": parallel_group_id,
                         "parallel_group_size": len(segment_cables),
                         "is_parallel_ambiguous": len(segment_cables) > 1,
@@ -1544,14 +1667,16 @@ class CableMatcher:
                         "src_asn": asn_a,
                         "dst_asn": asn_b,
                         "owner_asn_count": len(cable_owner_asns),
-                        "rtt_feasible": True,
+                        "rtt_feasible": bool(rtt_score_info["rtt_feasible"]),
+                        "rtt_feasibility_status": rtt_score_info["rtt_feasibility_status"],
+                        "rtt_filter_applied": bool(rtt_score_info["rtt_filter_applied"]),
                         "rtt_score": float(rtt_score_info["rtt_score"]),
                         "min_rtt_ms": float(min_rtt),
                         "rtt_lower_bound_ms": float(min_rtt),
                         "legacy_slack_rtt_lower_bound_ms": float(legacy_slack_lower_bound_ms),
                         "measured_rtt_ms": float(measured_rtt_delta),
-                        "rtt_margin_ms": float(rtt_score_info["rtt_margin_ms"]),
-                        "rtt_margin_with_tolerance_ms": float(rtt_score_info["rtt_margin_with_tolerance_ms"]),
+                        "rtt_margin_ms": rtt_score_info["rtt_margin_ms"],
+                        "rtt_margin_with_tolerance_ms": rtt_score_info["rtt_margin_with_tolerance_ms"],
                         "rtt_tolerance_ms": float(rtt_score_info["rtt_tolerance_ms"]),
                         "rtt_delta_quality": rtt_score_info["rtt_delta_quality"],
                         "latency_penalty": float(rtt_score_info["latency_penalty"]),
@@ -1761,6 +1886,7 @@ def write_match_manifest(
     feasible_link_count: int,
     as_precompute_file: Optional[str],
     asn_mmdb_path: str,
+    landing_region_override_file: Optional[str],
     path: str,
     match_output_file: str = OUTPUT_RESULTS_PATH,
     match_stats_file: str = MATCH_STATS_OUTPUT_PATH,
@@ -1778,11 +1904,24 @@ def write_match_manifest(
         "as_precompute_file": to_repo_relative_path(as_precompute_file) if as_precompute_file else None,
         "ip_to_asn_source": "ipinfo_asn_mmdb",
         "asn_mmdb_path": to_repo_relative_path(asn_mmdb_path),
-        "method_profile": "dual_core_cross_layer_evidence_fusion",
+        "landing_region_override_file": to_repo_relative_path(landing_region_override_file) if landing_region_override_file else None,
+        "landing_region_override_hash": fingerprint_file(landing_region_override_file),
+        "method_profile": "infeasibility_first_feasible_corridor_construction",
+        "paper_primary_cable_availability_mode": "confirmed_active_only",
+        "robustness_cable_availability_mode": "confirmed_active_plus_unknown",
+        "primary_candidate_constraints": [
+            "landing_proximity",
+            "cable_connectivity",
+            "measurement_time_availability",
+            "conservative_rtt_feasibility_when_observable",
+        ],
+        "supplementary_support_model": "geo_as_owner_rtt_evidence_scoring",
+        "supplementary_support_affects_primary_feasible_set": False,
         "interpretation": "infeasibility_first_conservative_candidate_audit",
         "support_semantics": "candidate support is evidence support, not ground-truth probability",
         "legacy_all_segments_semantics": "support-thresholded legacy candidate view",
-        "all_feasible_segments_semantics": "all hard-feasible candidates retained before support thresholding",
+        "all_segments_semantics": "legacy support-thresholded supplementary view",
+        "all_feasible_segments_semantics": "all candidates passing hard infeasibility filters",
         "support_threshold_value": float(CableMatcher.MATCH_THRESHOLD),
     }
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -1867,10 +2006,15 @@ def parse_args() -> argparse.Namespace:
         help="Connected-component distance threshold for landing-region corridor grouping.",
     )
     parser.add_argument(
+        "--landing-region-override-file",
+        default=None,
+        help="Optional JSON mapping landing_station_id to manual landing_region_id/name overrides.",
+    )
+    parser.add_argument(
         "--cable-availability-mode",
         choices=["confirmed_active_only", "confirmed_active_plus_unknown"],
-        default="confirmed_active_plus_unknown",
-        help="Cable lifecycle filter mode for the main feasible candidate set; default keeps unknown lifecycle metadata marked for compatibility.",
+        default="confirmed_active_only",
+        help="Cable lifecycle filter mode for the main feasible candidate set; use confirmed_active_plus_unknown for robustness.",
     )
     return parser.parse_args()
 
@@ -1890,6 +2034,7 @@ def main() -> None:
         asn_resolver = IPInfoASNResolver(args.asn_mmdb_path)
         owner2asn = load_owner2asn_mapping(OWNER2ASN_PATH)
         as_graph_precompute = load_as_graph_precompute(args.as_precompute_file)
+        landing_region_override = load_landing_region_override(args.landing_region_override_file)
         probe_metadata = load_probe_metadata(args.probe_meta_file)
     except (FileNotFoundError, ValueError) as exc:
         print("--- Critical error: failed to load required input files ---")
@@ -1906,6 +2051,8 @@ def main() -> None:
         as_graph_precompute=as_graph_precompute,
         rtt_tolerance_ms=args.rtt_tolerance_ms,
         landing_region_radius_km=args.landing_region_radius_km,
+        landing_region_override=landing_region_override,
+        landing_region_override_file=args.landing_region_override_file,
         cable_availability_mode=args.cable_availability_mode,
     )
     traceroute_file_paths = resolve_traceroute_input(args.traceroute_input)
@@ -2107,6 +2254,11 @@ def main() -> None:
                 output_file.write("\n]\n")
 
         finalized_stats = matcher.finalize_stats()
+        if finalized_stats.get("lifecycle_metadata_warning"):
+            print(
+                "Warning: cable lifecycle metadata coverage is low "
+                f"({finalized_stats.get('lifecycle_metadata_known_ratio', 0.0):.2%} known among considered candidates)."
+            )
         with open(match_stats_output_path, "w", encoding="utf-8") as stats_file:
             json.dump(finalized_stats, stats_file, ensure_ascii=False, indent=4)
 
@@ -2122,6 +2274,7 @@ def main() -> None:
             feasible_link_count=feasible_link_count,
             as_precompute_file=args.as_precompute_file if matcher.as_graph_precompute_loaded else None,
             asn_mmdb_path=args.asn_mmdb_path,
+            landing_region_override_file=args.landing_region_override_file,
             path=match_manifest_output_path,
             match_output_file=output_results_path,
             match_stats_file=match_stats_output_path,
