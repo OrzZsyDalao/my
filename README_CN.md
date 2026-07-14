@@ -178,6 +178,8 @@ output/
 
 若全量 pipeline 已以 Windows 计划任务的方式运行，可使用 `publish_july1_results_after_task.ps1`。它只会等待该任务成功结束后打包并推送，不会重复运行一遍测量 pipeline。
 
+`resume_incomplete_july1_pipeline.ps1` 用于继续优化后 2026-07-01 批处理中被中断的 8 个非 baseline measurement，成功后同样只打包并推送论文级 CSV。
+
 ## 各脚本参数说明
 
 ### `python precompute_as_graph.py`
