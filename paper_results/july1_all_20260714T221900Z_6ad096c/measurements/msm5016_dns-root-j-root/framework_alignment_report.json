@@ -1,0 +1,5 @@
+{
+  "status": "no_feasible_candidate_rows",
+  "interpretation": "The configured infeasibility-first projection retained no feasible physical candidates. This is a reportable topology/data limitation, not evidence of cable use or absence of real traffic.",
+  "paper_outputs_are_empty": true
+}
