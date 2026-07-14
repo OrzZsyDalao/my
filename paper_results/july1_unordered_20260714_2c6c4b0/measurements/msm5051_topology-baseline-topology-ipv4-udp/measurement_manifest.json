@@ -1,0 +1,13 @@
+{
+  "run_id": "july1_unordered_20260714_2c6c4b0",
+  "git_commit_sha": "2c6c4b08d40f1165e9436e93e2e508a89d28251a",
+  "config_hash": "750c53455d6d937155931825e7b784d4bffa3c72e8c98809216fd1b6162ae59d",
+  "msm_id": 5051,
+  "label": "topology-baseline_topology-ipv4-udp",
+  "input_file": "data\\traceroute_rundnsroot\\ripe_atlas_public_20260701_0000_0100\\topology-baseline_topology-ipv4-udp_msm5051_20260701T000000Z_010000Z.json",
+  "input_sha256": "3b2d88f04c77e20b31ce29960479e770be50fdc287244e640a5f517fe7e8cd02",
+  "measurement_window": null,
+  "status": "completed",
+  "error": "",
+  "completed_at_utc": "2026-07-14T20:59:59.161298+00:00"
+}

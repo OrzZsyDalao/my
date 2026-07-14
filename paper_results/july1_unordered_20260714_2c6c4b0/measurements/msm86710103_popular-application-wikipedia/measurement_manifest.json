@@ -1,0 +1,13 @@
+{
+  "run_id": "july1_unordered_20260714_2c6c4b0",
+  "git_commit_sha": "2c6c4b08d40f1165e9436e93e2e508a89d28251a",
+  "config_hash": "750c53455d6d937155931825e7b784d4bffa3c72e8c98809216fd1b6162ae59d",
+  "msm_id": 86710103,
+  "label": "popular-application_wikipedia",
+  "input_file": "data\\traceroute_rundnsroot\\ripe_atlas_public_20260701_0000_0100\\popular-application_wikipedia_msm86710103_20260701T000000Z_010000Z.json",
+  "input_sha256": "aa4e476361197eb732b86d96f8ef6fd127b9244fd14f32424bd08fb822c0af60",
+  "measurement_window": null,
+  "status": "completed",
+  "error": "",
+  "completed_at_utc": "2026-07-14T20:15:50.200969+00:00"
+}

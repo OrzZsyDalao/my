@@ -1,0 +1,13 @@
+{
+  "run_id": "july1_unordered_20260714_2c6c4b0",
+  "git_commit_sha": "2c6c4b08d40f1165e9436e93e2e508a89d28251a",
+  "config_hash": "750c53455d6d937155931825e7b784d4bffa3c72e8c98809216fd1b6162ae59d",
+  "msm_id": 5005,
+  "label": "dns-root_i-root",
+  "input_file": "data\\traceroute_rundnsroot\\ripe_atlas_public_20260701_0000_0100\\dns-root_i-root_msm5005_20260701T000000Z_010000Z.json",
+  "input_sha256": "6a6bc98ce7ebf12a9fedce55d55f3824c9255ffff1f03ef0d4ac2e7edc1edf32",
+  "measurement_window": null,
+  "status": "completed",
+  "error": "",
+  "completed_at_utc": "2026-07-14T16:24:12.873109+00:00"
+}
