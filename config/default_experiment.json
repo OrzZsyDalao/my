@@ -5,7 +5,7 @@
   "same_city_policy": "retain",
   "same_city_distance_threshold_km": 25.0,
   "timeout_gap_policy": "allow_timeout_bridged",
-  "cable_topology_policy": "adjacent_only",
+  "cable_topology_policy": "allow_unordered_reachability",
   "rtt_tolerance_ms": 5.0,
   "candidate_support_threshold": 0.5,
   "cable_availability_mode": "confirmed_active_only",

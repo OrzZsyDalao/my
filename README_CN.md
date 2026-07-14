@@ -10,7 +10,7 @@ python -m pipeline.package_paper_results --run-id <run_id>
 python -m pipeline.matched_comparison --run-id <run_id> --comparison-services Wikipedia,Reddit
 ```
 
-默认参数受版本控制，位于 `config/default_experiment.json`。`all_feasible_segments` 是 infeasibility-first 候选集合；`all_segments` 仅是保留兼容性的 support-thresholded 视图。Candidate support 是证据分数，不是实际海缆使用概率。direct physical segment 必须有显式 topology metadata；无序 landing-point 集合不会再自动展开为完全图。timeout gap 和 same-city geolocation ambiguity 会保留为字段。observation mass 只表示 traceroute 观测到的路径转换，不表示流量、数据包或实际海缆利用率。若严格 topology 没有保留可行候选，postprocess 与 robustness 会输出带表头的空审计表；这表示需要报告的数据/拓扑限制，不能解释为实际海缆使用证据。
+默认参数受版本控制，位于 `config/default_experiment.json`。`all_feasible_segments` 是 infeasibility-first 候选集合；`all_segments` 仅是保留兼容性的 support-thresholded 视图。Candidate support 是证据分数，不是实际海缆使用概率。由于当前海缆元数据通常只提供无序 landing-point 集合，而没有路由或 branch topology，默认的 `allow_unordered_reachability` 会枚举同一条海缆上有效登陆站之间的两两组合，作为可达性候选。这些候选会明确标注为 `unordered_cable_reachability`，不代表已确认的直接物理海缆段。只有在有显式有序路径或 segment/branch topology 时，才建议使用 `--cable-topology-policy adjacent_only` 进行严格直接物理段的敏感性分析。timeout gap 和 same-city geolocation ambiguity 会保留为字段。observation mass 只表示 traceroute 观测到的路径转换，不表示流量、数据包或实际海缆利用率。
 
 ## 当前论文主框架
 

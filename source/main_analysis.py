@@ -945,7 +945,7 @@ class CableMatcher:
         cable_availability_mode: str = "confirmed_active_only",
         same_city_policy: str = "retain",
         same_city_distance_threshold_km: float = 25.0,
-        cable_topology_policy: str = "adjacent_only",
+        cable_topology_policy: str = "allow_unordered_reachability",
         candidate_support_threshold: float = 0.5,
     ):
         self.all_cables = processed_cables
@@ -2312,8 +2312,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--cable-topology-policy",
         choices=["adjacent_only", "allow_unordered_reachability"],
-        default="adjacent_only",
-        help="Topology evidence allowed for candidate construction; unordered landing sets are never direct segments.",
+        default="allow_unordered_reachability",
+        help=(
+            "Topology evidence allowed for candidate construction. The default enumerates "
+            "landing-station pairs on cables with unordered landing sets as reachability candidates; "
+            "these are not asserted direct physical segments."
+        ),
     )
     parser.add_argument(
         "--candidate-support-threshold",
