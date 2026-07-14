@@ -19,6 +19,8 @@ from geopy.distance import geodesic
 from sklearn.neighbors import BallTree
 from tqdm import tqdm
 
+from measurement_catalog import lookup_measurement
+
 
 SOURCE_DIR = os.path.dirname(os.path.abspath(__file__)) if "__file__" in locals() else "."
 BASE_DIR = os.path.dirname(SOURCE_DIR)
@@ -32,12 +34,14 @@ IPINFO_DIR = os.path.join(DATA_DIR, "ipinfo")
 ASREL_DIR = os.path.join(DATA_DIR, "asrelationship")
 PFX2AS_DIR = os.path.join(DATA_DIR, "pfx2as")
 OWNER2ASN_DIR = os.path.join(DATA_DIR, "owner2asn")
+PROBE_DIR = os.path.join(DATA_DIR, "probe")
 
 LS_GEO_PATH = os.path.join(CABLE_DIR, "landing-point-geo.json")
 MMDB_PATH = os.path.join(IPINFO_DIR, "ipinfo_location.mmdb")
 ASREL_PATH = os.path.join(ASREL_DIR, "20250901.as-rel2.txt")
 PFX2AS_PATH = os.path.join(PFX2AS_DIR, "202512.pfx2as")
 OWNER2ASN_PATH = os.path.join(OWNER2ASN_DIR, "owner_to_asn.csv")
+PROBE_META_PATH = os.path.join(PROBE_DIR, "20251201.json")
 
 CABLE_DEBUG_OUTPUT_PATH = os.path.join(BASE_DIR, "cable_loading_debug.json")
 OUTPUT_RESULTS_PATH = os.path.join(OUTPUT_DIR, "cable_matching_output.json")
@@ -247,6 +251,34 @@ def load_owner2asn_mapping(path: str) -> Dict[str, Set[str]]:
     return owner2asn
 
 
+def load_probe_metadata(path: str) -> Dict[str, Dict[str, Any]]:
+    """Load optional RIPE Atlas probe metadata keyed by probe id."""
+    if not path or not os.path.exists(path):
+        print(f"Warning: probe metadata file not found: {path}")
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+    except Exception as exc:
+        print(f"Warning: failed to load probe metadata from {path}: {exc}")
+        return {}
+
+    objects = payload.get("objects", payload if isinstance(payload, list) else [])
+    probes: Dict[str, Dict[str, Any]] = {}
+    for item in objects:
+        if not isinstance(item, dict):
+            continue
+        probe_id = item.get("id")
+        if probe_id is None:
+            continue
+        probes[str(probe_id)] = {
+            "probe_country": item.get("country_code"),
+            "probe_asn": normalize_asn_value(item.get("asn_v4")),
+        }
+    print(f"Loaded probe metadata for {len(probes)} probes from {path}")
+    return probes
+
+
 def load_as_graph_precompute(path: str) -> Optional[Dict[str, Any]]:
     """Load precomputed AS-graph owner reachability state if available."""
     if not path:
@@ -271,21 +303,59 @@ def load_as_graph_precompute(path: str) -> Optional[Dict[str, Any]]:
 
 
 def stream_json_array(path: str) -> Generator[Dict[str, Any], None, None]:
-    """Fallback streaming reader for large JSON arrays."""
+    """Fallback reader that yields complete objects from a JSON array or stream.
+
+    RIPE Atlas result dumps are often written as one very long JSON array. Some
+    interrupted downloads can end mid-object; this scanner preserves all
+    complete objects before the truncation point instead of discarding the file.
+    """
     if not os.path.exists(path):
         return
 
     with open(path, "r", encoding="utf-8") as handle:
-        for line in handle:
-            line = line.strip()
-            if line in {"[", "]"} or not line:
-                continue
-            if line.endswith(","):
-                line = line[:-1]
-            try:
-                yield json.loads(line)
-            except json.JSONDecodeError:
-                continue
+        buffer: List[str] = []
+        depth = 0
+        in_string = False
+        escape = False
+        collecting = False
+
+        while True:
+            chunk = handle.read(1024 * 1024)
+            if not chunk:
+                break
+            for char in chunk:
+                if not collecting:
+                    if char == "{":
+                        collecting = True
+                        depth = 1
+                        buffer = ["{"]
+                    continue
+
+                buffer.append(char)
+                if in_string:
+                    if escape:
+                        escape = False
+                    elif char == "\\":
+                        escape = True
+                    elif char == '"':
+                        in_string = False
+                    continue
+
+                if char == '"':
+                    in_string = True
+                elif char == "{":
+                    depth += 1
+                elif char == "}":
+                    depth -= 1
+                    if depth == 0:
+                        try:
+                            parsed = json.loads("".join(buffer))
+                            if isinstance(parsed, dict):
+                                yield parsed
+                        except json.JSONDecodeError:
+                            pass
+                        collecting = False
+                        buffer = []
 
 
 def iter_traceroute_results(path: str) -> Generator[Dict[str, Any], None, None]:
@@ -347,6 +417,37 @@ def get_geo_info(ip_address: str, mmdb_reader: maxminddb.Reader) -> Dict[str, An
     return geo_data
 
 
+def select_hop_reply(hop_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Select one reply IP and RTT from a hop using a consistent minimum-RTT IP group."""
+    replies_by_ip: Dict[str, List[float]] = {}
+    for entry in hop_data.get("result", []):
+        ip = entry.get("from")
+        rtt = entry.get("rtt")
+        if not ip or rtt is None:
+            continue
+        try:
+            replies_by_ip.setdefault(str(ip), []).append(float(rtt))
+        except (TypeError, ValueError):
+            continue
+    if not replies_by_ip:
+        return None
+    selected_ip, selected_rtts = min(
+        replies_by_ip.items(),
+        key=lambda item: min(item[1]),
+    )
+    return {
+        "ip": selected_ip,
+        "rtt": min(selected_rtts),
+        "hop_reply_ip_count": len(replies_by_ip),
+        "hop_selected_reply_rule": "minimum_rtt_reply_ip",
+    }
+
+
+def build_trace_id(file_name: str, msm_id: Any, probe_id: Any, timestamp: Any, target_ip: Any) -> str:
+    """Build a stable trace identifier for client-to-service observation accounting."""
+    return f"{file_name}:{msm_id}:{probe_id}:{timestamp}:{target_ip}"
+
+
 def parse_hops_to_links(
     hops: List[Dict[str, Any]],
     msm_id: str,
@@ -354,26 +455,29 @@ def parse_hops_to_links(
     timestamp: str,
     file_name: str,
     mmdb_reader: maxminddb.Reader,
+    trace_metadata: Optional[Dict[str, Any]] = None,
 ) -> List[Dict[str, Any]]:
     """Convert consecutive traceroute hops into adjacent hop-pair links."""
     parsed_links: List[Dict[str, Any]] = []
     previous_rtt = 0.0
     previous_hop_info: Optional[Dict[str, Any]] = None
+    trace_metadata = trace_metadata or {}
 
     for hop_data in hops:
-        rtt_results = [entry.get("rtt") for entry in hop_data.get("result", []) if entry.get("rtt") is not None]
-        ip = hop_data.get("result", [{}])[0].get("from")
-
-        if not ip or not rtt_results:
+        selected_reply = select_hop_reply(hop_data)
+        if not selected_reply:
             previous_hop_info = None
             continue
 
-        rtt = min(rtt_results)
+        rtt = selected_reply["rtt"]
+        ip = selected_reply["ip"]
         current_hop_info = {
             "ip": ip,
             "rtt": rtt,
             "geo": get_geo_info(ip, mmdb_reader),
             "hop_num": hop_data["hop"],
+            "hop_reply_ip_count": selected_reply["hop_reply_ip_count"],
+            "hop_selected_reply_rule": selected_reply["hop_selected_reply_rule"],
         }
 
         is_previous_geolocated = previous_hop_info and previous_hop_info["geo"]["lat"] is not None
@@ -392,6 +496,7 @@ def parse_hops_to_links(
                     "probe_id": prb_id,
                     "timestamp": timestamp,
                     "file_name": file_name,
+                    **trace_metadata,
                 }
             )
 
@@ -457,6 +562,43 @@ class CableMatcher:
     AS_GRAPH_ONE_SIDED_PENALTY = 1.0
     AS_GRAPH_UNKNOWN_COST = 4.0
 
+    def build_landing_region_map(self) -> Dict[str, str]:
+        """Cluster landing stations into deterministic connected landing regions."""
+        station_ids = sorted(self.ls_geo.keys())
+        parent = {station_id: station_id for station_id in station_ids}
+
+        def find(item: str) -> str:
+            while parent[item] != item:
+                parent[item] = parent[parent[item]]
+                item = parent[item]
+            return item
+
+        def union(left: str, right: str) -> None:
+            root_left = find(left)
+            root_right = find(right)
+            if root_left == root_right:
+                return
+            if root_left < root_right:
+                parent[root_right] = root_left
+            else:
+                parent[root_left] = root_right
+
+        for index, station_a in enumerate(station_ids):
+            for station_b in station_ids[index + 1:]:
+                if geodesic(self.ls_geo[station_a], self.ls_geo[station_b]).km <= self.landing_region_radius_km:
+                    union(station_a, station_b)
+
+        components: Dict[str, List[str]] = {}
+        for station_id in station_ids:
+            components.setdefault(find(station_id), []).append(station_id)
+
+        landing_region_map: Dict[str, str] = {}
+        for component_index, (_, members) in enumerate(sorted(components.items()), start=1):
+            region_id = f"landing_region_{component_index:04d}"
+            for station_id in members:
+                landing_region_map[station_id] = region_id
+        return landing_region_map
+
     def __init__(
         self,
         processed_cables: List[Dict[str, Any]],
@@ -465,6 +607,8 @@ class CableMatcher:
         pfx2as_trie: Any,
         owner2asn: Dict[str, Set[str]],
         as_graph_precompute: Optional[Dict[str, Any]] = None,
+        rtt_tolerance_ms: float = 5.0,
+        landing_region_radius_km: float = 50.0,
     ):
         self.all_cables = processed_cables
         self.ls_geo = ls_coordinates
@@ -472,6 +616,9 @@ class CableMatcher:
         self.pfx2as_trie = pfx2as_trie
         self.owner2asn = owner2asn
         self.as_graph_precompute = as_graph_precompute or {}
+        self.rtt_tolerance_ms = float(rtt_tolerance_ms)
+        self.landing_region_radius_km = float(landing_region_radius_km)
+        self.landing_region_map = self.build_landing_region_map()
         self.candidate_count_per_matched_link: List[int] = []
         self.owner_group_signatures: Dict[str, int] = self.as_graph_precompute.get("owner_group_signatures", {})
         self.owner_group_reachability: Dict[int, Dict[int, Tuple[float, int]]] = self.as_graph_precompute.get(
@@ -513,6 +660,9 @@ class CableMatcher:
             "links_with_parallel_ambiguity": 0,
             "links_with_many_candidates": 0,
             "links_with_domestic_candidates": 0,
+            "rtt_tolerance_ms": float(self.rtt_tolerance_ms),
+            "landing_region_radius_km": float(self.landing_region_radius_km),
+            "landing_region_count": len(set(self.landing_region_map.values())),
             "as_precompute_enabled": self.as_graph_precompute_loaded,
             "candidate_count_list": self.candidate_count_per_matched_link,
         }
@@ -593,24 +743,40 @@ class CableMatcher:
 
     def compute_rtt_feasibility_score(self, measured_rtt_delta: float, min_rtt: float) -> Dict[str, Any]:
         """RTT/Physical Feasibility Core: assess whether a candidate is latency-feasible."""
+        rtt_quality = "valid"
+        try:
+            measured = float(measured_rtt_delta)
+        except (TypeError, ValueError):
+            measured = float("nan")
+        if not math.isfinite(measured) or measured <= 0:
+            rtt_quality = "non_positive_or_noisy"
+            measured = 0.0
+
         if min_rtt <= 0:
             return {
                 "rtt_feasible": False,
                 "rtt_score": 0.0,
-                "rtt_margin_ms": float(measured_rtt_delta),
+                "rtt_margin_ms": float(measured - min_rtt),
+                "rtt_margin_with_tolerance_ms": float(measured + self.rtt_tolerance_ms - min_rtt),
                 "latency_penalty": 0.0,
+                "rtt_tolerance_ms": float(self.rtt_tolerance_ms),
+                "rtt_delta_quality": rtt_quality,
             }
 
-        rtt_margin_ms = measured_rtt_delta - min_rtt
-        if measured_rtt_delta < min_rtt:
+        rtt_margin_ms = measured - min_rtt
+        rtt_margin_with_tolerance_ms = measured + self.rtt_tolerance_ms - min_rtt
+        if rtt_margin_with_tolerance_ms < 0:
             return {
                 "rtt_feasible": False,
                 "rtt_score": 0.0,
                 "rtt_margin_ms": float(rtt_margin_ms),
+                "rtt_margin_with_tolerance_ms": float(rtt_margin_with_tolerance_ms),
                 "latency_penalty": 0.0,
+                "rtt_tolerance_ms": float(self.rtt_tolerance_ms),
+                "rtt_delta_quality": rtt_quality,
             }
 
-        inflation_ratio = measured_rtt_delta / min_rtt if min_rtt > 0 else float("inf")
+        inflation_ratio = measured / min_rtt if min_rtt > 0 and measured > 0 else float("inf")
         rtt_score = min(1.0, 1.0 / inflation_ratio) if math.isfinite(inflation_ratio) and inflation_ratio > 0 else 0.0
 
         latency_penalty = 1.0
@@ -621,7 +787,10 @@ class CableMatcher:
             "rtt_feasible": True,
             "rtt_score": float(rtt_score),
             "rtt_margin_ms": float(rtt_margin_ms),
+            "rtt_margin_with_tolerance_ms": float(rtt_margin_with_tolerance_ms),
             "latency_penalty": float(latency_penalty),
+            "rtt_tolerance_ms": float(self.rtt_tolerance_ms),
+            "rtt_delta_quality": rtt_quality,
         }
 
     def _lookup_relationship(self, asn_a: str, asn_b: str) -> Optional[int]:
@@ -1081,7 +1250,11 @@ class CableMatcher:
                 if not segment_cables:
                     continue
                 had_segment_candidates = True
-                corridor_id = f"{segment_key[0]}::{segment_key[1]}"
+                exact_corridor_id = f"{segment_key[0]}::{segment_key[1]}"
+                region_a = self.landing_region_map.get(ls_a_id, ls_a_id)
+                region_b = self.landing_region_map.get(ls_b_id, ls_b_id)
+                landing_region_pair = tuple(sorted((region_a, region_b)))
+                corridor_id = f"{landing_region_pair[0]}::{landing_region_pair[1]}"
                 parallel_group_id = corridor_id
 
                 geo_score_info = self.compute_geo_spatial_score(d_in=d_in, d_out=d_out)
@@ -1090,8 +1263,8 @@ class CableMatcher:
                     self.stats["candidate_segments_considered"] += 1
 
                     gcd_dist = cable_info["gcd_dist"]
-                    est_fiber_len = gcd_dist * self.SLACK_FACTOR
-                    min_rtt = (est_fiber_len * 2) / self.SOL_FIBER_KM_MS
+                    legacy_slack_lower_bound_ms = ((gcd_dist * self.SLACK_FACTOR) * 2) / self.SOL_FIBER_KM_MS
+                    min_rtt = (gcd_dist * 2) / self.SOL_FIBER_KM_MS
                     rtt_score_info = self.compute_rtt_feasibility_score(measured_rtt_delta=measured_rtt_delta, min_rtt=min_rtt)
                     if not rtt_score_info["rtt_feasible"]:
                         self.stats["rtt_infeasible_filtered"] += 1
@@ -1107,9 +1280,6 @@ class CableMatcher:
                         dst_asn=asn_b,
                         cable_owner_asns=cable_owner_asns,
                     )
-
-                    if min(geo_score_info["geo_entry_score"], geo_score_info["geo_exit_score"]) >= 0.9:
-                        as_support_info["as_economic_score"] = max(as_support_info["as_economic_score"], 0.8)
 
                     fused_candidate_support = self.fuse_candidate_support(
                         geo_score=geo_score_info["geo_spatial_score"],
@@ -1128,7 +1298,13 @@ class CableMatcher:
                         "segment": f"{ls_a_id} -> {ls_b_id}",
                         "landing_pair": f"{ls_a_id} -> {ls_b_id}",
                         "corridor_id": corridor_id,
-                        "corridor_type": "exact_landing_pair",
+                        "corridor_type": "landing_region_pair",
+                        "exact_corridor_id": exact_corridor_id,
+                        "exact_landing_pair_id": exact_corridor_id,
+                        "landing_region_pair_id": corridor_id,
+                        "landing_region_entry_id": region_a,
+                        "landing_region_exit_id": region_b,
+                        "landing_region_method": f"connected_component_{self.landing_region_radius_km:g}km",
                         "parallel_group_id": parallel_group_id,
                         "parallel_group_size": len(segment_cables),
                         "is_parallel_ambiguous": len(segment_cables) > 1,
@@ -1164,8 +1340,13 @@ class CableMatcher:
                         "rtt_feasible": True,
                         "rtt_score": float(rtt_score_info["rtt_score"]),
                         "min_rtt_ms": float(min_rtt),
+                        "rtt_lower_bound_ms": float(min_rtt),
+                        "legacy_slack_rtt_lower_bound_ms": float(legacy_slack_lower_bound_ms),
                         "measured_rtt_ms": float(measured_rtt_delta),
                         "rtt_margin_ms": float(rtt_score_info["rtt_margin_ms"]),
+                        "rtt_margin_with_tolerance_ms": float(rtt_score_info["rtt_margin_with_tolerance_ms"]),
+                        "rtt_tolerance_ms": float(rtt_score_info["rtt_tolerance_ms"]),
+                        "rtt_delta_quality": rtt_score_info["rtt_delta_quality"],
                         "latency_penalty": float(rtt_score_info["latency_penalty"]),
                         "core_agreement": core_agreement,
                         "candidate_rank_by_fused_support": 0,
@@ -1373,6 +1554,8 @@ def write_match_manifest(
     feasible_link_count: int,
     as_precompute_file: Optional[str],
     path: str,
+    match_output_file: str = OUTPUT_RESULTS_PATH,
+    match_stats_file: str = MATCH_STATS_OUTPUT_PATH,
 ) -> None:
     """Write a manifest describing the processed traceroute inputs and outputs."""
     manifest = {
@@ -1382,8 +1565,8 @@ def write_match_manifest(
         "empty_trace_count": empty_trace_count,
         "matched_links_above_threshold": valid_link_count,
         "links_with_feasible_candidates": feasible_link_count,
-        "match_output_file": to_repo_relative_path(OUTPUT_RESULTS_PATH),
-        "match_stats_file": to_repo_relative_path(MATCH_STATS_OUTPUT_PATH),
+        "match_output_file": to_repo_relative_path(match_output_file),
+        "match_stats_file": to_repo_relative_path(match_stats_file),
         "as_precompute_file": to_repo_relative_path(as_precompute_file) if as_precompute_file else None,
         "method_profile": "dual_core_cross_layer_evidence_fusion",
         "interpretation": "infeasibility_first_conservative_candidate_audit",
@@ -1424,6 +1607,13 @@ def load_all_traceroute_files(directory: str) -> List[str]:
     return traceroute_files
 
 
+def resolve_traceroute_input(path: str) -> List[str]:
+    """Resolve a traceroute input file or directory into eligible JSON files."""
+    if os.path.isfile(path):
+        return [path]
+    return load_all_traceroute_files(path)
+
+
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments for the main candidate-support analysis stage."""
     parser = argparse.ArgumentParser(
@@ -1434,12 +1624,43 @@ def parse_args() -> argparse.Namespace:
         default=AS_GRAPH_PRECOMPUTE_PATH,
         help="Optional precomputed AS-graph owner reachability file produced by precompute_as_graph.py.",
     )
+    parser.add_argument(
+        "--traceroute-input",
+        default=TRACE_DIR,
+        help="Traceroute input file or directory. Defaults to data/traceroute_rundnsroot/.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        default=OUTPUT_DIR,
+        help="Directory for cable_matching_output.json, stats, and manifest outputs.",
+    )
+    parser.add_argument(
+        "--probe-meta-file",
+        default=PROBE_META_PATH,
+        help="Optional RIPE Atlas probe metadata JSON used for probe_country/probe_asn.",
+    )
+    parser.add_argument(
+        "--rtt-tolerance-ms",
+        type=float,
+        default=5.0,
+        help="Tolerance added to RTT lower-bound feasibility checks.",
+    )
+    parser.add_argument(
+        "--landing-region-radius-km",
+        type=float,
+        default=50.0,
+        help="Connected-component distance threshold for landing-region corridor grouping.",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     """Process traceroute links and emit candidate-support outputs."""
     args = parse_args()
+    output_dir = os.path.abspath(args.output_dir)
+    output_results_path = os.path.join(output_dir, "cable_matching_output.json")
+    match_stats_output_path = os.path.join(output_dir, "cable_matching_stats_5051.json")
+    match_manifest_output_path = os.path.join(output_dir, "cable_matching_manifest.json")
 
     try:
         ls_coordinates = load_ls_coordinates(LS_GEO_PATH)
@@ -1448,6 +1669,7 @@ def main() -> None:
         pfx2as_trie = load_pfx2as_mapping(PFX2AS_PATH)
         owner2asn = load_owner2asn_mapping(OWNER2ASN_PATH)
         as_graph_precompute = load_as_graph_precompute(args.as_precompute_file)
+        probe_metadata = load_probe_metadata(args.probe_meta_file)
     except (FileNotFoundError, ValueError) as exc:
         print("--- Critical error: failed to load required input files ---")
         print(str(exc))
@@ -1461,12 +1683,14 @@ def main() -> None:
         pfx2as_trie,
         owner2asn,
         as_graph_precompute=as_graph_precompute,
+        rtt_tolerance_ms=args.rtt_tolerance_ms,
+        landing_region_radius_km=args.landing_region_radius_km,
     )
-    traceroute_file_paths = load_all_traceroute_files(TRACE_DIR)
+    traceroute_file_paths = resolve_traceroute_input(args.traceroute_input)
 
     print("\n--- Candidate-support matching task started ---")
     print(f"Identified {len(traceroute_file_paths)} traceroute files.")
-    print(f"Incremental output will be written to: {OUTPUT_RESULTS_PATH}")
+    print(f"Incremental output will be written to: {output_results_path}")
     if matcher.as_graph_precompute_loaded:
         print(f"Using AS-graph precompute file: {args.as_precompute_file}")
     else:
@@ -1479,12 +1703,13 @@ def main() -> None:
     total_traces_processed = 0
     empty_trace_count = 0
     is_first_entry = True
+    trace_summary_rows: List[Dict[str, Any]] = []
 
     try:
-        os.makedirs(os.path.dirname(OUTPUT_RESULTS_PATH), exist_ok=True)
+        os.makedirs(os.path.dirname(output_results_path), exist_ok=True)
 
         with maxminddb.open_database(MMDB_PATH) as mmdb_reader:
-            with open(OUTPUT_RESULTS_PATH, "w", encoding="utf-8") as output_file:
+            with open(output_results_path, "w", encoding="utf-8") as output_file:
                 output_file.write("[\n")
 
                 with tqdm(
@@ -1506,16 +1731,64 @@ def main() -> None:
                             if not hops:
                                 empty_trace_count += 1
                                 continue
+                            raw_msm_id = raw_result.get("msm_id", "N/A")
+                            raw_probe_id = raw_result.get("prb_id", "N/A")
+                            raw_timestamp = raw_result.get("endtime", raw_result.get("timestamp", "N/A"))
+                            target_ip = (
+                                raw_result.get("dst_addr")
+                                or raw_result.get("dst_ip")
+                                or raw_result.get("target_ip")
+                                or raw_result.get("dst_name")
+                            )
+                            target_hostname = raw_result.get("dst_name") or raw_result.get("target") or raw_result.get("hostname")
+                            target_asn = matcher.IP2ASN(target_ip) if target_ip else "-1"
+                            service_meta = lookup_measurement(raw_msm_id)
+                            raw_probe_country = (
+                                raw_result.get("probe_country")
+                                or raw_result.get("prb_country")
+                                or raw_result.get("country_code")
+                            )
+                            raw_probe_asn = (
+                                raw_result.get("probe_asn")
+                                or raw_result.get("prb_asn")
+                                or raw_result.get("asn_v4")
+                            )
+                            probe_meta = probe_metadata.get(str(raw_probe_id), {})
+                            probe_country = raw_probe_country or probe_meta.get("probe_country")
+                            probe_asn = normalize_asn_value(raw_probe_asn or probe_meta.get("probe_asn"))
+                            trace_id = build_trace_id(file_name, raw_msm_id, raw_probe_id, raw_timestamp, target_ip)
+                            trace_metadata = {
+                                "trace_id": trace_id,
+                                "service_id": service_meta["service_id"],
+                                "service_class": service_meta["service_class"],
+                                "service_role": service_meta["role"],
+                                "deployment_type": service_meta["deployment_type"],
+                                "probe_country": probe_country,
+                                "probe_asn": probe_asn,
+                                "target_ip": target_ip,
+                                "target_asn": target_asn,
+                                "target_hostname": target_hostname,
+                                "source_address": raw_result.get("from") or raw_result.get("src_addr"),
+                                "service_entry_hop": None,
+                                "service_entry_asn": None,
+                                "service_entry_resolved": False,
+                                "target_asn_as_service_entry": bool(target_asn and target_asn != "-1"),
+                                "path_scope": "publicly_visible_path_unresolved_entry",
+                            }
 
                             traceroute_links = parse_hops_to_links(
                                 hops=hops,
-                                msm_id=raw_result.get("msm_id", "N/A"),
-                                prb_id=raw_result.get("prb_id", "N/A"),
-                                timestamp=raw_result.get("endtime", raw_result.get("timestamp", "N/A")),
+                                msm_id=raw_msm_id,
+                                prb_id=raw_probe_id,
+                                timestamp=raw_timestamp,
                                 file_name=file_name,
                                 mmdb_reader=mmdb_reader,
+                                trace_metadata=trace_metadata,
                             )
 
+                            trace_mappable_links = len(traceroute_links)
+                            trace_feasible_links = 0
+                            trace_legacy_matched_links = 0
                             for link in traceroute_links:
                                 match_output = matcher.match_link_to_cable(link)
                                 all_feasible_segments = match_output.get("all_feasible_segments", [])
@@ -1525,22 +1798,49 @@ def main() -> None:
                                 if not all_feasible_segments:
                                     continue
 
+                                trace_feasible_links += 1
                                 feasible_link_count += 1
                                 if all_segments:
+                                    trace_legacy_matched_links += 1
                                     valid_link_count += 1
                                 link_info = {
                                     "msm_id": link.get("measurement_id", "N/A"),
+                                    "trace_id": link.get("trace_id"),
+                                    "service_id": link.get("service_id"),
+                                    "service_class": link.get("service_class"),
+                                    "service_role": link.get("service_role"),
+                                    "deployment_type": link.get("deployment_type"),
                                     "probe_id": link.get("probe_id", "N/A"),
+                                    "probe_country": link.get("probe_country"),
+                                    "probe_asn": link.get("probe_asn"),
                                     "file_name": link.get("file_name", file_name),
                                     "timestamp": link.get("timestamp", "N/A"),
+                                    "source_address": link.get("source_address"),
+                                    "target_ip": link.get("target_ip"),
+                                    "target_asn": link.get("target_asn"),
+                                    "target_hostname": link.get("target_hostname"),
+                                    "service_entry_hop": link.get("service_entry_hop"),
+                                    "service_entry_asn": link.get("service_entry_asn"),
+                                    "service_entry_resolved": link.get("service_entry_resolved"),
+                                    "target_asn_as_service_entry": link.get("target_asn_as_service_entry"),
+                                    "path_scope": link.get("path_scope"),
                                     "hop_range": f"Hop {link['source']['hop_num']} -> {link['destination']['hop_num']}",
                                     "src_ip": link["source"]["ip"],
                                     "dst_ip": link["destination"]["ip"],
+                                    "src_asn": matcher.IP2ASN(link["source"]["ip"]),
+                                    "dst_asn": matcher.IP2ASN(link["destination"]["ip"]),
                                     "src_city": link["source"]["geo"].get("city"),
                                     "dst_city": link["destination"]["geo"].get("city"),
+                                    "transition_near_country": link["source"]["geo"]["country"],
+                                    "transition_far_country": link["destination"]["geo"]["country"],
                                     "src_country": link["source"]["geo"]["country"],
                                     "dst_country": link["destination"]["geo"]["country"],
                                     "rtt_delta_ms": link["rtt_delta"],
+                                    "hop_reply_ip_count": max(
+                                        link["source"].get("hop_reply_ip_count", 0),
+                                        link["destination"].get("hop_reply_ip_count", 0),
+                                    ),
+                                    "hop_selected_reply_rule": link["destination"].get("hop_selected_reply_rule"),
                                     "is_potential_oceanic": link["is_oceanic"],
                                 }
                                 match_result = {
@@ -1555,11 +1855,29 @@ def main() -> None:
                                 json.dump(match_result, output_file, ensure_ascii=False, indent=4)
                                 is_first_entry = False
 
+                            trace_summary_rows.append(
+                                {
+                                    **trace_metadata,
+                                    "msm_id": raw_msm_id,
+                                    "probe_id": raw_probe_id,
+                                    "timestamp": raw_timestamp,
+                                    "file_name": file_name,
+                                    "total_mappable_links": trace_mappable_links,
+                                    "links_with_feasible_submarine_corridor": trace_feasible_links,
+                                    "links_above_legacy_support_threshold": trace_legacy_matched_links,
+                                    "has_at_least_one_mappable_segment": trace_mappable_links > 0,
+                                    "has_at_least_one_feasible_submarine_corridor": trace_feasible_links > 0,
+                                }
+                            )
+
                 output_file.write("\n]\n")
 
         finalized_stats = matcher.finalize_stats()
-        with open(MATCH_STATS_OUTPUT_PATH, "w", encoding="utf-8") as stats_file:
+        with open(match_stats_output_path, "w", encoding="utf-8") as stats_file:
             json.dump(finalized_stats, stats_file, ensure_ascii=False, indent=4)
+
+        trace_summary_path = os.path.join(output_dir, "trace_observation_summary.csv")
+        pd.DataFrame(trace_summary_rows).to_csv(trace_summary_path, index=False, encoding="utf-8-sig")
 
         write_match_manifest(
             traceroute_file_paths=traceroute_file_paths,
@@ -1569,7 +1887,9 @@ def main() -> None:
             valid_link_count=valid_link_count,
             feasible_link_count=feasible_link_count,
             as_precompute_file=args.as_precompute_file if matcher.as_graph_precompute_loaded else None,
-            path=MATCH_MANIFEST_OUTPUT_PATH,
+            path=match_manifest_output_path,
+            match_output_file=output_results_path,
+            match_stats_file=match_stats_output_path,
         )
     except Exception as exc:
         print(f"\nFailed while writing result files: {exc}")
@@ -1580,8 +1900,8 @@ def main() -> None:
     print(f"Empty/invalid traceroute records: {empty_trace_count}")
     print(f"Retained {feasible_link_count} links with feasible candidates before thresholding.")
     print(f"Matched {valid_link_count} links above threshold (>= {matcher.MATCH_THRESHOLD}) in legacy all_segments.")
-    print(f"Results saved to: {OUTPUT_RESULTS_PATH}")
-    print(f"Stats saved to: {MATCH_STATS_OUTPUT_PATH}")
+    print(f"Results saved to: {output_results_path}")
+    print(f"Stats saved to: {match_stats_output_path}")
 
 
 if __name__ == "__main__":

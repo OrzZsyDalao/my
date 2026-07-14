@@ -37,3 +37,11 @@ probe/atlas_traceroute_config.local.json
 probe/results/*.json
 
 ripe_atlas_public_download/manifests/*.json
+
+output/public_traceroute_by_msmid/**/cable_matching_output.json
+output/public_traceroute_by_msmid/**/trace_candidate_support.csv
+output/public_traceroute_by_msmid/**/trace_feasible_candidate_space.csv
+output/public_traceroute_by_msmid/**/trace_observation_summary.csv
+output/public_traceroute_by_msmid/**/*.tmp
+
+output/smoke_framework_alignment_*/

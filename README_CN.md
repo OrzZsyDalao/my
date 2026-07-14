@@ -1,5 +1,52 @@
 # infocom26 项目说明
 
+## 当前论文主框架
+
+当前 paper-facing 分析统一为 **application / network / corridor distribution audit**，核心问题是：
+
+> 对于一个来源探针国家访问一个应用服务时，网络层观测到的路径转换分布，在投影到可行海缆走廊后是否仍然保持分散，还是集中在少量物理走廊上？
+
+主流程为：
+
+```text
+Application observation
+  -> publicly visible client-to-service path
+  -> atomic network-transition segments
+  -> infeasibility-first physical candidate construction
+  -> landing-region corridor projection
+  -> corridor observation-mass distribution
+  -> network-transition vs corridor-distribution audit
+```
+
+主分析单元是 `probe_country x service_id`。`probe_country` 来自 RIPE Atlas probe metadata；`transition_near_country` 和 `transition_far_country` 描述 hop-pair transition 的地理两端，二者不能混用。
+
+| 层级 | 主观测对象 |
+| --- | --- |
+| Application | `service_id`、实际 `target_ip` / `target_asn`、`probe_country` |
+| Network | 同一批 mappable atomic segments 上的 AS / country transition |
+| Physical | 可行 landing-region corridor candidates |
+| Aggregate | service physical exposure、corridor concentration、cross-layer distribution class |
+
+论文主输出文件：
+
+- `paper_service_country_physical_exposure.csv`
+- `paper_service_country_corridor_concentration.csv`
+- `paper_service_country_cross_layer_distribution.csv`
+- `paper_network_broad_physical_concentrated_cases.csv`
+- `paper_broad_corridor_distribution_cases.csv`
+- `paper_physical_exposure_cases.csv`
+
+`observation_mass` 表示 measurement-observed transition mass，不表示真实流量、包数量、带宽或真实海缆使用概率。candidate breadth、best-case upper bound、compression ratio、rank-gap mismatch、cable-level weighted support、product-of-experts ranking、AS-owner reranking 都保留为 supplementary views。
+
+推荐运行顺序：
+
+1. 下载或准备 RIPE Atlas traceroute。
+2. 准备 probe metadata、pfx2as、IP geolocation、AS relationship、owner-to-AS、cable metadata。
+3. 运行 Stage 1 feasible corridor construction：`python source/main_analysis.py --landing-region-radius-km 50 --rtt-tolerance-ms 5`
+4. 运行 Stage 2 application/network/corridor distribution audit：`python source/postprocess_candidate_output.py --input output/result/cable_matching_output.json --output output/result`
+5. 运行 robustness analyses：`python source/robustness_compare.py --input output/result/trace_candidate_support.csv --output output/result`
+6. 可选运行 legacy cable / owner analysis。
+
 本仓库实现的是一个面向 RIPE Atlas traceroute、AS 关系与海缆候选基础设施的**不确定性感知跨层多样性审计**（uncertainty-aware cross-layer diversity auditing）流程。
 
 核心研究问题是：
@@ -37,6 +84,7 @@ probe/
 
 ripe_atlas_public_download/
   download_public_traceroutes.py
+  run_per_measurement_pipeline.py
   manifests/
 
 data/
@@ -78,6 +126,9 @@ output/
 
 7. `ripe_atlas_public_download/download_public_traceroutes.py`
    公开数据下载脚本。下载第一轮 RIPE Atlas 公开 IPv4 traceroute measurement 数据，默认时间窗口为 2026-07-01 00:00:00 UTC 到 01:00:00 UTC。脚本会先校验 measurement metadata，再把可直接进入主流程的结果 JSON 数组写入 `data/traceroute_rundnsroot/`。
+
+8. `ripe_atlas_public_download/run_per_measurement_pipeline.py`
+   按 measurement 分别运行的批处理脚本。它会发现已下载的公开 traceroute 文件，按 `msm_id` 创建独立结果文件夹，并分别运行 `main_analysis.py`、`postprocess_candidate_output.py` 和 `robustness_compare.py`。
 
 ## 输入文件说明
 
@@ -202,6 +253,18 @@ output/
 | `--timeout` | `120` | HTTP 超时时间，单位秒 |
 | `--retries` | `3` | HTTP 重试次数 |
 
+### `python ripe_atlas_public_download/run_per_measurement_pipeline.py`
+
+| 参数 | 默认值 | 含义 |
+| --- | --- | --- |
+| `--input-dir` | `data/traceroute_rundnsroot/ripe_atlas_public_20260701_0000_0100` | 已下载公开 Atlas traceroute JSON 数组所在目录 |
+| `--output-root` | `output/public_traceroute_by_msmid` | 按 `msm_id` 创建独立结果子目录的根目录 |
+| `--as-precompute-file` | `output/preprocessed/as_graph_owner_reachability.pkl.gz` | 传给第一阶段的 AS 图预处理文件 |
+| `--measurement-id` | 默认全部发现的文件 | 可选过滤项，可重复传入以只运行指定 measurement |
+| `--skip-existing` | `False` | 如果某个 measurement 的 `cable_matching_manifest.json` 已存在，则跳过 |
+| `--skip-robustness` | `False` | 跳过 robustness comparison，用于更快的 smoke test |
+| `--dry-run` | `False` | 只打印将执行的命令，不实际运行 |
+
 ## 推荐运行顺序
 
 ```powershell
@@ -212,6 +275,7 @@ python .\postprocess_candidate_output.py --input .\output\result\cable_matching_
 python .\robustness_compare.py --input .\output\result\trace_candidate_support.csv --output .\output\result
 python .\probe\run_ripe_atlas_traceroute.py --config .\probe\atlas_traceroute_config.local.json --dry-run
 python .\ripe_atlas_public_download\download_public_traceroutes.py --metadata-only
+python .\ripe_atlas_public_download\run_per_measurement_pipeline.py --skip-existing
 ```
 
 ## RIPE Atlas 公开 traceroute 数据下载
@@ -237,7 +301,17 @@ data/traceroute_rundnsroot/ripe_atlas_public_20260701_0000_0100/dns-root_a-root_
 python .\ripe_atlas_public_download\download_public_traceroutes.py --metadata-only
 python .\ripe_atlas_public_download\download_public_traceroutes.py --measurement-id 5009
 python .\ripe_atlas_public_download\download_public_traceroutes.py --skip-existing
+python .\ripe_atlas_public_download\run_per_measurement_pipeline.py --measurement-id 5009 --skip-existing
+python .\ripe_atlas_public_download\run_per_measurement_pipeline.py --skip-existing
 ```
+
+按 `msm_id` 分别运行后的输出位于：
+
+```text
+output/public_traceroute_by_msmid/msm5009_dns-root-a-root/
+```
+
+每个文件夹包含该 measurement 单独的第一阶段匹配输出、postprocess 表、robustness 表和 manifest。`cable_matching_output.json`、`trace_candidate_support.csv`、`trace_feasible_candidate_space.csv` 这类大型中间文件默认不提交到 GitHub；体量较小的 summary 表和 manifest 可以提交用于检查。
 
 ## RIPE Atlas probe 辅助脚本配置说明
 

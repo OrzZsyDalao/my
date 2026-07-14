@@ -8,6 +8,40 @@ The main research question is:
 
 The goal is **not** per-path ground-truth submarine cable attribution. The pipeline produces candidate-support distributions, diversity metrics, mismatch diagnostics, ambiguity profiles, and robustness comparisons.
 
+## Current Paper-Primary Framework
+
+The paper-facing analysis is now an **application/network/corridor distribution audit**:
+
+```text
+Application observation
+  -> publicly visible client-to-service path
+  -> atomic network-transition segments
+  -> infeasibility-first physical candidate construction
+  -> landing-region corridor projection
+  -> corridor observation-mass distribution
+  -> network-transition vs corridor-distribution audit
+```
+
+The primary analysis unit is `probe_country x service_id`. `probe_country` comes from RIPE Atlas probe metadata, while `transition_near_country` / `transition_far_country` describe where each mapped hop-pair transition occurs. These are intentionally separate fields.
+
+| Layer | Primary Observation |
+| --- | --- |
+| Application | `service_id`, actual `target_ip` / `target_asn`, `probe_country` |
+| Network | atomic AS/country transitions over mappable hop-pair segments |
+| Physical | feasible landing-region corridor candidates |
+| Aggregate | service physical exposure, corridor concentration, cross-layer distribution class |
+
+Paper-primary outputs are:
+
+- `paper_service_country_physical_exposure.csv`
+- `paper_service_country_corridor_concentration.csv`
+- `paper_service_country_cross_layer_distribution.csv`
+- `paper_network_broad_physical_concentrated_cases.csv`
+- `paper_broad_corridor_distribution_cases.csv`
+- `paper_physical_exposure_cases.csv`
+
+Observation mass is measurement-observed transition mass. It is **not** traffic volume, packet count, bandwidth, or cable-use probability. Candidate breadth, best-case upper-bound diversity, compression ratios, rank gaps, cable-level weighted support, product-of-experts ranking, and AS-owner reranking are retained as supplementary views.
+
 ## Interpretation Boundary
 
 - `candidate_support`, `fused_candidate_support`, and `normalized_candidate_support` are evidence scores, not ground-truth cable utilization.
@@ -31,6 +65,7 @@ probe/
 
 ripe_atlas_public_download/
   download_public_traceroutes.py
+  run_per_measurement_pipeline.py
   manifests/
 
 data/
@@ -51,6 +86,20 @@ output/
 Root-level scripts such as `main_analysis.py` are thin wrappers that call the corresponding `source/` modules.
 
 ## Pipeline Overview
+
+Recommended paper-facing run order:
+
+1. Download or prepare RIPE Atlas traceroute inputs.
+2. Prepare probe metadata, pfx2as, IP geolocation, AS relationship, owner-to-AS, and cable metadata.
+3. Run Stage 1 feasible corridor construction with landing-region grouping:
+   `python source/main_analysis.py --landing-region-radius-km 50 --rtt-tolerance-ms 5`
+4. Run Stage 2 application/network/corridor distribution audit:
+   `python source/postprocess_candidate_output.py --input output/result/cable_matching_output.json --output output/result`
+5. Run robustness analyses:
+   `python source/robustness_compare.py --input output/result/trace_candidate_support.csv --output output/result`
+6. Optionally run legacy cable/owner analysis.
+
+Script roles:
 
 1. `precompute_as_graph.py`  
    Optional offline preprocessing for the AS-economic core. Builds bounded owner-group reachability over the CAIDA AS relationship graph.
@@ -75,6 +124,9 @@ Root-level scripts such as `main_analysis.py` are thin wrappers that call the co
 
 8. `ripe_atlas_public_download/download_public_traceroutes.py`
    Public dataset downloader. Downloads the first-round RIPE Atlas public IPv4 traceroute measurement set for the 2026-07-01 00:00:00 UTC to 01:00:00 UTC window. It validates measurement metadata first and writes pipeline-ready result arrays under `data/traceroute_rundnsroot/`.
+
+9. `ripe_atlas_public_download/run_per_measurement_pipeline.py`
+   Per-measurement batch runner. Discovers downloaded public traceroute files, creates one result folder per `msm_id`, and runs `main_analysis.py`, `postprocess_candidate_output.py`, and `robustness_compare.py` separately for each measurement.
 
 ## Input File Reference
 
@@ -206,6 +258,18 @@ Root-level scripts such as `main_analysis.py` are thin wrappers that call the co
 | `--timeout` | `120` | HTTP timeout in seconds |
 | `--retries` | `3` | HTTP retry count |
 
+### `python ripe_atlas_public_download/run_per_measurement_pipeline.py`
+
+| Parameter | Default | Meaning |
+| --- | --- | --- |
+| `--input-dir` | `data/traceroute_rundnsroot/ripe_atlas_public_20260701_0000_0100` | Directory containing downloaded public Atlas traceroute JSON arrays |
+| `--output-root` | `output/public_traceroute_by_msmid` | Root directory where one subfolder per `msm_id` is created |
+| `--as-precompute-file` | `output/preprocessed/as_graph_owner_reachability.pkl.gz` | AS-graph precompute file passed to Stage 1 |
+| `--measurement-id` | all discovered files | Optional filter. Repeat to run selected measurements only |
+| `--skip-existing` | `False` | Skip a measurement if its `cable_matching_manifest.json` already exists |
+| `--skip-robustness` | `False` | Skip robustness comparison for faster smoke tests |
+| `--dry-run` | `False` | Print commands without executing them |
+
 ## Recommended Run Order
 
 ```powershell
@@ -217,6 +281,7 @@ python .\robustness_compare.py --input .\output\result\trace_candidate_support.c
 python .\build_peeringdb_descriptors.py
 python .\probe\run_ripe_atlas_traceroute.py --config .\probe\atlas_traceroute_config.local.json --dry-run
 python .\ripe_atlas_public_download\download_public_traceroutes.py --metadata-only
+python .\ripe_atlas_public_download\run_per_measurement_pipeline.py --skip-existing
 ```
 
 ## Public RIPE Atlas Dataset Downloader
@@ -242,7 +307,17 @@ Useful commands:
 python .\ripe_atlas_public_download\download_public_traceroutes.py --metadata-only
 python .\ripe_atlas_public_download\download_public_traceroutes.py --measurement-id 5009
 python .\ripe_atlas_public_download\download_public_traceroutes.py --skip-existing
+python .\ripe_atlas_public_download\run_per_measurement_pipeline.py --measurement-id 5009 --skip-existing
+python .\ripe_atlas_public_download\run_per_measurement_pipeline.py --skip-existing
 ```
+
+Per-`msm_id` outputs are written under:
+
+```text
+output/public_traceroute_by_msmid/msm5009_dns-root-a-root/
+```
+
+Each folder contains the Stage 1 matching output, post-processing tables, robustness tables, and manifests for that individual measurement. Large intermediate files such as `cable_matching_output.json`, `trace_candidate_support.csv`, and `trace_feasible_candidate_space.csv` are ignored by Git because they can exceed GitHub-friendly sizes; compact summary tables and manifests can be committed for inspection.
 
 ## RIPE Atlas Probe Helper Config
 
