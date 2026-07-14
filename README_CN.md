@@ -1252,3 +1252,12 @@ PeeringDB 继续保持 external-only：
 - `output/result/paper_physical_concentration_cases.csv`
 - `output/result/paper_joint_mismatch_cases.csv`
 - `output/result/paper_broad_physical_space_cases.csv`
+
+## 最新论文一致性补丁
+
+Stage 1 现在补充记录与论文方法定义对齐的元数据，但不改变候选匹配主流程。
+
+- `--cable-availability-mode` 用于控制海缆生命周期过滤。默认值 `confirmed_active_plus_unknown` 会排除在 traceroute 时间点已知为未来规划或已退役的候选，同时保留并标记生命周期未知的候选以保持兼容性。若需要更严格视图，可以使用 `confirmed_active_only`，它也会排除生命周期未知的候选。
+- traceroute link 生成阶段会在 hop 序列中观察到实际目标 ASN 时记录 service-entry 边界。后处理中的 trace summary 会输出该边界是否被解析，但物理投影仍然保持 hop-pair 粒度。
+- candidate 行新增海缆生命周期字段，例如 `cable_status`、`cable_rfs_date`、`cable_retired_date`、`cable_availability_status` 和 `availability_filter_passed`。
+- `output/result/supplementary_owner_concentration.csv` 汇总 feasible corridor observation mass 上的拆分 owner exposure。它只是补充描述表：owner 不作为 ground truth，也不能解释为真实流量体积或真实海缆使用量。

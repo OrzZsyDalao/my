@@ -5,6 +5,7 @@ import json
 import math
 import os
 import pickle
+from datetime import datetime, timezone
 from statistics import median
 from typing import Any, Dict, Generator, List, Optional, Set, Tuple
 
@@ -110,6 +111,101 @@ def normalize_owners_field(raw_owners: Any) -> List[str]:
     return [owner] if owner else []
 
 
+def parse_loose_date(value: Any) -> Optional[datetime]:
+    """Parse common cable lifecycle date/year values into a UTC datetime."""
+    if value in (None, ""):
+        return None
+    if isinstance(value, (int, float)) and not pd.isna(value):
+        year = int(value)
+        if 1800 <= year <= 3000:
+            return datetime(year, 1, 1, tzinfo=timezone.utc)
+    text = str(value).strip()
+    if not text or text.lower() in {"nan", "none", "unknown"}:
+        return None
+    for fmt in ("%Y-%m-%d", "%Y/%m/%d", "%Y %B", "%Y %b", "%B %Y", "%b %Y", "%Y"):
+        try:
+            parsed = datetime.strptime(text, fmt)
+            return parsed.replace(tzinfo=timezone.utc)
+        except ValueError:
+            continue
+    for token in text.replace(",", " ").split():
+        if token.isdigit() and len(token) == 4:
+            year = int(token)
+            if 1800 <= year <= 3000:
+                return datetime(year, 1, 1, tzinfo=timezone.utc)
+    return None
+
+
+def parse_trace_datetime(value: Any) -> Optional[datetime]:
+    """Parse RIPE Atlas timestamp/endtime values into UTC datetimes."""
+    if value in (None, "", "N/A"):
+        return None
+    try:
+        numeric = float(value)
+        if numeric > 0:
+            return datetime.fromtimestamp(numeric, tz=timezone.utc)
+    except (TypeError, ValueError, OSError):
+        pass
+    text = str(value).strip()
+    if not text:
+        return None
+    try:
+        return datetime.fromisoformat(text.replace("Z", "+00:00")).astimezone(timezone.utc)
+    except ValueError:
+        return None
+
+
+def is_cable_available_at(cable: Dict[str, Any], trace_timestamp: Any, mode: str = "confirmed_active_plus_unknown") -> Dict[str, Any]:
+    """Evaluate cable lifecycle availability for a trace timestamp.
+
+    Unknown lifecycle metadata is retained but explicitly marked so old cable
+    datasets remain compatible.
+    """
+    trace_dt = parse_trace_datetime(trace_timestamp)
+    rfs_date = parse_loose_date(cable.get("rfs_date") or cable.get("rfs") or cable.get("rfs_year"))
+    retired_date = parse_loose_date(cable.get("retired_date"))
+    is_planned = bool(cable.get("is_planned", False))
+    retired = bool(cable.get("retired", False))
+    status = str(cable.get("status") or "").strip().lower()
+    availability_status = "active_unknown_date"
+    passed = True
+
+    if is_planned and (rfs_date is None or (trace_dt is not None and rfs_date > trace_dt)):
+        availability_status = "planned_not_rfs_at_trace_time"
+        passed = False
+    elif rfs_date is not None and trace_dt is not None and rfs_date > trace_dt:
+        availability_status = "rfs_after_trace_time"
+        passed = False
+    elif retired_date is not None and trace_dt is not None and retired_date <= trace_dt:
+        availability_status = "retired_before_trace_time"
+        passed = False
+    elif retired and retired_date is None:
+        availability_status = "retired_unknown_date"
+        passed = False
+    elif "planned" in status and (rfs_date is None or (trace_dt is not None and rfs_date > trace_dt)):
+        availability_status = "planned_status_not_rfs_at_trace_time"
+        passed = False
+    elif "retired" in status or "decommission" in status:
+        availability_status = "retired_status"
+        passed = False
+    elif rfs_date is None and not is_planned and not retired:
+        availability_status = "unknown"
+        passed = False
+    else:
+        availability_status = "confirmed_active_at_trace_time"
+        passed = True
+
+    if mode == "confirmed_active_plus_unknown" and availability_status == "unknown":
+        passed = True
+    return {
+        "availability_filter_passed": bool(passed),
+        "cable_availability_status": availability_status,
+        "cable_rfs_date": rfs_date.date().isoformat() if rfs_date else None,
+        "cable_retired_date": retired_date.date().isoformat() if retired_date else None,
+        "cable_status": cable.get("status"),
+    }
+
+
 def owner_group_signature(owner_asns: Set[str]) -> str:
     """Build a stable signature for a normalized owner-ASN set."""
     normalized = sorted(
@@ -178,6 +274,13 @@ def load_all_cables(directory: str) -> List[Dict[str, Any]]:
                     "name": cable_name,
                     "owners": owners,
                     "ls_points": ls_points,
+                    "rfs": cable_data.get("rfs"),
+                    "rfs_year": cable_data.get("rfs_year"),
+                    "rfs_date": cable_data.get("rfs_date"),
+                    "is_planned": cable_data.get("is_planned", False),
+                    "status": cable_data.get("status"),
+                    "retired": cable_data.get("retired", False),
+                    "retired_date": cable_data.get("retired_date"),
                 }
             )
     except FileNotFoundError as exc:
@@ -459,26 +562,59 @@ def parse_hops_to_links(
 ) -> List[Dict[str, Any]]:
     """Convert consecutive traceroute hops into adjacent hop-pair links."""
     parsed_links: List[Dict[str, Any]] = []
-    previous_rtt = 0.0
-    previous_hop_info: Optional[Dict[str, Any]] = None
     trace_metadata = trace_metadata or {}
+    target_asn = normalize_asn_value(trace_metadata.get("target_asn"))
 
+    hop_infos: List[Optional[Dict[str, Any]]] = []
     for hop_data in hops:
         selected_reply = select_hop_reply(hop_data)
         if not selected_reply:
+            hop_infos.append(None)
+            continue
+        ip = selected_reply["ip"]
+        geo = get_geo_info(ip, mmdb_reader)
+        hop_infos.append(
+            {
+                "ip": ip,
+                "rtt": selected_reply["rtt"],
+                "geo": geo,
+                "asn": normalize_asn_value(geo.get("asn")),
+                "hop_num": hop_data["hop"],
+                "hop_reply_ip_count": selected_reply["hop_reply_ip_count"],
+                "hop_selected_reply_rule": selected_reply["hop_selected_reply_rule"],
+            }
+        )
+
+    service_entry_hop: Optional[int] = None
+    service_entry_asn: Optional[str] = None
+    if target_asn != "-1":
+        for hop_info in hop_infos:
+            if hop_info and hop_info.get("asn") == target_asn:
+                service_entry_hop = int(hop_info["hop_num"])
+                service_entry_asn = target_asn
+                break
+
+    link_trace_metadata = dict(trace_metadata)
+    if service_entry_hop is not None:
+        link_trace_metadata.update(
+            {
+                "service_entry_hop": service_entry_hop,
+                "service_entry_asn": service_entry_asn,
+                "service_entry_resolved": True,
+                "path_scope": "client_to_service_entry",
+            }
+        )
+
+    previous_rtt = 0.0
+    previous_hop_info: Optional[Dict[str, Any]] = None
+
+    for current_hop_info in hop_infos:
+        if current_hop_info is None:
             previous_hop_info = None
             continue
-
-        rtt = selected_reply["rtt"]
-        ip = selected_reply["ip"]
-        current_hop_info = {
-            "ip": ip,
-            "rtt": rtt,
-            "geo": get_geo_info(ip, mmdb_reader),
-            "hop_num": hop_data["hop"],
-            "hop_reply_ip_count": selected_reply["hop_reply_ip_count"],
-            "hop_selected_reply_rule": selected_reply["hop_selected_reply_rule"],
-        }
+        if service_entry_hop is not None and int(current_hop_info["hop_num"]) > service_entry_hop:
+            break
+        rtt = current_hop_info["rtt"]
 
         is_previous_geolocated = previous_hop_info and previous_hop_info["geo"]["lat"] is not None
         is_current_geolocated = current_hop_info["geo"]["lat"] is not None
@@ -496,7 +632,7 @@ def parse_hops_to_links(
                     "probe_id": prb_id,
                     "timestamp": timestamp,
                     "file_name": file_name,
-                    **trace_metadata,
+                    **link_trace_metadata,
                 }
             )
 
@@ -609,6 +745,7 @@ class CableMatcher:
         as_graph_precompute: Optional[Dict[str, Any]] = None,
         rtt_tolerance_ms: float = 5.0,
         landing_region_radius_km: float = 50.0,
+        cable_availability_mode: str = "confirmed_active_plus_unknown",
     ):
         self.all_cables = processed_cables
         self.ls_geo = ls_coordinates
@@ -618,6 +755,7 @@ class CableMatcher:
         self.as_graph_precompute = as_graph_precompute or {}
         self.rtt_tolerance_ms = float(rtt_tolerance_ms)
         self.landing_region_radius_km = float(landing_region_radius_km)
+        self.cable_availability_mode = cable_availability_mode
         self.landing_region_map = self.build_landing_region_map()
         self.candidate_count_per_matched_link: List[int] = []
         self.owner_group_signatures: Dict[str, int] = self.as_graph_precompute.get("owner_group_signatures", {})
@@ -663,6 +801,10 @@ class CableMatcher:
             "rtt_tolerance_ms": float(self.rtt_tolerance_ms),
             "landing_region_radius_km": float(self.landing_region_radius_km),
             "landing_region_count": len(set(self.landing_region_map.values())),
+            "cable_availability_mode": self.cable_availability_mode,
+            "candidates_filtered_by_cable_lifecycle": 0,
+            "segments_filtered_by_cable_lifecycle": 0,
+            "candidates_with_unknown_cable_status": 0,
             "as_precompute_enabled": self.as_graph_precompute_loaded,
             "candidate_count_list": self.candidate_count_per_matched_link,
         }
@@ -701,6 +843,13 @@ class CableMatcher:
                             "owner_group_signature": owner_signature,
                             "owner_group_id": owner_group_id,
                             "gcd_dist": self.gcd_cache[segment],
+                            "rfs": cable.get("rfs"),
+                            "rfs_year": cable.get("rfs_year"),
+                            "rfs_date": cable.get("rfs_date"),
+                            "is_planned": cable.get("is_planned", False),
+                            "status": cable.get("status"),
+                            "retired": cable.get("retired", False),
+                            "retired_date": cable.get("retired_date"),
                         }
                     )
 
@@ -1261,6 +1410,17 @@ class CableMatcher:
 
                 for cable_info in segment_cables:
                     self.stats["candidate_segments_considered"] += 1
+                    availability_info = is_cable_available_at(
+                        cable_info,
+                        link.get("timestamp"),
+                        mode=self.cable_availability_mode,
+                    )
+                    if availability_info["cable_availability_status"] == "unknown":
+                        self.stats["candidates_with_unknown_cable_status"] += 1
+                    if not availability_info["availability_filter_passed"]:
+                        self.stats["candidates_filtered_by_cable_lifecycle"] += 1
+                        self.stats["segments_filtered_by_cable_lifecycle"] += 1
+                        continue
 
                     gcd_dist = cable_info["gcd_dist"]
                     legacy_slack_lower_bound_ms = ((gcd_dist * self.SLACK_FACTOR) * 2) / self.SOL_FIBER_KM_MS
@@ -1295,6 +1455,12 @@ class CableMatcher:
                     candidate = {
                         "cable_name": cable_info["cable_name"],
                         "cable_id": cable_info["cable_id"],
+                        "cable_owners": cable_info.get("cable_owners", []),
+                        "cable_rfs_date": availability_info["cable_rfs_date"],
+                        "cable_retired_date": availability_info["cable_retired_date"],
+                        "cable_status": availability_info["cable_status"],
+                        "cable_availability_status": availability_info["cable_availability_status"],
+                        "availability_filter_passed": availability_info["availability_filter_passed"],
                         "segment": f"{ls_a_id} -> {ls_b_id}",
                         "landing_pair": f"{ls_a_id} -> {ls_b_id}",
                         "corridor_id": corridor_id,
@@ -1651,6 +1817,12 @@ def parse_args() -> argparse.Namespace:
         default=50.0,
         help="Connected-component distance threshold for landing-region corridor grouping.",
     )
+    parser.add_argument(
+        "--cable-availability-mode",
+        choices=["confirmed_active_only", "confirmed_active_plus_unknown"],
+        default="confirmed_active_plus_unknown",
+        help="Cable lifecycle filter mode for the main feasible candidate set; default keeps unknown lifecycle metadata marked for compatibility.",
+    )
     return parser.parse_args()
 
 
@@ -1685,6 +1857,7 @@ def main() -> None:
         as_graph_precompute=as_graph_precompute,
         rtt_tolerance_ms=args.rtt_tolerance_ms,
         landing_region_radius_km=args.landing_region_radius_km,
+        cable_availability_mode=args.cable_availability_mode,
     )
     traceroute_file_paths = resolve_traceroute_input(args.traceroute_input)
 
@@ -1787,6 +1960,17 @@ def main() -> None:
                             )
 
                             trace_mappable_links = len(traceroute_links)
+                            trace_service_entry_resolved = any(
+                                bool(link.get("service_entry_resolved")) for link in traceroute_links
+                            )
+                            if trace_service_entry_resolved:
+                                first_entry_link = next(
+                                    link for link in traceroute_links if bool(link.get("service_entry_resolved"))
+                                )
+                                trace_metadata["service_entry_hop"] = first_entry_link.get("service_entry_hop")
+                                trace_metadata["service_entry_asn"] = first_entry_link.get("service_entry_asn")
+                                trace_metadata["service_entry_resolved"] = True
+                                trace_metadata["path_scope"] = first_entry_link.get("path_scope")
                             trace_feasible_links = 0
                             trace_legacy_matched_links = 0
                             for link in traceroute_links:

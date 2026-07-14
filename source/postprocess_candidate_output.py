@@ -364,6 +364,30 @@ def normalize_tag_list(value: Any) -> List[str]:
     return safe_parse_tags(value)
 
 
+def safe_parse_owners(value: Any) -> List[str]:
+    """Safely parse cable-owner fields from JSON strings, lists, comma strings, or empty values."""
+    if isinstance(value, list):
+        owners = value
+    elif value is None:
+        owners = []
+    else:
+        text = str(value).strip()
+        if not text or text.lower() in {"nan", "none", "na"}:
+            owners = []
+        else:
+            try:
+                parsed = json.loads(text)
+                owners = parsed if isinstance(parsed, list) else [text]
+            except json.JSONDecodeError:
+                owners = [part.strip() for part in text.split(",") if part.strip()]
+    unique_owners = []
+    for owner in owners:
+        owner_text = str(owner).strip()
+        if owner_text and owner_text not in unique_owners:
+            unique_owners.append(owner_text)
+    return unique_owners
+
+
 def ensure_corridor_columns(frame: pd.DataFrame) -> pd.DataFrame:
     """Ensure corridor-level identifiers exist and gracefully fall back to segment."""
     result = frame.copy()
@@ -1729,6 +1753,82 @@ def build_paper_physical_exposure_cases(exposure_frame: pd.DataFrame) -> pd.Data
     ).reset_index(drop=True)
 
 
+def build_supplementary_owner_concentration(
+    feasible_frame: pd.DataFrame,
+    segment_corridor_mass: pd.DataFrame,
+) -> pd.DataFrame:
+    """Aggregate owner exposure using split ownership over corridor observation mass."""
+    columns = [
+        "probe_country",
+        "service_id",
+        "owner",
+        "owner_observation_mass",
+        "owner_observation_share",
+        "unique_atomic_segments",
+        "unique_corridors",
+        "owner_multi_entity_mode",
+        "interpretation",
+    ]
+    if feasible_frame.empty or segment_corridor_mass.empty or "cable_owners" not in feasible_frame.columns:
+        return pd.DataFrame(columns=columns)
+
+    working = prepare_atomic_segment_projection_frame(feasible_frame, corridor_col="corridor_id")
+    if working.empty:
+        return pd.DataFrame(columns=columns)
+    working["owners_list"] = working["cable_owners"].apply(safe_parse_owners)
+    mass_lookup = segment_corridor_mass[
+        ["atomic_segment_id", "corridor_id", "observation_mass", "probe_country", "service_id"]
+    ].drop_duplicates()
+    owner_rows: List[Dict[str, Any]] = []
+    for _, mass_row in mass_lookup.iterrows():
+        subset = working.loc[
+            (working["atomic_segment_id"].astype(str) == str(mass_row["atomic_segment_id"]))
+            & (working["corridor_observation_id"].astype(str) == str(mass_row["corridor_id"]))
+        ]
+        raw_owner_weights: Dict[str, float] = {}
+        for _, candidate in subset.drop_duplicates(subset=["cable_id"]).iterrows():
+            owners = candidate.get("owners_list", [])
+            if not owners:
+                continue
+            split = 1.0 / len(owners)
+            for owner in owners:
+                raw_owner_weights[owner] = raw_owner_weights.get(owner, 0.0) + split
+        total_raw = sum(raw_owner_weights.values())
+        if total_raw <= 0:
+            continue
+        for owner, raw_weight in raw_owner_weights.items():
+            owner_rows.append(
+                {
+                    "probe_country": mass_row["probe_country"],
+                    "service_id": mass_row["service_id"],
+                    "owner": owner,
+                    "atomic_segment_id": mass_row["atomic_segment_id"],
+                    "corridor_id": mass_row["corridor_id"],
+                    "owner_observation_mass": float(mass_row["observation_mass"]) * raw_weight / total_raw,
+                }
+            )
+    if not owner_rows:
+        return pd.DataFrame(columns=columns)
+    owner_frame = pd.DataFrame(owner_rows)
+    aggregated = (
+        owner_frame.groupby(["probe_country", "service_id", "owner"], dropna=False)
+        .agg(
+            owner_observation_mass=("owner_observation_mass", "sum"),
+            unique_atomic_segments=("atomic_segment_id", pd.Series.nunique),
+            unique_corridors=("corridor_id", pd.Series.nunique),
+        )
+        .reset_index()
+    )
+    total_mass = aggregated.groupby(["probe_country", "service_id"], dropna=False)["owner_observation_mass"].transform("sum")
+    aggregated["owner_observation_share"] = np.where(total_mass > 0, aggregated["owner_observation_mass"] / total_mass, np.nan)
+    aggregated["owner_multi_entity_mode"] = "split"
+    aggregated["interpretation"] = "supplementary owner exposure over feasible corridor observation mass, not owner probability"
+    return aggregated[columns].sort_values(
+        ["probe_country", "service_id", "owner_observation_mass"],
+        ascending=[True, True, False],
+    ).reset_index(drop=True)
+
+
 def add_candidate_breadth_aliases(frame: pd.DataFrame) -> pd.DataFrame:
     """Add paper-facing candidate-breadth aliases to legacy unique-corridor breadth tables."""
     result = frame.copy()
@@ -1770,6 +1870,25 @@ def group_key_to_dict(group_fields: Sequence[str], group_key: Any) -> Dict[str, 
     return {field: values[index] for index, field in enumerate(group_fields)}
 
 
+def normalize_group_key_columns(frame: pd.DataFrame, group_fields: Sequence[str]) -> pd.DataFrame:
+    """Normalize grouping key columns before pandas merges across sparse legacy outputs."""
+    result = frame.copy()
+    for field in group_fields:
+        if field not in result.columns:
+            result[field] = "NA"
+        result[field] = result[field].astype(object).where(pd.notna(result[field]), "NA").astype(str)
+        result[field] = result[field].replace(
+            {
+                "": "NA",
+                "nan": "NA",
+                "NaN": "NA",
+                "None": "NA",
+                "<NA>": "NA",
+            }
+        )
+    return result
+
+
 def build_group_identifier_frame(frame: pd.DataFrame, group_fields: Sequence[str]) -> pd.DataFrame:
     """Build stable identifier columns for cross-layer audit outputs."""
     columns = ["unit_id", "probe_country", "src_country", "service_id", "msm_id", "file_name"]
@@ -1800,7 +1919,7 @@ def build_group_identifier_frame(frame: pd.DataFrame, group_fields: Sequence[str
         row["msm_id"] = summarize_identifier_value(group.get("msm_id", pd.Series(dtype=object)))
         row["file_name"] = summarize_identifier_value(group.get("file_name", pd.Series(dtype=object)))
         rows.append(row)
-    return pd.DataFrame(rows, columns=columns)
+    return normalize_group_key_columns(pd.DataFrame(rows, columns=columns), group_fields)
 
 
 def build_group_network_metrics(frame: pd.DataFrame, group_fields: Sequence[str]) -> pd.DataFrame:
@@ -1892,7 +2011,11 @@ def build_group_network_metrics(frame: pd.DataFrame, group_fields: Sequence[str]
             }
         )
 
-    result = identifier_frame.merge(pd.DataFrame(rows), on=list(group_fields), how="inner")
+    result = identifier_frame.merge(
+        normalize_group_key_columns(pd.DataFrame(rows), group_fields),
+        on=list(group_fields),
+        how="inner",
+    )
     ordered = identifier_columns + [
         "num_measurements",
         "num_probes",
@@ -1973,7 +2096,11 @@ def build_group_physical_metrics(
             }
         )
 
-    result = identifier_frame.merge(pd.DataFrame(rows), on=list(group_fields), how="inner")
+    result = identifier_frame.merge(
+        normalize_group_key_columns(pd.DataFrame(rows), group_fields),
+        on=list(group_fields),
+        how="inner",
+    )
     return result[columns]
 
 
@@ -3675,6 +3802,7 @@ def build_method_manifest() -> Dict[str, Any]:
             "ambiguity_taxonomy.csv",
             "ambiguity_summary.csv",
             "unit_ambiguity_profile.csv",
+            "supplementary_owner_concentration.csv",
         ],
         "network_definitions": list(NETWORK_DEFINITION_COLUMNS.keys()),
         "interpretation": "application-visible path-transition observations projected onto feasible corridor groups with ambiguity preserved",
@@ -3756,6 +3884,7 @@ def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
             "network_diversity_metric_catalog.csv",
             "candidate_space_profile.csv",
             "weighted_vs_conservative_diversity.csv",
+            "supplementary_owner_concentration.csv",
         ],
     }
 
@@ -4400,6 +4529,10 @@ def main() -> None:
         corridor_col=corridor_candidate_col,
         mass_mode="uniform",
     )
+    supplementary_owner_concentration = build_supplementary_owner_concentration(
+        projection_source_frame,
+        segment_corridor_mass,
+    )
     country_corridor_distribution_internal = summarize_corridor_observation_distribution(
         segment_corridor_mass,
         ["country"],
@@ -4756,6 +4889,7 @@ def main() -> None:
     core_agreement_summary_path = os.path.join(args.output, "core_agreement_summary.csv")
     as_reranking_effect_path = os.path.join(args.output, "as_reranking_effect.csv")
     filtering_breakdown_path = os.path.join(args.output, "filtering_breakdown.csv")
+    supplementary_owner_concentration_path = os.path.join(args.output, "supplementary_owner_concentration.csv")
     method_manifest_path = os.path.join(args.output, "method_manifest.json")
     conservative_manifest_path = os.path.join(args.output, "conservative_candidate_audit_manifest.json")
     framework_alignment_report_path = os.path.join(args.output, "framework_alignment_report.json")
@@ -4917,6 +5051,11 @@ def main() -> None:
     core_agreement_summary.to_csv(core_agreement_summary_path, index=False, encoding="utf-8-sig")
     as_reranking_effect.to_csv(as_reranking_effect_path, index=False, encoding="utf-8-sig")
     filtering_breakdown.to_csv(filtering_breakdown_path, index=False, encoding="utf-8-sig")
+    supplementary_owner_concentration.to_csv(
+        supplementary_owner_concentration_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
     summary_frame.to_csv(summary_path, index=False, encoding="utf-8-sig")
     with open(atomic_segment_diagnostics_path, "w", encoding="utf-8") as handle:
         json.dump(atomic_segment_id_diagnostics, handle, indent=2, ensure_ascii=False)
@@ -4999,6 +5138,7 @@ def main() -> None:
     print(f"Saved core agreement summary to {core_agreement_summary_path}")
     print(f"Saved AS reranking effect to {as_reranking_effect_path}")
     print(f"Saved filtering breakdown to {filtering_breakdown_path}")
+    print(f"Saved supplementary owner concentration to {supplementary_owner_concentration_path}")
     print(f"Saved method manifest to {method_manifest_path}")
     print(f"Saved conservative candidate-audit manifest to {conservative_manifest_path}")
     print(f"Saved quadrant summary table to {quadrant_summary_path}")

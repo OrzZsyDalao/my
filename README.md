@@ -1240,3 +1240,12 @@ Additional outputs:
 - `output/result/paper_physical_concentration_cases.csv`
 - `output/result/paper_joint_mismatch_cases.csv`
 - `output/result/paper_broad_physical_space_cases.csv`
+
+## Latest Framework-Alignment Patch
+
+Stage 1 now records additional paper-alignment metadata without changing the candidate matching philosophy.
+
+- `--cable-availability-mode` controls conservative cable lifecycle filtering. The default `confirmed_active_plus_unknown` excludes candidates that are known to be future/planned or retired at the traceroute timestamp, while retaining and marking unknown lifecycle metadata for compatibility. Use `confirmed_active_only` for a stricter view that also excludes unknown lifecycle metadata.
+- Traceroute link generation records a service-entry boundary when the actual target ASN is observed in the hop sequence. Downstream trace summaries expose whether the service-entry point was resolved, while the physical projection remains hop-pair based.
+- Candidate rows carry cable lifecycle fields such as `cable_status`, `cable_rfs_date`, `cable_retired_date`, `cable_availability_status`, and `availability_filter_passed`.
+- `output/result/supplementary_owner_concentration.csv` summarizes split owner exposure over feasible corridor observation mass. It is supplementary only: owners are not used as ground truth, and this table must not be read as per-owner traffic volume or per-cable utilization.
