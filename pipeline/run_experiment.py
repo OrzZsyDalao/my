@@ -220,9 +220,9 @@ def main() -> None:
                 "label": record["label"],
                 "input_file": str(record["input_file"].relative_to(REPO_DIR)),
                 "input_sha256": sha256_file(record["input_file"]),
-            "input_bytes": record["input_file"].stat().st_size,
-            "requested_window_start": record.get("requested_window_start"),
-            "requested_window_end": record.get("requested_window_end"),
+                "input_bytes": record["input_file"].stat().st_size,
+                "requested_window_start": record.get("requested_window_start"),
+                "requested_window_end": record.get("requested_window_end"),
             }
             for record in records
         ]
@@ -236,8 +236,6 @@ def main() -> None:
             "config_hash": config_digest,
             "config_file": str(resolved_config_path.relative_to(REPO_DIR)),
             "measurement_window": config.get("measurement_window"),
-            "requested_window_start": record.get("requested_window_start"),
-            "requested_window_end": record.get("requested_window_end"),
             "reference_input_manifest": str((run_root / "inputs" / "reference_input_manifest.csv").relative_to(REPO_DIR)),
             "interpretation": "measurement-observed feasible submarine corridor candidate audit; not traffic or ground-truth cable attribution",
             "status": "running",
@@ -262,6 +260,8 @@ def main() -> None:
             "input_file": str(record["input_file"].relative_to(REPO_DIR)),
             "input_sha256": sha256_file(record["input_file"]),
             "measurement_window": config.get("measurement_window"),
+            "requested_window_start": record.get("requested_window_start"),
+            "requested_window_end": record.get("requested_window_end"),
         }
         measurement_manifest.update({"status": "running", "error": ""})
         write_json(measurement_dir / "measurement_manifest.json", measurement_manifest)
