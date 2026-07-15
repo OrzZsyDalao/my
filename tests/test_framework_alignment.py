@@ -291,3 +291,121 @@ def test_paper_filter_keeps_only_auditable_rows():
     ])
     filtered = post.filter_auditable_paper_rows(frame)
     assert filtered["unit_id"].tolist() == ["auditable"]
+
+
+def test_framework_report_keeps_atomic_and_candidate_populations_separate():
+    """Projection rows may repeat candidates, but projection segment counts must remain unique."""
+    prepared = pd.DataFrame(
+        [
+            {"atomic_segment_id": "s1", "used_country_fallback_transition": False, "corridor_id": "a::b"},
+            {"atomic_segment_id": "s1", "used_country_fallback_transition": False, "corridor_id": "a::c"},
+            {"atomic_segment_id": "s2", "used_country_fallback_transition": True, "corridor_id": "d::e"},
+        ]
+    )
+    report = post.build_framework_alignment_report(
+        pd.DataFrame(),
+        prepared,
+        pd.DataFrame(),
+        {},
+        {
+            "atomic_segments_total": 10,
+            "atomic_segments_with_valid_rtt_evidence": 7,
+            "atomic_segments_with_inconclusive_rtt": 3,
+            "candidate_rows_total": 20,
+            "candidate_rows_lifecycle_filtered": 4,
+            "candidate_rows_rtt_infeasible": 5,
+            "candidate_rows_rtt_feasible": 11,
+            "candidate_rows_rtt_inconclusive": 2,
+        },
+    )
+
+    assert report["stage1_atomic_segments_total"] == 10
+    assert report["projection_atomic_segments_total"] == 2
+    assert report["projection_atomic_segments_with_as_transition"] == 1
+    assert report["projection_atomic_segments_using_country_fallback"] == 1
+    assert report["candidate_rows_rtt_feasible"] == 11
+
+
+def test_service_scope_summaries_use_the_same_segment_population_rules():
+    """All-visible and resolved-entry-only corridor/network summaries must remain separate."""
+    feasible = pd.DataFrame(
+        [
+            {"link_id": "s1", "corridor_id": "a::b", "src_country": "US", "dst_country": "GB", "probe_country": "US", "probe_id": "p1", "probe_asn": 64500, "src_asn": 64500, "dst_asn": 64496, "service_id": "svc", "service_entry_resolved": True},
+            {"link_id": "s2", "corridor_id": "c::d", "src_country": "US", "dst_country": "FR", "probe_country": "US", "probe_id": "p2", "probe_asn": 64501, "src_asn": 64501, "dst_asn": 64497, "service_id": "svc", "service_entry_resolved": False},
+        ]
+    )
+    prepared = post.prepare_atomic_segment_projection_frame(feasible)
+    scoped = post.build_service_path_scope_projections(prepared)
+    network = post.summarize_network_transition_concentration(
+        scoped,
+        ["probe_country", "service_id", "path_scope_stratum"],
+    )
+
+    totals = dict(zip(network["path_scope_stratum"], network["total_mappable_segments"]))
+    assert totals == {"all_publicly_visible": 2, "resolved_entry_only": 1}
+
+
+def test_complete_service_summary_retains_zero_projection_scope():
+    """A resolved-entry stratum with no inter-region candidates remains in the complete summary."""
+    exposure = pd.DataFrame(
+        [
+            {"probe_country": "US", "service_id": "svc", "path_scope_stratum": "all_publicly_visible"},
+            {"probe_country": "US", "service_id": "svc", "path_scope_stratum": "resolved_entry_only"},
+        ]
+    )
+    corridor = pd.DataFrame(
+        [{
+            "probe_country": "US",
+            "service_id": "svc",
+            "path_scope_stratum": "all_publicly_visible",
+            "total_mappable_segments": 35,
+            "auditable_paper_case": True,
+        }]
+    )
+
+    complete = post.ensure_service_path_scope_summary_rows(corridor, exposure, "corridor")
+    resolved = complete.loc[complete["path_scope_stratum"] == "resolved_entry_only"].iloc[0]
+
+    assert len(complete) == 2
+    assert resolved["total_mappable_segments"] == 0
+    assert bool(resolved["auditable_paper_case"]) is False
+    assert resolved["corridor_concentration_tier"] == "unknown_corridor_observation_concentration"
+
+
+def test_service_exposure_uses_inter_region_candidates_as_primary():
+    """An intra-region-only trace remains supplementary and is not paper-primary exposure."""
+    frame = pd.DataFrame(
+        [{
+            "trace_id": "t1",
+            "probe_country": "US",
+            "service_id": "svc",
+            "service_entry_resolved": True,
+            "has_at_least_one_mappable_segment": True,
+            "has_at_least_one_feasible_submarine_corridor": True,
+            "has_any_candidate": True,
+            "has_inter_region_candidate": False,
+            "has_domestic_inter_region_candidate": False,
+            "has_international_inter_region_candidate": False,
+            "has_intra_region_candidate": True,
+            "probe_id": "p1",
+            "probe_asn_norm": "AS64500",
+            "target_ip": "192.0.2.1",
+            "target_asn_norm": "AS64496",
+        }]
+    )
+    summary = post.build_service_country_physical_exposure_summary(frame)
+    all_visible = summary.loc[summary["path_scope_stratum"] == "all_publicly_visible"].iloc[0]
+
+    assert all_visible["any_candidate_exposure_rate"] == 1.0
+    assert all_visible["inter_region_candidate_exposure_rate"] == 0.0
+    assert all_visible["submarine_candidate_exposure_rate"] == 0.0
+
+
+def test_feasible_candidate_dedup_key_is_direction_independent():
+    """Reversing a landing pair must not create a second cable candidate."""
+    pytest.importorskip("maxminddb")
+    import main_analysis
+
+    forward = {"cable_id": "cable-x", "exact_landing_pair_id": "a::b", "segment": "a -> b"}
+    reverse = {"cable_id": "cable-x", "exact_landing_pair_id": "a::b", "segment": "b -> a"}
+    assert main_analysis.build_feasible_candidate_dedup_key(forward) == main_analysis.build_feasible_candidate_dedup_key(reverse)

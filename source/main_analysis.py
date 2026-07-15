@@ -847,6 +847,11 @@ def process_single_traceroute_file(
     return all_links
 
 
+def build_feasible_candidate_dedup_key(candidate: Dict[str, Any]) -> str:
+    """Return the direction-independent cable plus exact landing-pair candidate key."""
+    return f"{candidate.get('cable_id', 'NA')}::{candidate.get('exact_landing_pair_id', 'NA')}"
+
+
 class CableMatcher:
     """Cross-layer candidate matcher with uncertainty-aware evidence fusion."""
 
@@ -2011,7 +2016,9 @@ class CableMatcher:
         deduplicated_candidates: Dict[str, Dict[str, Any]] = {}
         unique_candidates: List[Dict[str, Any]] = []
         for candidate in sorted_candidates:
-            feasible_key = f"{candidate['cable_id']}::{candidate['segment']}"
+            # Direction is not part of physical-candidate identity: A->B and
+            # B->A on the same cable and exact landing pair are one candidate.
+            feasible_key = build_feasible_candidate_dedup_key(candidate)
             if feasible_key not in deduplicated_candidates:
                 deduplicated_candidates[feasible_key] = candidate
                 unique_candidates.append(candidate)
@@ -2595,6 +2602,10 @@ def main() -> None:
                                 trace_metadata["path_scope"] = first_entry_link.get("path_scope")
                             trace_feasible_links = 0
                             trace_legacy_matched_links = 0
+                            trace_has_inter_region_candidate = False
+                            trace_has_domestic_inter_region_candidate = False
+                            trace_has_international_inter_region_candidate = False
+                            trace_has_intra_region_candidate = False
                             for link in traceroute_links:
                                 match_output = matcher.match_link_to_cable(link)
                                 all_feasible_segments = match_output.get("all_feasible_segments", [])
@@ -2605,6 +2616,17 @@ def main() -> None:
                                     continue
 
                                 trace_feasible_links += 1
+                                candidate_scopes = {
+                                    str(candidate.get("candidate_scope", ""))
+                                    for candidate in all_feasible_segments
+                                }
+                                trace_has_domestic_inter_region_candidate |= "domestic_inter_region" in candidate_scopes
+                                trace_has_international_inter_region_candidate |= "international_inter_region" in candidate_scopes
+                                trace_has_intra_region_candidate |= "intra_landing_region" in candidate_scopes
+                                trace_has_inter_region_candidate |= bool(
+                                    candidate_scopes
+                                    & {"domestic_inter_region", "international_inter_region"}
+                                )
                                 feasible_link_count += 1
                                 if all_segments:
                                     trace_legacy_matched_links += 1
@@ -2681,6 +2703,11 @@ def main() -> None:
                                     "links_above_legacy_support_threshold": trace_legacy_matched_links,
                                     "has_at_least_one_mappable_segment": trace_mappable_links > 0,
                                     "has_at_least_one_feasible_submarine_corridor": trace_feasible_links > 0,
+                                    "has_any_candidate": trace_feasible_links > 0,
+                                    "has_inter_region_candidate": trace_has_inter_region_candidate,
+                                    "has_domestic_inter_region_candidate": trace_has_domestic_inter_region_candidate,
+                                    "has_international_inter_region_candidate": trace_has_international_inter_region_candidate,
+                                    "has_intra_region_candidate": trace_has_intra_region_candidate,
                                 }
                             )
 

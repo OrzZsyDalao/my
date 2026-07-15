@@ -703,7 +703,7 @@ def annotate_trace_candidate_scope_exposure(trace_frame: pd.DataFrame, feasible_
 
 
 def build_service_country_physical_exposure_summary(trace_frame: pd.DataFrame) -> pd.DataFrame:
-    """Compute trace-level service physical exposure by probe country and service."""
+    """Compute trace-level service exposure, with inter-region candidates as the paper-primary view."""
     columns = [
         "probe_country",
         "service_id",
@@ -744,7 +744,6 @@ def build_service_country_physical_exposure_summary(trace_frame: pd.DataFrame) -
             dedup = scoped_group.drop_duplicates(subset=["trace_id"]).copy()
             total_valid = int(len(dedup))
             mappable = int(dedup["has_at_least_one_mappable_segment"].sum())
-            exposed = int(dedup["has_at_least_one_feasible_submarine_corridor"].sum())
             any_candidate = int(dedup.get("has_any_candidate", pd.Series(index=dedup.index, dtype=bool)).sum())
             inter_region = int(dedup.get("has_inter_region_candidate", pd.Series(index=dedup.index, dtype=bool)).sum())
             domestic_inter = int(dedup.get("has_domestic_inter_region_candidate", pd.Series(index=dedup.index, dtype=bool)).sum())
@@ -767,16 +766,16 @@ def build_service_country_physical_exposure_summary(trace_frame: pd.DataFrame) -
                 "path_scope_stratum": path_scope_stratum,
                 "total_valid_traces": total_valid,
                 "mappable_traces": mappable,
-                "traces_with_feasible_submarine_corridor_candidates": exposed,
-                "submarine_candidate_exposure_rate": float(exposed / total_valid) if total_valid else np.nan,
+                "traces_with_feasible_submarine_corridor_candidates": inter_region,
+                "submarine_candidate_exposure_rate": float(inter_region / total_valid) if total_valid else np.nan,
                 "any_candidate_exposure_rate": float(any_candidate / total_valid) if total_valid else np.nan,
                 "inter_region_candidate_exposure_rate": float(inter_region / total_valid) if total_valid else np.nan,
                 "domestic_inter_region_candidate_exposure_rate": float(domestic_inter / total_valid) if total_valid else np.nan,
                 "international_inter_region_candidate_exposure_rate": float(international_inter / total_valid) if total_valid else np.nan,
                 "intra_region_candidate_rate": float(intra_region / total_valid) if total_valid else np.nan,
                 # Deprecated compatibility aliases.
-                "submarine_exposed_traces": exposed,
-                "service_physical_exposure_rate": float(exposed / total_valid) if total_valid else np.nan,
+                "submarine_exposed_traces": inter_region,
+                "service_physical_exposure_rate": float(inter_region / total_valid) if total_valid else np.nan,
                 "mappable_trace_rate": float(mappable / total_valid) if total_valid else np.nan,
                 "unique_probes": unique_probes,
                 "unique_probe_asns": unique_probe_asns,
@@ -839,15 +838,19 @@ def build_framework_alignment_report(
     method_manifest: Dict[str, Any],
     stage1_stats: Dict[str, Any] | None = None,
 ) -> Dict[str, Any]:
-    """Build a compact audit report showing whether paper-facing assumptions are populated."""
+    """Report trace, atomic-segment, and candidate-row populations without mixing denominators."""
     stage1_stats = stage1_stats or {}
     trace_dedup = trace_frame.drop_duplicates(subset=["trace_id"]).copy() if not trace_frame.empty and "trace_id" in trace_frame else trace_frame.copy()
     trace_count = int(len(trace_dedup))
-    total_atomic_segments = (
-        int(prepared_segments["atomic_segment_id"].nunique())
+    stage1_atomic_total = int(stage1_stats.get("atomic_segments_total", 0) or 0)
+    stage1_atomic_valid_rtt = int(stage1_stats.get("atomic_segments_with_valid_rtt_evidence", 0) or 0)
+    stage1_atomic_inconclusive_rtt = int(stage1_stats.get("atomic_segments_with_inconclusive_rtt", 0) or 0)
+    projection_segments = (
+        prepared_segments.drop_duplicates(subset=["atomic_segment_id"]).copy()
         if not prepared_segments.empty and "atomic_segment_id" in prepared_segments
-        else 0
+        else pd.DataFrame()
     )
+    projection_atomic_total = int(len(projection_segments))
     def _trace_count_with(column: str) -> int:
         if trace_dedup.empty or column not in trace_dedup:
             return 0
@@ -858,8 +861,41 @@ def build_framework_alignment_report(
             return 0
         return int(trace_dedup[column].replace({"": np.nan, "NA": np.nan, "nan": np.nan}).dropna().nunique())
 
-    segments_with_as_transition = int((~prepared_segments.get("used_country_fallback_transition", pd.Series(dtype=bool)).fillna(True).astype(bool)).sum()) if not prepared_segments.empty else 0
-    segments_using_country_fallback = int(prepared_segments.get("used_country_fallback_transition", pd.Series(dtype=bool)).fillna(False).astype(bool).sum()) if not prepared_segments.empty else 0
+    projection_fallback = (
+        projection_segments.get("used_country_fallback_transition", pd.Series(index=projection_segments.index, dtype=bool))
+        .fillna(True)
+        .astype(bool)
+        if not projection_segments.empty
+        else pd.Series(dtype=bool)
+    )
+    projection_atomic_with_as = int((~projection_fallback).sum())
+    projection_atomic_using_fallback = int(projection_fallback.sum())
+    for subset_name, subset_value in (
+        ("stage1_atomic_segments_with_valid_rtt", stage1_atomic_valid_rtt),
+        ("stage1_atomic_segments_with_inconclusive_rtt", stage1_atomic_inconclusive_rtt),
+    ):
+        if subset_value > stage1_atomic_total:
+            raise RuntimeError(f"Invalid framework accounting: {subset_name} exceeds stage1_atomic_segments_total")
+    if stage1_atomic_valid_rtt + stage1_atomic_inconclusive_rtt != stage1_atomic_total:
+        raise RuntimeError("Invalid framework accounting: Stage 1 RTT atomic-segment partition is incomplete")
+    for subset_name, subset_value in (
+        ("projection_atomic_segments_with_as_transition", projection_atomic_with_as),
+        ("projection_atomic_segments_using_country_fallback", projection_atomic_using_fallback),
+    ):
+        if subset_value > projection_atomic_total:
+            raise RuntimeError(f"Invalid framework accounting: {subset_name} exceeds projection_atomic_segments_total")
+    if projection_atomic_with_as + projection_atomic_using_fallback != projection_atomic_total:
+        raise RuntimeError("Invalid framework accounting: projection AS/fallback partition is incomplete")
+    candidate_rows_total = int(stage1_stats.get("candidate_rows_total", 0) or 0)
+    candidate_row_counts = {
+        "candidate_rows_lifecycle_filtered": int(stage1_stats.get("candidate_rows_lifecycle_filtered", 0) or 0),
+        "candidate_rows_rtt_infeasible": int(stage1_stats.get("candidate_rows_rtt_infeasible", 0) or 0),
+        "candidate_rows_rtt_feasible": int(stage1_stats.get("candidate_rows_rtt_feasible", 0) or 0),
+        "candidate_rows_rtt_inconclusive": int(stage1_stats.get("candidate_rows_rtt_inconclusive", 0) or 0),
+    }
+    for subset_name, subset_value in candidate_row_counts.items():
+        if subset_value > candidate_rows_total:
+            raise RuntimeError(f"Invalid framework accounting: {subset_name} exceeds candidate_rows_total")
     return {
         "total_traces": trace_count,
         "traces_with_probe_country": _trace_count_with("probe_country"),
@@ -872,15 +908,28 @@ def build_framework_alignment_report(
         "unique_target_asns": _unique_count("target_asn_norm"),
         "traces_with_service_entry_resolved": int(trace_dedup["service_entry_resolved"].fillna(False).astype(bool).sum()) if not trace_dedup.empty and "service_entry_resolved" in trace_dedup else 0,
         "service_entry_resolution_rate": float(trace_dedup["service_entry_resolved"].fillna(False).astype(bool).mean()) if not trace_dedup.empty and "service_entry_resolved" in trace_dedup else np.nan,
-        "total_atomic_segments": total_atomic_segments,
-        "segments_with_as_transition": segments_with_as_transition,
-        "segments_using_country_fallback": segments_using_country_fallback,
-        "country_fallback_share": float(segments_using_country_fallback / total_atomic_segments) if total_atomic_segments else np.nan,
-        "segments_with_feasible_corridors": total_atomic_segments,
-        "segments_with_valid_rtt": int(stage1_stats.get("segments_with_valid_rtt", 0) or 0),
-        "segments_with_inconclusive_rtt": int(stage1_stats.get("segments_with_inconclusive_rtt", 0) or 0),
-        "candidates_filtered_by_rtt": int(stage1_stats.get("candidates_filtered_by_valid_rtt", stage1_stats.get("candidates_rtt_infeasible", 0)) or 0),
-        "candidates_filtered_by_cable_lifecycle": int(stage1_stats.get("candidates_filtered_by_cable_lifecycle", 0) or 0),
+        "stage1_atomic_segments_total": stage1_atomic_total,
+        "stage1_atomic_segments_with_valid_rtt": stage1_atomic_valid_rtt,
+        "stage1_atomic_segments_with_inconclusive_rtt": stage1_atomic_inconclusive_rtt,
+        "stage1_valid_rtt_share": float(stage1_atomic_valid_rtt / stage1_atomic_total) if stage1_atomic_total else np.nan,
+        "stage1_inconclusive_rtt_share": float(stage1_atomic_inconclusive_rtt / stage1_atomic_total) if stage1_atomic_total else np.nan,
+        "projection_atomic_segments_total": projection_atomic_total,
+        "projection_atomic_segments_with_as_transition": projection_atomic_with_as,
+        "projection_atomic_segments_using_country_fallback": projection_atomic_using_fallback,
+        "projection_as_transition_share": float(projection_atomic_with_as / projection_atomic_total) if projection_atomic_total else np.nan,
+        "projection_country_fallback_share": float(projection_atomic_using_fallback / projection_atomic_total) if projection_atomic_total else np.nan,
+        "candidate_rows_total": candidate_rows_total,
+        **candidate_row_counts,
+        # Deprecated compatibility aliases. These now point to explicit atomic-segment populations.
+        "total_atomic_segments": stage1_atomic_total,
+        "segments_with_as_transition": projection_atomic_with_as,
+        "segments_using_country_fallback": projection_atomic_using_fallback,
+        "country_fallback_share": float(projection_atomic_using_fallback / projection_atomic_total) if projection_atomic_total else np.nan,
+        "segments_with_feasible_corridors": projection_atomic_total,
+        "segments_with_valid_rtt": stage1_atomic_valid_rtt,
+        "segments_with_inconclusive_rtt": stage1_atomic_inconclusive_rtt,
+        "candidates_filtered_by_rtt": int(stage1_stats.get("candidate_rows_rtt_infeasible", 0) or 0),
+        "candidates_filtered_by_cable_lifecycle": int(stage1_stats.get("candidate_rows_lifecycle_filtered", 0) or 0),
         "candidates_with_unknown_cable_status": int(stage1_stats.get("candidates_with_unknown_cable_status", 0) or 0),
         "landing_region_count": int(prepared_segments.get("corridor_id", pd.Series(dtype=object)).astype(str).str.split("::").explode().replace({"": np.nan, "nan": np.nan, "NA": np.nan}).dropna().nunique()) if not prepared_segments.empty and "corridor_id" in prepared_segments else 0,
         "exact_landing_pair_count": int(prepared_segments.get("exact_landing_pair_id", prepared_segments.get("landing_pair", pd.Series(dtype=object))).replace({"": np.nan, "nan": np.nan, "NA": np.nan}).dropna().nunique()) if not prepared_segments.empty else 0,
@@ -1228,6 +1277,14 @@ def prepare_atomic_segment_projection_frame(
     working["file_name"] = working.get("file_name", pd.Series(index=working.index, dtype=object)).fillna("NA").astype(str).str.strip()
     working["probe_id"] = working.get("probe_id", pd.Series(index=working.index, dtype=object)).fillna("NA")
     working["timestamp"] = working.get("timestamp", pd.Series(index=working.index, dtype=object)).fillna("NA")
+    working["service_entry_resolved"] = (
+        working.get("service_entry_resolved", pd.Series(False, index=working.index))
+        .fillna(False)
+        .astype(bool)
+    )
+    if "path_scope_stratum" not in working.columns:
+        working["path_scope_stratum"] = "all_publicly_visible"
+    working["path_scope_stratum"] = working["path_scope_stratum"].fillna("all_publicly_visible").astype(str)
     working["src_asn_norm"] = working.get("src_asn", pd.Series(index=working.index, dtype=object)).apply(
         lambda value: normalize_token(value, prefix="AS")
     )
@@ -1312,6 +1369,26 @@ def prepare_atomic_segment_projection_frame(
     return working
 
 
+def build_service_path_scope_projections(prepared: pd.DataFrame) -> pd.DataFrame:
+    """Return explicit all-visible and resolved-entry-only strata from one projection population."""
+    if prepared.empty:
+        result = prepared.copy()
+        result["path_scope_stratum"] = pd.Series(dtype=object)
+        return result
+    parts: List[pd.DataFrame] = []
+    all_visible = prepared.copy()
+    all_visible["path_scope_stratum"] = "all_publicly_visible"
+    parts.append(all_visible)
+    resolved = prepared.loc[
+        prepared.get("service_entry_resolved", pd.Series(False, index=prepared.index))
+        .fillna(False)
+        .astype(bool)
+    ].copy()
+    resolved["path_scope_stratum"] = "resolved_entry_only"
+    parts.append(resolved)
+    return pd.concat(parts, ignore_index=True, sort=False)
+
+
 def build_segment_corridor_mass_frame(
     feasible_frame: pd.DataFrame,
     corridor_col: str = "corridor_id",
@@ -1335,6 +1412,7 @@ def build_segment_corridor_mass_frame(
         "target_ip",
         "target_asn",
         "timestamp",
+        "path_scope_stratum",
         "traceroute_observation_id",
         "atomic_segment_id",
         "corridor_id",
@@ -1374,6 +1452,7 @@ def build_segment_corridor_mass_frame(
                 target_ip=("target_ip", dominant_non_missing_value),
                 target_asn=("target_asn", dominant_non_missing_value),
                 timestamp=("timestamp", lambda series: summarize_identifier_value(series, default="NA")),
+                path_scope_stratum=("path_scope_stratum", dominant_non_missing_value),
                 traceroute_observation_id=("traceroute_observation_id", dominant_non_missing_value),
                 network_transition_key=("network_transition_key", dominant_non_missing_value),
                 used_country_fallback_transition=("used_country_fallback_transition", "max"),
@@ -1555,6 +1634,96 @@ def filter_auditable_paper_rows(frame: pd.DataFrame) -> pd.DataFrame:
     return result.loc[result["auditable_paper_case"].fillna(False).astype(bool)].reset_index(drop=True)
 
 
+def apply_cross_layer_audit_eligibility(
+    frame: pd.DataFrame,
+    cross_layer_audit: pd.DataFrame,
+    group_fields: Sequence[str],
+) -> pd.DataFrame:
+    """Apply the shared segment/probe/ASN/fallback audit decision to a paper-source summary."""
+    if frame.empty or cross_layer_audit.empty:
+        return frame.copy()
+    audit_columns = [
+        "country_fallback_share",
+        "sufficient_network_transition_resolution",
+        "auditable_paper_case",
+        "observation_sufficiency_reason",
+        "failed_thresholds",
+    ]
+    available = [column for column in audit_columns if column in cross_layer_audit.columns]
+    audit_frame = cross_layer_audit[[*group_fields, *available]].drop_duplicates(subset=list(group_fields))
+    result = frame.drop(columns=[column for column in available if column in frame.columns]).merge(
+        audit_frame,
+        on=list(group_fields),
+        how="left",
+    )
+    if "auditable_paper_case" in result.columns:
+        result["auditable_paper_case"] = result["auditable_paper_case"].fillna(False).astype(bool)
+    return result
+
+
+def ensure_service_path_scope_summary_rows(
+    frame: pd.DataFrame,
+    exposure_frame: pd.DataFrame,
+    summary_kind: str,
+) -> pd.DataFrame:
+    """Retain every service-country path-scope stratum, including zero-projection strata."""
+    keys = ["probe_country", "service_id", "path_scope_stratum"]
+    if exposure_frame.empty or any(column not in exposure_frame.columns for column in keys):
+        return frame.copy()
+    base = exposure_frame[keys].drop_duplicates().copy()
+    result = base.merge(frame, on=keys, how="left")
+    missing_projection = result.get("total_mappable_segments", pd.Series(index=result.index, dtype=float)).isna()
+    defaults: Dict[str, Any] = {
+        "total_mappable_segments": 0,
+        "unique_probes": 0,
+        "unique_probe_asns": 0,
+        "auditable_paper_case": False,
+        "observation_sufficiency_reason": "insufficient_no_inter_region_projection_segments",
+        "failed_thresholds": "minimum_mappable_segments,minimum_unique_probes,minimum_unique_probe_asns,maximum_country_fallback_share",
+    }
+    if summary_kind == "corridor":
+        defaults.update(
+            {
+                "total_observation_mass": 0.0,
+                "unique_corridors_observed": 0,
+                "corridor_concentration_tier": "unknown_corridor_observation_concentration",
+                "is_corridor_concentrated": False,
+                "auditable_corridor_concentration": False,
+                "sufficient_corridor_observation": False,
+                "sufficient_network_transition_resolution": False,
+            }
+        )
+    elif summary_kind == "network":
+        defaults.update(
+            {
+                "unique_network_transitions_observed": 0,
+                "network_transition_concentration_tier": "unknown_network_transition_concentration",
+                "country_fallback_share": np.nan,
+                "sufficient_network_transition_resolution": False,
+            }
+        )
+    elif summary_kind == "cross_layer":
+        defaults.update(
+            {
+                "cross_layer_distribution_class": "unknown_cross_layer_distribution_class",
+                "auditable_cross_layer_case": False,
+                "sufficient_trace_observation": False,
+                "sufficient_corridor_observation": False,
+                "sufficient_network_transition_resolution": False,
+            }
+        )
+    for column, default in defaults.items():
+        if column not in result.columns:
+            result[column] = pd.Series(
+                index=result.index,
+                dtype=object if isinstance(default, (str, bool)) else float,
+            )
+        elif isinstance(default, (str, bool)):
+            result[column] = result[column].astype(object)
+        result.loc[missing_projection, column] = default
+    return result.sort_values(keys).reset_index(drop=True)
+
+
 def sufficient_observation_for_corridor_concentration(
     total_mappable_segments: Any,
     unique_probes: Any,
@@ -1704,7 +1873,7 @@ def summarize_network_transition_concentration(
     if prepared.empty:
         return pd.DataFrame(columns=columns)
 
-    segment_level = prepared.drop_duplicates(subset=["atomic_segment_id"]).copy()
+    segment_level = prepared.drop_duplicates(subset=[*group_fields, "atomic_segment_id"]).copy()
     rows: List[Dict[str, Any]] = []
     for group_key, group in segment_level.groupby(list(group_fields), dropna=False):
         row = group_key_to_dict(group_fields, group_key)
@@ -4756,26 +4925,104 @@ def main() -> None:
             pd.DataFrame(columns=columns).to_csv(
                 os.path.join(args.output, filename), index=False, encoding="utf-8-sig"
             )
+        trace_observation_frame = load_trace_observation_summary(args.output)
+        trace_observation_frame = annotate_trace_candidate_scope_exposure(
+            trace_observation_frame,
+            pd.DataFrame(),
+        )
+        service_exposure = build_service_country_physical_exposure_summary(trace_observation_frame)
+        corridor_empty = build_corridor_concentration_summary(
+            pd.DataFrame(),
+            ["probe_country", "service_id", "path_scope_stratum"],
+        )
+        network_empty = summarize_network_transition_concentration(
+            pd.DataFrame(),
+            ["probe_country", "service_id", "path_scope_stratum"],
+        )
+        cross_empty = build_cross_layer_distribution_audit(
+            corridor_empty,
+            network_empty,
+            ["probe_country", "service_id", "path_scope_stratum"],
+        )
+        service_corridor = ensure_service_path_scope_summary_rows(corridor_empty, service_exposure, "corridor")
+        service_network = ensure_service_path_scope_summary_rows(network_empty, service_exposure, "network")
+        service_cross = ensure_service_path_scope_summary_rows(cross_empty, service_exposure, "cross_layer")
+        service_exposure = apply_cross_layer_audit_eligibility(
+            service_exposure,
+            service_cross,
+            ["probe_country", "service_id", "path_scope_stratum"],
+        )
+        service_corridor = apply_cross_layer_audit_eligibility(
+            service_corridor,
+            service_cross,
+            ["probe_country", "service_id", "path_scope_stratum"],
+        )
+        for frame in (service_exposure, service_corridor, service_cross):
+            if not frame.empty:
+                frame["analysis_scope"] = "probe_country_service"
+        service_exposure.to_csv(
+            os.path.join(args.output, "service_country_physical_exposure_summary.csv"),
+            index=False,
+            encoding="utf-8-sig",
+        )
+        service_exposure.to_csv(
+            os.path.join(args.output, "service_country_physical_exposure.csv"),
+            index=False,
+            encoding="utf-8-sig",
+        )
+        service_corridor.to_csv(
+            os.path.join(args.output, "service_country_corridor_concentration_summary.csv"),
+            index=False,
+            encoding="utf-8-sig",
+        )
+        service_network.to_csv(
+            os.path.join(args.output, "service_country_network_transition_concentration_summary.csv"),
+            index=False,
+            encoding="utf-8-sig",
+        )
+        service_cross.to_csv(
+            os.path.join(args.output, "service_country_cross_layer_distribution_audit.csv"),
+            index=False,
+            encoding="utf-8-sig",
+        )
+        filter_auditable_paper_rows(service_exposure).to_csv(
+            os.path.join(args.output, "paper_service_country_physical_exposure.csv"),
+            index=False,
+            encoding="utf-8-sig",
+        )
+        filter_auditable_paper_rows(service_corridor).to_csv(
+            os.path.join(args.output, "paper_service_country_corridor_concentration.csv"),
+            index=False,
+            encoding="utf-8-sig",
+        )
+        filter_auditable_paper_rows(service_cross).to_csv(
+            os.path.join(args.output, "paper_service_country_cross_layer_distribution.csv"),
+            index=False,
+            encoding="utf-8-sig",
+        )
+        method_manifest = build_method_manifest()
+        framework_alignment_report = build_framework_alignment_report(
+            trace_observation_frame,
+            pd.DataFrame(),
+            service_cross,
+            method_manifest,
+            load_stage1_stats(args.output),
+        )
+        framework_alignment_report.update(
+            {
+                "status": "no_feasible_candidate_rows",
+                "interpretation": "The configured infeasibility-first projection retained no feasible physical candidates.",
+                "paper_outputs_are_empty": True,
+            }
+        )
         with open(os.path.join(args.output, "method_manifest.json"), "w", encoding="utf-8") as handle:
             json.dump(
-                {
-                    "method_name": "network_physical_diversity_auditing",
-                    "interpretation": "No feasible candidate rows were retained under this configured infeasibility-first projection.",
-                    "claim_boundary": "candidate_support_not_ground_truth_cable_attribution",
-                },
+                method_manifest,
                 handle,
                 indent=2,
             )
         with open(os.path.join(args.output, "framework_alignment_report.json"), "w", encoding="utf-8") as handle:
-            json.dump(
-                {
-                    "status": "no_feasible_candidate_rows",
-                    "interpretation": "The configured infeasibility-first projection retained no feasible physical candidates. This is a reportable topology/data limitation, not evidence of cable use or absence of real traffic.",
-                    "paper_outputs_are_empty": True,
-                },
-                handle,
-                indent=2,
-            )
+            json.dump(framework_alignment_report, handle, indent=2)
         return
 
     if not candidate_frame.empty:
@@ -4888,10 +5135,29 @@ def main() -> None:
         .astype(str)
         .ne("intra_landing_region")
     ].copy()
+    service_path_scope_projection = build_service_path_scope_projections(paper_inter_region_projection)
     segment_corridor_mass = build_segment_corridor_mass_frame(
         projection_source_frame,
         corridor_col=corridor_candidate_col,
         mass_mode="uniform",
+    )
+    service_segment_corridor_mass_parts: List[pd.DataFrame] = []
+    for path_scope_stratum, scoped_projection in service_path_scope_projection.groupby(
+        "path_scope_stratum",
+        dropna=False,
+    ):
+        scoped_mass = build_segment_corridor_mass_frame(
+            scoped_projection,
+            corridor_col=corridor_candidate_col,
+            mass_mode="uniform",
+        )
+        if not scoped_mass.empty:
+            scoped_mass["path_scope_stratum"] = str(path_scope_stratum)
+            service_segment_corridor_mass_parts.append(scoped_mass)
+    service_segment_corridor_mass = (
+        pd.concat(service_segment_corridor_mass_parts, ignore_index=True, sort=False)
+        if service_segment_corridor_mass_parts
+        else pd.DataFrame(columns=[*segment_corridor_mass.columns, "path_scope_stratum"])
     )
     supplementary_owner_concentration = build_supplementary_owner_concentration(
         projection_source_frame,
@@ -4903,8 +5169,8 @@ def main() -> None:
     )
     transition_country_corridor_distribution_internal = country_corridor_distribution_internal
     service_country_corridor_distribution_internal = summarize_corridor_observation_distribution(
-        segment_corridor_mass,
-        ["probe_country", "service_id"],
+        service_segment_corridor_mass,
+        ["probe_country", "service_id", "path_scope_stratum"],
     )
     country_corridor_concentration_summary = build_corridor_concentration_summary(
         country_corridor_distribution_internal,
@@ -4913,7 +5179,7 @@ def main() -> None:
     transition_country_corridor_concentration_summary = country_corridor_concentration_summary
     service_country_corridor_concentration_summary = build_corridor_concentration_summary(
         service_country_corridor_distribution_internal,
-        ["probe_country", "service_id"],
+        ["probe_country", "service_id", "path_scope_stratum"],
     )
     country_network_transition_concentration_summary = summarize_network_transition_concentration(
         paper_inter_region_projection,
@@ -4921,8 +5187,8 @@ def main() -> None:
     )
     transition_country_network_transition_concentration_summary = country_network_transition_concentration_summary
     service_country_network_transition_concentration_summary = summarize_network_transition_concentration(
-        paper_inter_region_projection,
-        ["probe_country", "service_id"],
+        service_path_scope_projection,
+        ["probe_country", "service_id", "path_scope_stratum"],
     )
     country_cross_layer_distribution_audit = build_cross_layer_distribution_audit(
         country_corridor_concentration_summary,
@@ -4933,7 +5199,33 @@ def main() -> None:
     service_country_cross_layer_distribution_audit = build_cross_layer_distribution_audit(
         service_country_corridor_concentration_summary,
         service_country_network_transition_concentration_summary,
-        ["probe_country", "service_id"],
+        ["probe_country", "service_id", "path_scope_stratum"],
+    )
+    service_audit_group_fields = ["probe_country", "service_id", "path_scope_stratum"]
+    service_country_corridor_concentration_summary = ensure_service_path_scope_summary_rows(
+        service_country_corridor_concentration_summary,
+        service_country_physical_exposure,
+        "corridor",
+    )
+    service_country_network_transition_concentration_summary = ensure_service_path_scope_summary_rows(
+        service_country_network_transition_concentration_summary,
+        service_country_physical_exposure,
+        "network",
+    )
+    service_country_cross_layer_distribution_audit = ensure_service_path_scope_summary_rows(
+        service_country_cross_layer_distribution_audit,
+        service_country_physical_exposure,
+        "cross_layer",
+    )
+    service_country_corridor_concentration_summary = apply_cross_layer_audit_eligibility(
+        service_country_corridor_concentration_summary,
+        service_country_cross_layer_distribution_audit,
+        service_audit_group_fields,
+    )
+    service_country_physical_exposure = apply_cross_layer_audit_eligibility(
+        service_country_physical_exposure,
+        service_country_cross_layer_distribution_audit,
+        service_audit_group_fields,
     )
     distribution_concentration_cases = combine_distribution_case_frames(
         country_corridor_concentration_summary,
@@ -5012,6 +5304,7 @@ def main() -> None:
             [
                 "probe_country",
                 "service_id",
+                "path_scope_stratum",
                 "msm_id",
                 "file_name",
                 "corridor_id",
@@ -5060,6 +5353,7 @@ def main() -> None:
                 [
                     "probe_country",
                     "service_id",
+                    "path_scope_stratum",
                     "msm_id",
                     "file_name",
                     "total_mappable_segments",
@@ -5117,6 +5411,7 @@ def main() -> None:
             [
                 "probe_country",
                 "service_id",
+                "path_scope_stratum",
                 "msm_id",
                 "file_name",
                 "total_mappable_segments",
@@ -5231,6 +5526,7 @@ def main() -> None:
     paper_country_cross_layer_audit_path = os.path.join(args.output, "paper_country_cross_layer_audit.csv")
     paper_service_country_cross_layer_audit_path = os.path.join(args.output, "paper_service_country_cross_layer_audit.csv")
     service_country_physical_exposure_path = os.path.join(args.output, "service_country_physical_exposure_summary.csv")
+    service_country_physical_exposure_alias_path = os.path.join(args.output, "service_country_physical_exposure.csv")
     country_physical_exposure_path = os.path.join(args.output, "country_physical_exposure_summary.csv")
     paper_service_country_physical_exposure_path = os.path.join(args.output, "paper_service_country_physical_exposure.csv")
     paper_service_country_corridor_concentration_path = os.path.join(args.output, "paper_service_country_corridor_concentration.csv")
@@ -5348,6 +5644,7 @@ def main() -> None:
     country_cross_layer_audit.to_csv(country_cross_layer_audit_path, index=False, encoding="utf-8-sig")
     service_country_cross_layer_audit.to_csv(service_country_cross_layer_audit_path, index=False, encoding="utf-8-sig")
     service_country_physical_exposure.to_csv(service_country_physical_exposure_path, index=False, encoding="utf-8-sig")
+    service_country_physical_exposure.to_csv(service_country_physical_exposure_alias_path, index=False, encoding="utf-8-sig")
     country_physical_exposure.to_csv(country_physical_exposure_path, index=False, encoding="utf-8-sig")
     filter_auditable_paper_rows(service_country_physical_exposure).to_csv(
         paper_service_country_physical_exposure_path,
@@ -5386,7 +5683,7 @@ def main() -> None:
         index=False,
         encoding="utf-8-sig",
     )
-    filter_auditable_paper_rows(service_country_corridor_concentration_summary).to_csv(
+    service_country_corridor_concentration_summary.to_csv(
         service_country_corridor_concentration_summary_path,
         index=False,
         encoding="utf-8-sig",
@@ -5411,7 +5708,7 @@ def main() -> None:
         index=False,
         encoding="utf-8-sig",
     )
-    filter_auditable_paper_rows(service_country_cross_layer_distribution_audit).to_csv(
+    service_country_cross_layer_distribution_audit.to_csv(
         service_country_cross_layer_distribution_audit_path,
         index=False,
         encoding="utf-8-sig",
