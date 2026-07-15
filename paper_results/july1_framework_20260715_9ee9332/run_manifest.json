@@ -1,0 +1,13 @@
+{
+  "run_id": "july1_framework_20260715_9ee9332",
+  "created_at_utc": "2026-07-15T01:36:06.783247+00:00",
+  "git_commit_sha": "9ee93322c2e73965e9851849da74d7bc41080382",
+  "config_hash": "750c53455d6d937155931825e7b784d4bffa3c72e8c98809216fd1b6162ae59d",
+  "config_file": "runs\\july1_framework_20260715_9ee9332\\inputs\\resolved_config.json",
+  "measurement_window": null,
+  "reference_input_manifest": "runs\\july1_framework_20260715_9ee9332\\inputs\\reference_input_manifest.csv",
+  "interpretation": "measurement-observed feasible submarine corridor candidate audit; not traffic or ground-truth cable attribution",
+  "status": "completed",
+  "completed_at_utc": "2026-07-15T03:01:49.305111+00:00",
+  "measurement_count": 18
+}

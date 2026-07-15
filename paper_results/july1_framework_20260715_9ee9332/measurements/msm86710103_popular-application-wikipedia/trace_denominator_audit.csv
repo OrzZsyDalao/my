@@ -1,0 +1,2 @@
+﻿raw_results_total,unique_traces_total,duplicate_results_removed,valid_traces_total,traces_with_service_entry_resolved,traces_with_feasible_submarine_candidates,missing_timestamp_count,timestamp_fallback_count,requested_window_start,requested_window_end,observed_timestamp_min,observed_timestamp_max
+25885,25885,0,25885,24640,4169,0,0,2026-07-01T00:00:00Z,2026-07-01T01:00:00Z,2026-07-01T00:01:36+00:00,2026-07-01T00:23:34+00:00

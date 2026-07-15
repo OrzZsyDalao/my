@@ -1,0 +1,1464 @@
+{
+  "run_id": "july1_framework_20260715_9ee9332",
+  "generated_at_utc": "2026-07-15T03:01:49.882631+00:00",
+  "source_run": "runs\\july1_framework_20260715_9ee9332",
+  "copied": [
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\dataset_summary.csv",
+      "sha256": "6d1aa7ded5194016acc08531e6db77301cad9663cbbe5106a4b74da2ad7cf539",
+      "bytes": 1286
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\trace_denominator_audit.csv",
+      "sha256": "a6d42148b8859b8f1e0cb3167fd548a9eadcba0a17c93606c83f18c267c08942",
+      "bytes": 429
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\filtering_breakdown.csv",
+      "sha256": "c2a94725c890276a1db6c9c7f51638c01bbcdf097ceb26af3572d6726b3101ca",
+      "bytes": 739
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\candidate_space_profile.csv",
+      "sha256": "39ea068865a034f716260ac437c0507ab794ced859f6c83ed1001828c79432a6",
+      "bytes": 11086
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\paper_service_country_physical_exposure.csv",
+      "sha256": "383560165dafe9acd4fe68b0175afb08c65de50ffd17c487b1082f11986b1cec",
+      "bytes": 11892
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\paper_service_country_corridor_concentration.csv",
+      "sha256": "b51e03ae8d2401cf89e1f3704cfdfdd68d1857eb04e09ca07d635eae07424b5d",
+      "bytes": 2833
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "1450851c19ceaf8e2416e6e8f4091aee54e0287daa795cc708449e9956c67632",
+      "bytes": 3747
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "2c746a92f4a49cd337f89b76e11cc68d311ef7dd8d9cd3fbfcbdc1711daacf8b",
+      "bytes": 4474
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "a99961101f290ac8de466f8b5bef58fc6759f5115acaec0a6250767f56b3fa26",
+      "bytes": 4527
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "6199d3c943aa837feab1cd17093a5aea824faab1ecb82eba9bbdce756237e8d5",
+      "bytes": 1612
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\robustness_conservative_candidate_audit.csv",
+      "sha256": "60d616eac87a75e31c1e9a7a9788e906c5a819e6dee0c1d087229d2b8e2b38ba",
+      "bytes": 25598
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\framework_alignment_report.json",
+      "sha256": "93fe5a7c6ffd3740e4586982cebc1b0e70243c69c0d46323ed7f891c9f3f5d94",
+      "bytes": 2048
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\cable_matching_manifest.json",
+      "sha256": "277cead0416b797c9b487cad49434c24bc1272dbd1d15aa27c17e27e4b6994a7",
+      "bytes": 3345
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5009_dns-root-a-root\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\dataset_summary.csv",
+      "sha256": "ee67cb12f61dc8286580e987ae8f42ace11d339edb99c07ff98039ba8c027957",
+      "bytes": 1334
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\trace_denominator_audit.csv",
+      "sha256": "ae5d6185ac9c1e8df7986424b81406ba4e96b476b3aca28efe0a97e7073bfb7e",
+      "bytes": 429
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\filtering_breakdown.csv",
+      "sha256": "e17fc5abf82f75468a6adc421d9b71930825dbce8cd051d39f4926fd567014c0",
+      "bytes": 744
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\candidate_space_profile.csv",
+      "sha256": "6c76d30f20b4b823edfb66d4c1e65797d91d7892087ba79b1cec07dc8052d51a",
+      "bytes": 13811
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\paper_service_country_physical_exposure.csv",
+      "sha256": "4f4e8bc6d2a62e5939bbe59d81eb8a22b253a1b873f557b212d413184e8f34b1",
+      "bytes": 13788
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\paper_service_country_corridor_concentration.csv",
+      "sha256": "5e563d969690800425555b2f4d929213ce8b937eef0d576c093f7c4b37dc64ad",
+      "bytes": 4382
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "770edd0cb67b3644b979056c4616a68d09bace482ee07adc21e3ed7195684a54",
+      "bytes": 5753
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "4646fbc302d2758dd26cf00ee170372b0e8f88c4facfba443c6a18616d528470",
+      "bytes": 6291
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "3b736747d5e93ba5e433e4221baf41f4a724892de7f2ba9dbf0f0ed26d6e760c",
+      "bytes": 6041
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "2cdc3978087d55b2097011be85a9d54ce58679ca5c989b3045c585ce1c1c8422",
+      "bytes": 2487
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\robustness_conservative_candidate_audit.csv",
+      "sha256": "792a876439a644fa48971a98d9785bf6e89b2c3111c79202abe45e12ca6a86f8",
+      "bytes": 26789
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\framework_alignment_report.json",
+      "sha256": "a8d0c12f58119ef732db7c65c857123f464a1104c5618a19249ce173bdd7fd0d",
+      "bytes": 2035
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\cable_matching_manifest.json",
+      "sha256": "efe2210feb5ef7e20be8771743dd67b68c6484a361e4c4deb106d52b40c6fafc",
+      "bytes": 3345
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5010_dns-root-b-root\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\dataset_summary.csv",
+      "sha256": "6085bba573ededbbf07f587c296e77adbc838d49435cf8e2f74a4d905730b6b2",
+      "bytes": 1285
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\trace_denominator_audit.csv",
+      "sha256": "8135fdc069b01c0b9bc3836eff3756ba18590eb60c907f8d68a08b32613af64a",
+      "bytes": 433
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\filtering_breakdown.csv",
+      "sha256": "1d337226e35a3a83c825bb5281bcd29631832ffd04db1bd805452cc6b881a16c",
+      "bytes": 752
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\candidate_space_profile.csv",
+      "sha256": "cede0fa9198d2133e4a65c341333ce1f69b71ea910cebf5cb1c2020f91a5b0da",
+      "bytes": 14583
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\paper_service_country_physical_exposure.csv",
+      "sha256": "65f545ffc377d6d4abbe9fef112262c2b5361edfaadbf756150d6380d6c0794e",
+      "bytes": 31856
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\paper_service_country_corridor_concentration.csv",
+      "sha256": "e00bd398ca6ee20971e3ec7868a9f4449855194930b1b83084cea56d95111a84",
+      "bytes": 5259
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "af7aace5709a0204f410c3cff133438723f1f6588e9e4a4a374b5892de3f6aef",
+      "bytes": 6875
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "f802e5193ca23ba72f803c6c48f64e58b173b5c10757abb191ecdfac557e422d",
+      "bytes": 7842
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "236dd63dcb6ef01b7cda99b8b57ca827d310c103c9d5d984812b2f29310e429e",
+      "bytes": 6054
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "8e07c797171aa33b519f11eb81de52cf83cfd07867e6deca4efa2d8548896599",
+      "bytes": 2879
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\robustness_conservative_candidate_audit.csv",
+      "sha256": "8623fc1dda52b510e1421ad4df7b6fe1ba561cd0eecd3f6c4e2ad5d87d4f4778",
+      "bytes": 26706
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\framework_alignment_report.json",
+      "sha256": "da4a59a9b84b1b49e6f2303fdaea0667edfaf137e7b40b09db2efa24490677a2",
+      "bytes": 2056
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\cable_matching_manifest.json",
+      "sha256": "30ff21e9f31f213459306ea61e35a853331a67b42f807a69271f4612b8d9c98b",
+      "bytes": 3350
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5011_dns-root-c-root\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\dataset_summary.csv",
+      "sha256": "c4c2d3b7af8545ee423f2001521fa5184f3fea99e4de5ab5cbc33acd69121cc5",
+      "bytes": 1300
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\trace_denominator_audit.csv",
+      "sha256": "4fb68e91e3e9baebc9c4ba6680649a8b7d6ed364e9eb7ca9c03519755d74728f",
+      "bytes": 436
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\filtering_breakdown.csv",
+      "sha256": "5121b527c395d3c3f4196c5b47d36cd054d7b3b64741b96670d7f164724c68cf",
+      "bytes": 742
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\candidate_space_profile.csv",
+      "sha256": "0e4e60d59043c288b077e6850c6d646ddb5cc353b525207b1fe393d04618b289",
+      "bytes": 11024
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\paper_service_country_physical_exposure.csv",
+      "sha256": "adc9b15e36cafc3d7db0eef7bed05b7f2ad9cf3a6b3db3b146c6b1db594fe0a1",
+      "bytes": 30937
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\paper_service_country_corridor_concentration.csv",
+      "sha256": "62e72d79c0d3f96cd76db64e9159659da8e59cd9df5a67a25bfdf5ddbd2ff8da",
+      "bytes": 3434
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "6b79bb59778601e65ddf1565183fb13e8a2fca85012a9b3429e8ba361dabd874",
+      "bytes": 4560
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "3ec0ede719ae0a7a9d5eb691508e220c81885d54fd8a39e5a0ce3cc1e77c8709",
+      "bytes": 3171
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "892126993bb5e0ba350fe81aab0ff2c2780a29c7ba1f8f7f56fbbc39c58d34c8",
+      "bytes": 3753
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "2d048859b4251f0b8fddd0eb2b104175b5618b9293c14918b4d8d8398fb7503e",
+      "bytes": 707
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\robustness_conservative_candidate_audit.csv",
+      "sha256": "e1e9081b99b8e8a0be5b4ff813ad713680a97efc0be7f8df8fd96718e7a5abc4",
+      "bytes": 25827
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\framework_alignment_report.json",
+      "sha256": "b46910c9278ef630bf084b6bf772df2186f3e13f1751c03ae69cd2126b3aa59e",
+      "bytes": 2050
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\cable_matching_manifest.json",
+      "sha256": "f8d0f2b8f3a14722dc8abfb18d32681b37aed575c6ec35e2579b2486b60299b6",
+      "bytes": 3352
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5012_dns-root-d-root\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\dataset_summary.csv",
+      "sha256": "d4299e09d564f41b633698d9c7d43f80c49407527b1af2cd618de479214b5c56",
+      "bytes": 1316
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\trace_denominator_audit.csv",
+      "sha256": "ff28d75966bf4edd96dae1d019c706e1114941b02df26905cb7b97a9223c40df",
+      "bytes": 433
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\filtering_breakdown.csv",
+      "sha256": "08fbdb1186170d8ec70f06571a27edc47638434f9c97db1952b37594db105d0e",
+      "bytes": 740
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\candidate_space_profile.csv",
+      "sha256": "cd239fe49136af90443f963b32677afb7a70198141b39b9438f51de116392c0f",
+      "bytes": 10441
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\paper_service_country_physical_exposure.csv",
+      "sha256": "4c709a4f2ee6c40714f93c22feef6bd800455f9aba9c87e22c82382956811b3f",
+      "bytes": 24838
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\paper_service_country_corridor_concentration.csv",
+      "sha256": "7c115055df63b55be5bac8bbcce94e3e992d5204acc024c081dbe49f1f704ac6",
+      "bytes": 2087
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "95a64d0f5b3ab67f53435d2bab79f9c7caeb2a085dba00a517a12d0b9b9072cf",
+      "bytes": 2776
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "ca6d1206fd11462307d5b1425083733df82b09ef3320771d70ab8f635f559d98",
+      "bytes": 2237
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "cf07a00c854a3c3674ba372777480bd2c11509f62242442c210abd7f638f33a0",
+      "bytes": 2937
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "d4cc067ab20472e6df6d5f9800b8beea1cb7f21fefd2e5e5ff5ebb3b81579289",
+      "bytes": 1998
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\robustness_conservative_candidate_audit.csv",
+      "sha256": "e7ec2384c20f3bc70b186878389d9969e13fae91f43308ba896933aea5f30ea1",
+      "bytes": 26848
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\framework_alignment_report.json",
+      "sha256": "b5d4e4c8c9efc95f6934dc0b1428c127d216721caf60d501d511bb2cd46391a7",
+      "bytes": 2047
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\cable_matching_manifest.json",
+      "sha256": "e88151eee2852685329828bb02d0a7ea6aa2f979ec42376659369d712ae11fd8",
+      "bytes": 3349
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5013_dns-root-e-root\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\dataset_summary.csv",
+      "sha256": "efb4d1b5e6ad9b32c0b5bc20112da3abd25ee97b517bafa9589df0ec07d0c55b",
+      "bytes": 1284
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\trace_denominator_audit.csv",
+      "sha256": "7655936b40b538876f07eab72d89805a0359b887b4223fbc847517c1c6f9f21e",
+      "bytes": 436
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\filtering_breakdown.csv",
+      "sha256": "20504dd91628450e19a10768e1aea792fcd749226ba6400f55898488f866506b",
+      "bytes": 742
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\candidate_space_profile.csv",
+      "sha256": "446f1b1ff33d325334aa710366daa6e062982bff495f88b3e9b1a588c2c37145",
+      "bytes": 10430
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\paper_service_country_physical_exposure.csv",
+      "sha256": "a4d9156a1934e4b67148a58662a1d4fda8bcb61afcf8ddd91988124f859e50de",
+      "bytes": 18993
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\paper_service_country_corridor_concentration.csv",
+      "sha256": "e1e69775aca84eec47943b1bd2e24f2970d0f14b376c0ecd66b1eec1d63688c1",
+      "bytes": 1505
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "e291d239a31ea690a991310f4062bfceeb22d6551989f1900dec06695b38e74a",
+      "bytes": 1987
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "29b50cf20f441b8ee67b92d76d3a6e5d44909a9c19ff8751063eab13b42afba0",
+      "bytes": 1920
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "0cf5b441d7fe87904df4ff2a3ac1aca0f5c831b7e92800c47e25a81e4f873a5c",
+      "bytes": 2508
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "0112f3a0d45b139eb74e10e40c6a9559476bd3f8305b8e8114662c8d44bda125",
+      "bytes": 1156
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\robustness_conservative_candidate_audit.csv",
+      "sha256": "a4b6c61272364b259a59fcd78cd2f16ffe20306eac9089c5576ffd955089aa34",
+      "bytes": 26732
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\framework_alignment_report.json",
+      "sha256": "fdd4090f15a61a9045d79f27a2f17d004aa29e32228a83ab383f85ab988790f8",
+      "bytes": 2049
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\cable_matching_manifest.json",
+      "sha256": "94c37f256ca122a1a83551e93df061ce4a39ecb73229aabff77d81400893c40d",
+      "bytes": 3352
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5004_dns-root-f-root\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\dataset_summary.csv",
+      "sha256": "28a334c55dcfadca2d8329bf6df794ae9a749843b437dd797030fdc6d4f1b349",
+      "bytes": 1318
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\trace_denominator_audit.csv",
+      "sha256": "01398b255f8ff76dc9a370cb5a365bc54bc79a0938a94d19226b0ad05f8626bc",
+      "bytes": 430
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\filtering_breakdown.csv",
+      "sha256": "6e03cd66b766a1153f0bc6448abd7cfcf44b3e70149bf2520f9a00e115e4643c",
+      "bytes": 746
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\candidate_space_profile.csv",
+      "sha256": "9f8d2f8424697e6523488dd7e24bb5dd3e91291fb0a1c24b248c2319cd09cc51",
+      "bytes": 13973
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\paper_service_country_physical_exposure.csv",
+      "sha256": "4ed110beb1639e45d2090ee428d4643aa1ac68291dd4e580a0c996b8be3dbbf8",
+      "bytes": 16166
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\paper_service_country_corridor_concentration.csv",
+      "sha256": "92ea74f48f7bc93ea916bb7ba36257a21519112803e692d730cbc818679c4a50",
+      "bytes": 5037
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "ab5f044e3ac954e99e1ef47a26ad22d9d68c35e3c197c991bc7566306aebedc9",
+      "bytes": 6653
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "2839baf5be5f46da98271797cd21738bdfe9b023efe9e91dfffa18320abc8067",
+      "bytes": 5441
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "b65b2a353e580f4fff6ce14e7dcb8e2d5d686ee69336cff5de61c5a81409f9e6",
+      "bytes": 5936
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "64e159fd51144e74f0abe2e53662b277662b828d6130fe6b952a9f8cb79c5cc7",
+      "bytes": 3399
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\robustness_conservative_candidate_audit.csv",
+      "sha256": "cf1d08007f5d842165ef669d5c0a85887b1457048c82cea2617747815e268923",
+      "bytes": 26229
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\framework_alignment_report.json",
+      "sha256": "dea85ad934bc168d2de93e179256ebb94073b5e610a9317c0bd6e8c84f9a0769",
+      "bytes": 2054
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\cable_matching_manifest.json",
+      "sha256": "5a6374367383997ee31005221ee3228f353e78f354a2302b2d0257d22f8cd267",
+      "bytes": 3346
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5014_dns-root-g-root\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\dataset_summary.csv",
+      "sha256": "4e8a86e94e1c26e88550cae4febb68222084631971f834f6c59b61ffb1121df4",
+      "bytes": 1315
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\trace_denominator_audit.csv",
+      "sha256": "510ec6e10000f6b34b620175e139ffd9f4b824a774b279147fc057bd5394a25d",
+      "bytes": 433
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\filtering_breakdown.csv",
+      "sha256": "5d9e7483ae090e7eeacdb4f1ea1a37ad9b8f28dc77d09dfb5432604570fa69e3",
+      "bytes": 745
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\candidate_space_profile.csv",
+      "sha256": "3abd30a9dc2f7a9aa37125dd1799112b35cb02b1a4b63221c69c26734b2d0eb2",
+      "bytes": 12283
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\paper_service_country_physical_exposure.csv",
+      "sha256": "c5266c1f5a099d7a059132c6f4fc093b7d28785c02e2cb8419c209d90fb3f3fb",
+      "bytes": 30996
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\paper_service_country_corridor_concentration.csv",
+      "sha256": "a76b152e297f730686a80314cc760a859371775358f9d3a472a824bdff582063",
+      "bytes": 5002
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "939bc26a6b25c2e8e746c527eae9aec7a963fc3ea01fc338ef4150f20488a2ff",
+      "bytes": 6618
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "3f35d779c495e0bee9433b62445ca4ae3716e1e9a43d1e4ce36b9371ba4facd8",
+      "bytes": 7379
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "2bfe1b1766e13b9880009c6f0527b33215fc399819cfbb3a4d2803a4167e96f4",
+      "bytes": 7731
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "56f52036b100e7d462fd42dba18f427cffb592ad43e52b3e6f538159a6279f96",
+      "bytes": 2048
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\robustness_conservative_candidate_audit.csv",
+      "sha256": "dab651bc0ebbe479557415880229f2dbc6e14efc8ffe1a518c2b2fd6d59ad8f9",
+      "bytes": 26012
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\framework_alignment_report.json",
+      "sha256": "513ea2e09c113cb62237e13d3a50d7f92eee40d822734a7438d7a5e9e9f8dd14",
+      "bytes": 2052
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\cable_matching_manifest.json",
+      "sha256": "942626ef24adeb067a3b3a0b6e4f07d6bf6d0eb90bdd7b32fb5ae3bcfcaf0f90",
+      "bytes": 3349
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5015_dns-root-h-root\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\dataset_summary.csv",
+      "sha256": "16b7c83765f70b7f7ed8ab025ae9195a45b169b1eb55b1d7a25568c07451edd0",
+      "bytes": 1292
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\trace_denominator_audit.csv",
+      "sha256": "ac5b7394e41281456cc0928059b433bdcbe79b91e5008a4f6a3f3165fc1c97c3",
+      "bytes": 430
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\filtering_breakdown.csv",
+      "sha256": "329de8035c975f2682fe6fec99a164b1462353a2e2b4e630ac175634ad727e6b",
+      "bytes": 746
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\candidate_space_profile.csv",
+      "sha256": "f20402fb83e63a028b10469b465c43b9090db7b50a5299b2116f4bab46d2a98c",
+      "bytes": 13652
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\paper_service_country_physical_exposure.csv",
+      "sha256": "424fe72db274e5d88679d8fd0c166b48ab057241a6544009b5e25afb6df96ed4",
+      "bytes": 17572
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\paper_service_country_corridor_concentration.csv",
+      "sha256": "91dc20c085ee5472c86b7f2978626059150c1eea568843f72f26d846a61cc973",
+      "bytes": 3413
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "e365e24f95675d88a3770aea44e426d154492c3333f518b7409c7bc61eb4923d",
+      "bytes": 4502
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "911444bce9db4d3f705d862ad73f82c3318d25e4dac7a6f16decb4d9bde5380f",
+      "bytes": 4867
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "0af7d541569d21da560a3deb41f77f67ff9ba5d7c36be58301f3ba40b559d2d8",
+      "bytes": 5531
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "b3a7c65a0c267f5a938a22cf5764b1462818b08dada8e1249b1ccd32de961289",
+      "bytes": 1617
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\robustness_conservative_candidate_audit.csv",
+      "sha256": "114ff511c667fe9b0957bc510e7df853c569dfcc51d256a22aa4546a7a69002f",
+      "bytes": 25528
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\framework_alignment_report.json",
+      "sha256": "97570f06721f58628826fc27786def7ab19897531a796573deab4e82126a7b6a",
+      "bytes": 2052
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\cable_matching_manifest.json",
+      "sha256": "cee36d7758898434d857edaa45e72501d322eaba8d6f43b15441049985929175",
+      "bytes": 3346
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5005_dns-root-i-root\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\dataset_summary.csv",
+      "sha256": "6ff2bc0c3e6e988d5a04069c5c4da57affda24cc75da8912ebd925b6ec72a2ae",
+      "bytes": 1285
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\trace_denominator_audit.csv",
+      "sha256": "89180803d3ddaaa7779ad731e9fce2b816a5527a6ebfa36690be69946bdf7354",
+      "bytes": 433
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\filtering_breakdown.csv",
+      "sha256": "d3d6c64cea8e5c2dceb147fec9063164da2e03130a1fc8f5651ea37e55778a9b",
+      "bytes": 743
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\candidate_space_profile.csv",
+      "sha256": "d8a4d64d6efacd1938ab9559ee5a062702d3760508362052108e6a2d0cd0a79c",
+      "bytes": 11450
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\paper_service_country_physical_exposure.csv",
+      "sha256": "00cbd61b89bec1a1454c2e856985a57c752814c2952dbb45610f2653326e0cc9",
+      "bytes": 16116
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\paper_service_country_corridor_concentration.csv",
+      "sha256": "bec0774ee6e287117eafa5ee5e0e63f0eb63b2ab88290aa8aed522c13fc46829",
+      "bytes": 3630
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "9be65afdd3ed6be5ec9dd5573353b6019b01e1e248d94a12504c587a889e5196",
+      "bytes": 4807
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "e853945e0517b75c2ce64e445d472dfb4014b522847655001a19de90ff94a973",
+      "bytes": 5893
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "ab762c8bf22bc4a627f616fcc13899a259c5ff47c4d5f11e42648723ba464d23",
+      "bytes": 4789
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "2d048859b4251f0b8fddd0eb2b104175b5618b9293c14918b4d8d8398fb7503e",
+      "bytes": 707
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\robustness_conservative_candidate_audit.csv",
+      "sha256": "577e39582fac4a5f92579d00ab4606b96b21892c4bedfcc644792d5ae42a77f0",
+      "bytes": 25719
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\framework_alignment_report.json",
+      "sha256": "be8fb6fb5235ad9e63c7a35cdcb6894828cc5affa28ecf67e6f238b2efb7c955",
+      "bytes": 2052
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\cable_matching_manifest.json",
+      "sha256": "e0dc2158688faf586ff8b2b0dabcd83acd275049161d079a55e764af2ae07867",
+      "bytes": 3349
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5016_dns-root-j-root\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\dataset_summary.csv",
+      "sha256": "e3e1062944930b3f35827fa518479d8ed02a7164adbbd0b96576c4e81e69f67e",
+      "bytes": 1271
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\trace_denominator_audit.csv",
+      "sha256": "c751a48f7a1cd5b0b23ace0d3dec6d30596bfcfe11a443875ac4b68909fe81e2",
+      "bytes": 437
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\filtering_breakdown.csv",
+      "sha256": "8a6e136c8c6c927c983179825f306881689383f5901ad4bdd21dde5e10b9e671",
+      "bytes": 744
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\candidate_space_profile.csv",
+      "sha256": "05a4afa392783ea36b8bf4eb5ff0630b334d21586390e52826dd454b65d86b46",
+      "bytes": 13644
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\paper_service_country_physical_exposure.csv",
+      "sha256": "49ed9cf059d650a37c9c767dde41a1b915647a09d1fcb98cd20110bb7188bc6b",
+      "bytes": 32274
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\paper_service_country_corridor_concentration.csv",
+      "sha256": "d1cc43aadaf8c6b4abcf3a46b67f352e1233d4c7a22add928ab3287b13a268be",
+      "bytes": 4480
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "8f2f7335a294177cdaac17178ae9cca08f97929af074ba7e9d21d7022fe9709c",
+      "bytes": 5866
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "a5ec0175e8f07617c0efa1ee0dd398bad4e2a563845dd6fdaa940f11eb7b4356",
+      "bytes": 5519
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "d318fc2c2acd225f927d2024a86f2dd4838cec0879d6e2904165ef4088839176",
+      "bytes": 3831
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "3eb89f385f6c643bf1254dec91c98d6d45da3324847db46fbc7421ad31167848",
+      "bytes": 4724
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\robustness_conservative_candidate_audit.csv",
+      "sha256": "f861f40ab87a3d7b090abcfedc6cbd54c5641677e02e8465c7e05d072fe0ec42",
+      "bytes": 26187
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\framework_alignment_report.json",
+      "sha256": "f0c187f2aea38dadfd492a4c858c85815097702df6b67e3b25cc202034fff510",
+      "bytes": 2052
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\cable_matching_manifest.json",
+      "sha256": "4c82e6f0af22be9a8d992bdc1baeab80db77d4eebf7332d5dd655fcfb41e65a9",
+      "bytes": 3353
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5001_dns-root-k-root\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\dataset_summary.csv",
+      "sha256": "2c5a088304582ab05ae0b7ef3df6be07a104091ce5d185fd1c9bc52e158992b0",
+      "bytes": 1304
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\trace_denominator_audit.csv",
+      "sha256": "1c664d9e09643dbc89939d29079238552a65f6db1985851cf8c9791841eeac95",
+      "bytes": 439
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\filtering_breakdown.csv",
+      "sha256": "641fdbf91065e7cf4c130cc5bee4e79b6306647f49c5b62c3f95c6e46958552b",
+      "bytes": 747
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\candidate_space_profile.csv",
+      "sha256": "d5b2fd83554ce0ddf08a59db73cf7ecbb8576b083922ba3374e43a9a5ce53875",
+      "bytes": 15279
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\paper_service_country_physical_exposure.csv",
+      "sha256": "c46d91b31fa88b46168442860a612d40f645585be3a2a4d6767ad538aa41fa9a",
+      "bytes": 34672
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\paper_service_country_corridor_concentration.csv",
+      "sha256": "e6bb2748a29a49eb3f00cc01c05b4785438beed7dfd7f245ffb48b949ee00174",
+      "bytes": 6220
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "38a4887b699782d32b00b326457d7c101d766dc079f8fc9501a5ddbe7f90e854",
+      "bytes": 8249
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "f6f102e6581e3778495830a0855a67a628b2cc2495d799783694b98d4de2dbb0",
+      "bytes": 5974
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "03226493e8b4ed6b7f87283be0632a07a7d14d37b73932589e32bf8c0701d8d9",
+      "bytes": 5428
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "65db0eddaaa5a60b31be77b40cd9409c6561d027408749c899167529ceae4a40",
+      "bytes": 2573
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\robustness_conservative_candidate_audit.csv",
+      "sha256": "2197ba8a2c1d2df78308a314936473842164753b7686a221befcc58528daf310",
+      "bytes": 26321
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\framework_alignment_report.json",
+      "sha256": "46c291025b6229cd1dc3b4c19b88e44893fd894c47ce19f9564f89d91d99ed5b",
+      "bytes": 2055
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\cable_matching_manifest.json",
+      "sha256": "4c2a162af2bda1a0665eec25eb6854ac5bcf34461814a129a20640aab54075bf",
+      "bytes": 3355
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5008_dns-root-l-root\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\dataset_summary.csv",
+      "sha256": "b29e0b4134213a812757df44ce1596cb2608e4f2c9d947ebe3e14a9dde9efb25",
+      "bytes": 1276
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\trace_denominator_audit.csv",
+      "sha256": "ce0e1c4341f44a843d73d881f67859a6cc33d441c570b6c2aea825634d635683",
+      "bytes": 437
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\filtering_breakdown.csv",
+      "sha256": "423dcd1d9c46afb4b2c98466ff62521e76f76808eb4eef411c7ee9a506578464",
+      "bytes": 746
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\candidate_space_profile.csv",
+      "sha256": "9600251cf62c9eb0dc724802c254f1199c4638cb82103c7b86eb44ae6320c661",
+      "bytes": 16331
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\paper_service_country_physical_exposure.csv",
+      "sha256": "e9c604ee8157360e292fa46182c5d501e6daa273197cb04b18ba1adf20440e58",
+      "bytes": 33194
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\paper_service_country_corridor_concentration.csv",
+      "sha256": "da1994dfc15c010f41b0a5881e4df64cf9ab38989ab78f81e9a0a52fb1f075e1",
+      "bytes": 4839
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "cf2b4f98c69aee01487f6eeac46e8ef1bfec9c92482ed536db8a7d6f302400d7",
+      "bytes": 6403
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "1f12fcb73be159bec816ecf0d0883343c3d74d8e567acf63705f5597d1aa0c75",
+      "bytes": 5153
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "9edac6d403a858a13934724e310508cce7a3923317b9fb205c2cdfba0af3caf2",
+      "bytes": 5018
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "2d048859b4251f0b8fddd0eb2b104175b5618b9293c14918b4d8d8398fb7503e",
+      "bytes": 707
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\robustness_conservative_candidate_audit.csv",
+      "sha256": "9fdad21a9d7773afcccd8738a2c1dd9d4f44b747ea827323a7fb571b85715693",
+      "bytes": 26842
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\framework_alignment_report.json",
+      "sha256": "59b13a5ffef135c3b7e61658850c0ff7abb3fd1a07c5dde5277fef224d3806bc",
+      "bytes": 2054
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\cable_matching_manifest.json",
+      "sha256": "f20c7746ff78e708b904cfb8a31bdfe648a2c40eb549ba124f521d8aaa2b873a",
+      "bytes": 3353
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5006_dns-root-m-root\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\dataset_summary.csv",
+      "sha256": "61ed5e2fa57dad06ff309c5121daa808477499d295311c3cae64505e5d4011df",
+      "bytes": 1302
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\trace_denominator_audit.csv",
+      "sha256": "abe25785c63d4dc1eeb6479523a02f1b420a84652dd4bf78649aeaafcf7fa165",
+      "bytes": 433
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\filtering_breakdown.csv",
+      "sha256": "98327a12b349003820d808a4b17ffbbe7f84237264ae5232507735fd8068704e",
+      "bytes": 747
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\candidate_space_profile.csv",
+      "sha256": "a606967f22c01a317cec00580304500b62914ee4a08b23595966b696f8689b58",
+      "bytes": 13374
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\paper_service_country_physical_exposure.csv",
+      "sha256": "87fc1ca34c53c1db967ef0dbab9ea56fd12eacf6418be8b20488e797638f34d8",
+      "bytes": 38459
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\paper_service_country_corridor_concentration.csv",
+      "sha256": "bdc23a7eefb14dad76226576a8e4c8622a765d2a4f641568d8cce9c2458404ea",
+      "bytes": 4564
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "ca57ef28e00d533cee817cd172177dbcae7c59335a8674170dfdca6b82adfa6a",
+      "bytes": 5888
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "516b68776c67b32388d854aa6d6f3a32d1a7d0afc4b5b750d9178ac95758d537",
+      "bytes": 7585
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "b817b1e51bd194fa9c016e396ca2e9ce76d2be5077477451902204595fc5bc9f",
+      "bytes": 9325
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "9bbf7cbc740ab66da10a9a357dbea20394eb04a954eea7edb7e64ad7b36e0bba",
+      "bytes": 2108
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\robustness_conservative_candidate_audit.csv",
+      "sha256": "c396c80555f3e5a9001fc4f42b6ffeab4c33bad61a09d9bcb8e2eea8cb46dc58",
+      "bytes": 26867
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\framework_alignment_report.json",
+      "sha256": "4650e6c2bb254efec4b3a281e6d279634e9114eb2cd8d7b67dbf426c347235b6",
+      "bytes": 2055
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\cable_matching_manifest.json",
+      "sha256": "bfbc59f3d9eda1da7144be3dad8283fef5329e2032e76fb2c8926532b43ac2e6",
+      "bytes": 3445
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176517335_edge-localization-extension-netflix-assets\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\dataset_summary.csv",
+      "sha256": "8e7e1992cceb219e9708bc2c6e1342213fe0093b1dda1e3ed64c721b38800dcd",
+      "bytes": 1273
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\trace_denominator_audit.csv",
+      "sha256": "21ef6104bb2f7b5510dcfbd4e41b4825e9fe290130e13944308443e638562d44",
+      "bytes": 433
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\filtering_breakdown.csv",
+      "sha256": "36ac0e050e7f1f7847048ae16c82b2bac243a93d616f0ac68a35a88f8c11ae1e",
+      "bytes": 747
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\candidate_space_profile.csv",
+      "sha256": "fc52820db40385caaa523a04cb308ff61df92fbf4f9f7cb1767adcd7eb96ecc2",
+      "bytes": 12545
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\paper_service_country_physical_exposure.csv",
+      "sha256": "e43c7ccc51e81105a13bbca73a914f0d8e4e27895a348cabc47d983f00cafea4",
+      "bytes": 37582
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\paper_service_country_corridor_concentration.csv",
+      "sha256": "8fca7d7d7fc3b5b82dbd4a7b31f73dcf0dffcb84c17c33449655e4679a1f3790",
+      "bytes": 3534
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "8bf140230cc8e3d0e485b5888f2a41ede22b3b9602e209783be46d0794c9cb51",
+      "bytes": 4614
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "28c622d7a42644a1862d8ea30ffc7a03781e466fd77e18caec905e0b491202fd",
+      "bytes": 5415
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "1214c7480cee66756ba220df301e6dfecbd2756f250908f8538220cb08c5c533",
+      "bytes": 5897
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "2d048859b4251f0b8fddd0eb2b104175b5618b9293c14918b4d8d8398fb7503e",
+      "bytes": 707
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\robustness_conservative_candidate_audit.csv",
+      "sha256": "590e48e949e971276c2e3a9f4fd7ef2fe785e1af5514e7475db506556fe245ba",
+      "bytes": 25294
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\framework_alignment_report.json",
+      "sha256": "cdb09f8dcc5975a5341a3b9da1028f054574e9216722f27620ba14da37839a86",
+      "bytes": 2055
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\cable_matching_manifest.json",
+      "sha256": "5e6ecd03a31cd63828a8f07266f08382ff6ad41cd67368dab55031ddca6d15e9",
+      "bytes": 3398
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm176906957_popular-application-reddit\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\dataset_summary.csv",
+      "sha256": "79a141f6de284af23410058bb57358bc06955a1de4006d4ae1d1e7d122d21c1f",
+      "bytes": 1273
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\trace_denominator_audit.csv",
+      "sha256": "12d077f1a53fbb2cd69c3b6087cdb2d7c26d4f38f881ad172bb92f6ae6790bc1",
+      "bytes": 433
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\filtering_breakdown.csv",
+      "sha256": "cc8f902fbac6a1065c7fa6716c9a3e8750512cd6d0ec570ef833bde7c787ae3b",
+      "bytes": 751
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\candidate_space_profile.csv",
+      "sha256": "38a91e813390d9a101d362a1453960fdeae30e273b5cf08fcfc5178a7d80af48",
+      "bytes": 14361
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\paper_service_country_physical_exposure.csv",
+      "sha256": "cb189ba40d610ddf74242d55450fdde2dc99e359e4aa0d9c1a0e570a5259acb3",
+      "bytes": 32842
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\paper_service_country_corridor_concentration.csv",
+      "sha256": "b5239509ec29b100d2ddbbd486725646f96f020eb4dbf7081c0fb90e4c0b3a88",
+      "bytes": 5221
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "4b80b9f4660dd0c2047fccd3a7dc4b667678eb9b50c5d4bb8fb42b40959cd33f",
+      "bytes": 6879
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "65bffc5a584d12c8ea2586b7e63702de44c887e6f10c0c5c64a4d75a1021785a",
+      "bytes": 7807
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "20c61e1026ccc1efa867caba3e9128b6ea1f4cb23a99f7b7a21a171e98df6234",
+      "bytes": 9369
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "d80cf8b71edc7ba5b7ab918d6c3a135cf5ad627b51db743d2a251258e5a84022",
+      "bytes": 3068
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\robustness_conservative_candidate_audit.csv",
+      "sha256": "4f9331982b757a6ce6b1409d812d3655924189135e24bb09cf314c8be4b164d5",
+      "bytes": 26314
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\framework_alignment_report.json",
+      "sha256": "af824986e96c412324a95a5221f1133fd8880bda0024adf653b67495fd6d31ed",
+      "bytes": 2056
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\cable_matching_manifest.json",
+      "sha256": "095f346cabd7445a3887bc664d83144f4cc847973256b344baf34cbf6fbeb57f",
+      "bytes": 3404
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm86710103_popular-application-wikipedia\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\dataset_summary.csv",
+      "sha256": "79031618db607c30f93598bcf679fb6abf3191052fd01fd583c5f3e6faa8a452",
+      "bytes": 1340
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\trace_denominator_audit.csv",
+      "sha256": "da7f5f7ddb7aee2be6fe80387cb2658d510d5f0a6f7ed1ac54dd8ad18e8d001d",
+      "bytes": 432
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\filtering_breakdown.csv",
+      "sha256": "ab07c18ed66998f50fc507ad511bada6bf327f2b00c390123e216720d3dd578e",
+      "bytes": 746
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\candidate_space_profile.csv",
+      "sha256": "2a65d21c3fd603f967e8f0909bf4f4c6716f9b4db5fd9c9f7e8d5ebc2b347218",
+      "bytes": 24869
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_service_country_physical_exposure.csv",
+      "sha256": "dc81225a0cf5547afe87df15e462ffee78f3a6537afd3cd73d7e95c26cf96517",
+      "bytes": 30293
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_service_country_corridor_concentration.csv",
+      "sha256": "42ded83cc29dcb402b2e8f5bbde4e515aeb887e5349d0ae9fbb4e298aac9c904",
+      "bytes": 6746
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "67ca339e7e461cf2c18c2ed8a3be3490a431f476dfd8635d272865e6c43e6bee",
+      "bytes": 8594
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "783dfe61b133e1e585a0c23a348ca023253573beeb57fcb1a5177bf6bafaf8df",
+      "bytes": 2620
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "fe245fe18b46ceb488ff56b7586575f527e78c4796b67d21f07258ffc19d24af",
+      "bytes": 2496
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "c4e7f9e21bf951167f681e542ad41ee2dff937c4be07e279b890afb3c60a6bed",
+      "bytes": 12141
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\robustness_conservative_candidate_audit.csv",
+      "sha256": "cfb3c0f7f7516dfa308747bde5bd12f963142e38ee953412c86a41ba5f251348",
+      "bytes": 25582
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\framework_alignment_report.json",
+      "sha256": "d0d5c8bb9878d8eb05a1a821ab2a46c9e45ae5d12513e6215117f4e9004286e4",
+      "bytes": 2062
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\cable_matching_manifest.json",
+      "sha256": "0c572ec0ec5827b269d7948894ab270595bce33ff31de573546987a1bd6f0c6e",
+      "bytes": 3411
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5151_topology-baseline-topology-ipv4-icmp\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\dataset_summary.csv",
+      "sha256": "70eccc0fcdb69ebdc0f595cb2d4533d6014a9c6b786b4bdbe44081c36b9ee773",
+      "bytes": 1339
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\trace_denominator_audit.csv",
+      "sha256": "8c0c9e83692bf3257929e63850553cca552a6d5d92da025fa1ea592ca639ce9a",
+      "bytes": 434
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\filtering_breakdown.csv",
+      "sha256": "3c5e9ca386a470cca35a823c4dfb4e991f5e0bc58c42eb8fa613f12e659e7b6d",
+      "bytes": 753
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\candidate_space_profile.csv",
+      "sha256": "75bc2154c09b2704f9d5fb119180de5ad5f04a09a32c0e3c5250e7689c9afa94",
+      "bytes": 28774
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\paper_service_country_physical_exposure.csv",
+      "sha256": "a9b51e81ece9767495a50b7392fedcff52ec4cd858d65295ae1872acbc58b14b",
+      "bytes": 46190
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\paper_service_country_corridor_concentration.csv",
+      "sha256": "b76a238a3d3d2bef1f23ba4537db844a9405c9996b7c4e3c2b42cd993e084904",
+      "bytes": 11451
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\paper_service_country_cross_layer_distribution.csv",
+      "sha256": "a0ab01b9f37a66b082b8942c7f9993ea0aa9859962f4da84bee32981ab649122",
+      "bytes": 14522
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\paper_corridor_observation_concentration_cases.csv",
+      "sha256": "b2c925fecf12454a4f81f4e7e040bd38e5f0bbaa3ce70877509cd0402bb460c2",
+      "bytes": 3010
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\paper_network_broad_physical_concentrated_cases.csv",
+      "sha256": "ca3dc3ba652417a0427c078e99cf300ad18a7cd4f111f544e95b059641868b36",
+      "bytes": 3911
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\paper_broad_corridor_distribution_cases.csv",
+      "sha256": "5e389e9df9da50e1f6793b392eedbefd37d4eb8fcf3f87b81484cd1d9f49e9c0",
+      "bytes": 19919
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\robustness_conservative_candidate_audit.csv",
+      "sha256": "f72ec41c80d6db146ab5442ffafaea338a6156e4e8e68fedb8e53dc2bba90d86",
+      "bytes": 26665
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\framework_alignment_report.json",
+      "sha256": "a1c2ba04bf5b3e567eba54cd2a723064f2070b31734682b8c2c3b72f1dda9ff2",
+      "bytes": 2065
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\method_manifest.json",
+      "sha256": "d5e8c11aae7c86e15b31c7a5f0955562898ee5e8050ff7fe183982db4f2ec803",
+      "bytes": 5401
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\cable_matching_manifest.json",
+      "sha256": "64c11e4a42d04c713b4b55bee2e63c42768d051063d578d83e24d78780767bb0",
+      "bytes": 3411
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\landing_region_catalog.csv",
+      "sha256": "5c9d5f6c0843a9ffdcd8b9a5f0de1e044a104ba6c2fc8a20ca42a82060d24b14",
+      "bytes": 299130
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\measurements\\msm5051_topology-baseline-topology-ipv4-udp\\corridor_catalog.csv",
+      "sha256": "a205f71a094e70377553e0ec84b2f890c6c6c0573366ae890b0c0b6ba01ca1a1",
+      "bytes": 5306625
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\inputs\\resolved_config.json",
+      "sha256": "49b957d92d0b5488fa41f844e07d1b65e0bcb385403d6303c8b75b1b4d7ba311",
+      "bytes": 460
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\inputs\\input_manifest.csv",
+      "sha256": "e94fe240d4bbdc47ef83405cc4690940e1787324b248e28f977f19c77faa2221",
+      "bytes": 4924
+    },
+    {
+      "path": "paper_results\\july1_framework_20260715_9ee9332\\inputs\\reference_input_manifest.csv",
+      "sha256": "38fec94eb6532aa98a97c44a19eb52824373c981757600c29bcddcc21ac4d452",
+      "bytes": 834
+    }
+  ],
+  "skipped": [],
+  "interpretation": "measurement-observed feasible corridor audit; no raw traceroute data or ground-truth cable claim"
+}
