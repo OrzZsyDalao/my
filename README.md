@@ -21,6 +21,8 @@ python -m pipeline.matched_comparison --run-id <run_id> --comparison-services Wi
 
 Defaults are versioned in `config/default_experiment.json`. `all_feasible_segments` is the infeasibility-first candidate set; `all_segments` is the legacy support-thresholded view. Candidate support is evidence support, not a probability of true cable use. Because the current cable metadata generally provides unordered landing-point sets rather than route or branch topology, the default `allow_unordered_reachability` policy enumerates valid landing-station pairs on the same cable as reachability candidates. These candidates are explicitly labelled `unordered_cable_reachability`; they are not asserted direct physical segments. Use `--cable-topology-policy adjacent_only` only when an explicit ordered path or segment/branch topology is available and a strict direct-segment sensitivity analysis is desired. Timeout gaps and same-city geolocation ambiguity are retained as fields. Observation mass is traceroute-observed path-transition mass, never traffic volume or actual cable utilisation.
 
+Paper-primary corridor concentration uses only `international_inter_region` and `domestic_inter_region` candidates. `intra_landing_region` candidates remain in the feasible-candidate audit and supplementary outputs, but do not enter the main inter-region corridor distribution. Full summaries contain `all_publicly_visible` and `resolved_entry_only` strata; every `paper_*.csv` is restricted to `auditable_paper_case == True`. Candidate-row RTT/lifecycle counters are named `candidate_rows_*`, while `atomic_segments_*` always count unique hop-pair observations.
+
 ## Current Paper-Primary Framework
 
 The paper-facing analysis is now an **application/network/corridor distribution audit**:

@@ -266,3 +266,28 @@ def test_network_and_corridor_summaries_use_same_atomic_segment_population():
     assert set(prepared["atomic_segment_id"]) == set(mass["atomic_segment_id"])
     assert prepared["atomic_segment_id"].nunique() == 2
     assert mass["atomic_segment_id"].nunique() == 2
+
+
+def test_intra_region_candidates_are_retained_but_excluded_from_default_corridor_mass():
+    """Domestic inter-region candidates remain auditable while intra-region rows stay supplementary."""
+    feasible = pd.DataFrame(
+        [
+            {"link_id": "domestic", "corridor_id": "r1::r2", "landing_region_entry_id": "r1", "landing_region_exit_id": "r2", "candidate_scope": "domestic_inter_region", "corridor_label": "City A -> City B", "src_country": "US", "dst_country": "US", "probe_country": "US", "probe_id": "p1", "probe_asn": 64500, "src_asn": 64500, "dst_asn": 64496, "service_id": "svc"},
+            {"link_id": "intra", "corridor_id": "r1::r1", "landing_region_entry_id": "r1", "landing_region_exit_id": "r1", "candidate_scope": "intra_landing_region", "corridor_label": "City A intra-region", "src_country": "US", "dst_country": "US", "probe_country": "US", "probe_id": "p1", "probe_asn": 64500, "src_asn": 64500, "dst_asn": 64496, "service_id": "svc"},
+        ]
+    )
+    prepared = post.prepare_atomic_segment_projection_frame(feasible)
+    mass = post.build_segment_corridor_mass_frame(feasible)
+
+    assert set(prepared["candidate_scope"]) == {"domestic_inter_region", "intra_landing_region"}
+    assert set(mass["corridor_id"]) == {"r1::r2"}
+
+
+def test_paper_filter_keeps_only_auditable_rows():
+    """Paper-facing tables must not silently retain insufficient-observation rows."""
+    frame = pd.DataFrame([
+        {"unit_id": "small", "auditable_paper_case": False},
+        {"unit_id": "auditable", "auditable_paper_case": True},
+    ])
+    filtered = post.filter_auditable_paper_rows(frame)
+    assert filtered["unit_id"].tolist() == ["auditable"]

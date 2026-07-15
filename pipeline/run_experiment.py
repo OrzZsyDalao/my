@@ -73,7 +73,22 @@ def discover_measurements(input_dir: Path, selected: List[int] | None) -> List[D
         if wanted and msm_id not in wanted:
             continue
         label = path.name.split("_msm", 1)[0]
-        records.append({"msm_id": msm_id, "label": label, "input_file": path})
+        window_match = re.search(r"_(\d{8}T\d{6}Z)_(\d{6}Z)\.json$", path.name)
+        requested_window_start = None
+        requested_window_end = None
+        if window_match:
+            start_token, end_token = window_match.groups()
+            start = datetime.strptime(start_token, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
+            end = datetime.strptime(start_token[:8] + "T" + end_token, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
+            requested_window_start = start.isoformat().replace("+00:00", "Z")
+            requested_window_end = end.isoformat().replace("+00:00", "Z")
+        records.append({
+            "msm_id": msm_id,
+            "label": label,
+            "input_file": path,
+            "requested_window_start": requested_window_start,
+            "requested_window_end": requested_window_end,
+        })
     if not records:
         raise ValueError(f"No selected RIPE Atlas JSON measurements found in {input_dir}")
     return records
@@ -205,7 +220,9 @@ def main() -> None:
                 "label": record["label"],
                 "input_file": str(record["input_file"].relative_to(REPO_DIR)),
                 "input_sha256": sha256_file(record["input_file"]),
-                "input_bytes": record["input_file"].stat().st_size,
+            "input_bytes": record["input_file"].stat().st_size,
+            "requested_window_start": record.get("requested_window_start"),
+            "requested_window_end": record.get("requested_window_end"),
             }
             for record in records
         ]
@@ -219,6 +236,8 @@ def main() -> None:
             "config_hash": config_digest,
             "config_file": str(resolved_config_path.relative_to(REPO_DIR)),
             "measurement_window": config.get("measurement_window"),
+            "requested_window_start": record.get("requested_window_start"),
+            "requested_window_end": record.get("requested_window_end"),
             "reference_input_manifest": str((run_root / "inputs" / "reference_input_manifest.csv").relative_to(REPO_DIR)),
             "interpretation": "measurement-observed feasible submarine corridor candidate audit; not traffic or ground-truth cable attribution",
             "status": "running",
@@ -261,8 +280,13 @@ def main() -> None:
             "--candidate-support-threshold", str(config["candidate_support_threshold"]),
             "--cable-availability-mode", str(config["cable_availability_mode"]),
         ]
-        if config.get("measurement_window"):
-            main_command += ["--measurement-window", str(config["measurement_window"])]
+        requested_window = (
+            f"{record['requested_window_start']}/{record['requested_window_end']}"
+            if record.get("requested_window_start") and record.get("requested_window_end")
+            else config.get("measurement_window")
+        )
+        if requested_window:
+            main_command += ["--measurement-window", str(requested_window)]
         postprocess_command = [
             sys.executable, "source/postprocess_candidate_output.py", "--input",
             str(measurement_dir / "cable_matching_output.json"), "--output", str(measurement_dir),

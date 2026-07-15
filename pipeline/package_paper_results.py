@@ -26,6 +26,10 @@ PAPER_FILES = (
     "paper_broad_corridor_distribution_cases.csv",
     "robustness_conservative_candidate_audit.csv",
     "framework_alignment_report.json",
+    "method_manifest.json",
+    "cable_matching_manifest.json",
+    "landing_region_catalog.csv",
+    "corridor_catalog.csv",
 )
 REQUIRED_PAPER_FILES = tuple(filename for filename in PAPER_FILES if filename != "robustness_conservative_candidate_audit.csv")
 
@@ -122,6 +126,15 @@ def main() -> None:
             copied.append({"path": str(target.relative_to(REPO_DIR)), "sha256": sha256_file(target), "bytes": target.stat().st_size})
     shutil.copy2(manifest_path, destination / "run_manifest.json")
     shutil.copy2(index_path, destination / "run_index.csv")
+    input_destination = destination / "inputs"
+    input_destination.mkdir()
+    for filename in ("resolved_config.json", "input_manifest.csv", "reference_input_manifest.csv"):
+        source = run_root / "inputs" / filename
+        if not source.exists():
+            raise RuntimeError(f"Required run input artifact is missing: {source}")
+        target = input_destination / filename
+        shutil.copy2(source, target)
+        copied.append({"path": str(target.relative_to(REPO_DIR)), "sha256": sha256_file(target), "bytes": target.stat().st_size})
     write_readme(destination / "PAPER_RESULTS_README.md", args.run_id)
     write_json(destination / "package_manifest.json", {
         "run_id": args.run_id,

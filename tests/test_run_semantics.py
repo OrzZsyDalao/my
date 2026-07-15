@@ -77,3 +77,22 @@ def test_segment_accounting_rejects_subset_overflow():
     }
     with pytest.raises(RuntimeError, match="Invalid segment accounting"):
         matcher.finalize_stats()
+
+
+def test_candidate_row_accounting_rejects_candidate_overflow():
+    """Candidate-row counters must never be emitted as atomic-segment counters."""
+    pytest.importorskip("maxminddb")
+    import main_analysis
+
+    matcher = object.__new__(main_analysis.CableMatcher)
+    matcher.candidate_count_per_matched_link = []
+    matcher.stats = {
+        "atomic_segments_total": 1,
+        "candidate_rows_total": 1,
+        "candidate_rows_considered": 2,
+        "candidate_segments_considered": 1,
+        "confirmed_active_candidates": 0,
+        "candidates_with_unknown_cable_status": 0,
+    }
+    with pytest.raises(RuntimeError, match="Invalid candidate-row accounting"):
+        matcher.finalize_stats()

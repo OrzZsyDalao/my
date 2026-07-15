@@ -661,6 +661,47 @@ def load_trace_observation_summary(output_dir: str) -> pd.DataFrame:
     return frame
 
 
+def annotate_trace_candidate_scope_exposure(trace_frame: pd.DataFrame, feasible_frame: pd.DataFrame) -> pd.DataFrame:
+    """Attach all/inter-region candidate exposure flags to trace summaries without dropping intra-region candidates."""
+    if trace_frame.empty:
+        return trace_frame.copy()
+    result = trace_frame.copy()
+    flags = [
+        "has_any_candidate",
+        "has_inter_region_candidate",
+        "has_domestic_inter_region_candidate",
+        "has_international_inter_region_candidate",
+        "has_intra_region_candidate",
+    ]
+    for flag in flags:
+        result[flag] = False
+    if feasible_frame.empty or "trace_id" not in feasible_frame:
+        return result
+    working = feasible_frame.copy()
+    scope = working.get("candidate_scope", pd.Series(index=working.index, dtype=object)).fillna("").astype(str)
+    if scope.eq("").any():
+        entry = working.get("landing_region_entry_id", pd.Series(index=working.index, dtype=object)).fillna("").astype(str)
+        exit_ = working.get("landing_region_exit_id", pd.Series(index=working.index, dtype=object)).fillna("").astype(str)
+        inferred = np.where(entry.ne("") & entry.eq(exit_), "intra_landing_region", np.where(
+            working.get("src_country", pd.Series(index=working.index, dtype=object)).astype(str).eq(
+                working.get("dst_country", pd.Series(index=working.index, dtype=object)).astype(str)
+            ),
+            "domestic_inter_region",
+            "international_inter_region",
+        ))
+        scope = np.where(scope.eq(""), inferred, scope)
+    working["candidate_scope"] = scope
+    grouped = working.groupby("trace_id", dropna=False)["candidate_scope"].agg(lambda values: set(values.astype(str)))
+    for trace_id, scopes in grouped.items():
+        mask = result["trace_id"].astype(str).eq(str(trace_id))
+        result.loc[mask, "has_any_candidate"] = bool(scopes)
+        result.loc[mask, "has_inter_region_candidate"] = bool(scopes & {"domestic_inter_region", "international_inter_region"})
+        result.loc[mask, "has_domestic_inter_region_candidate"] = "domestic_inter_region" in scopes
+        result.loc[mask, "has_international_inter_region_candidate"] = "international_inter_region" in scopes
+        result.loc[mask, "has_intra_region_candidate"] = "intra_landing_region" in scopes
+    return result
+
+
 def build_service_country_physical_exposure_summary(trace_frame: pd.DataFrame) -> pd.DataFrame:
     """Compute trace-level service physical exposure by probe country and service."""
     columns = [
@@ -668,8 +709,16 @@ def build_service_country_physical_exposure_summary(trace_frame: pd.DataFrame) -
         "service_id",
         "service_class",
         "deployment_type",
+        "path_scope_stratum",
         "total_valid_traces",
         "mappable_traces",
+        "traces_with_feasible_submarine_corridor_candidates",
+        "submarine_candidate_exposure_rate",
+        "any_candidate_exposure_rate",
+        "inter_region_candidate_exposure_rate",
+        "domestic_inter_region_candidate_exposure_rate",
+        "international_inter_region_candidate_exposure_rate",
+        "intra_region_candidate_rate",
         "submarine_exposed_traces",
         "service_physical_exposure_rate",
         "mappable_trace_rate",
@@ -688,27 +737,44 @@ def build_service_country_physical_exposure_summary(trace_frame: pd.DataFrame) -
     rows: List[Dict[str, Any]] = []
     for group_key, group in trace_frame.groupby(["probe_country", "service_id"], dropna=False):
         probe_country, service_id = group_key
-        dedup = group.drop_duplicates(subset=["trace_id"]).copy()
-        total_valid = int(len(dedup))
-        mappable = int(dedup["has_at_least_one_mappable_segment"].sum())
-        exposed = int(dedup["has_at_least_one_feasible_submarine_corridor"].sum())
-        unique_probes = int(dedup.get("probe_id", pd.Series(dtype=object)).astype(str).replace({"": np.nan, "nan": np.nan, "NA": np.nan}).dropna().nunique())
-        unique_probe_asns = int(dedup.get("probe_asn_norm", pd.Series(dtype=object)).replace("NA", np.nan).dropna().nunique())
-        unique_target_ips = int(dedup.get("target_ip", pd.Series(dtype=object)).astype(str).replace({"": np.nan, "nan": np.nan, "NA": np.nan}).dropna().nunique())
-        unique_target_asns = int(dedup.get("target_asn_norm", pd.Series(dtype=object)).replace("NA", np.nan).dropna().nunique())
-        sufficiency = evaluate_paper_observation_sufficiency(
-            total_observations=total_valid,
-            unique_probes=unique_probes,
-            unique_probe_asns=unique_probe_asns,
-        )
-        rows.append(
-            {
+        for path_scope_stratum, scoped_group in (
+            ("all_publicly_visible", group),
+            ("resolved_entry_only", group.loc[group["service_entry_resolved"].fillna(False).astype(bool)]),
+        ):
+            dedup = scoped_group.drop_duplicates(subset=["trace_id"]).copy()
+            total_valid = int(len(dedup))
+            mappable = int(dedup["has_at_least_one_mappable_segment"].sum())
+            exposed = int(dedup["has_at_least_one_feasible_submarine_corridor"].sum())
+            any_candidate = int(dedup.get("has_any_candidate", pd.Series(index=dedup.index, dtype=bool)).sum())
+            inter_region = int(dedup.get("has_inter_region_candidate", pd.Series(index=dedup.index, dtype=bool)).sum())
+            domestic_inter = int(dedup.get("has_domestic_inter_region_candidate", pd.Series(index=dedup.index, dtype=bool)).sum())
+            international_inter = int(dedup.get("has_international_inter_region_candidate", pd.Series(index=dedup.index, dtype=bool)).sum())
+            intra_region = int(dedup.get("has_intra_region_candidate", pd.Series(index=dedup.index, dtype=bool)).sum())
+            unique_probes = int(dedup.get("probe_id", pd.Series(dtype=object)).astype(str).replace({"": np.nan, "nan": np.nan, "NA": np.nan}).dropna().nunique())
+            unique_probe_asns = int(dedup.get("probe_asn_norm", pd.Series(dtype=object)).replace("NA", np.nan).dropna().nunique())
+            unique_target_ips = int(dedup.get("target_ip", pd.Series(dtype=object)).astype(str).replace({"": np.nan, "nan": np.nan, "NA": np.nan}).dropna().nunique())
+            unique_target_asns = int(dedup.get("target_asn_norm", pd.Series(dtype=object)).replace("NA", np.nan).dropna().nunique())
+            sufficiency = evaluate_paper_observation_sufficiency(
+                total_observations=total_valid,
+                unique_probes=unique_probes,
+                unique_probe_asns=unique_probe_asns,
+            )
+            rows.append({
                 "probe_country": probe_country,
                 "service_id": service_id,
                 "service_class": dominant_non_missing_value(dedup.get("service_class", pd.Series(dtype=object))),
                 "deployment_type": dominant_non_missing_value(dedup.get("deployment_type", pd.Series(dtype=object))),
+                "path_scope_stratum": path_scope_stratum,
                 "total_valid_traces": total_valid,
                 "mappable_traces": mappable,
+                "traces_with_feasible_submarine_corridor_candidates": exposed,
+                "submarine_candidate_exposure_rate": float(exposed / total_valid) if total_valid else np.nan,
+                "any_candidate_exposure_rate": float(any_candidate / total_valid) if total_valid else np.nan,
+                "inter_region_candidate_exposure_rate": float(inter_region / total_valid) if total_valid else np.nan,
+                "domestic_inter_region_candidate_exposure_rate": float(domestic_inter / total_valid) if total_valid else np.nan,
+                "international_inter_region_candidate_exposure_rate": float(international_inter / total_valid) if total_valid else np.nan,
+                "intra_region_candidate_rate": float(intra_region / total_valid) if total_valid else np.nan,
+                # Deprecated compatibility aliases.
                 "submarine_exposed_traces": exposed,
                 "service_physical_exposure_rate": float(exposed / total_valid) if total_valid else np.nan,
                 "mappable_trace_rate": float(mappable / total_valid) if total_valid else np.nan,
@@ -721,8 +787,7 @@ def build_service_country_physical_exposure_summary(trace_frame: pd.DataFrame) -
                 "auditable_paper_case": sufficiency["auditable_paper_case"],
                 "observation_sufficiency_reason": sufficiency["observation_sufficiency_reason"],
                 "failed_thresholds": sufficiency["failed_thresholds"],
-            }
-        )
+            })
     return pd.DataFrame(rows, columns=columns).sort_values(["probe_country", "service_id"]).reset_index(drop=True)
 
 
@@ -1214,6 +1279,22 @@ def prepare_atomic_segment_projection_frame(
     working["corridor_label"] = working.groupby("corridor_observation_id", dropna=False)["corridor_label"].transform(
         dominant_non_missing_value
     )
+    entry_region = working.get("landing_region_entry_id", pd.Series(index=working.index, dtype=object)).fillna("").astype(str)
+    exit_region = working.get("landing_region_exit_id", pd.Series(index=working.index, dtype=object)).fillna("").astype(str)
+    inferred_scope = np.where(
+        entry_region.ne("") & entry_region.eq(exit_region),
+        "intra_landing_region",
+        np.where(
+            working["src_country"].astype(str).eq(working["dst_country"].astype(str)),
+            "domestic_inter_region",
+            "international_inter_region",
+        ),
+    )
+    existing_scope = working.get("candidate_scope", pd.Series(index=working.index, dtype=object)).fillna("").astype(str).str.strip()
+    working["candidate_scope"] = np.where(existing_scope.ne(""), existing_scope, inferred_scope)
+    working["is_inter_region_candidate"] = working["candidate_scope"].ne("intra_landing_region")
+    intra_label_mask = working["candidate_scope"].eq("intra_landing_region") & entry_label.ne("")
+    working.loc[intra_label_mask, "corridor_label"] = entry_label[intra_label_mask] + " intra-region"
     working["is_domestic_segment"] = (
         working["src_country"].astype(str).str.strip().ne("")
         & (working["src_country"].astype(str) == working["dst_country"].astype(str))
@@ -1235,9 +1316,12 @@ def build_segment_corridor_mass_frame(
     feasible_frame: pd.DataFrame,
     corridor_col: str = "corridor_id",
     mass_mode: str = "uniform",
+    include_intra_landing_region: bool = False,
 ) -> pd.DataFrame:
-    """Project atomic path-transition segments onto feasible corridors with one unit of observation mass per segment."""
+    """Project atomic segments onto corridors, excluding intra-region candidates by default for paper concentration."""
     working = prepare_atomic_segment_projection_frame(feasible_frame, corridor_col)
+    if not include_intra_landing_region and not working.empty:
+        working = working.loc[working["candidate_scope"].ne("intra_landing_region")].copy()
     columns = [
         "country",
         "probe_country",
@@ -1344,9 +1428,15 @@ def build_corridor_observation_distribution(
     group_fields: Sequence[str],
     corridor_col: str = "corridor_id",
     mass_mode: str = "uniform",
+    include_intra_landing_region: bool = False,
 ) -> pd.DataFrame:
     """Aggregate atomic segments into a corridor observation-mass distribution with corridor deduplication."""
-    segment_corridor_mass = build_segment_corridor_mass_frame(feasible_frame, corridor_col=corridor_col, mass_mode=mass_mode)
+    segment_corridor_mass = build_segment_corridor_mass_frame(
+        feasible_frame,
+        corridor_col=corridor_col,
+        mass_mode=mass_mode,
+        include_intra_landing_region=include_intra_landing_region,
+    )
     return summarize_corridor_observation_distribution(segment_corridor_mass, group_fields)
 
 
@@ -1455,6 +1545,14 @@ def evaluate_paper_observation_sufficiency(
         "observation_sufficiency_reason": "auditable" if not failed else "insufficient_" + ",".join(failed),
         "failed_thresholds": ",".join(failed),
     }
+
+
+def filter_auditable_paper_rows(frame: pd.DataFrame) -> pd.DataFrame:
+    """Return only explicitly auditable rows for every paper-facing CSV."""
+    result = frame.copy()
+    if "auditable_paper_case" not in result.columns:
+        result["auditable_paper_case"] = False
+    return result.loc[result["auditable_paper_case"].fillna(False).astype(bool)].reset_index(drop=True)
 
 
 def sufficient_observation_for_corridor_concentration(
@@ -4705,6 +4803,7 @@ def main() -> None:
     candidate_frame.to_csv(trace_output, index=False, encoding="utf-8-sig")
     feasible_frame.to_csv(trace_feasible_output, index=False, encoding="utf-8-sig")
     trace_observation_frame = load_trace_observation_summary(args.output)
+    trace_observation_frame = annotate_trace_candidate_scope_exposure(trace_observation_frame, feasible_frame)
     service_country_physical_exposure = build_service_country_physical_exposure_summary(trace_observation_frame)
     country_physical_exposure = build_country_physical_exposure_summary(trace_observation_frame)
 
@@ -4748,16 +4847,16 @@ def main() -> None:
         peeringdb_country_column="probe_country",
     )
     paper_country_cross_layer_audit = (
-        country_cross_layer_audit.loc[
+        filter_auditable_paper_rows(country_cross_layer_audit.loc[
             country_cross_layer_audit["physical_level"].astype(str) == PAPER_PRIMARY_PHYSICAL_LEVEL
-        ].reset_index(drop=True)
+        ])
         if not country_cross_layer_audit.empty
         else pd.DataFrame(columns=PRIMARY_CROSS_LAYER_COLUMNS)
     )
     paper_service_country_cross_layer_audit = (
-        service_country_cross_layer_audit.loc[
+        filter_auditable_paper_rows(service_country_cross_layer_audit.loc[
             service_country_cross_layer_audit["physical_level"].astype(str) == PAPER_PRIMARY_PHYSICAL_LEVEL
-        ].reset_index(drop=True)
+        ])
         if not service_country_cross_layer_audit.empty
         else pd.DataFrame(columns=PRIMARY_CROSS_LAYER_COLUMNS)
     )
@@ -4783,6 +4882,12 @@ def main() -> None:
         projection_source_frame,
         corridor_col=corridor_candidate_col,
     )
+    paper_inter_region_projection = prepared_segment_projection.loc[
+        prepared_segment_projection.get("candidate_scope", pd.Series(index=prepared_segment_projection.index, dtype=object))
+        .fillna("")
+        .astype(str)
+        .ne("intra_landing_region")
+    ].copy()
     segment_corridor_mass = build_segment_corridor_mass_frame(
         projection_source_frame,
         corridor_col=corridor_candidate_col,
@@ -4811,12 +4916,12 @@ def main() -> None:
         ["probe_country", "service_id"],
     )
     country_network_transition_concentration_summary = summarize_network_transition_concentration(
-        prepared_segment_projection,
+        paper_inter_region_projection,
         ["country"],
     )
     transition_country_network_transition_concentration_summary = country_network_transition_concentration_summary
     service_country_network_transition_concentration_summary = summarize_network_transition_concentration(
-        prepared_segment_projection,
+        paper_inter_region_projection,
         ["probe_country", "service_id"],
     )
     country_cross_layer_distribution_audit = build_cross_layer_distribution_audit(
@@ -5088,7 +5193,7 @@ def main() -> None:
     conservative_manifest = build_conservative_candidate_audit_manifest()
     framework_alignment_report = build_framework_alignment_report(
         trace_observation_frame,
-        prepared_segment_projection,
+        paper_inter_region_projection,
         service_country_cross_layer_distribution_audit,
         method_manifest,
         stage1_stats,
@@ -5229,14 +5334,14 @@ def main() -> None:
     if upper_bound_mismatch.empty:
         print("Warning: upper-bound mismatch table is empty; writing a header-only CSV.")
     upper_bound_mismatch.to_csv(upper_bound_mismatch_path, index=False, encoding="utf-8-sig")
-    corridor_physical_uniform.to_csv(paper_physical_path, index=False, encoding="utf-8-sig")
+    filter_auditable_paper_rows(corridor_physical_uniform).to_csv(paper_physical_path, index=False, encoding="utf-8-sig")
     paper_unit_network_physical_mismatch = upper_bound_mismatch.loc[
         (upper_bound_mismatch["physical_level"].astype(str) == PAPER_PRIMARY_PHYSICAL_LEVEL)
         & (upper_bound_mismatch["network_definition"].astype(str) == PAPER_PRIMARY_NETWORK_DEFINITION)
     ].copy()
     if upper_bound_mismatch.empty and not paper_unit_network_physical_mismatch.empty:
         raise RuntimeError("paper_unit_network_physical_mismatch has rows while the full upper-bound mismatch table is empty.")
-    paper_unit_network_physical_mismatch.to_csv(paper_mismatch_path, index=False, encoding="utf-8-sig")
+    filter_auditable_paper_rows(paper_unit_network_physical_mismatch).to_csv(paper_mismatch_path, index=False, encoding="utf-8-sig")
     network_metric_catalog.to_csv(network_metric_catalog_path, index=False, encoding="utf-8-sig")
     peeringdb_footprint_summary.to_csv(peeringdb_summary_path, index=False, encoding="utf-8-sig")
     unit_cross_layer_audit.to_csv(unit_cross_layer_audit_path, index=False, encoding="utf-8-sig")
@@ -5244,7 +5349,7 @@ def main() -> None:
     service_country_cross_layer_audit.to_csv(service_country_cross_layer_audit_path, index=False, encoding="utf-8-sig")
     service_country_physical_exposure.to_csv(service_country_physical_exposure_path, index=False, encoding="utf-8-sig")
     country_physical_exposure.to_csv(country_physical_exposure_path, index=False, encoding="utf-8-sig")
-    service_country_physical_exposure.to_csv(
+    filter_auditable_paper_rows(service_country_physical_exposure).to_csv(
         paper_service_country_physical_exposure_path,
         index=False,
         encoding="utf-8-sig",
@@ -5281,7 +5386,7 @@ def main() -> None:
         index=False,
         encoding="utf-8-sig",
     )
-    service_country_corridor_concentration_summary.to_csv(
+    filter_auditable_paper_rows(service_country_corridor_concentration_summary).to_csv(
         service_country_corridor_concentration_summary_path,
         index=False,
         encoding="utf-8-sig",
@@ -5306,7 +5411,7 @@ def main() -> None:
         index=False,
         encoding="utf-8-sig",
     )
-    service_country_cross_layer_distribution_audit.to_csv(
+    filter_auditable_paper_rows(service_country_cross_layer_distribution_audit).to_csv(
         service_country_cross_layer_distribution_audit_path,
         index=False,
         encoding="utf-8-sig",
@@ -5316,37 +5421,37 @@ def main() -> None:
         index=False,
         encoding="utf-8-sig",
     )
-    country_corridor_concentration_summary.to_csv(
+    filter_auditable_paper_rows(country_corridor_concentration_summary).to_csv(
         paper_transition_country_corridor_concentration_path,
         index=False,
         encoding="utf-8-sig",
     )
-    country_network_transition_concentration_summary.to_csv(
+    filter_auditable_paper_rows(country_network_transition_concentration_summary).to_csv(
         paper_transition_country_network_transition_concentration_path,
         index=False,
         encoding="utf-8-sig",
     )
-    country_cross_layer_distribution_audit.to_csv(
+    filter_auditable_paper_rows(country_cross_layer_distribution_audit).to_csv(
         paper_transition_country_cross_layer_distribution_path,
         index=False,
         encoding="utf-8-sig",
     )
-    paper_corridor_observation_concentration_cases.to_csv(
+    filter_auditable_paper_rows(paper_corridor_observation_concentration_cases).to_csv(
         paper_corridor_observation_concentration_cases_path,
         index=False,
         encoding="utf-8-sig",
     )
-    paper_network_broad_physical_concentrated_cases.to_csv(
+    filter_auditable_paper_rows(paper_network_broad_physical_concentrated_cases).to_csv(
         paper_network_broad_physical_concentrated_cases_path,
         index=False,
         encoding="utf-8-sig",
     )
-    paper_broad_corridor_distribution_cases.to_csv(
+    filter_auditable_paper_rows(paper_broad_corridor_distribution_cases).to_csv(
         paper_broad_corridor_distribution_cases_path,
         index=False,
         encoding="utf-8-sig",
     )
-    paper_physical_exposure_cases.to_csv(
+    filter_auditable_paper_rows(paper_physical_exposure_cases).to_csv(
         paper_physical_exposure_cases_path,
         index=False,
         encoding="utf-8-sig",
@@ -5361,17 +5466,17 @@ def main() -> None:
         index=False,
         encoding="utf-8-sig",
     )
-    paper_physical_concentration_cases.to_csv(
+    filter_auditable_paper_rows(paper_physical_concentration_cases).to_csv(
         paper_physical_concentration_cases_path,
         index=False,
         encoding="utf-8-sig",
     )
-    paper_joint_mismatch_cases.to_csv(
+    filter_auditable_paper_rows(paper_joint_mismatch_cases).to_csv(
         paper_joint_mismatch_cases_path,
         index=False,
         encoding="utf-8-sig",
     )
-    paper_broad_physical_space_cases.to_csv(
+    filter_auditable_paper_rows(paper_broad_physical_space_cases).to_csv(
         paper_broad_physical_space_cases_path,
         index=False,
         encoding="utf-8-sig",

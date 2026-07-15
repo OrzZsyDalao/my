@@ -918,7 +918,9 @@ class CableMatcher:
             for station_id in members:
                 landing_region_map[station_id] = region_id
                 self.landing_region_method_map[station_id] = "geographic_connected_component"
-            self.landing_region_label_map.setdefault(region_id, region_id)
+            representative = min(members)
+            representative_name = self.landing_station_names.get(representative, representative)
+            self.landing_region_label_map.setdefault(region_id, representative_name)
 
         for station_id, override in self.landing_region_override.items():
             if station_id not in self.ls_geo:
@@ -961,6 +963,7 @@ class CableMatcher:
         self.landing_region_override_file = landing_region_override_file
         self.landing_region_label_map: Dict[str, str] = {}
         self.landing_region_method_map: Dict[str, str] = {}
+        self.landing_station_names = self.load_landing_station_names()
         self.cable_availability_mode = cable_availability_mode
         self.same_city_policy = same_city_policy
         self.same_city_distance_threshold_km = float(same_city_distance_threshold_km)
@@ -989,6 +992,15 @@ class CableMatcher:
             "links_with_geo_candidates": 0,
             "candidate_segments_considered": 0,
             "candidate_rows_total": 0,
+            "candidate_rows_considered": 0,
+            "candidate_rows_lifecycle_filtered": 0,
+            "candidate_rows_with_unknown_lifecycle": 0,
+            "candidate_rows_confirmed_active": 0,
+            "candidate_rows_rtt_infeasible": 0,
+            "candidate_rows_rtt_feasible": 0,
+            "candidate_rows_rtt_inconclusive": 0,
+            "candidate_rows_support_below_threshold": 0,
+            "candidate_rows_support_above_threshold": 0,
             "candidates_with_valid_rtt": 0,
             "candidates_with_inconclusive_rtt": 0,
             "candidates_filtered_by_rtt": 0,
@@ -1100,6 +1112,22 @@ class CableMatcher:
                         }
                 )
 
+    @staticmethod
+    def load_landing_station_names() -> Dict[str, str]:
+        """Load readable landing-station names for paper-facing region labels."""
+        try:
+            with open(LS_GEO_PATH, "r", encoding="utf-8") as handle:
+                features = json.load(handle).get("features", [])
+        except (OSError, ValueError, json.JSONDecodeError):
+            return {}
+        return {
+            str(feature.get("properties", {}).get("id")): str(
+                feature.get("properties", {}).get("name") or feature.get("properties", {}).get("id")
+            )
+            for feature in features
+            if feature.get("properties", {}).get("id")
+        }
+
     def finalize_stats(self) -> Dict[str, Any]:
         """Return stats with aggregate metrics computed from per-link counts."""
         finalized = dict(self.stats)
@@ -1133,6 +1161,20 @@ class CableMatcher:
         ):
             if int(finalized.get(key, 0) or 0) > total_segments:
                 raise RuntimeError(f"Invalid segment accounting: {key} exceeds atomic_segments_total")
+        candidate_total = int(finalized.get("candidate_rows_total", 0) or 0)
+        for key in (
+            "candidate_rows_considered",
+            "candidate_rows_lifecycle_filtered",
+            "candidate_rows_with_unknown_lifecycle",
+            "candidate_rows_confirmed_active",
+            "candidate_rows_rtt_infeasible",
+            "candidate_rows_rtt_feasible",
+            "candidate_rows_rtt_inconclusive",
+            "candidate_rows_support_below_threshold",
+            "candidate_rows_support_above_threshold",
+        ):
+            if int(finalized.get(key, 0) or 0) > candidate_total:
+                raise RuntimeError(f"Invalid candidate-row accounting: {key} exceeds candidate_rows_total")
         finalized["counting_semantics"] = {
             "candidate": "candidate rows evaluated independently",
             "atomic_segment": "one visible hop-pair or timeout-bridged visible hop pair",
@@ -1740,7 +1782,15 @@ class CableMatcher:
                     self.landing_region_label_map.get(region_id, region_id)
                     for region_id in landing_region_pair
                 )
-                corridor_label = f"{region_label_pair[0]} -> {region_label_pair[1]}"
+                if region_a == region_b:
+                    corridor_label = f"{self.landing_region_label_map.get(region_a, region_a)} intra-region"
+                    candidate_scope = "intra_landing_region"
+                elif country_a and country_b and country_a == country_b:
+                    corridor_label = f"{region_label_pair[0]} -> {region_label_pair[1]}"
+                    candidate_scope = "domestic_inter_region"
+                else:
+                    corridor_label = f"{region_label_pair[0]} -> {region_label_pair[1]}"
+                    candidate_scope = "international_inter_region"
                 landing_region_method = (
                     "manual_override"
                     if "manual_override" in {
@@ -1750,12 +1800,23 @@ class CableMatcher:
                     else "geographic_connected_component"
                 )
                 parallel_group_id = corridor_id
+                lifecycle_surviving_by_exact_pair = sum(
+                    1
+                    for cable_info in segment_cables
+                    if is_cable_available_at(
+                        cable_info,
+                        link.get("timestamp"),
+                        mode=self.cable_availability_mode,
+                        trace_datetime=trace_datetime,
+                    )["availability_filter_passed"]
+                )
 
                 geo_score_info = self.compute_geo_spatial_score(d_in=d_in, d_out=d_out)
 
                 for cable_info in segment_cables:
                     self.stats["candidate_segments_considered"] += 1
                     self.stats["candidate_rows_total"] += 1
+                    self.stats["candidate_rows_considered"] += 1
                     availability_info = is_cable_available_at(
                         cable_info,
                         link.get("timestamp"),
@@ -1764,30 +1825,35 @@ class CableMatcher:
                     )
                     if availability_info["cable_availability_status"] == "unknown":
                         self.stats["candidates_with_unknown_cable_status"] += 1
+                        self.stats["candidate_rows_with_unknown_lifecycle"] += 1
                     if availability_info["cable_availability_status"] == "confirmed_active_at_trace_time":
                         self.stats["confirmed_active_candidates"] += 1
+                        self.stats["candidate_rows_confirmed_active"] += 1
                     if not availability_info["availability_filter_passed"]:
                         self.stats["candidates_filtered_by_cable_lifecycle"] += 1
+                        self.stats["candidate_rows_lifecycle_filtered"] += 1
                         continue
-
                     gcd_dist = cable_info["gcd_dist"]
                     legacy_slack_lower_bound_ms = ((gcd_dist * self.SLACK_FACTOR) * 2) / self.SOL_FIBER_KM_MS
                     min_rtt = (gcd_dist * 2) / self.SOL_FIBER_KM_MS
                     rtt_score_info = self.compute_rtt_feasibility_score(measured_rtt_delta=measured_rtt_delta, min_rtt=min_rtt)
                     if rtt_score_info["rtt_feasibility_status"] == "inconclusive":
                         self.stats["candidates_with_inconclusive_rtt"] += 1
+                        self.stats["candidate_rows_rtt_inconclusive"] += 1
                         self.stats["candidates_retained_due_to_inconclusive_rtt"] += 1
                     elif rtt_score_info["rtt_feasibility_status"] in {"feasible", "infeasible"}:
                         self.stats["candidates_with_valid_rtt"] += 1
                     if not rtt_score_info["rtt_feasible"]:
                         self.stats["rtt_infeasible_filtered"] += 1
                         self.stats["candidates_rtt_infeasible"] += 1
+                        self.stats["candidate_rows_rtt_infeasible"] += 1
                         self.stats["candidates_filtered_by_rtt"] += 1
                         if rtt_score_info.get("rtt_filter_applied"):
                             self.stats["candidates_filtered_by_valid_rtt"] += 1
                         continue
                     rtt_feasible_candidate_found = True
                     self.stats["candidates_rtt_feasible"] += 1
+                    self.stats["candidate_rows_rtt_feasible"] += 1
                     self.stats["candidates_retained"] += 1
 
                     cable_owner_asns: Set[str] = set(cable_info.get("cable_owner_asns", set()))
@@ -1823,6 +1889,8 @@ class CableMatcher:
                         "corridor_id": corridor_id,
                         "corridor_label": corridor_label,
                         "corridor_type": "landing_region_pair",
+                        "candidate_scope": candidate_scope,
+                        "is_inter_region_candidate": candidate_scope != "intra_landing_region",
                         "candidate_topology_type": cable_info.get("candidate_topology_type"),
                         "cable_topology_status": cable_info.get("topology_status"),
                         "exact_corridor_id": exact_corridor_id,
@@ -1836,8 +1904,11 @@ class CableMatcher:
                         "landing_region_method": landing_region_method,
                         "landing_region_radius_km": float(self.landing_region_radius_km),
                         "parallel_group_id": parallel_group_id,
-                        "parallel_group_size": len(segment_cables),
-                        "is_parallel_ambiguous": len(segment_cables) > 1,
+                        "parallel_group_size_metadata": len(segment_cables),
+                        "parallel_group_size_after_lifecycle": lifecycle_surviving_by_exact_pair,
+                        "parallel_group_size_feasible": 0,
+                        "parallel_group_size": 0,
+                        "is_parallel_ambiguous": False,
                         "physical_candidate_group_id": parallel_group_id,
                         "physical_candidate_group_type": "srlg_like_corridor_group",
                         "candidate_support": float(fused_candidate_support),
@@ -1946,6 +2017,16 @@ class CableMatcher:
                 unique_candidates.append(candidate)
 
         feasible_candidates = [dict(candidate) for candidate in unique_candidates]
+        feasible_parallel_sizes: Dict[str, int] = {}
+        for candidate in feasible_candidates:
+            key = str(candidate.get("exact_landing_pair_id") or candidate.get("segment"))
+            feasible_parallel_sizes[key] = feasible_parallel_sizes.get(key, 0) + 1
+        for candidate in feasible_candidates:
+            key = str(candidate.get("exact_landing_pair_id") or candidate.get("segment"))
+            feasible_size = feasible_parallel_sizes[key]
+            candidate["parallel_group_size_feasible"] = feasible_size
+            candidate["parallel_group_size"] = feasible_size  # deprecated compatibility alias
+            candidate["is_parallel_ambiguous"] = feasible_size > 1
         feasible_support_sum = self.normalize_candidate_supports(feasible_candidates)
         self.assign_candidate_ranks(feasible_candidates)
 
@@ -1958,8 +2039,10 @@ class CableMatcher:
             )
             if candidate["support_above_threshold"]:
                 self.stats["candidates_support_above_threshold"] += 1
+                self.stats["candidate_rows_support_above_threshold"] += 1
             else:
                 self.stats["candidates_support_below_threshold"] += 1
+                self.stats["candidate_rows_support_below_threshold"] += 1
 
         filtered_candidates = [dict(candidate) for candidate in feasible_candidates if candidate["support_above_threshold"]]
         if feasible_candidates and not filtered_candidates:
@@ -1982,13 +2065,13 @@ class CableMatcher:
             candidate["ambiguity_tags"] = self.build_ambiguity_tags(
                 candidate=candidate,
                 filtered_candidate_count=len(feasible_candidates),
-                segment_candidate_count=candidate["parallel_segment_candidate_count"],
+                segment_candidate_count=candidate["parallel_group_size_feasible"],
             )
         for candidate in filtered_candidates:
             candidate["ambiguity_tags"] = self.build_ambiguity_tags(
                 candidate=candidate,
                 filtered_candidate_count=len(feasible_candidates),
-                segment_candidate_count=candidate["parallel_segment_candidate_count"],
+                segment_candidate_count=candidate["parallel_group_size_feasible"],
             )
 
         self._link_info_summary(filtered_candidates)
@@ -2151,6 +2234,8 @@ def write_match_manifest(
     measurement_window: Optional[str] = None,
     trace_level_stats: Optional[Dict[str, Any]] = None,
     matcher_config: Optional[Dict[str, Any]] = None,
+    observed_timestamp_min: Optional[str] = None,
+    observed_timestamp_max: Optional[str] = None,
     match_output_file: str = OUTPUT_RESULTS_PATH,
     match_stats_file: str = MATCH_STATS_OUTPUT_PATH,
 ) -> None:
@@ -2188,6 +2273,10 @@ def write_match_manifest(
         "support_threshold_value": (matcher_config or {}).get("candidate_support_threshold", float(CableMatcher.MATCH_THRESHOLD)),
         "run_id": run_id,
         "measurement_window": measurement_window,
+        "requested_window_start": (measurement_window or "").split("/", 1)[0] or None,
+        "requested_window_end": (measurement_window or "").split("/", 1)[1] if measurement_window and "/" in measurement_window else None,
+        "observed_timestamp_min": observed_timestamp_min,
+        "observed_timestamp_max": observed_timestamp_max,
         "run_config_file": to_repo_relative_path(run_config_file) if run_config_file else None,
         "run_config_hash": fingerprint_file(run_config_file),
         "trace_denominator_audit": trace_level_stats or {},
@@ -2612,6 +2701,23 @@ def main() -> None:
             "missing_timestamp_count": missing_timestamp_count,
             "timestamp_fallback_count": timestamp_fallback_count,
         }
+        observed_datetimes = [
+            parse_trace_datetime(row.get("timestamp"))
+            for row in trace_summary_rows
+            if parse_trace_datetime(row.get("timestamp")) is not None
+        ]
+        requested_window_start = (args.measurement_window or "").split("/", 1)[0] or None
+        requested_window_end = (
+            (args.measurement_window or "").split("/", 1)[1]
+            if args.measurement_window and "/" in args.measurement_window
+            else None
+        )
+        trace_level_stats.update({
+            "requested_window_start": requested_window_start,
+            "requested_window_end": requested_window_end,
+            "observed_timestamp_min": min(observed_datetimes).isoformat() if observed_datetimes else None,
+            "observed_timestamp_max": max(observed_datetimes).isoformat() if observed_datetimes else None,
+        })
         for key in (
             "valid_traces_total",
             "traces_with_service_entry_resolved",
@@ -2660,6 +2766,8 @@ def main() -> None:
                 "rtt_tolerance_ms": args.rtt_tolerance_ms,
                 "candidate_support_threshold": args.candidate_support_threshold,
             },
+            observed_timestamp_min=trace_level_stats["observed_timestamp_min"],
+            observed_timestamp_max=trace_level_stats["observed_timestamp_max"],
             path=match_manifest_output_path,
             match_output_file=output_results_path,
             match_stats_file=match_stats_output_path,
