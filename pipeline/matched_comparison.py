@@ -47,14 +47,15 @@ def nearest_time_probe_matches(left: pd.DataFrame, right: pd.DataFrame, toleranc
         return pd.DataFrame()
     left_frame["probe_key"] = left_frame["probe_id"].astype(str)
     right_frame["probe_key"] = right_frame["probe_id"].astype(str)
-    left_frame = left_frame.sort_values(["probe_key", "timestamp_dt"])
-    right_frame = right_frame.sort_values(["probe_key", "timestamp_dt"])
+    # merge_asof requires the time key to be globally monotonic even with a by-key.
+    left_frame = left_frame.sort_values(["timestamp_dt", "probe_key"])
+    right_frame = right_frame.sort_values(["timestamp_dt", "probe_key"])
     right_columns = right_frame[["probe_key", "timestamp_dt", "trace_id", "has_candidate"]].rename(
         columns={"timestamp_dt": "matched_timestamp_dt", "trace_id": "matched_trace_id", "has_candidate": "matched_has_candidate"}
     )
     matched = pd.merge_asof(
         left_frame,
-        right_columns.sort_values(["probe_key", "matched_timestamp_dt"]),
+        right_columns.sort_values(["matched_timestamp_dt", "probe_key"]),
         left_on="timestamp_dt",
         right_on="matched_timestamp_dt",
         by="probe_key",

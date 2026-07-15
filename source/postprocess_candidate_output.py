@@ -5391,7 +5391,7 @@ def main() -> None:
         index=False,
         encoding="utf-8-sig",
     )
-    service_country_corridor_concentration_summary.to_csv(
+    filter_auditable_paper_rows(service_country_corridor_concentration_summary).to_csv(
         paper_service_country_corridor_concentration_path,
         index=False,
         encoding="utf-8-sig",
@@ -5416,7 +5416,7 @@ def main() -> None:
         index=False,
         encoding="utf-8-sig",
     )
-    service_country_cross_layer_distribution_audit.to_csv(
+    filter_auditable_paper_rows(service_country_cross_layer_distribution_audit).to_csv(
         paper_service_country_cross_layer_distribution_path,
         index=False,
         encoding="utf-8-sig",
