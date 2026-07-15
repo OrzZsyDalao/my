@@ -8,10 +8,17 @@
 python -m pipeline.run_experiment --measurement-id 5009
 python -m pipeline.run_experiment --resume-run-id <failed_run_id>
 python -m pipeline.package_paper_results --run-id <run_id>
+```
+
+跨服务 matched comparison 被明确标记为 `optional_posthoc_analysis`，不会由全量 pipeline 自动运行，也不影响 measurement 完成状态或论文结果打包：
+
+```powershell
 python -m pipeline.matched_comparison --run-id <run_id> --comparison-services Wikipedia,Reddit
 ```
 
 论文正文的走廊集中度只使用 `international_inter_region` 与 `domestic_inter_region` 候选。`intra_landing_region` 候选仍保留在可行候选审计和补充输出中，但不会进入正文的跨区域走廊分布。完整 summary 同时输出 `all_publicly_visible` 和 `resolved_entry_only` 两种 path scope；所有 `paper_*.csv` 均严格限制为 `auditable_paper_case == True`。RTT 与生命周期等候选级统计使用 `candidate_rows_*` 命名，`atomic_segments_*` 只统计唯一 hop-pair 观测。
+
+论文可审计阈值使用完整“国家—服务—path scope”分组内 probe 与 probe ASN 的并集。每条走廊的 `unique_probes` 仅作为走廊内描述；`group_unique_probes` 和 `group_unique_probe_asns` 才是 corridor concentration 与可审计判定使用的组级数量。
 
 默认参数受版本控制，位于 `config/default_experiment.json`。`all_feasible_segments` 是 infeasibility-first 候选集合；`all_segments` 仅是保留兼容性的 support-thresholded 视图。Candidate support 是证据分数，不是实际海缆使用概率。由于当前海缆元数据通常只提供无序 landing-point 集合，而没有路由或 branch topology，默认的 `allow_unordered_reachability` 会枚举同一条海缆上有效登陆站之间的两两组合，作为可达性候选。这些候选会明确标注为 `unordered_cable_reachability`，不代表已确认的直接物理海缆段。只有在有显式有序路径或 segment/branch topology 时，才建议使用 `--cable-topology-policy adjacent_only` 进行严格直接物理段的敏感性分析。timeout gap 和 same-city geolocation ambiguity 会保留为字段。observation mass 只表示 traceroute 观测到的路径转换，不表示流量、数据包或实际海缆利用率。
 

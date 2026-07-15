@@ -1536,6 +1536,8 @@ def summarize_corridor_observation_distribution(
         "unique_traceroutes",
         "unique_probes",
         "unique_probe_asns",
+        "group_unique_probes",
+        "group_unique_probe_asns",
         "share_of_observation_mass",
         "rank_within_group",
         "is_top1_corridor",
@@ -1564,6 +1566,21 @@ def summarize_corridor_observation_distribution(
         )
         .reset_index()
     )
+    group_probe_counts = (
+        segment_corridor_mass.groupby(list(group_fields), dropna=False)
+        .agg(
+            group_unique_probes=(
+                "probe_id",
+                lambda series: series.astype(str).replace({"": np.nan, "nan": np.nan, "NA": np.nan}).dropna().nunique(),
+            ),
+            group_unique_probe_asns=(
+                "probe_asn_norm",
+                lambda series: series.astype(str).replace({"": np.nan, "nan": np.nan, "NA": np.nan}).dropna().nunique(),
+            ),
+        )
+        .reset_index()
+    )
+    aggregated = aggregated.merge(group_probe_counts, on=list(group_fields), how="left", validate="many_to_one")
     total_mass = aggregated.groupby(list(group_fields), dropna=False)["observation_mass"].transform("sum")
     aggregated["share_of_observation_mass"] = np.where(total_mass > 0, aggregated["observation_mass"] / total_mass, np.nan)
     aggregated = rank_within_group(aggregated, group_fields, "observation_mass", "rank_within_group")
@@ -1795,8 +1812,14 @@ def build_corridor_concentration_summary(
         total_mass = float(pd.to_numeric(group["observation_mass"], errors="coerce").sum())
         domestic_mass = float(pd.to_numeric(group["domestic_segment_mass"], errors="coerce").sum())
         international_mass = float(pd.to_numeric(group["international_segment_mass"], errors="coerce").sum())
-        unique_probes = int(pd.to_numeric(group["unique_probes"], errors="coerce").fillna(0).max())
-        unique_probe_asns = int(pd.to_numeric(group["unique_probe_asns"], errors="coerce").fillna(0).max())
+        group_probe_values = pd.to_numeric(group["group_unique_probes"], errors="coerce").dropna().unique()
+        group_probe_asn_values = pd.to_numeric(group["group_unique_probe_asns"], errors="coerce").dropna().unique()
+        if len(group_probe_values) != 1 or len(group_probe_asn_values) != 1:
+            raise RuntimeError(
+                "Corridor concentration requires one group-level probe union count per analysis group."
+            )
+        unique_probes = int(group_probe_values[0])
+        unique_probe_asns = int(group_probe_asn_values[0])
         total_segments = int(round(total_mass)) if pd.notna(total_mass) else 0
         sufficiency = evaluate_paper_observation_sufficiency(
             total_observations=total_segments,
@@ -5284,6 +5307,8 @@ def main() -> None:
                 "unique_traceroutes",
                 "unique_probes",
                 "unique_probe_asns",
+                "group_unique_probes",
+                "group_unique_probe_asns",
                 "share_of_country_observation_mass",
                 "rank_within_country",
                 "is_top1_corridor",
@@ -5315,6 +5340,8 @@ def main() -> None:
                 "unique_traceroutes",
                 "unique_probes",
                 "unique_probe_asns",
+                "group_unique_probes",
+                "group_unique_probe_asns",
                 "share_of_unit_observation_mass",
                 "rank_within_unit",
                 "is_top1_corridor",

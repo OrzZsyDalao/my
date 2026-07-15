@@ -2,6 +2,7 @@
 
 This is the paper pipeline entry point.  It intentionally never reuses output
 directories and records every completed measurement in the current run index.
+Optional cross-service matched comparisons are intentionally excluded.
 """
 
 from __future__ import annotations
@@ -173,7 +174,7 @@ def reference_input_descriptors(as_precompute_file: Path) -> List[Dict[str, Any]
 
 
 def main() -> None:
-    """Run selected measurements in an isolated, manifest-bound directory."""
+    """Run only per-measurement Stage 1, postprocess, and robustness stages."""
     args = parse_args()
     if args.run_id and args.resume_run_id:
         raise ValueError("Use either --run-id or --resume-run-id, not both.")

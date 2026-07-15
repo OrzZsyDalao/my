@@ -227,6 +227,46 @@ def test_observation_mass_deduplicates_corridors_per_atomic_segment():
     assert set(mass["raw_segment_count_with_corridor_feasible"]) == {1}
 
 
+def test_corridor_summary_uses_group_probe_union_not_largest_corridor_count():
+    """Disjoint probes across corridors must be unioned before paper audit thresholds are applied."""
+    rows = []
+    for index in range(30):
+        corridor_id = "corridor-a" if index < 15 else "corridor-b"
+        probe_number = index % 6 if index < 15 else 6 + ((index - 15) % 7)
+        probe_asn_number = probe_number % 2 if probe_number < 6 else 2 + (probe_number % 2)
+        rows.append(
+            {
+                "probe_country": "US",
+                "service_id": "svc",
+                "path_scope_stratum": "all_publicly_visible",
+                "corridor_id": corridor_id,
+                "corridor_label": corridor_id,
+                "msm_id": 5009,
+                "file_name": "sample.json",
+                "observation_mass": 1.0,
+                "raw_segment_count_with_corridor_feasible": 1,
+                "atomic_segment_id": f"segment-{index}",
+                "traceroute_observation_id": f"trace-{index}",
+                "probe_id": f"probe-{probe_number}",
+                "probe_asn_norm": f"AS{64500 + probe_asn_number}",
+                "domestic_segment_mass": 0.0,
+                "international_segment_mass": 1.0,
+            }
+        )
+    mass = pd.DataFrame(rows)
+    group_fields = ["probe_country", "service_id", "path_scope_stratum"]
+
+    distribution = post.summarize_corridor_observation_distribution(mass, group_fields)
+    summary = post.build_corridor_concentration_summary(distribution, group_fields).iloc[0]
+
+    assert sorted(distribution["unique_probes"].tolist()) == [6, 7]
+    assert distribution["group_unique_probes"].unique().tolist() == [13]
+    assert distribution["group_unique_probe_asns"].unique().tolist() == [4]
+    assert summary["unique_probes"] == 13
+    assert summary["unique_probe_asns"] == 4
+    assert bool(summary["auditable_paper_case"]) is True
+
+
 def test_network_and_corridor_summaries_use_same_atomic_segment_population():
     """Network and corridor concentration summaries should be based on the same atomic segments."""
     feasible = pd.DataFrame(

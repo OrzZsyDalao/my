@@ -13,6 +13,7 @@ from typing import Any, Dict, List
 from pipeline.common import REPO_DIR, sha256_file, write_json
 
 
+# Optional post-hoc matched-service outputs are intentionally not paper-package inputs.
 PAPER_FILES = (
     "dataset_summary.csv",
     "trace_denominator_audit.csv",

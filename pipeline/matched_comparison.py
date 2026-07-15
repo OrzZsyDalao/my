@@ -1,4 +1,8 @@
-"""Construct common-probe, nearest-time service comparisons inside one isolated run."""
+"""Optional post-hoc common-probe, nearest-time pairwise service comparison.
+
+This module is not invoked by the full experiment pipeline, does not affect
+measurement completion, and is not part of paper-package validation.
+"""
 
 from __future__ import annotations
 
@@ -11,6 +15,9 @@ import numpy as np
 import pandas as pd
 
 from pipeline.common import REPO_DIR
+
+
+ANALYSIS_ROLE = "optional_posthoc_analysis"
 
 
 def parse_args() -> argparse.Namespace:
@@ -89,78 +96,8 @@ def nearest_time_probe_matches(left: pd.DataFrame, right: pd.DataFrame, toleranc
     return pd.DataFrame(selected)
 
 
-def build_shared_service_time_snapshots(
-    frame: pd.DataFrame,
-    services: List[str],
-    tolerance_seconds: float,
-) -> pd.DataFrame:
-    """Build a common probe-time cohort present in every requested service."""
-    columns = [
-        "snapshot_id",
-        "probe_id",
-        "service_id",
-        "comparison_service_id",
-        "trace_id",
-        "timestamp",
-        "matched_time_delta_seconds",
-        "inter_region_candidate_exposure",
-    ]
-    if len(services) < 3 or frame.empty:
-        return pd.DataFrame(columns=columns)
-    anchor_service = services[0]
-    anchor = frame.loc[frame["service_id"].astype(str) == anchor_service].copy()
-    if anchor.empty:
-        return pd.DataFrame(columns=columns)
-    matches_by_service: Dict[str, pd.DataFrame] = {}
-    shared_anchor_ids = set(anchor["trace_id"].astype(str))
-    for service in services[1:]:
-        other = frame.loc[frame["service_id"].astype(str) == service].copy()
-        matches = nearest_time_probe_matches(anchor, other, tolerance_seconds)
-        matches_by_service[service] = matches
-        shared_anchor_ids &= set(matches.get("trace_id", pd.Series(dtype=object)).astype(str))
-    if not shared_anchor_ids:
-        return pd.DataFrame(columns=columns)
-
-    anchor_lookup = anchor.set_index(anchor["trace_id"].astype(str), drop=False)
-    rows: List[Dict[str, Any]] = []
-    for snapshot_number, anchor_trace_id in enumerate(sorted(shared_anchor_ids), start=1):
-        anchor_row = anchor_lookup.loc[anchor_trace_id]
-        if isinstance(anchor_row, pd.DataFrame):
-            anchor_row = anchor_row.iloc[0]
-        snapshot_id = f"snapshot-{snapshot_number}:{anchor_trace_id}"
-        rows.append(
-            {
-                "snapshot_id": snapshot_id,
-                "probe_id": anchor_row["probe_id"],
-                "service_id": anchor_service,
-                "comparison_service_id": "ALL_SERVICES",
-                "trace_id": anchor_trace_id,
-                "timestamp": anchor_row.get("timestamp"),
-                "matched_time_delta_seconds": 0.0,
-                "inter_region_candidate_exposure": bool(anchor_row.get("has_candidate", False)),
-            }
-        )
-        for service in services[1:]:
-            matched_row = matches_by_service[service].loc[
-                matches_by_service[service]["trace_id"].astype(str) == anchor_trace_id
-            ].iloc[0]
-            rows.append(
-                {
-                    "snapshot_id": snapshot_id,
-                    "probe_id": anchor_row["probe_id"],
-                    "service_id": service,
-                    "comparison_service_id": "ALL_SERVICES",
-                    "trace_id": matched_row["matched_trace_id"],
-                    "timestamp": matched_row["matched_timestamp_dt"],
-                    "matched_time_delta_seconds": float(matched_row["matched_time_delta_seconds"]),
-                    "inter_region_candidate_exposure": bool(matched_row["matched_has_candidate"]),
-                }
-            )
-    return pd.DataFrame(rows, columns=columns)
-
-
 def main() -> None:
-    """Write strict probe-and-nearest-time matched service comparison tables."""
+    """Write optional pairwise probe-and-nearest-time service comparisons."""
     args = parse_args()
     services = [item.strip() for item in args.comparison_services.split(",") if item.strip()]
     run_root = REPO_DIR / "runs" / args.run_id
@@ -176,11 +113,11 @@ def main() -> None:
             "unmatched_trace_count",
             "candidate_exposure_mean",
             "mean_matched_time_delta_seconds",
+            "analysis_role",
         ])
         empty.to_csv(output / "paper_matched_service_comparison.csv", index=False)
         empty.to_csv(output / "paper_matched_service_pairwise_differences.csv", index=False)
         empty.to_csv(output / "paper_matched_service_common_probe_coverage.csv", index=False)
-        empty.to_csv(output / "matched_service_shared_snapshots.csv", index=False)
         return
     frame["timestamp_dt"] = pd.to_datetime(frame.get("timestamp"), errors="coerce", utc=True)
     if "has_inter_region_candidate" not in frame.columns:
@@ -216,34 +153,12 @@ def main() -> None:
     coverage = pd.DataFrame(coverage_rows)
     comparison = pd.DataFrame(comparison_rows)
     differences = pd.DataFrame(difference_rows)
-    shared_snapshots = build_shared_service_time_snapshots(
-        frame,
-        services,
-        args.time_match_tolerance_seconds,
-    )
-    if not shared_snapshots.empty:
-        shared_tuple_count = int(shared_snapshots["snapshot_id"].nunique())
-        shared_probe_count = int(shared_snapshots["probe_id"].astype(str).nunique())
-        for service in services:
-            service_rows = shared_snapshots.loc[shared_snapshots["service_id"] == service]
-            comparison_rows_for_service = {
-                "service_id": service,
-                "comparison_service_id": "ALL_SERVICES",
-                "aggregation": "shared_probe_time_snapshot",
-                "matched_probe_count": shared_probe_count,
-                "matched_trace_tuple_count": shared_tuple_count,
-                "unmatched_trace_count": int(
-                    len(frame.loc[frame["service_id"].astype(str) == service]) - service_rows["trace_id"].nunique()
-                ),
-                "candidate_exposure_mean": float(service_rows["inter_region_candidate_exposure"].mean()),
-                "mean_matched_time_delta_seconds": float(service_rows["matched_time_delta_seconds"].mean()),
-            }
-            comparison = pd.concat([comparison, pd.DataFrame([comparison_rows_for_service])], ignore_index=True)
+    for output_frame in (coverage, comparison, differences):
+        output_frame["analysis_role"] = ANALYSIS_ROLE
     comparison.to_csv(output / "paper_matched_service_comparison.csv", index=False, encoding="utf-8-sig")
     differences.to_csv(output / "paper_matched_service_pairwise_differences.csv", index=False, encoding="utf-8-sig")
     coverage.to_csv(output / "paper_matched_service_common_probe_coverage.csv", index=False, encoding="utf-8-sig")
-    shared_snapshots.to_csv(output / "matched_service_shared_snapshots.csv", index=False, encoding="utf-8-sig")
-    print(f"Wrote strict probe-time matched comparison for {len(difference_rows)} service pairs: {output}")
+    print(f"Wrote optional post-hoc probe-time comparison for {len(difference_rows)} service pairs: {output}")
 
 
 if __name__ == "__main__":

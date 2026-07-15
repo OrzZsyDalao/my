@@ -10,7 +10,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.append(str(REPO_ROOT))
 
-from pipeline.matched_comparison import build_shared_service_time_snapshots, nearest_time_probe_matches
+from pipeline.matched_comparison import ANALYSIS_ROLE, nearest_time_probe_matches
 
 
 def test_nearest_time_matching_respects_probe_and_tolerance():
@@ -64,21 +64,12 @@ def test_nearest_time_matching_does_not_reuse_right_trace():
     assert matched["matched_trace_id"].nunique() == 1
 
 
-def test_shared_snapshot_requires_every_service_within_tolerance():
-    """The multi-service cohort should retain only anchor observations matched in every service."""
-    frame = pd.DataFrame(
-        {
-            "service_id": ["a", "b", "c"],
-            "probe_id": ["p1", "p1", "p1"],
-            "timestamp": ["2026-07-01T00:00:00Z", "2026-07-01T00:04:00Z", "2026-07-01T00:08:00Z"],
-            "timestamp_dt": pd.to_datetime(["2026-07-01T00:00:00Z", "2026-07-01T00:04:00Z", "2026-07-01T00:08:00Z"]),
-            "trace_id": ["a1", "b1", "c1"],
-            "has_candidate": [True, False, True],
-        }
-    )
+def test_matched_comparison_is_explicitly_optional_posthoc():
+    """Cross-service matching must remain outside full-run and paper-package requirements."""
+    from pipeline.package_paper_results import PAPER_FILES, REQUIRED_PAPER_FILES
 
-    snapshots = build_shared_service_time_snapshots(frame, ["a", "b", "c"], tolerance_seconds=600)
-
-    assert snapshots["snapshot_id"].nunique() == 1
-    assert set(snapshots["service_id"]) == {"a", "b", "c"}
-    assert snapshots["probe_id"].nunique() == 1
+    assert ANALYSIS_ROLE == "optional_posthoc_analysis"
+    assert not any("matched_service" in filename for filename in PAPER_FILES)
+    assert not any("matched_service" in filename for filename in REQUIRED_PAPER_FILES)
+    run_experiment_source = (REPO_ROOT / "pipeline" / "run_experiment.py").read_text(encoding="utf-8")
+    assert "matched_comparison" not in run_experiment_source
