@@ -64,6 +64,50 @@ Paper-primary outputs are:
 
 Observation mass is measurement-observed transition mass. It is **not** traffic volume, packet count, bandwidth, or cable-use probability. Candidate breadth, best-case upper-bound diversity, compression ratios, rank gaps, cable-level weighted support, product-of-experts ranking, and AS-owner reranking are retained as supplementary views.
 
+## Country Geography Candidate-Dependency Proxy
+
+`source/postprocess_candidate_output.py` also stratifies inter-region feasible-corridor candidate exposure by broad country geography. This is a descriptive candidate-dependency proxy, not observed cable use or national resilience.
+
+Input:
+
+- `data/country_geography_types.json`: versioned operational taxonomy. `landlocked_country_codes` and `island_or_archipelagic_country_codes` are explicit ISO alpha-2 lists; other valid two-letter codes use `default_valid_alpha2_type=coastal_mainland_or_mixed`. `unknown_country_codes` prevents missing values from silently becoming coastal countries.
+- `--country-geography-catalog <path>`: optional post-processing override. The default points to the tracked catalog above.
+
+Dependency-proxy tiers use the paper-primary inter-region candidate exposure rate:
+
+- `no_observed_inter_region_candidate_exposure`: rate = 0.
+- `low_candidate_dependency_proxy`: 0 < rate < 0.05.
+- `moderate_candidate_dependency_proxy`: 0.05 <= rate < 0.15.
+- `high_candidate_dependency_proxy`: 0.15 <= rate < 0.30.
+- `very_high_candidate_dependency_proxy`: rate >= 0.30.
+
+Generated outputs:
+
+| File | Meaning |
+| --- | --- |
+| `country_geography_candidate_dependency.csv` | Complete probe-country table, recomputed directly from trace rows for `all_publicly_visible` and `resolved_entry_only`. |
+| `service_country_geography_candidate_dependency.csv` | Complete country-service table enriched with corridor concentration and cross-layer distribution fields. |
+| `geography_type_candidate_dependency_summary.csv` | Geography-type comparison with trace-weighted rates, eligible-country medians/IQRs, and auditable concentration shares. |
+| `paper_service_country_geography_candidate_dependency.csv` | Paper-facing country-service rows restricted to `auditable_paper_case == True`. |
+| `country_geography_catalog_resolved.csv` | Country codes observed in the dataset, their resolved geography type, and classification provenance. |
+| `country_geography_dependency_manifest.json` | Catalog checksum, formulas, thresholds, path scopes, output list, and interpretation boundary. |
+
+Key fields:
+
+| Field | Meaning |
+| --- | --- |
+| `country_geography_type` | `landlocked`, `island_or_archipelagic`, `coastal_mainland_or_mixed`, or `unknown`. |
+| `traces_with_inter_region_candidates` | Unique traces containing at least one feasible domestic or international inter-region corridor candidate. |
+| `candidate_dependency_proxy_rate` | `traces_with_inter_region_candidates / total_valid_traces`; identical to the paper-primary inter-region exposure rate. |
+| `inter_region_candidate_rate_among_mappable_traces` | Conditional rate using only mappable traces as denominator; reported separately to expose mapping-coverage effects. |
+| `candidate_dependency_proxy_tier` | Transparent descriptive tier defined above. |
+| `trace_weighted_candidate_dependency_proxy_rate` | Geography-type aggregate recomputed from summed trace numerators and denominators, not an average of country percentages. |
+| `median_country_candidate_dependency_proxy_rate`, `*_p25`, `*_p75` | Distribution across geography-summary-eligible countries. |
+| `auditable_corridor_concentrated_unit_share` | Share of auditable service-country units with severe or moderate corridor observation concentration. |
+| `auditable_network_broad_physical_concentrated_unit_share` | Share of auditable units in the paper-primary cross-layer class. |
+
+`intra_landing_region` remains a supplementary rate and is excluded from `candidate_dependency_proxy_rate`. Geography type is an explanatory stratum only; it never changes candidate filtering, support scoring, corridor assignment, or paper audit eligibility.
+
 ## Interpretation Boundary
 
 - `candidate_support`, `fused_candidate_support`, and `normalized_candidate_support` are evidence scores, not ground-truth cable utilization.

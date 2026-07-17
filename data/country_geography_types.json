@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "classification_name": "operational_country_geography_type",
+  "description": "A transparent ISO alpha-2 operational taxonomy for stratifying submarine-corridor candidate exposure. It is not a resilience or dependency ground truth.",
+  "types": [
+    "landlocked",
+    "island_or_archipelagic",
+    "coastal_mainland_or_mixed",
+    "unknown"
+  ],
+  "landlocked_country_codes": [
+    "AD", "AF", "AM", "AT", "AZ", "BF", "BI", "BO", "BT", "BW",
+    "BY", "CF", "CH", "CZ", "ET", "HU", "KG", "KZ", "LA", "LI",
+    "LS", "LU", "MD", "MK", "ML", "MN", "MW", "NE", "NP", "PY",
+    "RS", "RW", "SK", "SM", "SS", "SZ", "TD", "TJ", "TM",
+    "UG", "UZ", "VA", "XK", "ZM", "ZW"
+  ],
+  "island_or_archipelagic_country_codes": [
+    "AG", "AI", "AS", "AW", "BB", "BH", "BL", "BM", "BN", "BS",
+    "BV", "CC", "CK", "CU", "CV", "CW", "CX", "CY", "DM", "DO",
+    "FJ", "FK", "FM", "FO", "GB", "GD", "GG", "GP", "GS", "GU",
+    "HM", "HT", "ID", "IE", "IM", "IS", "JE", "JM", "JP",
+    "KI", "KN", "KY", "LC", "LK", "MF", "MG", "MH", "MP",
+    "MQ", "MS", "MT", "MU", "MV", "NC", "NF", "NR", "NU", "NZ",
+    "PF", "PG", "PH", "PN", "PR", "PW", "RE", "SB", "SC", "SG",
+    "SH", "SJ", "ST", "SX", "TC", "TK", "TL", "TO", "TT", "TV",
+    "TW", "UM", "VC", "VG", "VI", "VU", "WS"
+  ],
+  "default_valid_alpha2_type": "coastal_mainland_or_mixed",
+  "unknown_country_codes": ["", "-", "--", "NA", "N/A", "NONE", "NULL", "UNKNOWN", "ZZ"],
+  "classification_boundary": "The taxonomy describes broad national geography only. It does not establish actual submarine-cable use, traffic dependency, resilience, or the physical path of a traceroute."
+}

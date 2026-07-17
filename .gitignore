@@ -12,6 +12,7 @@ paper_results/*
 
 data/**
 !data/
+!data/country_geography_types.json
 !data/asrelationship/
 !data/asrelationship/.gitkeep
 !data/cable/

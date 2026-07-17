@@ -151,7 +151,10 @@ def trace_audit_value(path: Path, column: str) -> str:
     return str(row.get(column, ""))
 
 
-def reference_input_descriptors(as_precompute_file: Path) -> List[Dict[str, Any]]:
+def reference_input_descriptors(
+    as_precompute_file: Path,
+    country_geography_catalog: Path,
+) -> List[Dict[str, Any]]:
     """Describe fixed reference inputs used by every measurement in the run."""
     paths = [
         REPO_DIR / "data" / "cable" / "landing-point-geo.json",
@@ -160,6 +163,7 @@ def reference_input_descriptors(as_precompute_file: Path) -> List[Dict[str, Any]
         REPO_DIR / "data" / "asrelationship" / "20250901.as-rel2.txt",
         REPO_DIR / "data" / "owner2asn" / "owner_to_asn.csv",
         REPO_DIR / "data" / "probe" / "20251201.json",
+        country_geography_catalog,
         as_precompute_file,
     ]
     rows = []
@@ -181,6 +185,10 @@ def main() -> None:
     input_dir = Path(args.input_dir).resolve()
     config_path = Path(args.config).resolve()
     config = load_config(config_path)
+    geography_catalog = Path(config["country_geography_catalog"])
+    if not geography_catalog.is_absolute():
+        geography_catalog = REPO_DIR / geography_catalog
+    geography_catalog = geography_catalog.resolve()
     commit_sha = git_commit_sha()
     run_id = args.resume_run_id or args.run_id or make_run_id(commit_sha)
     run_root = REPO_DIR / "runs" / run_id
@@ -228,7 +236,10 @@ def main() -> None:
             for record in records
         ]
         write_csv(run_root / "inputs" / "input_manifest.csv", input_rows)
-        reference_inputs = reference_input_descriptors(Path(args.as_precompute_file).resolve())
+        reference_inputs = reference_input_descriptors(
+            Path(args.as_precompute_file).resolve(),
+            geography_catalog,
+        )
         write_csv(run_root / "inputs" / "reference_input_manifest.csv", reference_inputs)
         run_manifest = {
             "run_id": run_id,
@@ -291,6 +302,7 @@ def main() -> None:
         postprocess_command = [
             sys.executable, "source/postprocess_candidate_output.py", "--input",
             str(measurement_dir / "cable_matching_output.json"), "--output", str(measurement_dir),
+            "--country-geography-catalog", str(geography_catalog),
         ]
         robustness_command = [
             sys.executable, "source/robustness_compare.py", "--input",
@@ -304,6 +316,8 @@ def main() -> None:
             ))
             postprocess_ready = all((measurement_dir / filename).exists() for filename in (
                 "trace_candidate_support.csv", "dataset_summary.csv", "framework_alignment_report.json",
+                "paper_service_country_geography_candidate_dependency.csv",
+                "country_geography_dependency_manifest.json",
             ))
             robustness_ready = (measurement_dir / "robustness_conservative_candidate_audit.csv").exists()
             if not stage_one_ready:

@@ -1,5 +1,49 @@
 # infocom26 项目说明
 
+## 国家地理类型与海缆候选依赖代理分析
+
+`source/postprocess_candidate_output.py` 会按国家的宏观地理类型，对 inter-region 可行海缆走廊候选暴露率进行分层统计。这里的“依赖率”是候选依赖代理，不是已观测到的真实海缆使用率，也不是国家韧性结论。
+
+输入文件和参数：
+
+- `data/country_geography_types.json`：受版本控制的操作性分类目录。`landlocked_country_codes` 和 `island_or_archipelagic_country_codes` 使用显式 ISO alpha-2 列表；其他有效两位代码按 `default_valid_alpha2_type=coastal_mainland_or_mixed` 处理；`unknown_country_codes` 防止缺失国家被错误归入沿海国家。
+- `--country-geography-catalog <path>`：可选的后处理覆盖参数，默认使用上述仓库内目录。
+
+候选依赖代理分级使用正文口径的 inter-region candidate exposure rate：
+
+- `no_observed_inter_region_candidate_exposure`：rate = 0。
+- `low_candidate_dependency_proxy`：0 < rate < 0.05。
+- `moderate_candidate_dependency_proxy`：0.05 <= rate < 0.15。
+- `high_candidate_dependency_proxy`：0.15 <= rate < 0.30。
+- `very_high_candidate_dependency_proxy`：rate >= 0.30。
+
+新增输出文件：
+
+| 文件 | 含义 |
+| --- | --- |
+| `country_geography_candidate_dependency.csv` | 完整国家表，直接从 trace 行重新计算，同时保留 `all_publicly_visible` 和 `resolved_entry_only`。 |
+| `service_country_geography_candidate_dependency.csv` | 完整国家—服务表，并合并 corridor concentration 和 cross-layer distribution 字段。 |
+| `geography_type_candidate_dependency_summary.csv` | 按地理类型汇总 trace-weighted rate、符合统计条件国家的中位数/IQR，以及可审计集中度比例。 |
+| `paper_service_country_geography_candidate_dependency.csv` | 论文表，只保留 `auditable_paper_case == True` 的国家—服务行。 |
+| `country_geography_catalog_resolved.csv` | 本次数据实际出现的国家代码、最终地理类型和分类来源。 |
+| `country_geography_dependency_manifest.json` | 记录目录校验和、公式、阈值、path scope、输出清单和解释边界。 |
+
+关键字段：
+
+| 字段 | 含义 |
+| --- | --- |
+| `country_geography_type` | `landlocked`、`island_or_archipelagic`、`coastal_mainland_or_mixed` 或 `unknown`。 |
+| `traces_with_inter_region_candidates` | 至少包含一个国内或国际 inter-region 可行走廊候选的唯一 trace 数量。 |
+| `candidate_dependency_proxy_rate` | `traces_with_inter_region_candidates / total_valid_traces`，即正文主候选暴露率。 |
+| `inter_region_candidate_rate_among_mappable_traces` | 仅以 mappable traces 为分母的条件比例，用于揭示不同地理类型的可映射覆盖差异。 |
+| `candidate_dependency_proxy_tier` | 按上述固定阈值得到的描述性分级。 |
+| `trace_weighted_candidate_dependency_proxy_rate` | 对分子和分母直接求和得到的地理类型总体率，不是国家百分比的简单平均。 |
+| `median_country_candidate_dependency_proxy_rate`、`*_p25`、`*_p75` | 符合 geography summary 条件的国家间分布。 |
+| `auditable_corridor_concentrated_unit_share` | 可审计国家—服务单元中 severe/moderate corridor concentration 的比例。 |
+| `auditable_network_broad_physical_concentrated_unit_share` | 可审计单元中属于论文主 cross-layer 类别的比例。 |
+
+`intra_landing_region` 只作为补充比例，不进入 `candidate_dependency_proxy_rate`。国家地理类型仅用于解释性分层，不参与候选过滤、support scoring、corridor assignment 或 paper audit eligibility。
+
 ## Run-isolated 可复现运行
 
 论文实验写入独立的 `runs/<run_id>/`；历史 `output/` 目录不能作为论文结果包。每个 run 记录输入校验和、参数配置、Git commit、measurement 状态、日志和 trace 分母。结果打包只读取当前 run index 中 `status=completed` 的 measurement，避免历史输出污染。

@@ -16,6 +16,120 @@ if str(SOURCE_DIR) not in sys.path:
 import postprocess_candidate_output as post
 
 
+def test_country_geography_catalog_classifies_operational_types():
+    """The versioned catalog should classify landlocked, island, and default coastal countries."""
+    catalog = post.load_country_geography_catalog(str(REPO_ROOT / "data" / "country_geography_types.json"))
+
+    assert post.classify_country_geography_type("CH", catalog)[0] == "landlocked"
+    assert post.classify_country_geography_type("JP", catalog)[0] == "island_or_archipelagic"
+    assert post.classify_country_geography_type("US", catalog)[0] == "coastal_mainland_or_mixed"
+    assert post.classify_country_geography_type("NA", catalog)[0] == "unknown"
+    assert not (
+        catalog["landlocked_country_codes"]
+        & catalog["island_or_archipelagic_country_codes"]
+    )
+    assert all(len(code) == 2 and code.isalpha() for code in catalog["landlocked_country_codes"])
+    assert all(len(code) == 2 and code.isalpha() for code in catalog["island_or_archipelagic_country_codes"])
+
+
+def test_country_geography_dependency_recomputes_trace_level_rate():
+    """Country dependency proxies must use trace counts rather than averaging service rates."""
+    trace_frame = pd.DataFrame(
+        [
+            {
+                "trace_id": "t1",
+                "probe_country": "CH",
+                "service_id": "svc-a",
+                "probe_id": "p1",
+                "probe_asn_norm": "AS64500",
+                "service_entry_resolved": True,
+                "has_at_least_one_mappable_segment": True,
+                "has_inter_region_candidate": True,
+                "has_domestic_inter_region_candidate": False,
+                "has_international_inter_region_candidate": True,
+                "has_intra_region_candidate": False,
+            },
+            {
+                "trace_id": "t2",
+                "probe_country": "CH",
+                "service_id": "svc-b",
+                "probe_id": "p2",
+                "probe_asn_norm": "AS64501",
+                "service_entry_resolved": False,
+                "has_at_least_one_mappable_segment": True,
+                "has_inter_region_candidate": False,
+                "has_domestic_inter_region_candidate": False,
+                "has_international_inter_region_candidate": False,
+                "has_intra_region_candidate": True,
+            },
+        ]
+    )
+    catalog = post.load_country_geography_catalog(str(REPO_ROOT / "data" / "country_geography_types.json"))
+
+    result = post.build_country_geography_candidate_dependency(trace_frame, catalog)
+    all_visible = result.loc[result["path_scope_stratum"] == "all_publicly_visible"].iloc[0]
+    resolved = result.loc[result["path_scope_stratum"] == "resolved_entry_only"].iloc[0]
+
+    assert all_visible["total_valid_traces"] == 2
+    assert all_visible["candidate_dependency_proxy_rate"] == 0.5
+    assert all_visible["country_geography_type"] == "landlocked"
+    assert resolved["total_valid_traces"] == 1
+    assert resolved["candidate_dependency_proxy_rate"] == 1.0
+
+
+def test_geography_type_summary_uses_trace_weighted_rate():
+    """Geography summaries should expose trace-weighted rates alongside country distributions."""
+    country = pd.DataFrame(
+        [
+            {
+                "probe_country": "US",
+                "country_geography_type": "coastal_mainland_or_mixed",
+                "path_scope_stratum": "all_publicly_visible",
+                "total_valid_traces": 100,
+                "traces_with_inter_region_candidates": 10,
+                "candidate_dependency_proxy_rate": 0.10,
+                "candidate_dependency_proxy_tier": "moderate_candidate_dependency_proxy",
+                "geography_summary_eligible": True,
+            },
+            {
+                "probe_country": "CA",
+                "country_geography_type": "coastal_mainland_or_mixed",
+                "path_scope_stratum": "all_publicly_visible",
+                "total_valid_traces": 10,
+                "traces_with_inter_region_candidates": 5,
+                "candidate_dependency_proxy_rate": 0.50,
+                "candidate_dependency_proxy_tier": "very_high_candidate_dependency_proxy",
+                "geography_summary_eligible": True,
+            },
+            {
+                "probe_country": "MX",
+                "country_geography_type": "coastal_mainland_or_mixed",
+                "path_scope_stratum": "all_publicly_visible",
+                "total_valid_traces": 0,
+                "traces_with_inter_region_candidates": 0,
+                "candidate_dependency_proxy_rate": np.nan,
+                "candidate_dependency_proxy_tier": "unknown_candidate_dependency_proxy",
+                "geography_summary_eligible": False,
+            },
+        ]
+    )
+    service = pd.DataFrame(
+        columns=[
+            "country_geography_type",
+            "path_scope_stratum",
+            "auditable_paper_case",
+            "corridor_concentration_tier",
+            "cross_layer_distribution_class",
+        ]
+    )
+
+    summary = post.build_geography_type_candidate_dependency_summary(country, service).iloc[0]
+
+    assert math.isclose(summary["trace_weighted_candidate_dependency_proxy_rate"], 15 / 110)
+    assert summary["median_country_candidate_dependency_proxy_rate"] == 0.30
+    assert summary["num_countries"] == 2
+
+
 def test_confirmed_active_only_excludes_unknown_lifecycle_by_default():
     """Paper-primary lifecycle filtering should exclude unknown cable metadata."""
     pytest.importorskip("maxminddb")

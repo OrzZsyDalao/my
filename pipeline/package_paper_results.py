@@ -20,6 +20,7 @@ PAPER_FILES = (
     "filtering_breakdown.csv",
     "candidate_space_profile.csv",
     "paper_service_country_physical_exposure.csv",
+    "paper_service_country_geography_candidate_dependency.csv",
     "paper_service_country_corridor_concentration.csv",
     "paper_service_country_cross_layer_distribution.csv",
     "paper_corridor_observation_concentration_cases.csv",
@@ -67,6 +68,7 @@ def write_readme(path: Path, run_id: str) -> None:
         "## 11. Robustness\nSensitivity outputs retain timeout-gap, geolocation, topology, and support uncertainty where available.",
         "## 12. Candidate breadth\nUnique corridor counts are candidate-space breadth descriptors, not the primary observation-concentration metric.",
         "## 13. Interpretation boundary\nNo table establishes real traffic volume, actual cable use, or ground-truth cable attribution.",
+        "## 14. Country geography stratification\nThe country-geography table reports an inter-region feasible-corridor candidate-dependency proxy. Geography type is explanatory metadata only and never changes physical candidate construction.",
     ]
     path.write_text("\n\n".join(sections) + "\n", encoding="utf-8")
 

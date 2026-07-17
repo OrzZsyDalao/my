@@ -17,6 +17,7 @@ BASE_DIR = os.path.dirname(SOURCE_DIR)
 DEFAULT_INPUT = os.path.join(BASE_DIR, "output", "result", "cable_matching_output.json")
 DEFAULT_OUTPUT = os.path.join(BASE_DIR, "output", "result")
 PEERINGDB_DESCRIPTOR_PATH = os.path.join(DEFAULT_OUTPUT, "country_peeringdb_descriptors.csv")
+DEFAULT_COUNTRY_GEOGRAPHY_CATALOG = os.path.join(BASE_DIR, "data", "country_geography_types.json")
 DEFAULT_UNIT_FIELDS = ["probe_country", "service_id"]
 # Paper-primary relative target for the upper-bound mismatch view.
 TARGET_MISMATCH_CATEGORY = "network_high_physical_upper_low"
@@ -27,6 +28,11 @@ MINIMUM_MAPPABLE_SEGMENTS = 30
 MINIMUM_UNIQUE_PROBES = 10
 MINIMUM_UNIQUE_PROBE_ASNS = 3
 MAXIMUM_COUNTRY_FALLBACK_SHARE = 0.3
+COUNTRY_DEPENDENCY_PROXY_THRESHOLDS = {
+    "low": 0.05,
+    "moderate": 0.15,
+    "high": 0.30,
+}
 QUADRANT_ORDER = [
     "network_high_physical_low",
     "network_high_physical_high",
@@ -194,6 +200,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--minimum-unique-probes", type=int, default=MINIMUM_UNIQUE_PROBES)
     parser.add_argument("--minimum-unique-probe-asns", type=int, default=MINIMUM_UNIQUE_PROBE_ASNS)
     parser.add_argument("--maximum-country-fallback-share", type=float, default=MAXIMUM_COUNTRY_FALLBACK_SHARE)
+    parser.add_argument(
+        "--country-geography-catalog",
+        default=DEFAULT_COUNTRY_GEOGRAPHY_CATALOG,
+        help="JSON catalog used to classify probe countries by broad geography type.",
+    )
     return parser.parse_args()
 
 
@@ -601,6 +612,497 @@ def load_peeringdb_descriptors(output_dir: str) -> pd.DataFrame:
         return pd.DataFrame()
     frame["country"] = frame["country"].fillna("").astype(str).str.upper()
     return frame
+
+
+def load_country_geography_catalog(path: str) -> Dict[str, Any]:
+    """Load the transparent country-geography taxonomy used for stratified analysis."""
+    empty_catalog = {
+        "schema_version": "missing",
+        "classification_name": "operational_country_geography_type",
+        "types": ["landlocked", "island_or_archipelagic", "coastal_mainland_or_mixed", "unknown"],
+        "landlocked_country_codes": set(),
+        "island_or_archipelagic_country_codes": set(),
+        "unknown_country_codes": {"", "NA", "UNKNOWN", "ZZ"},
+        "default_valid_alpha2_type": "unknown",
+        "classification_boundary": "Country geography is unavailable; no dependency interpretation is permitted.",
+        "catalog_path": path,
+        "catalog_loaded": False,
+    }
+    if not path or not os.path.exists(path):
+        print(f"Warning: country geography catalog not found: {path}")
+        return empty_catalog
+    try:
+        with open(path, "r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        print(f"Warning: failed to read country geography catalog at {path}: {exc}")
+        return empty_catalog
+    if not isinstance(payload, dict):
+        return empty_catalog
+    result = dict(payload)
+    for key in (
+        "landlocked_country_codes",
+        "island_or_archipelagic_country_codes",
+        "unknown_country_codes",
+    ):
+        result[key] = {
+            str(value).strip().upper()
+            for value in payload.get(key, [])
+        }
+    result["catalog_path"] = path
+    result["catalog_loaded"] = True
+    return result
+
+
+def classify_country_geography_type(country: Any, catalog: Dict[str, Any]) -> Tuple[str, str]:
+    """Classify one ISO-like country code using the configured operational taxonomy."""
+    code = str(country or "").strip().upper()
+    if code in catalog.get("unknown_country_codes", set()) or len(code) != 2 or not code.isalpha():
+        return "unknown", "unclassified_or_missing_country_code"
+    if code in catalog.get("landlocked_country_codes", set()):
+        return "landlocked", "catalog_landlocked_list"
+    if code in catalog.get("island_or_archipelagic_country_codes", set()):
+        return "island_or_archipelagic", "catalog_island_or_archipelagic_list"
+    return str(catalog.get("default_valid_alpha2_type", "unknown")), "catalog_default_alpha2_rule"
+
+
+def attach_country_geography_type(
+    frame: pd.DataFrame,
+    catalog: Dict[str, Any],
+    country_column: str = "probe_country",
+) -> pd.DataFrame:
+    """Attach geography type and provenance without changing the analysis population."""
+    result = frame.copy()
+    if country_column not in result.columns:
+        result[country_column] = "NA"
+    classified = result[country_column].apply(lambda value: classify_country_geography_type(value, catalog))
+    result["country_geography_type"] = classified.apply(lambda value: value[0])
+    result["country_geography_classification_source"] = classified.apply(lambda value: value[1])
+    return result
+
+
+def classify_candidate_dependency_proxy(rate: Any) -> str:
+    """Map an inter-region candidate-exposure rate to transparent descriptive tiers."""
+    numeric = pd.to_numeric(pd.Series([rate]), errors="coerce").iloc[0]
+    if pd.isna(numeric):
+        return "unknown_candidate_dependency_proxy"
+    numeric = float(numeric)
+    if numeric <= 0:
+        return "no_observed_inter_region_candidate_exposure"
+    if numeric < COUNTRY_DEPENDENCY_PROXY_THRESHOLDS["low"]:
+        return "low_candidate_dependency_proxy"
+    if numeric < COUNTRY_DEPENDENCY_PROXY_THRESHOLDS["moderate"]:
+        return "moderate_candidate_dependency_proxy"
+    if numeric < COUNTRY_DEPENDENCY_PROXY_THRESHOLDS["high"]:
+        return "high_candidate_dependency_proxy"
+    return "very_high_candidate_dependency_proxy"
+
+
+def _count_unique_non_missing(frame: pd.DataFrame, column: str) -> int:
+    """Count stable non-empty identifiers in a possibly sparse frame."""
+    if column not in frame.columns or frame.empty:
+        return 0
+    values = frame[column].astype(str).str.strip().replace(
+        {"": np.nan, "nan": np.nan, "None": np.nan, "NA": np.nan}
+    )
+    return int(values.dropna().nunique())
+
+
+def build_country_geography_candidate_dependency(
+    trace_frame: pd.DataFrame,
+    catalog: Dict[str, Any],
+) -> pd.DataFrame:
+    """Recompute country candidate-exposure proxies directly from trace observations."""
+    columns = [
+        "probe_country",
+        "country_geography_type",
+        "country_geography_classification_source",
+        "path_scope_stratum",
+        "total_valid_traces",
+        "mappable_traces",
+        "traces_with_inter_region_candidates",
+        "traces_with_domestic_inter_region_candidates",
+        "traces_with_international_inter_region_candidates",
+        "traces_with_intra_region_candidates",
+        "inter_region_candidate_exposure_rate",
+        "inter_region_candidate_rate_among_mappable_traces",
+        "domestic_inter_region_candidate_exposure_rate",
+        "international_inter_region_candidate_exposure_rate",
+        "intra_region_candidate_rate",
+        "candidate_dependency_proxy_rate",
+        "candidate_dependency_proxy_tier",
+        "unique_services",
+        "unique_probes",
+        "unique_probe_asns",
+        "service_entry_resolution_rate",
+        "geography_summary_eligible",
+        "geography_summary_eligibility_reason",
+        "candidate_dependency_proxy_interpretation",
+    ]
+    if trace_frame.empty:
+        return pd.DataFrame(columns=columns)
+    rows: List[Dict[str, Any]] = []
+    for probe_country, country_group in trace_frame.groupby("probe_country", dropna=False):
+        resolved_mask = country_group.get(
+            "service_entry_resolved",
+            pd.Series(False, index=country_group.index, dtype=bool),
+        ).fillna(False).astype(bool)
+        for path_scope_stratum, scoped_group in (
+            ("all_publicly_visible", country_group),
+            ("resolved_entry_only", country_group.loc[resolved_mask]),
+        ):
+            dedup = scoped_group.drop_duplicates(subset=["trace_id"]).copy()
+            total = int(len(dedup))
+            mappable = int(
+                dedup.get("has_at_least_one_mappable_segment", pd.Series(index=dedup.index, dtype=bool))
+                .fillna(False)
+                .astype(bool)
+                .sum()
+            )
+            inter_region = int(
+                dedup.get("has_inter_region_candidate", pd.Series(index=dedup.index, dtype=bool))
+                .fillna(False)
+                .astype(bool)
+                .sum()
+            )
+            domestic = int(
+                dedup.get("has_domestic_inter_region_candidate", pd.Series(index=dedup.index, dtype=bool))
+                .fillna(False)
+                .astype(bool)
+                .sum()
+            )
+            international = int(
+                dedup.get("has_international_inter_region_candidate", pd.Series(index=dedup.index, dtype=bool))
+                .fillna(False)
+                .astype(bool)
+                .sum()
+            )
+            intra_region = int(
+                dedup.get("has_intra_region_candidate", pd.Series(index=dedup.index, dtype=bool))
+                .fillna(False)
+                .astype(bool)
+                .sum()
+            )
+            unique_probes = _count_unique_non_missing(dedup, "probe_id")
+            unique_probe_asns = _count_unique_non_missing(dedup, "probe_asn_norm")
+            eligible = bool(
+                mappable >= MINIMUM_MAPPABLE_SEGMENTS
+                and unique_probes >= MINIMUM_UNIQUE_PROBES
+                and unique_probe_asns >= MINIMUM_UNIQUE_PROBE_ASNS
+            )
+            failed = []
+            if mappable < MINIMUM_MAPPABLE_SEGMENTS:
+                failed.append("minimum_mappable_traces")
+            if unique_probes < MINIMUM_UNIQUE_PROBES:
+                failed.append("minimum_unique_probes")
+            if unique_probe_asns < MINIMUM_UNIQUE_PROBE_ASNS:
+                failed.append("minimum_unique_probe_asns")
+            dependency_rate = float(inter_region / total) if total else np.nan
+            geography_type, geography_source = classify_country_geography_type(probe_country, catalog)
+            rows.append(
+                {
+                    "probe_country": str(probe_country),
+                    "country_geography_type": geography_type,
+                    "country_geography_classification_source": geography_source,
+                    "path_scope_stratum": path_scope_stratum,
+                    "total_valid_traces": total,
+                    "mappable_traces": mappable,
+                    "traces_with_inter_region_candidates": inter_region,
+                    "traces_with_domestic_inter_region_candidates": domestic,
+                    "traces_with_international_inter_region_candidates": international,
+                    "traces_with_intra_region_candidates": intra_region,
+                    "inter_region_candidate_exposure_rate": dependency_rate,
+                    "inter_region_candidate_rate_among_mappable_traces": float(inter_region / mappable) if mappable else np.nan,
+                    "domestic_inter_region_candidate_exposure_rate": float(domestic / total) if total else np.nan,
+                    "international_inter_region_candidate_exposure_rate": float(international / total) if total else np.nan,
+                    "intra_region_candidate_rate": float(intra_region / total) if total else np.nan,
+                    "candidate_dependency_proxy_rate": dependency_rate,
+                    "candidate_dependency_proxy_tier": classify_candidate_dependency_proxy(dependency_rate),
+                    "unique_services": _count_unique_non_missing(dedup, "service_id"),
+                    "unique_probes": unique_probes,
+                    "unique_probe_asns": unique_probe_asns,
+                    "service_entry_resolution_rate": (
+                        float(dedup.get("service_entry_resolved", pd.Series(index=dedup.index, dtype=bool)).fillna(False).astype(bool).mean())
+                        if total
+                        else np.nan
+                    ),
+                    "geography_summary_eligible": eligible,
+                    "geography_summary_eligibility_reason": "eligible" if eligible else "insufficient_" + ",".join(failed),
+                    "candidate_dependency_proxy_interpretation": (
+                        "trace share with at least one feasible domestic or international inter-region submarine-corridor candidate; "
+                        "not actual cable use or traffic dependency"
+                    ),
+                }
+            )
+    return pd.DataFrame(rows, columns=columns).sort_values(
+        ["probe_country", "path_scope_stratum"]
+    ).reset_index(drop=True)
+
+
+def build_service_country_geography_candidate_dependency(
+    service_exposure: pd.DataFrame,
+    corridor_summary: pd.DataFrame,
+    cross_layer_summary: pd.DataFrame,
+    catalog: Dict[str, Any],
+) -> pd.DataFrame:
+    """Enrich service-country exposure with geography and corridor-distribution context."""
+    result = attach_country_geography_type(service_exposure, catalog, "probe_country")
+    if result.empty:
+        for column in [
+            "candidate_dependency_proxy_rate",
+            "candidate_dependency_proxy_rate_among_mappable_traces",
+            "candidate_dependency_proxy_tier",
+            "candidate_dependency_proxy_interpretation",
+        ]:
+            result[column] = pd.Series(dtype=object)
+        return result
+    result["candidate_dependency_proxy_rate"] = pd.to_numeric(
+        result.get("inter_region_candidate_exposure_rate"), errors="coerce"
+    )
+    exposed = pd.to_numeric(
+        result.get("traces_with_feasible_submarine_corridor_candidates"), errors="coerce"
+    )
+    mappable = pd.to_numeric(result.get("mappable_traces"), errors="coerce")
+    result["candidate_dependency_proxy_rate_among_mappable_traces"] = np.where(
+        mappable > 0,
+        exposed / mappable,
+        np.nan,
+    )
+    result["candidate_dependency_proxy_tier"] = result["candidate_dependency_proxy_rate"].apply(
+        classify_candidate_dependency_proxy
+    )
+    result["candidate_dependency_proxy_interpretation"] = (
+        "descriptive inter-region feasible-corridor candidate exposure; not actual cable use or traffic dependency"
+    )
+    join_fields = ["probe_country", "service_id", "path_scope_stratum"]
+    if not corridor_summary.empty:
+        corridor_columns = join_fields + [
+            column
+            for column in [
+                "total_mappable_segments",
+                "top1_corridor_share",
+                "top3_corridor_share",
+                "effective_corridor_count",
+                "corridor_concentration_tier",
+            ]
+            if column in corridor_summary.columns
+        ]
+        result = result.merge(
+            corridor_summary[corridor_columns].drop_duplicates(subset=join_fields),
+            on=join_fields,
+            how="left",
+        )
+    if not cross_layer_summary.empty:
+        cross_columns = join_fields + [
+            column
+            for column in [
+                "effective_network_transition_count",
+                "network_transition_concentration_tier",
+                "cross_layer_distribution_class",
+            ]
+            if column in cross_layer_summary.columns
+        ]
+        result = result.merge(
+            cross_layer_summary[cross_columns].drop_duplicates(subset=join_fields),
+            on=join_fields,
+            how="left",
+        )
+    return result
+
+
+def build_geography_type_candidate_dependency_summary(
+    country_dependency: pd.DataFrame,
+    service_dependency: pd.DataFrame,
+) -> pd.DataFrame:
+    """Summarize trace-weighted exposure and country-level distributions by geography type."""
+    columns = [
+        "country_geography_type",
+        "path_scope_stratum",
+        "num_countries",
+        "num_geography_summary_eligible_countries",
+        "total_valid_traces",
+        "traces_with_inter_region_candidates",
+        "trace_weighted_candidate_dependency_proxy_rate",
+        "eligible_trace_weighted_candidate_dependency_proxy_rate",
+        "median_country_candidate_dependency_proxy_rate",
+        "country_candidate_dependency_proxy_rate_p25",
+        "country_candidate_dependency_proxy_rate_p75",
+        "high_or_very_high_country_share",
+        "num_service_country_units",
+        "num_auditable_service_country_units",
+        "auditable_corridor_concentrated_unit_share",
+        "auditable_network_broad_physical_concentrated_unit_share",
+        "interpretation_boundary",
+    ]
+    if country_dependency.empty:
+        return pd.DataFrame(columns=columns)
+    rows: List[Dict[str, Any]] = []
+    for (geography_type, path_scope), group in country_dependency.groupby(
+        ["country_geography_type", "path_scope_stratum"], dropna=False
+    ):
+        observed_group = group.loc[
+            pd.to_numeric(group["total_valid_traces"], errors="coerce").fillna(0) > 0
+        ].copy()
+        total = float(pd.to_numeric(observed_group["total_valid_traces"], errors="coerce").fillna(0).sum())
+        exposed = float(
+            pd.to_numeric(observed_group["traces_with_inter_region_candidates"], errors="coerce").fillna(0).sum()
+        )
+        eligible = observed_group.loc[
+            observed_group["geography_summary_eligible"].fillna(False).astype(bool)
+        ].copy()
+        eligible_total = float(pd.to_numeric(eligible.get("total_valid_traces"), errors="coerce").fillna(0).sum())
+        eligible_exposed = float(
+            pd.to_numeric(eligible.get("traces_with_inter_region_candidates"), errors="coerce").fillna(0).sum()
+        )
+        rates = pd.to_numeric(eligible.get("candidate_dependency_proxy_rate"), errors="coerce").dropna()
+        high_tiers = {"high_candidate_dependency_proxy", "very_high_candidate_dependency_proxy"}
+        matching_services = service_dependency.loc[
+            service_dependency.get("country_geography_type", pd.Series(index=service_dependency.index, dtype=object)).astype(str).eq(str(geography_type))
+            & service_dependency.get("path_scope_stratum", pd.Series(index=service_dependency.index, dtype=object)).astype(str).eq(str(path_scope))
+        ].copy()
+        matching_services = matching_services.loc[
+            pd.to_numeric(
+                matching_services.get("total_valid_traces", pd.Series(index=matching_services.index, dtype=float)),
+                errors="coerce",
+            ).fillna(0) > 0
+        ]
+        auditable_services = matching_services.loc[
+            matching_services.get("auditable_paper_case", pd.Series(index=matching_services.index, dtype=bool))
+            .fillna(False)
+            .astype(bool)
+        ]
+        concentrated = auditable_services.get(
+            "corridor_concentration_tier", pd.Series(index=auditable_services.index, dtype=object)
+        ).isin(
+            {
+                "severe_corridor_observation_concentration",
+                "moderate_corridor_observation_concentration",
+            }
+        )
+        main_cross_layer = auditable_services.get(
+            "cross_layer_distribution_class", pd.Series(index=auditable_services.index, dtype=object)
+        ).eq("network_broad_physical_concentrated")
+        rows.append(
+            {
+                "country_geography_type": geography_type,
+                "path_scope_stratum": path_scope,
+                "num_countries": int(observed_group["probe_country"].nunique()),
+                "num_geography_summary_eligible_countries": int(eligible["probe_country"].nunique()),
+                "total_valid_traces": int(total),
+                "traces_with_inter_region_candidates": int(exposed),
+                "trace_weighted_candidate_dependency_proxy_rate": float(exposed / total) if total else np.nan,
+                "eligible_trace_weighted_candidate_dependency_proxy_rate": (
+                    float(eligible_exposed / eligible_total) if eligible_total else np.nan
+                ),
+                "median_country_candidate_dependency_proxy_rate": float(rates.median()) if not rates.empty else np.nan,
+                "country_candidate_dependency_proxy_rate_p25": float(rates.quantile(0.25)) if not rates.empty else np.nan,
+                "country_candidate_dependency_proxy_rate_p75": float(rates.quantile(0.75)) if not rates.empty else np.nan,
+                "high_or_very_high_country_share": (
+                    float(eligible["candidate_dependency_proxy_tier"].isin(high_tiers).mean())
+                    if not eligible.empty
+                    else np.nan
+                ),
+                "num_service_country_units": int(len(matching_services)),
+                "num_auditable_service_country_units": int(len(auditable_services)),
+                "auditable_corridor_concentrated_unit_share": (
+                    float(concentrated.mean()) if not auditable_services.empty else np.nan
+                ),
+                "auditable_network_broad_physical_concentrated_unit_share": (
+                    float(main_cross_layer.mean()) if not auditable_services.empty else np.nan
+                ),
+                "interpretation_boundary": (
+                    "geography-stratified feasible-corridor candidate exposure; not real traffic, cable use, or national resilience"
+                ),
+            }
+        )
+    return pd.DataFrame(rows, columns=columns).sort_values(
+        ["path_scope_stratum", "country_geography_type"]
+    ).reset_index(drop=True)
+
+
+def write_country_geography_dependency_outputs(
+    output_dir: str,
+    trace_frame: pd.DataFrame,
+    service_exposure: pd.DataFrame,
+    corridor_summary: pd.DataFrame,
+    cross_layer_summary: pd.DataFrame,
+    catalog_path: str,
+) -> Dict[str, str]:
+    """Build and write all geography-stratified candidate-dependency artifacts."""
+    catalog = load_country_geography_catalog(catalog_path)
+    country_dependency = build_country_geography_candidate_dependency(trace_frame, catalog)
+    service_dependency = build_service_country_geography_candidate_dependency(
+        service_exposure,
+        corridor_summary,
+        cross_layer_summary,
+        catalog,
+    )
+    geography_summary = build_geography_type_candidate_dependency_summary(
+        country_dependency,
+        service_dependency,
+    )
+    resolved_catalog = (
+        country_dependency[
+            [
+                "probe_country",
+                "country_geography_type",
+                "country_geography_classification_source",
+            ]
+        ]
+        .drop_duplicates()
+        .sort_values("probe_country")
+        .reset_index(drop=True)
+        if not country_dependency.empty
+        else pd.DataFrame(
+            columns=[
+                "probe_country",
+                "country_geography_type",
+                "country_geography_classification_source",
+            ]
+        )
+    )
+    paths = {
+        "country": os.path.join(output_dir, "country_geography_candidate_dependency.csv"),
+        "service_country": os.path.join(output_dir, "service_country_geography_candidate_dependency.csv"),
+        "summary": os.path.join(output_dir, "geography_type_candidate_dependency_summary.csv"),
+        "paper": os.path.join(output_dir, "paper_service_country_geography_candidate_dependency.csv"),
+        "resolved_catalog": os.path.join(output_dir, "country_geography_catalog_resolved.csv"),
+        "manifest": os.path.join(output_dir, "country_geography_dependency_manifest.json"),
+    }
+    country_dependency.to_csv(paths["country"], index=False, encoding="utf-8-sig")
+    service_dependency.to_csv(paths["service_country"], index=False, encoding="utf-8-sig")
+    geography_summary.to_csv(paths["summary"], index=False, encoding="utf-8-sig")
+    filter_auditable_paper_rows(service_dependency).to_csv(paths["paper"], index=False, encoding="utf-8-sig")
+    resolved_catalog.to_csv(paths["resolved_catalog"], index=False, encoding="utf-8-sig")
+    catalog_sha256 = None
+    if catalog_path and os.path.exists(catalog_path):
+        with open(catalog_path, "rb") as handle:
+            catalog_sha256 = hashlib.sha256(handle.read()).hexdigest()
+    try:
+        manifest_catalog_path = os.path.relpath(catalog_path, BASE_DIR) if catalog_path else None
+    except ValueError:
+        manifest_catalog_path = os.path.abspath(catalog_path) if catalog_path else None
+    manifest = {
+        "method_name": "country_geography_candidate_dependency_proxy_analysis",
+        "catalog_path": manifest_catalog_path,
+        "catalog_sha256": catalog_sha256,
+        "catalog_loaded": bool(catalog.get("catalog_loaded")),
+        "country_geography_types": catalog.get("types", []),
+        "primary_rate": "traces_with_inter_region_candidates / total_valid_traces",
+        "conditional_rate": "traces_with_inter_region_candidates / mappable_traces",
+        "candidate_dependency_proxy_thresholds": COUNTRY_DEPENDENCY_PROXY_THRESHOLDS,
+        "paper_filter": "auditable_paper_case == True",
+        "path_scope_strata": ["all_publicly_visible", "resolved_entry_only"],
+        "intra_region_treatment": "reported separately and excluded from the primary candidate dependency proxy",
+        "interpretation_boundary": (
+            "The dependency proxy is feasible inter-region submarine-corridor candidate exposure. "
+            "It is not observed cable use, traffic volume, causal dependency, or resilience ground truth."
+        ),
+        "generated_outputs": [os.path.basename(path) for path in paths.values() if path != paths["manifest"]],
+    }
+    with open(paths["manifest"], "w", encoding="utf-8") as handle:
+        json.dump(manifest, handle, indent=2, ensure_ascii=False)
+    return paths
 
 
 def load_stage1_stats(output_dir: str) -> Dict[str, Any]:
@@ -4237,6 +4739,7 @@ def build_method_manifest() -> Dict[str, Any]:
         ],
         "primary_outputs": [
             "paper_service_country_physical_exposure.csv",
+            "paper_service_country_geography_candidate_dependency.csv",
             "paper_service_country_corridor_concentration.csv",
             "paper_service_country_cross_layer_distribution.csv",
             "paper_network_broad_physical_concentrated_cases.csv",
@@ -4258,6 +4761,11 @@ def build_method_manifest() -> Dict[str, Any]:
             "rank_and_percentile_mismatch",
         ],
         "supplementary_outputs": [
+            "country_geography_candidate_dependency.csv",
+            "service_country_geography_candidate_dependency.csv",
+            "geography_type_candidate_dependency_summary.csv",
+            "country_geography_catalog_resolved.csv",
+            "country_geography_dependency_manifest.json",
             "unit_network_layer_diversity.csv",
             "trace_candidate_support.csv",
             "unit_cross_layer_audit.csv",
@@ -4328,6 +4836,7 @@ def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
         "all_feasible_segments_semantics": "all hard-feasible candidates preserved before support thresholding",
         "primary_outputs": [
             "paper_service_country_physical_exposure.csv",
+            "paper_service_country_geography_candidate_dependency.csv",
             "paper_service_country_corridor_concentration.csv",
             "paper_service_country_cross_layer_distribution.csv",
             "paper_network_broad_physical_concentrated_cases.csv",
@@ -4344,6 +4853,12 @@ def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
             "rank_and_percentile_mismatch",
         ],
         "generated_outputs": [
+            "country_geography_candidate_dependency.csv",
+            "service_country_geography_candidate_dependency.csv",
+            "geography_type_candidate_dependency_summary.csv",
+            "paper_service_country_geography_candidate_dependency.csv",
+            "country_geography_catalog_resolved.csv",
+            "country_geography_dependency_manifest.json",
             "trace_feasible_candidate_space.csv",
             "unit_cross_layer_audit.csv",
             "country_cross_layer_audit.csv",
@@ -4983,6 +5498,14 @@ def main() -> None:
         for frame in (service_exposure, service_corridor, service_cross):
             if not frame.empty:
                 frame["analysis_scope"] = "probe_country_service"
+        write_country_geography_dependency_outputs(
+            args.output,
+            trace_observation_frame,
+            service_exposure,
+            service_corridor,
+            service_cross,
+            args.country_geography_catalog,
+        )
         service_exposure.to_csv(
             os.path.join(args.output, "service_country_physical_exposure_summary.csv"),
             index=False,
@@ -5249,6 +5772,14 @@ def main() -> None:
         service_country_physical_exposure,
         service_country_cross_layer_distribution_audit,
         service_audit_group_fields,
+    )
+    geography_dependency_paths = write_country_geography_dependency_outputs(
+        args.output,
+        trace_observation_frame,
+        service_country_physical_exposure,
+        service_country_corridor_concentration_summary,
+        service_country_cross_layer_distribution_audit,
+        args.country_geography_catalog,
     )
     distribution_concentration_cases = combine_distribution_case_frames(
         country_corridor_concentration_summary,
@@ -5904,6 +6435,9 @@ def main() -> None:
     print(f"Saved AS reranking effect to {as_reranking_effect_path}")
     print(f"Saved filtering breakdown to {filtering_breakdown_path}")
     print(f"Saved supplementary owner concentration to {supplementary_owner_concentration_path}")
+    print(f"Saved country geography candidate-dependency table to {geography_dependency_paths['country']}")
+    print(f"Saved geography-type candidate-dependency summary to {geography_dependency_paths['summary']}")
+    print(f"Saved paper geography candidate-dependency table to {geography_dependency_paths['paper']}")
     print(f"Saved method manifest to {method_manifest_path}")
     print(f"Saved conservative candidate-audit manifest to {conservative_manifest_path}")
     print(f"Saved quadrant summary table to {quadrant_summary_path}")
