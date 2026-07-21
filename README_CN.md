@@ -1288,6 +1288,9 @@ PeeringDB 继续保持 external-only：
 - `output/result/service_country_corridor_concentration_summary.csv`：service-country 级 corridor 集中度汇总，也是论文主用的 corridor observation concentration 单元表。
 - `output/result/country_network_transition_concentration_summary.csv`：在同一批可映射 segment 上计算的 network transition 集中度，优先使用 AS transition，缺失 ASN 时回退到 country transition。
 - `output/result/service_country_network_transition_concentration_summary.csv`：service-country 级 network transition 集中度汇总。
+- `output/result/country_network_transition_distribution.csv`：显式 country 级网络转换分布表。`network_transition_observation_count` 对应 \(N_u(t)\)，`share_of_network_transition_observations` 对应 \(q_u(t)\)。即使一个 atomic segment 展开为多条候选行，也只计数一次。
+- `output/result/service_country_network_transition_distribution.csv`：按 `path_scope_stratum` 输出显式 service-country 网络转换分布；`network_transition_representation` 明确区分 `as_transition` 与不会被静默删除的 `country_fallback`。
+- `output/result/network_corridor_segment_population_alignment.csv`：逐 unit 检查网络侧 \(q_u(t)\) 与走廊侧 \(p_u(c)\) 是否使用完全相同的 unique atomic segment ID 集合。若集合不一致，后处理会直接停止，避免生成不可比结果。
 - `output/result/country_cross_layer_distribution_audit.csv`：country 级 cross-layer distribution-shape 审计表，联合 network transition concentration 与 corridor observation concentration。
 - `output/result/service_country_cross_layer_distribution_audit.csv`：service-country 级 cross-layer distribution-shape 审计表，`cross_layer_distribution_class` 是主解释字段。
 - `output/result/paper_corridor_observation_concentration_cases.csv`：auditable 的 severe / moderate corridor observation concentration 案例。
@@ -1299,6 +1302,8 @@ PeeringDB 继续保持 external-only：
 - candidate breadth 回答的是“一个 unit 里出现了多少个 unique feasible corridors”。
 - observation concentration 回答的是“这些 measurement-observed path-transition segments 在 feasible corridors 上如何分布”。
 - cross-layer distribution audit 比较的是同一批 segment 上的分布形态，而不是把 AS-transition 数量和 corridor 数量当作同一种计量单位直接比较。
+- 当片段两端 ASN 都可获得时，转换键为 `AS<src>->AS<dst>`；任意一端 ASN 缺失时，该片段仍保留在分母中，并显式记为 `COUNTRY_FALLBACK:<src_country>-><dst_country>`。
+- candidate row 的展开不会放大网络观测数：计算 \(N_u(t)\) 和 \(q_u(t)\) 前，会按分析 unit 与 atomic segment 去重。
 
 ## 5051 全量运行结果说明
 

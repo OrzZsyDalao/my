@@ -2368,11 +2368,102 @@ def build_network_transition_concentration_summary(
     return summarize_network_transition_concentration(prepared, group_fields)
 
 
-def summarize_network_transition_concentration(
+def build_network_transition_distribution(
     prepared: pd.DataFrame,
     group_fields: Sequence[str],
 ) -> pd.DataFrame:
-    """Summarize network transition concentration from a prepared atomic segment projection frame."""
+    """Build q_u(t) over unique atomic segments, with explicit country fallback rows."""
+    columns = [
+        *group_fields,
+        "msm_id",
+        "file_name",
+        "network_transition_key",
+        "network_transition_representation",
+        "network_transition_observation_count",
+        "unique_atomic_segments",
+        "share_of_network_transition_observations",
+        "rank_within_unit",
+        "is_top1_network_transition",
+        "is_top2_network_transition",
+        "is_top3_network_transition",
+        "used_country_fallback_transition",
+        "group_total_mappable_segments",
+        "group_unique_probes",
+        "group_unique_probe_asns",
+        "domestic_segment_count",
+        "international_segment_count",
+    ]
+    if prepared.empty:
+        return pd.DataFrame(columns=columns)
+    segment_identity_fields = [*group_fields, "atomic_segment_id"]
+    transition_cardinality = prepared.groupby(segment_identity_fields, dropna=False)[
+        "network_transition_key"
+    ].nunique(dropna=False)
+    if (transition_cardinality > 1).any():
+        raise RuntimeError(
+            "Candidate rows for one atomic segment disagree on the network transition key."
+        )
+    segment_level = prepared.drop_duplicates(subset=segment_identity_fields).copy()
+    rows: List[Dict[str, Any]] = []
+    for group_key, group in segment_level.groupby(list(group_fields), dropna=False):
+        group_values = group_key_to_dict(group_fields, group_key)
+        total_segments = int(group["atomic_segment_id"].nunique())
+        unique_probes = _count_unique_non_missing(group, "probe_id")
+        unique_probe_asns = _count_unique_non_missing(group, "probe_asn_norm")
+        transition_counts = group["network_transition_key"].value_counts(dropna=False)
+        for rank, (transition_key, observation_count) in enumerate(transition_counts.items(), start=1):
+            transition_mask = group["network_transition_key"].eq(transition_key)
+            transition_group = group.loc[transition_mask]
+            fallback = bool(
+                transition_group["used_country_fallback_transition"].fillna(False).astype(bool).any()
+            )
+            domestic_count = int(
+                transition_group["is_domestic_segment"].fillna(False).astype(bool).sum()
+            )
+            count = int(observation_count)
+            rows.append(
+                {
+                    **group_values,
+                    "msm_id": summarize_identifier_value(
+                        transition_group.get("msm_id", pd.Series(dtype=object)), default="NA"
+                    ),
+                    "file_name": summarize_identifier_value(
+                        transition_group.get("file_name", pd.Series(dtype=object)), default="NA"
+                    ),
+                    "network_transition_key": str(transition_key),
+                    "network_transition_representation": "country_fallback" if fallback else "as_transition",
+                    "network_transition_observation_count": count,
+                    "unique_atomic_segments": int(transition_group["atomic_segment_id"].nunique()),
+                    "share_of_network_transition_observations": (
+                        float(count / total_segments) if total_segments else np.nan
+                    ),
+                    "rank_within_unit": rank,
+                    "is_top1_network_transition": rank == 1,
+                    "is_top2_network_transition": rank == 2,
+                    "is_top3_network_transition": rank == 3,
+                    "used_country_fallback_transition": fallback,
+                    "group_total_mappable_segments": total_segments,
+                    "group_unique_probes": unique_probes,
+                    "group_unique_probe_asns": unique_probe_asns,
+                    "domestic_segment_count": domestic_count,
+                    "international_segment_count": count - domestic_count,
+                }
+            )
+    result = pd.DataFrame(rows, columns=columns)
+    if not result.empty:
+        group_share_sums = result.groupby(list(group_fields), dropna=False)[
+            "share_of_network_transition_observations"
+        ].sum()
+        if not np.allclose(group_share_sums.to_numpy(dtype=float), 1.0, atol=1e-9):
+            raise RuntimeError("Network transition shares q_u(t) must sum to one within every analysis unit.")
+    return result
+
+
+def summarize_network_transition_distribution(
+    distribution: pd.DataFrame,
+    group_fields: Sequence[str],
+) -> pd.DataFrame:
+    """Summarize concentration metrics from the explicit q_u(t) distribution."""
     columns = [
         *group_fields,
         "msm_id",
@@ -2395,27 +2486,33 @@ def summarize_network_transition_concentration(
         "domestic_segment_share",
         "international_segment_share",
     ]
-    if prepared.empty:
+    if distribution.empty:
         return pd.DataFrame(columns=columns)
-
-    segment_level = prepared.drop_duplicates(subset=[*group_fields, "atomic_segment_id"]).copy()
     rows: List[Dict[str, Any]] = []
-    for group_key, group in segment_level.groupby(list(group_fields), dropna=False):
+    for group_key, group in distribution.groupby(list(group_fields), dropna=False):
         row = group_key_to_dict(group_fields, group_key)
-        transition_shares = (
-            group["network_transition_key"].value_counts(normalize=True)
-            if not group.empty
-            else pd.Series(dtype=float)
+        ordered = group.sort_values("rank_within_unit")
+        shares = pd.to_numeric(
+            ordered["share_of_network_transition_observations"], errors="coerce"
+        ).fillna(0.0).tolist()
+        top1_share = float(shares[0]) if shares else float("nan")
+        top2_share = compute_topk_share(shares, 2)
+        top3_share = compute_topk_share(shares, 3)
+        effective_count = compute_effective_count_from_shares(shares)
+        total_values = pd.to_numeric(group["group_total_mappable_segments"], errors="coerce").dropna().unique()
+        probe_values = pd.to_numeric(group["group_unique_probes"], errors="coerce").dropna().unique()
+        probe_asn_values = pd.to_numeric(group["group_unique_probe_asns"], errors="coerce").dropna().unique()
+        if len(total_values) != 1 or len(probe_values) != 1 or len(probe_asn_values) != 1:
+            raise RuntimeError("Network transition distribution requires stable group-level segment/probe counts.")
+        total_segments = int(total_values[0])
+        unique_probes = int(probe_values[0])
+        unique_probe_asns = int(probe_asn_values[0])
+        counts = pd.to_numeric(group["network_transition_observation_count"], errors="coerce").fillna(0)
+        fallback_count = float(
+            counts.loc[group["used_country_fallback_transition"].fillna(False).astype(bool)].sum()
         )
-        ordered_shares = transition_shares.tolist()
-        top1_share = float(ordered_shares[0]) if ordered_shares else float("nan")
-        top2_share = compute_topk_share(ordered_shares, 2)
-        top3_share = compute_topk_share(ordered_shares, 3)
-        effective_count = compute_effective_count_from_shares(ordered_shares)
-        total_segments = int(group["atomic_segment_id"].nunique())
-        unique_probes = int(group["probe_id"].astype(str).replace({"": np.nan, "nan": np.nan, "NA": np.nan}).dropna().nunique())
-        unique_probe_asns = int(group["probe_asn_norm"].replace("NA", np.nan).dropna().nunique())
-        fallback_share = float(group["used_country_fallback_transition"].fillna(False).astype(bool).mean())
+        domestic_count = float(pd.to_numeric(group["domestic_segment_count"], errors="coerce").fillna(0).sum())
+        fallback_share = float(fallback_count / total_segments) if total_segments else np.nan
         sufficiency = evaluate_paper_observation_sufficiency(
             total_observations=total_segments,
             unique_probes=unique_probes,
@@ -2429,8 +2526,8 @@ def summarize_network_transition_concentration(
                 "msm_id": summarize_identifier_value(group.get("msm_id", pd.Series(dtype=object)), default="NA"),
                 "file_name": summarize_identifier_value(group.get("file_name", pd.Series(dtype=object)), default="NA"),
                 "total_mappable_segments": total_segments,
-                "unique_network_transitions_observed": int(group["network_transition_key"].nunique()),
-                "top1_network_transition_key": str(transition_shares.index[0]) if not transition_shares.empty else "NA",
+                "unique_network_transitions_observed": int(len(group)),
+                "top1_network_transition_key": str(ordered.iloc[0]["network_transition_key"]),
                 "top1_network_transition_share": top1_share,
                 "top2_network_transition_share": top2_share,
                 "top3_network_transition_share": top3_share,
@@ -2442,17 +2539,79 @@ def summarize_network_transition_concentration(
                     effective_count,
                 ),
                 "country_fallback_share": fallback_share,
-                "sufficient_network_transition_resolution": sufficiency["sufficient_network_transition_resolution"],
+                "sufficient_network_transition_resolution": sufficiency[
+                    "sufficient_network_transition_resolution"
+                ],
                 "auditable_paper_case": sufficiency["auditable_paper_case"],
                 "observation_sufficiency_reason": sufficiency["observation_sufficiency_reason"],
                 "failed_thresholds": sufficiency["failed_thresholds"],
                 "unique_probes": unique_probes,
                 "unique_probe_asns": unique_probe_asns,
-                "domestic_segment_share": float(group["is_domestic_segment"].fillna(False).astype(bool).mean()),
-                "international_segment_share": float((~group["is_domestic_segment"].fillna(False).astype(bool)).mean()),
+                "domestic_segment_share": float(domestic_count / total_segments) if total_segments else np.nan,
+                "international_segment_share": (
+                    float((total_segments - domestic_count) / total_segments) if total_segments else np.nan
+                ),
             }
         )
     return pd.DataFrame(rows, columns=columns).sort_values(list(group_fields)).reset_index(drop=True)
+
+
+def summarize_network_transition_concentration(
+    prepared: pd.DataFrame,
+    group_fields: Sequence[str],
+) -> pd.DataFrame:
+    """Summarize network transition concentration from a prepared atomic segment projection frame."""
+    distribution = build_network_transition_distribution(prepared, group_fields)
+    return summarize_network_transition_distribution(distribution, group_fields)
+
+
+def build_network_corridor_segment_population_alignment(
+    prepared: pd.DataFrame,
+    segment_corridor_mass: pd.DataFrame,
+    group_fields: Sequence[str],
+    analysis_scope: str,
+) -> pd.DataFrame:
+    """Verify that q_u and p_u use exactly the same unique atomic segment sets."""
+    columns = [
+        "analysis_scope",
+        *group_fields,
+        "network_atomic_segments",
+        "corridor_atomic_segments",
+        "shared_atomic_segments",
+        "network_only_atomic_segments",
+        "corridor_only_atomic_segments",
+        "segment_population_aligned",
+    ]
+    network_sets: Dict[Tuple[Any, ...], set] = {}
+    corridor_sets: Dict[Tuple[Any, ...], set] = {}
+    if not prepared.empty:
+        network_level = prepared.drop_duplicates(subset=[*group_fields, "atomic_segment_id"])
+        for group_key, group in network_level.groupby(list(group_fields), dropna=False):
+            key = group_key if isinstance(group_key, tuple) else (group_key,)
+            network_sets[key] = set(group["atomic_segment_id"].astype(str))
+    if not segment_corridor_mass.empty:
+        corridor_level = segment_corridor_mass.drop_duplicates(subset=[*group_fields, "atomic_segment_id"])
+        for group_key, group in corridor_level.groupby(list(group_fields), dropna=False):
+            key = group_key if isinstance(group_key, tuple) else (group_key,)
+            corridor_sets[key] = set(group["atomic_segment_id"].astype(str))
+    rows: List[Dict[str, Any]] = []
+    for key in sorted(set(network_sets) | set(corridor_sets), key=lambda value: tuple(map(str, value))):
+        network_ids = network_sets.get(key, set())
+        corridor_ids = corridor_sets.get(key, set())
+        row = {field: value for field, value in zip(group_fields, key)}
+        rows.append(
+            {
+                "analysis_scope": analysis_scope,
+                **row,
+                "network_atomic_segments": len(network_ids),
+                "corridor_atomic_segments": len(corridor_ids),
+                "shared_atomic_segments": len(network_ids & corridor_ids),
+                "network_only_atomic_segments": len(network_ids - corridor_ids),
+                "corridor_only_atomic_segments": len(corridor_ids - network_ids),
+                "segment_population_aligned": network_ids == corridor_ids,
+            }
+        )
+    return pd.DataFrame(rows, columns=columns)
 
 
 def classify_cross_layer_distribution_class(
@@ -4715,6 +4874,8 @@ def build_method_manifest() -> Dict[str, Any]:
         "primary_physical_level": "landing_region_pair_corridor",
         "primary_projection": "uniform observation mass across feasible corridors",
         "primary_network_distribution": "network transitions over the same mappable atomic segments",
+        "network_transition_distribution_note": "N_u(t) counts each unique atomic segment once; q_u(t) is emitted as share_of_network_transition_observations, with an explicit country_fallback representation whenever either endpoint ASN is unavailable",
+        "network_corridor_population_alignment": "network_corridor_segment_population_alignment.csv verifies that q_u(t) and corridor p_u(c) use identical atomic segment sets",
         "primary_cross_layer_class": "network_broad_physical_concentrated",
         "peeringdb_descriptor_note": "PeeringDB descriptors are external interconnection-footprint descriptors only and are not used for physical-candidate construction or candidate-support scoring",
         "segment_projection_note": "Traceroutes are decomposed into independently mappable path-transition segments; paper-facing service-country outputs are grouped by probe_country and service_id, while transition-country outputs are supplementary geography views",
@@ -4746,6 +4907,8 @@ def build_method_manifest() -> Dict[str, Any]:
             "paper_broad_corridor_distribution_cases.csv",
             "paper_physical_exposure_cases.csv",
             "service_country_corridor_observation_distribution.csv",
+            "service_country_network_transition_distribution.csv",
+            "network_corridor_segment_population_alignment.csv",
             "service_country_corridor_concentration_summary.csv",
             "service_country_network_transition_concentration_summary.csv",
             "service_country_cross_layer_distribution_audit.csv",
@@ -4762,6 +4925,7 @@ def build_method_manifest() -> Dict[str, Any]:
         ],
         "supplementary_outputs": [
             "country_geography_candidate_dependency.csv",
+            "country_network_transition_distribution.csv",
             "service_country_geography_candidate_dependency.csv",
             "geography_type_candidate_dependency_summary.csv",
             "country_geography_catalog_resolved.csv",
@@ -4832,6 +4996,8 @@ def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
         "primary_physical_level": "landing_region_pair_corridor",
         "primary_projection": "uniform_observation_mass",
         "primary_network_distribution": "network transitions over same atomic segment population",
+        "network_transition_distribution_note": "N_u(t) counts each unique atomic segment once; q_u(t) is the normalized share_of_network_transition_observations, with missing endpoint ASNs retained through an explicit country fallback",
+        "network_corridor_population_alignment": "network_corridor_segment_population_alignment.csv asserts identical atomic segment sets for the network and corridor representations",
         "legacy_all_segments_semantics": "support-thresholded legacy candidate list",
         "all_feasible_segments_semantics": "all hard-feasible candidates preserved before support thresholding",
         "primary_outputs": [
@@ -4869,6 +5035,9 @@ def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
             "atomic_segment_id_diagnostics.json",
             "country_corridor_observation_distribution.csv",
             "service_country_corridor_observation_distribution.csv",
+            "country_network_transition_distribution.csv",
+            "service_country_network_transition_distribution.csv",
+            "network_corridor_segment_population_alignment.csv",
             "country_corridor_concentration_summary.csv",
             "service_country_corridor_concentration_summary.csv",
             "country_network_transition_concentration_summary.csv",
@@ -5458,6 +5627,29 @@ def main() -> None:
             "paper_broad_corridor_distribution_cases.csv": ["analysis_scope"],
             "unit_network_layer_diversity.csv": ["unit_id"],
             "unit_network_physical_upper_bound_mismatch.csv": ["unit_id", "network_definition", "physical_level"],
+            "country_network_transition_distribution.csv": [
+                "country",
+                "network_transition_key",
+                "network_transition_representation",
+                "network_transition_observation_count",
+                "share_of_network_transition_observations",
+            ],
+            "service_country_network_transition_distribution.csv": [
+                "probe_country",
+                "service_id",
+                "path_scope_stratum",
+                "network_transition_key",
+                "network_transition_representation",
+                "network_transition_observation_count",
+                "share_of_network_transition_observations",
+            ],
+            "network_corridor_segment_population_alignment.csv": [
+                "analysis_scope",
+                "network_atomic_segments",
+                "corridor_atomic_segments",
+                "shared_atomic_segments",
+                "segment_population_aligned",
+            ],
         }
         for filename, columns in empty_tables.items():
             pd.DataFrame(columns=columns).to_csv(
@@ -5727,15 +5919,56 @@ def main() -> None:
         service_country_corridor_distribution_internal,
         ["probe_country", "service_id", "path_scope_stratum"],
     )
-    country_network_transition_concentration_summary = summarize_network_transition_concentration(
+    country_network_transition_distribution = build_network_transition_distribution(
         paper_inter_region_projection,
         ["country"],
     )
+    country_network_transition_concentration_summary = summarize_network_transition_distribution(
+        country_network_transition_distribution,
+        ["country"],
+    )
     transition_country_network_transition_concentration_summary = country_network_transition_concentration_summary
-    service_country_network_transition_concentration_summary = summarize_network_transition_concentration(
+    service_country_network_transition_distribution = build_network_transition_distribution(
         service_path_scope_projection,
         ["probe_country", "service_id", "path_scope_stratum"],
     )
+    service_country_network_transition_concentration_summary = summarize_network_transition_distribution(
+        service_country_network_transition_distribution,
+        ["probe_country", "service_id", "path_scope_stratum"],
+    )
+    country_segment_population_alignment = build_network_corridor_segment_population_alignment(
+        paper_inter_region_projection,
+        segment_corridor_mass,
+        ["country"],
+        "transition_near_country",
+    )
+    service_segment_population_alignment = build_network_corridor_segment_population_alignment(
+        service_path_scope_projection,
+        service_segment_corridor_mass,
+        ["probe_country", "service_id", "path_scope_stratum"],
+        "probe_country_service",
+    )
+    network_corridor_segment_population_alignment = pd.concat(
+        [country_segment_population_alignment, service_segment_population_alignment],
+        ignore_index=True,
+        sort=False,
+    )
+    if (
+        not network_corridor_segment_population_alignment.empty
+        and not network_corridor_segment_population_alignment["segment_population_aligned"]
+        .fillna(False)
+        .astype(bool)
+        .all()
+    ):
+        mismatched = network_corridor_segment_population_alignment.loc[
+            ~network_corridor_segment_population_alignment["segment_population_aligned"]
+            .fillna(False)
+            .astype(bool)
+        ]
+        raise RuntimeError(
+            "Network q_u(t) and corridor p_u(c) do not use the same atomic segment population: "
+            f"{len(mismatched)} analysis units differ."
+        )
     country_cross_layer_distribution_audit = build_cross_layer_distribution_audit(
         country_corridor_concentration_summary,
         country_network_transition_concentration_summary,
@@ -6124,6 +6357,18 @@ def main() -> None:
         args.output,
         "service_country_corridor_concentration_summary.csv",
     )
+    country_network_transition_distribution_path = os.path.join(
+        args.output,
+        "country_network_transition_distribution.csv",
+    )
+    service_country_network_transition_distribution_path = os.path.join(
+        args.output,
+        "service_country_network_transition_distribution.csv",
+    )
+    network_corridor_segment_population_alignment_path = os.path.join(
+        args.output,
+        "network_corridor_segment_population_alignment.csv",
+    )
     country_network_transition_concentration_summary_path = os.path.join(
         args.output,
         "country_network_transition_concentration_summary.csv",
@@ -6248,6 +6493,21 @@ def main() -> None:
     )
     filter_auditable_paper_rows(service_country_corridor_concentration_summary).to_csv(
         paper_service_country_corridor_concentration_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    country_network_transition_distribution.to_csv(
+        country_network_transition_distribution_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    service_country_network_transition_distribution.to_csv(
+        service_country_network_transition_distribution_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    network_corridor_segment_population_alignment.to_csv(
+        network_corridor_segment_population_alignment_path,
         index=False,
         encoding="utf-8-sig",
     )
@@ -6413,6 +6673,9 @@ def main() -> None:
     print(f"Saved service-country corridor observation distribution to {service_country_corridor_observation_distribution_path}")
     print(f"Saved country corridor concentration summary to {country_corridor_concentration_summary_path}")
     print(f"Saved service-country corridor concentration summary to {service_country_corridor_concentration_summary_path}")
+    print(f"Saved country network-transition distribution to {country_network_transition_distribution_path}")
+    print(f"Saved service-country network-transition distribution to {service_country_network_transition_distribution_path}")
+    print(f"Saved network/corridor atomic-segment alignment audit to {network_corridor_segment_population_alignment_path}")
     print(f"Saved country network-transition concentration summary to {country_network_transition_concentration_summary_path}")
     print(f"Saved service-country network-transition concentration summary to {service_country_network_transition_concentration_summary_path}")
     print(f"Saved country cross-layer distribution audit to {country_cross_layer_distribution_audit_path}")

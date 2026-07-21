@@ -1273,6 +1273,9 @@ New or newly promoted outputs:
 - `output/result/service_country_corridor_concentration_summary.csv`: service-country version of the same concentration summary and the main paper-ready unit table for corridor observation concentration.
 - `output/result/country_network_transition_concentration_summary.csv`: network-transition concentration over the same mappable segment population, using AS transitions first and country-transition fallback when ASNs are missing.
 - `output/result/service_country_network_transition_concentration_summary.csv`: service-country network-transition concentration summary.
+- `output/result/country_network_transition_distribution.csv`: explicit country-level network distribution. `network_transition_observation_count` is \(N_u(t)\), while `share_of_network_transition_observations` is \(q_u(t)\). Each atomic segment is counted once even when it expands into multiple feasible candidate rows.
+- `output/result/service_country_network_transition_distribution.csv`: explicit service-country network distribution for each `path_scope_stratum`, with `network_transition_representation` identifying `as_transition` versus the non-silent `country_fallback`.
+- `output/result/network_corridor_segment_population_alignment.csv`: per-unit diagnostic proving that network \(q_u(t)\) and corridor \(p_u(c)\) use exactly the same unique atomic segment IDs. Any mismatch stops post-processing instead of producing incomparable summaries.
 - `output/result/country_cross_layer_distribution_audit.csv`: country-level cross-layer distribution-shape audit joining network transition concentration and corridor observation concentration.
 - `output/result/service_country_cross_layer_distribution_audit.csv`: service-country cross-layer distribution-shape audit with `cross_layer_distribution_class` as the main interpretation field.
 - `output/result/paper_corridor_observation_concentration_cases.csv`: auditable severe or moderate corridor observation concentration cases.
@@ -1284,6 +1287,8 @@ Interpretation update:
 - Candidate breadth asks how many unique feasible corridors appear in a unit.
 - Observation concentration asks how measurement-observed path-transition segments distribute over those feasible corridors.
 - The cross-layer distribution audit compares concentration patterns over the same observed segment population; it does not equate AS-transition counts with corridor counts as identical units.
+- If both endpoint ASNs are available, the transition key is `AS<src>->AS<dst>`. If either ASN is unavailable, the segment remains in the denominator under the explicit key `COUNTRY_FALLBACK:<src_country>-><dst_country>`.
+- Candidate-row expansion never increases network observation counts: candidates are deduplicated to one row per analysis unit and atomic segment before computing \(N_u(t)\) and \(q_u(t)\).
 
 ## Large-Scale 5051 Run Artifacts
 

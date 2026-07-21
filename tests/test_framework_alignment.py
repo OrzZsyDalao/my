@@ -499,6 +499,105 @@ def test_service_scope_summaries_use_the_same_segment_population_rules():
     assert totals == {"all_publicly_visible": 2, "resolved_entry_only": 1}
 
 
+def test_network_transition_distribution_counts_atomic_segments_once_and_retains_fallback():
+    """q_u(t) must deduplicate candidate rows and retain missing-ASN segments explicitly."""
+    prepared = pd.DataFrame(
+        [
+            {
+                "country": "US",
+                "atomic_segment_id": "s1",
+                "network_transition_key": "AS64500->AS64496",
+                "used_country_fallback_transition": False,
+                "is_domestic_segment": False,
+                "probe_id": "p1",
+                "probe_asn_norm": "AS64500",
+                "msm_id": 1,
+                "file_name": "sample.json",
+            },
+            {
+                "country": "US",
+                "atomic_segment_id": "s1",
+                "network_transition_key": "AS64500->AS64496",
+                "used_country_fallback_transition": False,
+                "is_domestic_segment": False,
+                "probe_id": "p1",
+                "probe_asn_norm": "AS64500",
+                "msm_id": 1,
+                "file_name": "sample.json",
+            },
+            {
+                "country": "US",
+                "atomic_segment_id": "s2",
+                "network_transition_key": "COUNTRY_FALLBACK:US->GB",
+                "used_country_fallback_transition": True,
+                "is_domestic_segment": False,
+                "probe_id": "p2",
+                "probe_asn_norm": "AS64501",
+                "msm_id": 1,
+                "file_name": "sample.json",
+            },
+        ]
+    )
+
+    distribution = post.build_network_transition_distribution(prepared, ["country"])
+    counts = dict(
+        zip(
+            distribution["network_transition_key"],
+            distribution["network_transition_observation_count"],
+        )
+    )
+    shares = dict(
+        zip(
+            distribution["network_transition_key"],
+            distribution["share_of_network_transition_observations"],
+        )
+    )
+
+    assert counts == {"AS64500->AS64496": 1, "COUNTRY_FALLBACK:US->GB": 1}
+    assert shares == {"AS64500->AS64496": 0.5, "COUNTRY_FALLBACK:US->GB": 0.5}
+    assert distribution["share_of_network_transition_observations"].sum() == pytest.approx(1.0)
+    fallback = distribution.loc[
+        distribution["network_transition_key"] == "COUNTRY_FALLBACK:US->GB"
+    ].iloc[0]
+    assert fallback["network_transition_representation"] == "country_fallback"
+
+
+def test_network_corridor_segment_population_alignment_reports_exact_set_match():
+    """The network and corridor representations must expose identical segment sets."""
+    prepared = pd.DataFrame(
+        [
+            {"country": "US", "atomic_segment_id": "s1"},
+            {"country": "US", "atomic_segment_id": "s1"},
+            {"country": "US", "atomic_segment_id": "s2"},
+        ]
+    )
+    corridor_mass = pd.DataFrame(
+        [
+            {"country": "US", "atomic_segment_id": "s1"},
+            {"country": "US", "atomic_segment_id": "s2"},
+        ]
+    )
+
+    aligned = post.build_network_corridor_segment_population_alignment(
+        prepared,
+        corridor_mass,
+        ["country"],
+        "transition_near_country",
+    ).iloc[0]
+    assert bool(aligned["segment_population_aligned"]) is True
+    assert aligned["network_atomic_segments"] == 2
+    assert aligned["corridor_atomic_segments"] == 2
+
+    mismatched = post.build_network_corridor_segment_population_alignment(
+        prepared,
+        corridor_mass.loc[corridor_mass["atomic_segment_id"] == "s1"],
+        ["country"],
+        "transition_near_country",
+    ).iloc[0]
+    assert bool(mismatched["segment_population_aligned"]) is False
+    assert mismatched["network_only_atomic_segments"] == 1
+
+
 def test_complete_service_summary_retains_zero_projection_scope():
     """A resolved-entry stratum with no inter-region candidates remains in the complete summary."""
     exposure = pd.DataFrame(
