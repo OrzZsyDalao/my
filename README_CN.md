@@ -1305,6 +1305,16 @@ PeeringDB 继续保持 external-only：
 - 当片段两端 ASN 都可获得时，转换键为 `AS<src>->AS<dst>`；任意一端 ASN 缺失时，该片段仍保留在分母中，并显式记为 `COUNTRY_FALLBACK:<src_country>-><dst_country>`。
 - candidate row 的展开不会放大网络观测数：计算 \(N_u(t)\) 和 \(q_u(t)\) 前，会按分析 unit 与 atomic segment 去重。
 
+### 7 月 1 日网络转换结果包
+
+7 月 1 日时间窗口内的 18 个公开 RIPE Atlas measurement 已完成显式网络转换分布统计，便于检查的结果位于 `output/public_traceroute_by_msmid/`。
+
+- 每个 measurement 目录包含 `country_network_transition_distribution.csv`、`service_country_network_transition_distribution.csv`、`network_corridor_segment_population_alignment.csv`，以及对应的 country/service 集中度汇总表。
+- `all_measurements_network_transition_distribution_run_summary.csv` 汇总每个 measurement 的 segment 数、unit 数、归一化误差、fallback 数量和对齐失败数。
+- `all_measurements_country_network_transition_concentration_summary.csv` 与 `all_measurements_service_country_network_transition_concentration_summary.csv` 合并各 measurement 的集中度结果，便于跨 measurement 检查。
+- `all_measurements_network_transition_concentration_tier_summary.csv` 按集中度等级与可审计状态汇总 service/path-scope unit 数量。
+- 本结果包覆盖 39,935 个 inter-region atomic segments。18 个 measurement 的 network/corridor segment population 均完全对齐，并且每个 unit 的 \(q_u(t)\) 都在浮点误差范围内归一化为 1。
+
 ## 5051 全量运行结果说明
 
 仓库同样支持 RIPE Atlas `msm_id = 5051` 的全量运行。

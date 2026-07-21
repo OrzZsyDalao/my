@@ -1290,6 +1290,16 @@ Interpretation update:
 - If both endpoint ASNs are available, the transition key is `AS<src>->AS<dst>`. If either ASN is unavailable, the segment remains in the denominator under the explicit key `COUNTRY_FALLBACK:<src_country>-><dst_country>`.
 - Candidate-row expansion never increases network observation counts: candidates are deduplicated to one row per analysis unit and atomic segment before computing \(N_u(t)\) and \(q_u(t)\).
 
+### July 1 Network-Transition Result Bundle
+
+The 18 public RIPE Atlas measurements from the July 1 window have been evaluated using the explicit network-transition distribution. The reviewable outputs are stored under `output/public_traceroute_by_msmid/`.
+
+- Each measurement directory contains `country_network_transition_distribution.csv`, `service_country_network_transition_distribution.csv`, `network_corridor_segment_population_alignment.csv`, and the corresponding country/service concentration summaries.
+- `all_measurements_network_transition_distribution_run_summary.csv` records segment counts, unit counts, normalization errors, fallback counts, and alignment failures for every measurement.
+- `all_measurements_country_network_transition_concentration_summary.csv` and `all_measurements_service_country_network_transition_concentration_summary.csv` combine the per-measurement concentration summaries for cross-measurement review.
+- `all_measurements_network_transition_concentration_tier_summary.csv` reports service/path-scope unit counts by concentration tier and audit eligibility.
+- This bundle covers 39,935 inter-region atomic segments. All 18 measurements passed network/corridor segment-population alignment, and every per-unit \(q_u(t)\) distribution sums to one within floating-point tolerance.
+
 ## Large-Scale 5051 Run Artifacts
 
 The repository also supports a full-scale RIPE Atlas `msm_id = 5051` run.
