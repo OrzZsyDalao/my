@@ -562,6 +562,65 @@ def test_network_transition_distribution_counts_atomic_segments_once_and_retains
     assert fallback["network_transition_representation"] == "country_fallback"
 
 
+def test_hop_pair_as_processing_separates_boundary_intra_as_and_unknown_asn():
+    """Same-AS pairs and unknown ASN sentinels must not masquerade as AS boundaries."""
+    feasible = pd.DataFrame(
+        [
+            {
+                "link_id": "same-as",
+                "corridor_id": "a::b",
+                "src_country": "US",
+                "dst_country": "GB",
+                "src_asn": 174,
+                "dst_asn": 174,
+                "probe_id": "p1",
+                "probe_asn": 64500,
+            },
+            {
+                "link_id": "cross-as",
+                "corridor_id": "a::c",
+                "src_country": "US",
+                "dst_country": "GB",
+                "src_asn": "AS174",
+                "dst_asn": 3356,
+                "probe_id": "p2",
+                "probe_asn": 64501,
+            },
+            {
+                "link_id": "unknown-as",
+                "corridor_id": "a::d",
+                "src_country": "US",
+                "dst_country": "NZ",
+                "src_asn": -1,
+                "dst_asn": 38022,
+                "probe_id": "p3",
+                "probe_asn": 64502,
+            },
+        ]
+    )
+    prepared = post.prepare_atomic_segment_projection_frame(feasible)
+    classes = dict(zip(prepared["atomic_segment_id"], prepared["hop_pair_as_class"]))
+
+    assert post.normalize_transition_asn(-1) == "NA"
+    assert post.normalize_transition_asn("AS0") == "NA"
+    assert post.normalize_transition_asn("AS174") == "174"
+    assert classes == {
+        "same-as": "intra_as_hop_pair",
+        "cross-as": "cross_as_transition",
+        "unknown-as": "country_fallback",
+    }
+    fallback = prepared.loc[prepared["atomic_segment_id"] == "unknown-as"].iloc[0]
+    assert fallback["network_transition_key"] == "COUNTRY_FALLBACK:US->NZ"
+
+    boundary = post.build_as_boundary_transition_distribution(prepared, ["country"])
+    assert boundary["as_boundary_transition_key"].tolist() == ["174->3356"]
+    assert boundary.iloc[0]["group_total_hop_pair_segments"] == 3
+    assert boundary.iloc[0]["group_cross_as_boundary_segments"] == 1
+    assert boundary.iloc[0]["group_intra_as_hop_pair_segments"] == 1
+    assert boundary.iloc[0]["group_country_fallback_segments"] == 1
+    assert boundary.iloc[0]["share_of_as_boundary_observations"] == pytest.approx(1.0)
+
+
 def test_network_corridor_segment_population_alignment_reports_exact_set_match():
     """The network and corridor representations must expose identical segment sets."""
     prepared = pd.DataFrame(

@@ -1291,6 +1291,9 @@ PeeringDB 继续保持 external-only：
 - `output/result/country_network_transition_distribution.csv`：显式 country 级网络转换分布表。`network_transition_observation_count` 对应 \(N_u(t)\)，`share_of_network_transition_observations` 对应 \(q_u(t)\)。即使一个 atomic segment 展开为多条候选行，也只计数一次。
 - `output/result/service_country_network_transition_distribution.csv`：按 `path_scope_stratum` 输出显式 service-country 网络转换分布；`network_transition_representation` 明确区分 `as_transition` 与不会被静默删除的 `country_fallback`。
 - `output/result/network_corridor_segment_population_alignment.csv`：逐 unit 检查网络侧 \(q_u(t)\) 与走廊侧 \(p_u(c)\) 是否使用完全相同的 unique atomic segment ID 集合。若集合不一致，后处理会直接停止，避免生成不可比结果。
+- `output/result/country_as_boundary_transition_distribution.csv`：只保留两端 ASN 有效且不同的 hop pair，输出 country 级跨 AS 边界分布。
+- `output/result/service_country_as_boundary_transition_distribution.csv`：用于检查跨 AS 收敛的 service-country/path-scope 级 boundary-only 分布。
+- `output/result/country_as_boundary_transition_concentration_summary.csv` 与 `service_country_as_boundary_transition_concentration_summary.csv`：输出跨 AS coverage、同 AS 占比、fallback 占比、Top-k share、effective transition count 和独立可审计状态。
 - `output/result/country_cross_layer_distribution_audit.csv`：country 级 cross-layer distribution-shape 审计表，联合 network transition concentration 与 corridor observation concentration。
 - `output/result/service_country_cross_layer_distribution_audit.csv`：service-country 级 cross-layer distribution-shape 审计表，`cross_layer_distribution_class` 是主解释字段。
 - `output/result/paper_corridor_observation_concentration_cases.csv`：auditable 的 severe / moderate corridor observation concentration 案例。
@@ -1304,16 +1307,22 @@ PeeringDB 继续保持 external-only：
 - cross-layer distribution audit 比较的是同一批 segment 上的分布形态，而不是把 AS-transition 数量和 corridor 数量当作同一种计量单位直接比较。
 - 当片段两端 ASN 都可获得时，转换键为 `AS<src>->AS<dst>`；任意一端 ASN 缺失时，该片段仍保留在分母中，并显式记为 `COUNTRY_FALLBACK:<src_country>-><dst_country>`。
 - candidate row 的展开不会放大网络观测数：计算 \(N_u(t)\) 和 \(q_u(t)\) 前，会按分析 unit 与 atomic segment 去重。
+- `hop_pair_as_class` 将 hop pair 分为 `cross_as_transition`、`intra_as_hop_pair` 和 `country_fallback`。同 AS hop pair 继续保留在完整同分母视图中，但不会进入 AS-boundary-only 视图。
+- `-1`、`0`、`NA`、`unknown` 等 ASN sentinel 会作为缺失值进入显式 country fallback；该规则只属于后处理语义，不修改 IP-to-AS 解析逻辑。
 
 ### 7 月 1 日网络转换结果包
 
 7 月 1 日时间窗口内的 18 个公开 RIPE Atlas measurement 已完成显式网络转换分布统计，便于检查的结果位于 `output/public_traceroute_by_msmid/`。
 
 - 每个 measurement 目录包含 `country_network_transition_distribution.csv`、`service_country_network_transition_distribution.csv`、`network_corridor_segment_population_alignment.csv`，以及对应的 country/service 集中度汇总表。
+- 每个 measurement 目录同时包含 AS-boundary-only 分布和汇总，避免将同 AS hop pair 错误解释为跨 AS 收敛。
 - `all_measurements_network_transition_distribution_run_summary.csv` 汇总每个 measurement 的 segment 数、unit 数、归一化误差、fallback 数量和对齐失败数。
 - `all_measurements_country_network_transition_concentration_summary.csv` 与 `all_measurements_service_country_network_transition_concentration_summary.csv` 合并各 measurement 的集中度结果，便于跨 measurement 检查。
 - `all_measurements_network_transition_concentration_tier_summary.csv` 按集中度等级与可审计状态汇总 service/path-scope unit 数量。
 - 本结果包覆盖 39,935 个 inter-region atomic segments。18 个 measurement 的 network/corridor segment population 均完全对齐，并且每个 unit 的 \(q_u(t)\) 都在浮点误差范围内归一化为 1。
+- hop-pair AS 分层后得到 7,522 个有效跨 AS boundary segments（18.8%）、25,865 个 intra-AS hop pairs（64.8%）和 6,548 个显式 country fallback segments（16.4%）。
+- AS-boundary-only 审计中有 70 个独立满足阈值的 service/path-scope units：12 个 severe、4 个 moderate、5 个 weak、49 个 broad。讨论跨 AS 收敛时应使用这些 boundary-only 等级，而不是完整 hop-pair 等级。
+- `all_measurements_hop_pair_as_processing_summary.csv` 按 measurement 汇总三类 hop pair 与校验指标；合并后的 boundary summary 和 tier 表使用 `all_measurements_*_as_boundary_*` 文件名。
 
 ## 5051 全量运行结果说明
 

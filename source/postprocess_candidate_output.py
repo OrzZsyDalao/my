@@ -282,6 +282,23 @@ def normalize_token(value: Any, prefix: str = "") -> str:
     return text
 
 
+def normalize_transition_asn(value: Any) -> str:
+    """Normalize hop-pair ASN values and reject explicit unknown sentinels."""
+    text = normalize_token(value).strip()
+    if text.upper().startswith("AS"):
+        text = text[2:].strip()
+    upper = text.upper()
+    if upper in {"", "NA", "NAN", "NONE", "NULL", "UNKNOWN", "-1", "0"}:
+        return "NA"
+    if text.endswith(".0"):
+        integer_part = text[:-2]
+        if integer_part.lstrip("+").isdigit():
+            text = integer_part
+    if text.startswith("-") or not text:
+        return "NA"
+    return text
+
+
 def effective_count_from_entropy(entropy_value: float, category_count: int) -> float:
     """Convert entropy back to an effective count with a zero-data safeguard."""
     return float(math.exp(entropy_value)) if category_count > 0 else 0.0
@@ -1764,9 +1781,9 @@ def prepare_atomic_segment_projection_frame(
         .astype(str)
         .str.strip()
     )
-    working["probe_asn_norm"] = working.get("probe_asn", pd.Series(index=working.index, dtype=object)).apply(
-        lambda value: normalize_token(value, prefix="AS")
-    )
+    working["probe_asn_norm"] = working.get(
+        "probe_asn", pd.Series(index=working.index, dtype=object)
+    ).apply(normalize_transition_asn)
     working["country"] = working["transition_near_country"]
     working["src_country"] = working["transition_near_country"]
     working["dst_country"] = working["transition_far_country"]
@@ -1787,12 +1804,12 @@ def prepare_atomic_segment_projection_frame(
     if "path_scope_stratum" not in working.columns:
         working["path_scope_stratum"] = "all_publicly_visible"
     working["path_scope_stratum"] = working["path_scope_stratum"].fillna("all_publicly_visible").astype(str)
-    working["src_asn_norm"] = working.get("src_asn", pd.Series(index=working.index, dtype=object)).apply(
-        lambda value: normalize_token(value, prefix="AS")
-    )
-    working["dst_asn_norm"] = working.get("dst_asn", pd.Series(index=working.index, dtype=object)).apply(
-        lambda value: normalize_token(value, prefix="AS")
-    )
+    working["src_asn_norm"] = working.get(
+        "src_asn", pd.Series(index=working.index, dtype=object)
+    ).apply(normalize_transition_asn)
+    working["dst_asn_norm"] = working.get(
+        "dst_asn", pd.Series(index=working.index, dtype=object)
+    ).apply(normalize_transition_asn)
     explicit_link_ids = working.get("link_id", pd.Series(index=working.index, dtype=object)).fillna("").astype(str).str.strip()
     working["atomic_segment_id"] = explicit_link_ids
     missing_segment_mask = working["atomic_segment_id"].eq("") | working["atomic_segment_id"].str.lower().eq("nan")
@@ -1861,6 +1878,20 @@ def prepare_atomic_segment_projection_frame(
     has_both_asns = (
         working["src_asn_norm"].astype(str).ne("NA")
         & working["dst_asn_norm"].astype(str).ne("NA")
+    )
+    same_asn = has_both_asns & working["src_asn_norm"].astype(str).eq(
+        working["dst_asn_norm"].astype(str)
+    )
+    working["hop_pair_as_class"] = np.select(
+        [~has_both_asns, same_asn],
+        ["country_fallback", "intra_as_hop_pair"],
+        default="cross_as_transition",
+    )
+    working["is_cross_as_transition"] = working["hop_pair_as_class"].eq(
+        "cross_as_transition"
+    )
+    working["is_intra_as_hop_pair"] = working["hop_pair_as_class"].eq(
+        "intra_as_hop_pair"
     )
     working["network_transition_key"] = np.where(
         has_both_asns,
@@ -2368,6 +2399,37 @@ def build_network_transition_concentration_summary(
     return summarize_network_transition_concentration(prepared, group_fields)
 
 
+def ensure_hop_pair_as_class(frame: pd.DataFrame) -> pd.DataFrame:
+    """Attach explicit cross-AS, intra-AS, and fallback classes to hop-pair rows."""
+    result = frame.copy()
+    if "hop_pair_as_class" in result.columns:
+        classes = result["hop_pair_as_class"].fillna("").astype(str).str.strip()
+    else:
+        classes = pd.Series("", index=result.index, dtype=object)
+    fallback = result.get(
+        "used_country_fallback_transition", pd.Series(False, index=result.index)
+    ).fillna(False).astype(bool)
+    keys = result.get(
+        "network_transition_key", pd.Series("", index=result.index, dtype=object)
+    ).fillna("").astype(str)
+    parts = keys.str.split("->", n=1, expand=True)
+    left = parts[0].fillna("").astype(str).str.strip()
+    right = (
+        parts[1].fillna("").astype(str).str.strip()
+        if parts.shape[1] > 1
+        else pd.Series("", index=result.index, dtype=object)
+    )
+    inferred = np.select(
+        [fallback | keys.str.startswith("COUNTRY_FALLBACK:"), left.eq(right) & left.ne("")],
+        ["country_fallback", "intra_as_hop_pair"],
+        default="cross_as_transition",
+    )
+    result["hop_pair_as_class"] = np.where(classes.ne(""), classes, inferred)
+    result["is_cross_as_transition"] = result["hop_pair_as_class"].eq("cross_as_transition")
+    result["is_intra_as_hop_pair"] = result["hop_pair_as_class"].eq("intra_as_hop_pair")
+    return result
+
+
 def build_network_transition_distribution(
     prepared: pd.DataFrame,
     group_fields: Sequence[str],
@@ -2379,6 +2441,7 @@ def build_network_transition_distribution(
         "file_name",
         "network_transition_key",
         "network_transition_representation",
+        "hop_pair_as_class",
         "network_transition_observation_count",
         "unique_atomic_segments",
         "share_of_network_transition_observations",
@@ -2395,6 +2458,7 @@ def build_network_transition_distribution(
     ]
     if prepared.empty:
         return pd.DataFrame(columns=columns)
+    prepared = ensure_hop_pair_as_class(prepared)
     segment_identity_fields = [*group_fields, "atomic_segment_id"]
     transition_cardinality = prepared.groupby(segment_identity_fields, dropna=False)[
         "network_transition_key"
@@ -2417,6 +2481,9 @@ def build_network_transition_distribution(
             fallback = bool(
                 transition_group["used_country_fallback_transition"].fillna(False).astype(bool).any()
             )
+            hop_pair_classes = transition_group["hop_pair_as_class"].dropna().astype(str).unique()
+            if len(hop_pair_classes) != 1:
+                raise RuntimeError("One network transition key maps to multiple hop-pair AS classes.")
             domestic_count = int(
                 transition_group["is_domestic_segment"].fillna(False).astype(bool).sum()
             )
@@ -2432,6 +2499,7 @@ def build_network_transition_distribution(
                     ),
                     "network_transition_key": str(transition_key),
                     "network_transition_representation": "country_fallback" if fallback else "as_transition",
+                    "hop_pair_as_class": str(hop_pair_classes[0]),
                     "network_transition_observation_count": count,
                     "unique_atomic_segments": int(transition_group["atomic_segment_id"].nunique()),
                     "share_of_network_transition_observations": (
@@ -2459,6 +2527,184 @@ def build_network_transition_distribution(
     return result
 
 
+def build_as_boundary_transition_distribution(
+    prepared: pd.DataFrame,
+    group_fields: Sequence[str],
+) -> pd.DataFrame:
+    """Build a cross-AS-boundary-only distribution without misclassifying intra-AS hop pairs."""
+    columns = [
+        *group_fields,
+        "msm_id",
+        "file_name",
+        "as_boundary_transition_key",
+        "as_boundary_observation_count",
+        "share_of_as_boundary_observations",
+        "rank_within_unit",
+        "is_top1_as_boundary_transition",
+        "is_top2_as_boundary_transition",
+        "is_top3_as_boundary_transition",
+        "group_total_hop_pair_segments",
+        "group_cross_as_boundary_segments",
+        "group_intra_as_hop_pair_segments",
+        "group_country_fallback_segments",
+        "cross_as_boundary_coverage_rate",
+        "intra_as_hop_pair_share",
+        "country_fallback_share",
+        "group_unique_probes",
+        "group_unique_probe_asns",
+    ]
+    if prepared.empty:
+        return pd.DataFrame(columns=columns)
+    classified = ensure_hop_pair_as_class(prepared)
+    segment_fields = [*group_fields, "atomic_segment_id"]
+    class_cardinality = classified.groupby(segment_fields, dropna=False)[
+        "hop_pair_as_class"
+    ].nunique(dropna=False)
+    if (class_cardinality > 1).any():
+        raise RuntimeError("Candidate rows for one atomic segment disagree on hop-pair AS class.")
+    segment_level = classified.drop_duplicates(subset=segment_fields).copy()
+    rows: List[Dict[str, Any]] = []
+    for group_key, group in segment_level.groupby(list(group_fields), dropna=False):
+        group_values = group_key_to_dict(group_fields, group_key)
+        total_segments = int(group["atomic_segment_id"].nunique())
+        class_counts = group["hop_pair_as_class"].value_counts()
+        boundary_group = group.loc[group["hop_pair_as_class"].eq("cross_as_transition")].copy()
+        boundary_segments = int(boundary_group["atomic_segment_id"].nunique())
+        intra_segments = int(class_counts.get("intra_as_hop_pair", 0))
+        fallback_segments = int(class_counts.get("country_fallback", 0))
+        if boundary_group.empty:
+            continue
+        transition_counts = boundary_group["network_transition_key"].value_counts(dropna=False)
+        for rank, (transition_key, observation_count) in enumerate(transition_counts.items(), start=1):
+            transition_group = boundary_group.loc[
+                boundary_group["network_transition_key"].eq(transition_key)
+            ]
+            count = int(observation_count)
+            rows.append(
+                {
+                    **group_values,
+                    "msm_id": summarize_identifier_value(
+                        transition_group.get("msm_id", pd.Series(dtype=object)), default="NA"
+                    ),
+                    "file_name": summarize_identifier_value(
+                        transition_group.get("file_name", pd.Series(dtype=object)), default="NA"
+                    ),
+                    "as_boundary_transition_key": str(transition_key),
+                    "as_boundary_observation_count": count,
+                    "share_of_as_boundary_observations": float(count / boundary_segments),
+                    "rank_within_unit": rank,
+                    "is_top1_as_boundary_transition": rank == 1,
+                    "is_top2_as_boundary_transition": rank == 2,
+                    "is_top3_as_boundary_transition": rank == 3,
+                    "group_total_hop_pair_segments": total_segments,
+                    "group_cross_as_boundary_segments": boundary_segments,
+                    "group_intra_as_hop_pair_segments": intra_segments,
+                    "group_country_fallback_segments": fallback_segments,
+                    "cross_as_boundary_coverage_rate": float(boundary_segments / total_segments),
+                    "intra_as_hop_pair_share": float(intra_segments / total_segments),
+                    "country_fallback_share": float(fallback_segments / total_segments),
+                    "group_unique_probes": _count_unique_non_missing(boundary_group, "probe_id"),
+                    "group_unique_probe_asns": _count_unique_non_missing(
+                        boundary_group, "probe_asn_norm"
+                    ),
+                }
+            )
+    result = pd.DataFrame(rows, columns=columns)
+    if not result.empty:
+        share_sums = result.groupby(list(group_fields), dropna=False)[
+            "share_of_as_boundary_observations"
+        ].sum()
+        if not np.allclose(share_sums.to_numpy(dtype=float), 1.0, atol=1e-9):
+            raise RuntimeError("AS-boundary transition shares must sum to one within every unit.")
+    return result
+
+
+def summarize_as_boundary_transition_distribution(
+    distribution: pd.DataFrame,
+    group_fields: Sequence[str],
+) -> pd.DataFrame:
+    """Summarize concentration only across valid cross-AS boundary hop pairs."""
+    columns = [
+        *group_fields,
+        "msm_id",
+        "file_name",
+        "total_hop_pair_segments",
+        "cross_as_boundary_segments",
+        "intra_as_hop_pair_segments",
+        "country_fallback_segments",
+        "cross_as_boundary_coverage_rate",
+        "intra_as_hop_pair_share",
+        "country_fallback_share",
+        "unique_as_boundary_transitions",
+        "top1_as_boundary_transition_key",
+        "top1_as_boundary_transition_share",
+        "top2_as_boundary_transition_share",
+        "top3_as_boundary_transition_share",
+        "effective_as_boundary_transition_count",
+        "as_boundary_transition_concentration_tier",
+        "auditable_as_boundary_case",
+        "as_boundary_observation_sufficiency_reason",
+        "unique_probes",
+        "unique_probe_asns",
+    ]
+    if distribution.empty:
+        return pd.DataFrame(columns=columns)
+    rows: List[Dict[str, Any]] = []
+    for group_key, group in distribution.groupby(list(group_fields), dropna=False):
+        ordered = group.sort_values("rank_within_unit")
+        shares = pd.to_numeric(
+            ordered["share_of_as_boundary_observations"], errors="coerce"
+        ).fillna(0.0).tolist()
+        top1 = float(shares[0]) if shares else np.nan
+        top2 = compute_topk_share(shares, 2)
+        top3 = compute_topk_share(shares, 3)
+        effective = compute_effective_count_from_shares(shares)
+        boundary_segments = int(
+            pd.to_numeric(group["group_cross_as_boundary_segments"], errors="coerce").max()
+        )
+        unique_probes = int(pd.to_numeric(group["group_unique_probes"], errors="coerce").max())
+        unique_probe_asns = int(
+            pd.to_numeric(group["group_unique_probe_asns"], errors="coerce").max()
+        )
+        sufficiency = evaluate_paper_observation_sufficiency(
+            total_observations=boundary_segments,
+            unique_probes=unique_probes,
+            unique_probe_asns=unique_probe_asns,
+            country_fallback_share=0.0,
+            require_country_fallback=False,
+        )
+        rows.append(
+            {
+                **group_key_to_dict(group_fields, group_key),
+                "msm_id": summarize_identifier_value(group.get("msm_id", pd.Series(dtype=object))),
+                "file_name": summarize_identifier_value(group.get("file_name", pd.Series(dtype=object))),
+                "total_hop_pair_segments": int(pd.to_numeric(group["group_total_hop_pair_segments"], errors="coerce").max()),
+                "cross_as_boundary_segments": boundary_segments,
+                "intra_as_hop_pair_segments": int(pd.to_numeric(group["group_intra_as_hop_pair_segments"], errors="coerce").max()),
+                "country_fallback_segments": int(pd.to_numeric(group["group_country_fallback_segments"], errors="coerce").max()),
+                "cross_as_boundary_coverage_rate": float(pd.to_numeric(group["cross_as_boundary_coverage_rate"], errors="coerce").max()),
+                "intra_as_hop_pair_share": float(pd.to_numeric(group["intra_as_hop_pair_share"], errors="coerce").max()),
+                "country_fallback_share": float(pd.to_numeric(group["country_fallback_share"], errors="coerce").max()),
+                "unique_as_boundary_transitions": int(len(group)),
+                "top1_as_boundary_transition_key": str(ordered.iloc[0]["as_boundary_transition_key"]),
+                "top1_as_boundary_transition_share": top1,
+                "top2_as_boundary_transition_share": top2,
+                "top3_as_boundary_transition_share": top3,
+                "effective_as_boundary_transition_count": effective,
+                "as_boundary_transition_concentration_tier": classify_network_transition_concentration_tier(
+                    top1, top2, top3, effective
+                ).replace("network_transition", "as_boundary_transition"),
+                "auditable_as_boundary_case": sufficiency["auditable_paper_case"],
+                "as_boundary_observation_sufficiency_reason": sufficiency[
+                    "observation_sufficiency_reason"
+                ],
+                "unique_probes": unique_probes,
+                "unique_probe_asns": unique_probe_asns,
+            }
+        )
+    return pd.DataFrame(rows, columns=columns).sort_values(list(group_fields)).reset_index(drop=True)
+
+
 def summarize_network_transition_distribution(
     distribution: pd.DataFrame,
     group_fields: Sequence[str],
@@ -2476,6 +2722,11 @@ def summarize_network_transition_distribution(
         "top3_network_transition_share",
         "effective_network_transition_count",
         "network_transition_concentration_tier",
+        "cross_as_boundary_segments",
+        "intra_as_hop_pair_segments",
+        "country_fallback_segments",
+        "cross_as_boundary_share",
+        "intra_as_hop_pair_share",
         "country_fallback_share",
         "sufficient_network_transition_resolution",
         "auditable_paper_case",
@@ -2508,9 +2759,10 @@ def summarize_network_transition_distribution(
         unique_probes = int(probe_values[0])
         unique_probe_asns = int(probe_asn_values[0])
         counts = pd.to_numeric(group["network_transition_observation_count"], errors="coerce").fillna(0)
-        fallback_count = float(
-            counts.loc[group["used_country_fallback_transition"].fillna(False).astype(bool)].sum()
-        )
+        classes = group.get("hop_pair_as_class", pd.Series("", index=group.index)).astype(str)
+        cross_as_count = float(counts.loc[classes.eq("cross_as_transition")].sum())
+        intra_as_count = float(counts.loc[classes.eq("intra_as_hop_pair")].sum())
+        fallback_count = float(counts.loc[classes.eq("country_fallback")].sum())
         domestic_count = float(pd.to_numeric(group["domestic_segment_count"], errors="coerce").fillna(0).sum())
         fallback_share = float(fallback_count / total_segments) if total_segments else np.nan
         sufficiency = evaluate_paper_observation_sufficiency(
@@ -2538,6 +2790,11 @@ def summarize_network_transition_distribution(
                     top3_share,
                     effective_count,
                 ),
+                "cross_as_boundary_segments": int(cross_as_count),
+                "intra_as_hop_pair_segments": int(intra_as_count),
+                "country_fallback_segments": int(fallback_count),
+                "cross_as_boundary_share": float(cross_as_count / total_segments) if total_segments else np.nan,
+                "intra_as_hop_pair_share": float(intra_as_count / total_segments) if total_segments else np.nan,
                 "country_fallback_share": fallback_share,
                 "sufficient_network_transition_resolution": sufficiency[
                     "sufficient_network_transition_resolution"
@@ -4875,6 +5132,7 @@ def build_method_manifest() -> Dict[str, Any]:
         "primary_projection": "uniform observation mass across feasible corridors",
         "primary_network_distribution": "network transitions over the same mappable atomic segments",
         "network_transition_distribution_note": "N_u(t) counts each unique atomic segment once; q_u(t) is emitted as share_of_network_transition_observations, with an explicit country_fallback representation whenever either endpoint ASN is unavailable",
+        "hop_pair_as_processing_note": "Complete hop-pair distributions retain cross_as_transition, intra_as_hop_pair, and country_fallback classes; AS-boundary-only outputs exclude intra-AS pairs and fallback rows when auditing cross-AS convergence",
         "network_corridor_population_alignment": "network_corridor_segment_population_alignment.csv verifies that q_u(t) and corridor p_u(c) use identical atomic segment sets",
         "primary_cross_layer_class": "network_broad_physical_concentrated",
         "peeringdb_descriptor_note": "PeeringDB descriptors are external interconnection-footprint descriptors only and are not used for physical-candidate construction or candidate-support scoring",
@@ -4926,6 +5184,10 @@ def build_method_manifest() -> Dict[str, Any]:
         "supplementary_outputs": [
             "country_geography_candidate_dependency.csv",
             "country_network_transition_distribution.csv",
+            "country_as_boundary_transition_distribution.csv",
+            "service_country_as_boundary_transition_distribution.csv",
+            "country_as_boundary_transition_concentration_summary.csv",
+            "service_country_as_boundary_transition_concentration_summary.csv",
             "service_country_geography_candidate_dependency.csv",
             "geography_type_candidate_dependency_summary.csv",
             "country_geography_catalog_resolved.csv",
@@ -4997,6 +5259,7 @@ def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
         "primary_projection": "uniform_observation_mass",
         "primary_network_distribution": "network transitions over same atomic segment population",
         "network_transition_distribution_note": "N_u(t) counts each unique atomic segment once; q_u(t) is the normalized share_of_network_transition_observations, with missing endpoint ASNs retained through an explicit country fallback",
+        "hop_pair_as_processing_note": "Same-AS hop pairs remain visible as intra_as_hop_pair in the complete same-population view, while separate AS-boundary-only outputs measure convergence across valid unequal ASNs",
         "network_corridor_population_alignment": "network_corridor_segment_population_alignment.csv asserts identical atomic segment sets for the network and corridor representations",
         "legacy_all_segments_semantics": "support-thresholded legacy candidate list",
         "all_feasible_segments_semantics": "all hard-feasible candidates preserved before support thresholding",
@@ -5038,6 +5301,10 @@ def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
             "country_network_transition_distribution.csv",
             "service_country_network_transition_distribution.csv",
             "network_corridor_segment_population_alignment.csv",
+            "country_as_boundary_transition_distribution.csv",
+            "service_country_as_boundary_transition_distribution.csv",
+            "country_as_boundary_transition_concentration_summary.csv",
+            "service_country_as_boundary_transition_concentration_summary.csv",
             "country_corridor_concentration_summary.csv",
             "service_country_corridor_concentration_summary.csv",
             "country_network_transition_concentration_summary.csv",
@@ -5650,6 +5917,32 @@ def main() -> None:
                 "shared_atomic_segments",
                 "segment_population_aligned",
             ],
+            "country_as_boundary_transition_distribution.csv": [
+                "country",
+                "as_boundary_transition_key",
+                "as_boundary_observation_count",
+                "share_of_as_boundary_observations",
+            ],
+            "service_country_as_boundary_transition_distribution.csv": [
+                "probe_country",
+                "service_id",
+                "path_scope_stratum",
+                "as_boundary_transition_key",
+                "as_boundary_observation_count",
+                "share_of_as_boundary_observations",
+            ],
+            "country_as_boundary_transition_concentration_summary.csv": [
+                "country",
+                "cross_as_boundary_segments",
+                "as_boundary_transition_concentration_tier",
+            ],
+            "service_country_as_boundary_transition_concentration_summary.csv": [
+                "probe_country",
+                "service_id",
+                "path_scope_stratum",
+                "cross_as_boundary_segments",
+                "as_boundary_transition_concentration_tier",
+            ],
         }
         for filename, columns in empty_tables.items():
             pd.DataFrame(columns=columns).to_csv(
@@ -5935,6 +6228,26 @@ def main() -> None:
     service_country_network_transition_concentration_summary = summarize_network_transition_distribution(
         service_country_network_transition_distribution,
         ["probe_country", "service_id", "path_scope_stratum"],
+    )
+    country_as_boundary_transition_distribution = build_as_boundary_transition_distribution(
+        paper_inter_region_projection,
+        ["country"],
+    )
+    service_country_as_boundary_transition_distribution = build_as_boundary_transition_distribution(
+        service_path_scope_projection,
+        ["probe_country", "service_id", "path_scope_stratum"],
+    )
+    country_as_boundary_transition_concentration_summary = (
+        summarize_as_boundary_transition_distribution(
+            country_as_boundary_transition_distribution,
+            ["country"],
+        )
+    )
+    service_country_as_boundary_transition_concentration_summary = (
+        summarize_as_boundary_transition_distribution(
+            service_country_as_boundary_transition_distribution,
+            ["probe_country", "service_id", "path_scope_stratum"],
+        )
     )
     country_segment_population_alignment = build_network_corridor_segment_population_alignment(
         paper_inter_region_projection,
@@ -6365,6 +6678,22 @@ def main() -> None:
         args.output,
         "service_country_network_transition_distribution.csv",
     )
+    country_as_boundary_transition_distribution_path = os.path.join(
+        args.output,
+        "country_as_boundary_transition_distribution.csv",
+    )
+    service_country_as_boundary_transition_distribution_path = os.path.join(
+        args.output,
+        "service_country_as_boundary_transition_distribution.csv",
+    )
+    country_as_boundary_transition_concentration_summary_path = os.path.join(
+        args.output,
+        "country_as_boundary_transition_concentration_summary.csv",
+    )
+    service_country_as_boundary_transition_concentration_summary_path = os.path.join(
+        args.output,
+        "service_country_as_boundary_transition_concentration_summary.csv",
+    )
     network_corridor_segment_population_alignment_path = os.path.join(
         args.output,
         "network_corridor_segment_population_alignment.csv",
@@ -6503,6 +6832,26 @@ def main() -> None:
     )
     service_country_network_transition_distribution.to_csv(
         service_country_network_transition_distribution_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    country_as_boundary_transition_distribution.to_csv(
+        country_as_boundary_transition_distribution_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    service_country_as_boundary_transition_distribution.to_csv(
+        service_country_as_boundary_transition_distribution_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    country_as_boundary_transition_concentration_summary.to_csv(
+        country_as_boundary_transition_concentration_summary_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    service_country_as_boundary_transition_concentration_summary.to_csv(
+        service_country_as_boundary_transition_concentration_summary_path,
         index=False,
         encoding="utf-8-sig",
     )
@@ -6675,6 +7024,10 @@ def main() -> None:
     print(f"Saved service-country corridor concentration summary to {service_country_corridor_concentration_summary_path}")
     print(f"Saved country network-transition distribution to {country_network_transition_distribution_path}")
     print(f"Saved service-country network-transition distribution to {service_country_network_transition_distribution_path}")
+    print(f"Saved country AS-boundary transition distribution to {country_as_boundary_transition_distribution_path}")
+    print(f"Saved service-country AS-boundary transition distribution to {service_country_as_boundary_transition_distribution_path}")
+    print(f"Saved country AS-boundary concentration summary to {country_as_boundary_transition_concentration_summary_path}")
+    print(f"Saved service-country AS-boundary concentration summary to {service_country_as_boundary_transition_concentration_summary_path}")
     print(f"Saved network/corridor atomic-segment alignment audit to {network_corridor_segment_population_alignment_path}")
     print(f"Saved country network-transition concentration summary to {country_network_transition_concentration_summary_path}")
     print(f"Saved service-country network-transition concentration summary to {service_country_network_transition_concentration_summary_path}")

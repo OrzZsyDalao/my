@@ -1276,6 +1276,9 @@ New or newly promoted outputs:
 - `output/result/country_network_transition_distribution.csv`: explicit country-level network distribution. `network_transition_observation_count` is \(N_u(t)\), while `share_of_network_transition_observations` is \(q_u(t)\). Each atomic segment is counted once even when it expands into multiple feasible candidate rows.
 - `output/result/service_country_network_transition_distribution.csv`: explicit service-country network distribution for each `path_scope_stratum`, with `network_transition_representation` identifying `as_transition` versus the non-silent `country_fallback`.
 - `output/result/network_corridor_segment_population_alignment.csv`: per-unit diagnostic proving that network \(q_u(t)\) and corridor \(p_u(c)\) use exactly the same unique atomic segment IDs. Any mismatch stops post-processing instead of producing incomparable summaries.
+- `output/result/country_as_boundary_transition_distribution.csv`: country-level distribution restricted to valid hop pairs whose endpoint ASNs differ.
+- `output/result/service_country_as_boundary_transition_distribution.csv`: service-country/path-scope AS-boundary-only distribution used to audit cross-AS convergence.
+- `output/result/country_as_boundary_transition_concentration_summary.csv` and `service_country_as_boundary_transition_concentration_summary.csv`: boundary-only concentration summaries with cross-AS coverage, intra-AS share, fallback share, Top-k shares, effective transition count, and independent audit eligibility.
 - `output/result/country_cross_layer_distribution_audit.csv`: country-level cross-layer distribution-shape audit joining network transition concentration and corridor observation concentration.
 - `output/result/service_country_cross_layer_distribution_audit.csv`: service-country cross-layer distribution-shape audit with `cross_layer_distribution_class` as the main interpretation field.
 - `output/result/paper_corridor_observation_concentration_cases.csv`: auditable severe or moderate corridor observation concentration cases.
@@ -1289,16 +1292,22 @@ Interpretation update:
 - The cross-layer distribution audit compares concentration patterns over the same observed segment population; it does not equate AS-transition counts with corridor counts as identical units.
 - If both endpoint ASNs are available, the transition key is `AS<src>->AS<dst>`. If either ASN is unavailable, the segment remains in the denominator under the explicit key `COUNTRY_FALLBACK:<src_country>-><dst_country>`.
 - Candidate-row expansion never increases network observation counts: candidates are deduplicated to one row per analysis unit and atomic segment before computing \(N_u(t)\) and \(q_u(t)\).
+- `hop_pair_as_class` distinguishes `cross_as_transition`, `intra_as_hop_pair`, and `country_fallback`. Same-AS hop pairs remain in the complete same-population view but never enter the AS-boundary-only view.
+- ASN sentinels such as `-1`, `0`, `NA`, and `unknown` are treated as missing and use the explicit country fallback; this is post-processing semantics and does not alter IP-to-AS resolution.
 
 ### July 1 Network-Transition Result Bundle
 
 The 18 public RIPE Atlas measurements from the July 1 window have been evaluated using the explicit network-transition distribution. The reviewable outputs are stored under `output/public_traceroute_by_msmid/`.
 
 - Each measurement directory contains `country_network_transition_distribution.csv`, `service_country_network_transition_distribution.csv`, `network_corridor_segment_population_alignment.csv`, and the corresponding country/service concentration summaries.
+- Each measurement directory also contains AS-boundary-only distributions and summaries so cross-AS convergence is not inferred from same-AS hop pairs.
 - `all_measurements_network_transition_distribution_run_summary.csv` records segment counts, unit counts, normalization errors, fallback counts, and alignment failures for every measurement.
 - `all_measurements_country_network_transition_concentration_summary.csv` and `all_measurements_service_country_network_transition_concentration_summary.csv` combine the per-measurement concentration summaries for cross-measurement review.
 - `all_measurements_network_transition_concentration_tier_summary.csv` reports service/path-scope unit counts by concentration tier and audit eligibility.
 - This bundle covers 39,935 inter-region atomic segments. All 18 measurements passed network/corridor segment-population alignment, and every per-unit \(q_u(t)\) distribution sums to one within floating-point tolerance.
+- Hop-pair AS classification identifies 7,522 valid cross-AS boundary segments (18.8%), 25,865 intra-AS hop pairs (64.8%), and 6,548 explicit country-fallback segments (16.4%).
+- The AS-boundary-only audit has 70 independently auditable service/path-scope units: 12 severe, 4 moderate, 5 weak, and 49 broad. These boundary-only tiers, rather than the complete hop-pair tiers, should be used for claims about cross-AS convergence.
+- `all_measurements_hop_pair_as_processing_summary.csv` records the three hop-pair classes and validation metrics per measurement. The combined boundary summaries and tier table use the `all_measurements_*_as_boundary_*` filenames.
 
 ## Large-Scale 5051 Run Artifacts
 
