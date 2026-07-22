@@ -28,6 +28,14 @@
 | `country_geography_catalog_resolved.csv` | 本次数据实际出现的国家代码、最终地理类型和分类来源。 |
 | `country_geography_dependency_manifest.json` | 记录目录校验和、公式、阈值、path scope、输出清单和解释边界。 |
 
+可以直接将已有的逐 measurement 汇总与国家类型目录合并，无需重新运行候选匹配或完整后处理：
+
+```bash
+python pipeline/merge_existing_country_geography_results.py
+```
+
+脚本会在 `output/public_traceroute_by_msmid/` 下生成 `all_measurements_service_country_geography_concentration.csv`、`all_measurements_country_geography_type_summary.csv`、`all_measurements_geography_concentration_tier_summary.csv`、`all_measurements_country_geography_catalog_resolved.csv`、`all_measurements_paper_service_country_geography_concentration.csv` 和合并 manifest。论文表只保留现有 cross-layer audit 已判定为可审计的行；国家类型 rate 汇总继续按 rate 来源分层，避免静默混合旧 exposure 与新版 inter-region exposure。
+
 关键字段：
 
 | 字段 | 含义 |

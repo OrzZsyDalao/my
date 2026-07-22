@@ -1,0 +1,45 @@
+{
+  "generated_at_utc": "2026-07-22T09:37:33.981868+00:00",
+  "method": "merge_existing_measurement_results_with_operational_country_geography_type",
+  "input_policy": "existing summary CSVs only; no Stage 1 or full postprocess rerun",
+  "catalog": "data\\country_geography_types.json",
+  "measurements_included": [
+    "msm176517335_edge-localization-extension-netflix-assets",
+    "msm176906957_popular-application-reddit",
+    "msm5001_dns-root-k-root",
+    "msm5004_dns-root-f-root",
+    "msm5005_dns-root-i-root",
+    "msm5006_dns-root-m-root",
+    "msm5008_dns-root-l-root",
+    "msm5009_dns-root-a-root",
+    "msm5010_dns-root-b-root",
+    "msm5011_dns-root-c-root",
+    "msm5012_dns-root-d-root",
+    "msm5013_dns-root-e-root",
+    "msm5014_dns-root-g-root",
+    "msm5015_dns-root-h-root",
+    "msm5016_dns-root-j-root",
+    "msm5151_topology-baseline-topology-ipv4-icmp",
+    "msm86710103_popular-application-wikipedia"
+  ],
+  "measurements_skipped": [
+    {
+      "measurement_dir": "msm5051_topology-baseline-topology-ipv4-udp",
+      "missing_files": [
+        "service_country_physical_exposure_summary.csv",
+        "service_country_corridor_concentration_summary.csv",
+        "service_country_cross_layer_distribution_audit.csv"
+      ]
+    }
+  ],
+  "scope_harmonization": "explicit outputs use all_publicly_visible; legacy outputs retain their single existing scope",
+  "rate_harmonization": "prefer inter_region_candidate_exposure_rate when present; otherwise retain legacy service_physical_exposure_rate with an explicit source label",
+  "generated_outputs": [
+    "all_measurements_service_country_geography_concentration.csv",
+    "all_measurements_country_geography_type_summary.csv",
+    "all_measurements_geography_concentration_tier_summary.csv",
+    "all_measurements_country_geography_catalog_resolved.csv",
+    "all_measurements_paper_service_country_geography_concentration.csv"
+  ],
+  "interpretation_boundary": "descriptive feasible-candidate and corridor-concentration analysis, not actual cable use or traffic dependency"
+}
