@@ -18,7 +18,7 @@ ASREL_DIR = os.path.join(DATA_DIR, "asrelationship")
 OWNER2ASN_DIR = os.path.join(DATA_DIR, "owner2asn")
 CABLE_DIR = os.path.join(DATA_DIR, "cable")
 
-DEFAULT_ASREL_PATH = os.path.join(ASREL_DIR, "20250901.as-rel2.txt")
+DEFAULT_ASREL_PATH = os.path.join(ASREL_DIR, "20260701.as-rel2.txt")
 DEFAULT_OWNER2ASN_PATH = os.path.join(OWNER2ASN_DIR, "owner_to_asn.csv")
 DEFAULT_CABLE_DIR = CABLE_DIR
 DEFAULT_OUTPUT_PATH = os.path.join(OUTPUT_DIR, "as_graph_owner_reachability.pkl.gz")

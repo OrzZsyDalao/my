@@ -206,7 +206,7 @@ output/
 | `data/cable/*.json` | 第一阶段、第二阶段、AS 预处理 | 每根海缆一个 JSON，包含 `id`、`name`、`landing_points`、`owners` 等 | 海缆元数据、登陆站对、owner 信息 |
 | `data/ipinfo/ipinfo_location.mmdb` | 第一阶段、第二阶段 | MMDB geolocation 数据库 | IP 到国家 / 城市的地理映射 |
 | `data/ipinfo/ipinfo_asn.mmdb` | 第一阶段、第二阶段 | IPinfo ASN MMDB 数据库 | 当前所有 hop、endpoint、target、service-entry、network-transition 的 IP 到 ASN 映射来源 |
-| `data/asrelationship/20250901.as-rel2.txt` | 第一阶段、AS 预处理 | CAIDA 格式 AS 关系文件 | AS-economic core 的关系图输入 |
+| `data/asrelationship/20260701.as-rel2.txt` | 第一阶段、AS 预处理 | CAIDA AS 关系文件（2026-07-01 快照） | AS-economic core 的关系图输入 |
 | `data/pfx2as/202512.pfx2as` | 旧实验兼容 | prefix 到 origin ASN 的映射 | 保留给旧实验；当前 IP 到 ASN 解析使用 `data/ipinfo/ipinfo_asn.mmdb` |
 | `data/owner2asn/owner_to_asn.csv` | 第一阶段、AS 预处理 | `owner,asn` 两列 | cable owner 到 ASN 的映射 |
 
@@ -218,7 +218,9 @@ output/
 | `data/traceroute_rundnsroot/**/*.json` | 第一阶段 | RIPE Atlas traceroute 结果文件 | 第一阶段主输入目录 |
 | `data/traceroute_rundnsroot/ripe_atlas_public_20260701_0000_0100/*.json` | 第一阶段 | 下载得到的 RIPE Atlas traceroute result 数组，文件名包含 dataset、服务/root 名称、`msm_id` 和 UTC 时间窗口 | 第一轮 DNS Root、应用、扩展和 topology baseline 数据集 |
 | `data/traceroute/ripe_atlas_5051_20251201.json` | 可选 | 大规模 traceroute 输入 | 全量运行用 |
-| `data/probe/*.json` | 第二阶段 | probe 元数据，通常包含 `objects[].id` 与 `objects[].country_code` | 将 probe ID 映射到源国家 |
+| `data/probe/20260701.json` | 第二阶段 | RIPE Atlas probe 元数据（2026-07-01 快照），包含 `objects[].id` 与 `objects[].country_code` | 将 probe ID 映射到源国家 |
+
+对齐到 2026-07-01 的参考快照分别来自 RIPE Atlas 官方 probe archive 和 CAIDA serial-2 AS-relationship archive。`data/` 下的运行数据按设计不提交到 Git；每台电脑运行 pipeline 前都需要将两个解压文件放到上表路径。
 
 ### 可选预处理输入
 
@@ -252,7 +254,7 @@ output/
 
 | 参数 | 默认值 | 含义 |
 | --- | --- | --- |
-| `--asrel-file` | `data/asrelationship/20250901.as-rel2.txt` | CAIDA AS relationship 文件 |
+| `--asrel-file` | `data/asrelationship/20260701.as-rel2.txt` | CAIDA AS relationship 文件 |
 | `--owner2asn-file` | `data/owner2asn/owner_to_asn.csv` | owner 到 ASN 映射 |
 | `--cable-dir` | `data/cable/` | 海缆元数据目录 |
 | `--output` | `output/preprocessed/as_graph_owner_reachability.pkl.gz` | 预处理输出路径 |
@@ -274,7 +276,7 @@ output/
 | --- | --- | --- |
 | `--raw-traces-file` | `data/traceroute_rundnsroot/root_dns_traces.json` | 原始 traceroute 输入文件或目录 |
 | `--match-output-file` | `output/result/cable_matching_output.json` | 第一阶段输出 JSON |
-| `--probe-meta-file` | `data/probe/20251201.json` | probe 元数据文件 |
+| `--probe-meta-file` | `data/probe/20260701.json` | probe 元数据文件 |
 | `--probe-file-name` | `None` | 从 `data/probe/` 中按文件名选 probe 文件 |
 | `--probe-use-latest` | `False` | 自动选择最新 probe JSON |
 | `--mmdb-path` | `data/ipinfo/ipinfo_location.mmdb` | geolocation MMDB 路径 |

@@ -209,7 +209,7 @@ Script roles:
 | `data/cable/*.json` | Stage 1, Stage 2, AS precompute | One JSON per cable, including `id`, `name`, `landing_points`, `owners` | Cable metadata, landing pairs, and owner metadata |
 | `data/ipinfo/ipinfo_location.mmdb` | Stage 1, Stage 2 | MMDB geolocation database | IP-to-country/city geolocation |
 | `data/ipinfo/ipinfo_asn.mmdb` | Stage 1, Stage 2 | IPinfo ASN MMDB database | Active IP-to-ASN lookup source for hop, endpoint, target, service-entry, and network-transition ASN fields |
-| `data/asrelationship/20250901.as-rel2.txt` | Stage 1, AS precompute | CAIDA-style AS relationships (`AS1|AS2|rel`) | AS-economic relationship model |
+| `data/asrelationship/20260701.as-rel2.txt` | Stage 1, AS precompute | CAIDA AS relationships (`AS1|AS2|rel`), snapshot 2026-07-01 | AS-economic relationship model |
 | `data/pfx2as/202512.pfx2as` | Legacy compatibility only | Prefix-to-origin-AS mapping | Retained for old experiments; current IP-to-ASN mapping uses `data/ipinfo/ipinfo_asn.mmdb` |
 | `data/owner2asn/owner_to_asn.csv` | Stage 1, AS precompute | CSV with `owner,asn` | Maps cable owners to ASNs |
 
@@ -221,7 +221,9 @@ Script roles:
 | `data/traceroute_rundnsroot/**/*.json` | Stage 1 | RIPE Atlas traceroute result files | Main traceroute source directory |
 | `data/traceroute_rundnsroot/ripe_atlas_public_20260701_0000_0100/*.json` | Stage 1 | Downloaded public RIPE Atlas traceroute result arrays with filenames containing dataset, service/root name, `msm_id`, and UTC window | First-round DNS Root, application, extension, and topology-baseline dataset |
 | `data/traceroute/ripe_atlas_5051_20251201.json` | Optional | Larger full-scale traceroute input | Full dataset run |
-| `data/probe/*.json` | Stage 2 | Probe metadata, typically with `objects[].id` and `objects[].country_code` | Maps probe IDs to source countries |
+| `data/probe/20260701.json` | Stage 2 | RIPE Atlas probe archive with `objects[].id` and `objects[].country_code`, snapshot 2026-07-01 | Maps probe IDs to source countries |
+
+The aligned 2026-07-01 reference snapshots come from the official RIPE Atlas probe archive and CAIDA serial-2 AS-relationship archive. Runtime data under `data/` is intentionally excluded from Git; each machine must place the two decompressed files at the paths above before running the pipeline.
 
 ### Precomputed Optional Input
 
@@ -243,7 +245,7 @@ Script roles:
 
 | Parameter | Default | Meaning |
 | --- | --- | --- |
-| `--asrel-file` | `data/asrelationship/20250901.as-rel2.txt` | CAIDA AS relationship input |
+| `--asrel-file` | `data/asrelationship/20260701.as-rel2.txt` | CAIDA AS relationship input |
 | `--owner2asn-file` | `data/owner2asn/owner_to_asn.csv` | Owner-to-ASN mapping |
 | `--cable-dir` | `data/cable/` | Cable metadata directory |
 | `--output` | `output/preprocessed/as_graph_owner_reachability.pkl.gz` | Output precompute payload |
@@ -266,7 +268,7 @@ Script roles:
 | --- | --- | --- |
 | `--raw-traces-file` | `data/traceroute_rundnsroot/root_dns_traces.json` | Raw traceroute input file or directory |
 | `--match-output-file` | `output/result/cable_matching_output.json` | Stage 1 matching JSON |
-| `--probe-meta-file` | `data/probe/20251201.json` | Probe metadata file |
+| `--probe-meta-file` | `data/probe/20260701.json` | Probe metadata file |
 | `--probe-file-name` | `None` | Probe filename under `data/probe/` |
 | `--probe-use-latest` | `False` | Automatically select latest probe JSON |
 | `--mmdb-path` | `data/ipinfo/ipinfo_location.mmdb` | MMDB path |

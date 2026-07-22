@@ -160,9 +160,9 @@ def reference_input_descriptors(
         REPO_DIR / "data" / "cable" / "landing-point-geo.json",
         REPO_DIR / "data" / "ipinfo" / "ipinfo_location.mmdb",
         REPO_DIR / "data" / "ipinfo" / "ipinfo_asn.mmdb",
-        REPO_DIR / "data" / "asrelationship" / "20250901.as-rel2.txt",
+        REPO_DIR / "data" / "asrelationship" / "20260701.as-rel2.txt",
         REPO_DIR / "data" / "owner2asn" / "owner_to_asn.csv",
-        REPO_DIR / "data" / "probe" / "20251201.json",
+        REPO_DIR / "data" / "probe" / "20260701.json",
         country_geography_catalog,
         as_precompute_file,
     ]

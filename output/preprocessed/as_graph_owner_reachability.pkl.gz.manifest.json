@@ -1,9 +1,9 @@
 {
   "output_file": "output\\preprocessed\\as_graph_owner_reachability.pkl.gz",
   "owner_group_count": 312,
-  "graph_node_count": 78643,
-  "graph_edge_count": 1141392,
-  "reachable_entries": 10353257,
+  "graph_node_count": 80119,
+  "graph_edge_count": 1503644,
+  "reachable_entries": 10913271,
   "config": {
     "max_hops_unknown": 2,
     "search_max_hops": 2,
@@ -13,9 +13,9 @@
   },
   "source_files": {
     "asrel_file": {
-      "path": "data\\asrelationship\\20250901.as-rel2.txt",
-      "size_bytes": 10511124,
-      "mtime_epoch": 1782874212.6699498
+      "path": "data\\asrelationship\\20260701.as-rel2.txt",
+      "size_bytes": 13998401,
+      "mtime_epoch": 1784698529.2756076
     },
     "owner2asn_file": {
       "path": "data\\owner2asn\\owner_to_asn.csv",

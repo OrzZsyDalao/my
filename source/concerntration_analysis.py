@@ -21,7 +21,7 @@ DEFAULT_FLAG_CROSS_COUNTRY = True
 # Default to the smaller traceroute source for routine testing.
 DEFAULT_RAW_TRACES_FILE = "./data/traceroute_rundnsroot/root_dns_traces.json"
 DEFAULT_MATCH_OUTPUT_FILE = "./output/result/cable_matching_output.json"
-DEFAULT_PROBE_META_FILE = "./data/probe/20251201.json"
+DEFAULT_PROBE_META_FILE = "./data/probe/20260701.json"
 DEFAULT_OUTPUT_CSV = "./output/result/country_root_cable_dependency_hybrid.csv"
 
 SOURCE_DIR = os.path.dirname(os.path.abspath(__file__)) if '__file__' in locals() else '.'
@@ -268,7 +268,7 @@ def resolve_probe_metadata_path(
         print(f"No probe file specified. Using latest available probe metadata file: {latest_probe}")
         return latest_probe
 
-    return probe_meta_file or os.path.join(probe_dir, '20251201.json')
+    return probe_meta_file or os.path.join(probe_dir, '20260701.json')
 
 
 def load_pfx2as_mapping(path: str) -> Optional[Any]:
