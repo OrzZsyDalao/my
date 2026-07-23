@@ -1,0 +1,212 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1540" height="1114" viewBox="0 0 1540 1114" role="img" aria-labelledby="title desc">
+<title id="title">Country geography and cross-layer concentration</title>
+<desc id="desc">Auditable service-country units only; physical metrics describe feasible corridor candidates.</desc>
+<rect width="1540" height="1114" fill="#F5F1E8"/>
+<text x="34.0" y="42.0" text-anchor="start" font-family="Georgia, Segoe UI, sans-serif" font-size="27" font-weight="500" fill="#17313D">Country geography and cross-layer concentration</text>
+<text x="34.0" y="70.0" text-anchor="start" font-family="Georgia, Segoe UI, sans-serif" font-size="14" font-weight="400" fill="#526A75">Auditable service-country units only; physical metrics describe feasible corridor candidates.</text>
+<text x="34.0" y="95.0" text-anchor="start" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">Boxes show Q1–Q3; center line is median; whiskers use 1.5×IQR; dots are sampled outliers.</text>
+<rect x="30.0" y="118.0" width="740.0" height="470.0" rx="10" fill="#FFFFFF" stroke="#CAD8DD"/>
+<text x="52.0" y="149.0" text-anchor="start" font-family="Georgia, Segoe UI, sans-serif" font-size="18" font-weight="500" fill="#17313D">Top-1 feasible corridor share</text>
+<text x="52.0" y="170.0" text-anchor="start" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">Higher values indicate stronger corridor-observation concentration.</text>
+<line x1="108.0" y1="496.0" x2="746.0" y2="496.0" stroke="#E4ECEF" stroke-width="1"/>
+<text x="98.0" y="501.0" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">0.00</text>
+<line x1="108.0" y1="417.5" x2="746.0" y2="417.5" stroke="#E4ECEF" stroke-width="1"/>
+<text x="98.0" y="422.5" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">0.25</text>
+<line x1="108.0" y1="339.0" x2="746.0" y2="339.0" stroke="#E4ECEF" stroke-width="1"/>
+<text x="98.0" y="344.0" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">0.50</text>
+<line x1="108.0" y1="260.5" x2="746.0" y2="260.5" stroke="#E4ECEF" stroke-width="1"/>
+<text x="98.0" y="265.5" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">0.75</text>
+<line x1="108.0" y1="182.0" x2="746.0" y2="182.0" stroke="#E4ECEF" stroke-width="1"/>
+<text x="98.0" y="187.0" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">1.00</text>
+<text x="214.3" y="523.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#17313D">Coastal mainland / mixed</text>
+<text x="214.3" y="543.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="11" font-weight="400" fill="#526A75">n=225</text>
+<line x1="214.3" y1="182.0" x2="214.3" y2="295.6" stroke="#176B87" stroke-width="2"/>
+<line x1="214.3" y1="410.0" x2="214.3" y2="462.1" stroke="#176B87" stroke-width="2"/>
+<line x1="189.7" y1="182.0" x2="239.0" y2="182.0" stroke="#176B87" stroke-width="2"/>
+<line x1="189.7" y1="462.1" x2="239.0" y2="462.1" stroke="#176B87" stroke-width="2"/>
+<rect x="177.3" y="295.6" width="74.0" height="114.4" fill="#176B87" fill-opacity="0.24" stroke="#176B87" stroke-width="2"/>
+<line x1="177.3" y1="372.2" x2="251.3" y2="372.2" stroke="#17313D" stroke-width="3"/>
+<text x="427.0" y="523.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#17313D">Island / archipelagic</text>
+<text x="427.0" y="543.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="11" font-weight="400" fill="#526A75">n=95</text>
+<line x1="427.0" y1="262.1" x2="427.0" y2="336.2" stroke="#D97706" stroke-width="2"/>
+<line x1="427.0" y1="385.9" x2="427.0" y2="440.9" stroke="#D97706" stroke-width="2"/>
+<line x1="402.3" y1="262.1" x2="451.7" y2="262.1" stroke="#D97706" stroke-width="2"/>
+<line x1="402.3" y1="440.9" x2="451.7" y2="440.9" stroke="#D97706" stroke-width="2"/>
+<rect x="390.0" y="336.2" width="74.0" height="49.6" fill="#D97706" fill-opacity="0.24" stroke="#D97706" stroke-width="2"/>
+<line x1="390.0" y1="359.6" x2="464.0" y2="359.6" stroke="#17313D" stroke-width="3"/>
+<circle cx="418.6" cy="462.9" r="2.4" fill="#D97706" fill-opacity="0.55"/>
+<circle cx="420.7" cy="259.3" r="2.4" fill="#D97706" fill-opacity="0.55"/>
+<circle cx="422.8" cy="257.2" r="2.4" fill="#D97706" fill-opacity="0.55"/>
+<circle cx="424.9" cy="220.8" r="2.4" fill="#D97706" fill-opacity="0.55"/>
+<circle cx="427.0" cy="182.0" r="2.4" fill="#D97706" fill-opacity="0.55"/>
+<text x="639.7" y="523.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#17313D">Landlocked</text>
+<text x="639.7" y="543.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="11" font-weight="400" fill="#526A75">n=18</text>
+<line x1="639.7" y1="182.0" x2="639.7" y2="182.0" stroke="#2F855A" stroke-width="2"/>
+<line x1="639.7" y1="187.4" x2="639.7" y2="193.4" stroke="#2F855A" stroke-width="2"/>
+<line x1="615.0" y1="182.0" x2="664.3" y2="182.0" stroke="#2F855A" stroke-width="2"/>
+<line x1="615.0" y1="193.4" x2="664.3" y2="193.4" stroke="#2F855A" stroke-width="2"/>
+<rect x="602.7" y="182.0" width="74.0" height="5.4" fill="#2F855A" fill-opacity="0.24" stroke="#2F855A" stroke-width="2"/>
+<line x1="602.7" y1="182.0" x2="676.7" y2="182.0" stroke="#17313D" stroke-width="3"/>
+<circle cx="631.3" cy="293.4" r="2.4" fill="#2F855A" fill-opacity="0.55"/>
+<circle cx="633.4" cy="277.4" r="2.4" fill="#2F855A" fill-opacity="0.55"/>
+<circle cx="635.5" cy="275.9" r="2.4" fill="#2F855A" fill-opacity="0.55"/>
+<rect x="800.0" y="118.0" width="740.0" height="470.0" rx="10" fill="#FFFFFF" stroke="#CAD8DD"/>
+<text x="822.0" y="149.0" text-anchor="start" font-family="Georgia, Segoe UI, sans-serif" font-size="18" font-weight="500" fill="#17313D">Effective feasible corridor count</text>
+<text x="822.0" y="170.0" text-anchor="start" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">Raw counts shown on a log1p axis; lower values indicate narrower concentration.</text>
+<line x1="878.0" y1="496.0" x2="1516.0" y2="496.0" stroke="#E4ECEF" stroke-width="1"/>
+<text x="868.0" y="501.0" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">0</text>
+<line x1="878.0" y1="448.8" x2="1516.0" y2="448.8" stroke="#E4ECEF" stroke-width="1"/>
+<text x="868.0" y="453.8" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">1</text>
+<line x1="878.0" y1="401.7" x2="1516.0" y2="401.7" stroke="#E4ECEF" stroke-width="1"/>
+<text x="868.0" y="406.7" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">3</text>
+<line x1="878.0" y1="332.9" x2="1516.0" y2="332.9" stroke="#E4ECEF" stroke-width="1"/>
+<text x="868.0" y="337.9" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">10</text>
+<line x1="878.0" y1="262.4" x2="1516.0" y2="262.4" stroke="#E4ECEF" stroke-width="1"/>
+<text x="868.0" y="267.4" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">30</text>
+<line x1="878.0" y1="182.0" x2="1516.0" y2="182.0" stroke="#E4ECEF" stroke-width="1"/>
+<text x="868.0" y="187.0" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">100</text>
+<text x="984.3" y="523.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#17313D">Coastal mainland / mixed</text>
+<text x="984.3" y="543.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="11" font-weight="400" fill="#526A75">n=225</text>
+<line x1="984.3" y1="308.2" x2="984.3" y2="349.9" stroke="#176B87" stroke-width="2"/>
+<line x1="984.3" y1="409.6" x2="984.3" y2="448.8" stroke="#176B87" stroke-width="2"/>
+<line x1="959.7" y1="308.2" x2="1009.0" y2="308.2" stroke="#176B87" stroke-width="2"/>
+<line x1="959.7" y1="448.8" x2="1009.0" y2="448.8" stroke="#176B87" stroke-width="2"/>
+<rect x="947.3" y="349.9" width="74.0" height="59.7" fill="#176B87" fill-opacity="0.24" stroke="#176B87" stroke-width="2"/>
+<line x1="947.3" y1="377.9" x2="1021.3" y2="377.9" stroke="#17313D" stroke-width="3"/>
+<circle cx="975.9" cy="306.4" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="978.0" cy="304.9" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="980.1" cy="302.7" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="982.2" cy="301.1" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="984.3" cy="298.8" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="986.4" cy="297.9" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="988.5" cy="292.2" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="990.6" cy="290.7" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="992.7" cy="288.4" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="975.9" cy="286.4" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="978.0" cy="275.6" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="980.1" cy="257.1" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="982.2" cy="238.3" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="984.3" cy="237.7" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="986.4" cy="236.2" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="988.5" cy="214.4" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<text x="1197.0" y="523.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#17313D">Island / archipelagic</text>
+<text x="1197.0" y="543.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="11" font-weight="400" fill="#526A75">n=95</text>
+<line x1="1197.0" y1="316.8" x2="1197.0" y2="348.9" stroke="#D97706" stroke-width="2"/>
+<line x1="1197.0" y1="389.0" x2="1197.0" y2="448.8" stroke="#D97706" stroke-width="2"/>
+<line x1="1172.3" y1="316.8" x2="1221.7" y2="316.8" stroke="#D97706" stroke-width="2"/>
+<line x1="1172.3" y1="448.8" x2="1221.7" y2="448.8" stroke="#D97706" stroke-width="2"/>
+<rect x="1160.0" y="348.9" width="74.0" height="40.1" fill="#D97706" fill-opacity="0.24" stroke="#D97706" stroke-width="2"/>
+<line x1="1160.0" y1="365.2" x2="1234.0" y2="365.2" stroke="#17313D" stroke-width="3"/>
+<circle cx="1188.6" cy="310.2" r="2.4" fill="#D97706" fill-opacity="0.55"/>
+<circle cx="1190.7" cy="307.5" r="2.4" fill="#D97706" fill-opacity="0.55"/>
+<circle cx="1192.8" cy="303.6" r="2.4" fill="#D97706" fill-opacity="0.55"/>
+<circle cx="1194.9" cy="291.9" r="2.4" fill="#D97706" fill-opacity="0.55"/>
+<circle cx="1197.0" cy="233.5" r="2.4" fill="#D97706" fill-opacity="0.55"/>
+<text x="1409.7" y="523.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#17313D">Landlocked</text>
+<text x="1409.7" y="543.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="11" font-weight="400" fill="#526A75">n=18</text>
+<line x1="1409.7" y1="443.3" x2="1409.7" y2="445.5" stroke="#2F855A" stroke-width="2"/>
+<line x1="1409.7" y1="448.8" x2="1409.7" y2="448.8" stroke="#2F855A" stroke-width="2"/>
+<line x1="1385.0" y1="443.3" x2="1434.3" y2="443.3" stroke="#2F855A" stroke-width="2"/>
+<line x1="1385.0" y1="448.8" x2="1434.3" y2="448.8" stroke="#2F855A" stroke-width="2"/>
+<rect x="1372.7" y="445.5" width="74.0" height="3.3" fill="#2F855A" fill-opacity="0.24" stroke="#2F855A" stroke-width="2"/>
+<line x1="1372.7" y1="448.8" x2="1446.7" y2="448.8" stroke="#17313D" stroke-width="3"/>
+<circle cx="1401.3" cy="424.8" r="2.4" fill="#2F855A" fill-opacity="0.55"/>
+<circle cx="1403.4" cy="423.2" r="2.4" fill="#2F855A" fill-opacity="0.55"/>
+<circle cx="1405.5" cy="371.3" r="2.4" fill="#2F855A" fill-opacity="0.55"/>
+<rect x="30.0" y="616.0" width="740.0" height="470.0" rx="10" fill="#FFFFFF" stroke="#CAD8DD"/>
+<text x="52.0" y="647.0" text-anchor="start" font-family="Georgia, Segoe UI, sans-serif" font-size="18" font-weight="500" fill="#17313D">Effective network-transition count</text>
+<text x="52.0" y="668.0" text-anchor="start" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">Network-side concentration over the comparable segment population.</text>
+<line x1="108.0" y1="994.0" x2="746.0" y2="994.0" stroke="#E4ECEF" stroke-width="1"/>
+<text x="98.0" y="999.0" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">0</text>
+<line x1="108.0" y1="946.8" x2="746.0" y2="946.8" stroke="#E4ECEF" stroke-width="1"/>
+<text x="98.0" y="951.8" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">1</text>
+<line x1="108.0" y1="899.7" x2="746.0" y2="899.7" stroke="#E4ECEF" stroke-width="1"/>
+<text x="98.0" y="904.7" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">3</text>
+<line x1="108.0" y1="830.9" x2="746.0" y2="830.9" stroke="#E4ECEF" stroke-width="1"/>
+<text x="98.0" y="835.9" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">10</text>
+<line x1="108.0" y1="760.4" x2="746.0" y2="760.4" stroke="#E4ECEF" stroke-width="1"/>
+<text x="98.0" y="765.4" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">30</text>
+<line x1="108.0" y1="680.0" x2="746.0" y2="680.0" stroke="#E4ECEF" stroke-width="1"/>
+<text x="98.0" y="685.0" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">100</text>
+<text x="214.3" y="1021.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#17313D">Coastal mainland / mixed</text>
+<text x="214.3" y="1041.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="11" font-weight="400" fill="#526A75">n=225</text>
+<line x1="214.3" y1="783.4" x2="214.3" y2="822.8" stroke="#176B87" stroke-width="2"/>
+<line x1="214.3" y1="885.7" x2="214.3" y2="946.8" stroke="#176B87" stroke-width="2"/>
+<line x1="189.7" y1="783.4" x2="239.0" y2="783.4" stroke="#176B87" stroke-width="2"/>
+<line x1="189.7" y1="946.8" x2="239.0" y2="946.8" stroke="#176B87" stroke-width="2"/>
+<rect x="177.3" y="822.8" width="74.0" height="62.9" fill="#176B87" fill-opacity="0.24" stroke="#176B87" stroke-width="2"/>
+<line x1="177.3" y1="854.3" x2="251.3" y2="854.3" stroke="#17313D" stroke-width="3"/>
+<circle cx="205.9" cy="778.3" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="208.0" cy="774.5" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="210.1" cy="773.3" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="212.2" cy="773.0" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="214.3" cy="771.9" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="216.4" cy="770.2" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="218.5" cy="757.7" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="220.6" cy="739.2" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="222.7" cy="724.4" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="205.9" cy="700.2" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<circle cx="208.0" cy="695.4" r="2.4" fill="#176B87" fill-opacity="0.55"/>
+<text x="427.0" y="1021.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#17313D">Island / archipelagic</text>
+<text x="427.0" y="1041.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="11" font-weight="400" fill="#526A75">n=95</text>
+<line x1="427.0" y1="740.6" x2="427.0" y2="781.1" stroke="#D97706" stroke-width="2"/>
+<line x1="427.0" y1="858.5" x2="427.0" y2="919.8" stroke="#D97706" stroke-width="2"/>
+<line x1="402.3" y1="740.6" x2="451.7" y2="740.6" stroke="#D97706" stroke-width="2"/>
+<line x1="402.3" y1="919.8" x2="451.7" y2="919.8" stroke="#D97706" stroke-width="2"/>
+<rect x="390.0" y="781.1" width="74.0" height="77.4" fill="#D97706" fill-opacity="0.24" stroke="#D97706" stroke-width="2"/>
+<line x1="390.0" y1="815.5" x2="464.0" y2="815.5" stroke="#17313D" stroke-width="3"/>
+<circle cx="418.6" cy="730.1" r="2.4" fill="#D97706" fill-opacity="0.55"/>
+<circle cx="420.7" cy="724.7" r="2.4" fill="#D97706" fill-opacity="0.55"/>
+<circle cx="422.8" cy="714.8" r="2.4" fill="#D97706" fill-opacity="0.55"/>
+<text x="639.7" y="1021.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#17313D">Landlocked</text>
+<text x="639.7" y="1041.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="11" font-weight="400" fill="#526A75">n=18</text>
+<line x1="639.7" y1="817.2" x2="639.7" y2="825.0" stroke="#2F855A" stroke-width="2"/>
+<line x1="639.7" y1="845.2" x2="639.7" y2="853.2" stroke="#2F855A" stroke-width="2"/>
+<line x1="615.0" y1="817.2" x2="664.3" y2="817.2" stroke="#2F855A" stroke-width="2"/>
+<line x1="615.0" y1="853.2" x2="664.3" y2="853.2" stroke="#2F855A" stroke-width="2"/>
+<rect x="602.7" y="825.0" width="74.0" height="20.2" fill="#2F855A" fill-opacity="0.24" stroke="#2F855A" stroke-width="2"/>
+<line x1="602.7" y1="836.3" x2="676.7" y2="836.3" stroke="#17313D" stroke-width="3"/>
+<circle cx="631.3" cy="946.8" r="2.4" fill="#2F855A" fill-opacity="0.55"/>
+<circle cx="633.4" cy="922.8" r="2.4" fill="#2F855A" fill-opacity="0.55"/>
+<circle cx="635.5" cy="921.2" r="2.4" fill="#2F855A" fill-opacity="0.55"/>
+<circle cx="637.6" cy="764.5" r="2.4" fill="#2F855A" fill-opacity="0.55"/>
+<rect x="800.0" y="616.0" width="740.0" height="470.0" rx="10" fill="#FFFFFF" stroke="#CAD8DD"/>
+<text x="822.0" y="647.0" text-anchor="start" font-family="Georgia, Segoe UI, sans-serif" font-size="18" font-weight="500" fill="#17313D">Top-3 feasible corridor share</text>
+<text x="822.0" y="668.0" text-anchor="start" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">Cumulative observation mass assigned to the three leading corridor candidates.</text>
+<line x1="878.0" y1="994.0" x2="1516.0" y2="994.0" stroke="#E4ECEF" stroke-width="1"/>
+<text x="868.0" y="999.0" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">0.00</text>
+<line x1="878.0" y1="915.5" x2="1516.0" y2="915.5" stroke="#E4ECEF" stroke-width="1"/>
+<text x="868.0" y="920.5" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">0.25</text>
+<line x1="878.0" y1="837.0" x2="1516.0" y2="837.0" stroke="#E4ECEF" stroke-width="1"/>
+<text x="868.0" y="842.0" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">0.50</text>
+<line x1="878.0" y1="758.5" x2="1516.0" y2="758.5" stroke="#E4ECEF" stroke-width="1"/>
+<text x="868.0" y="763.5" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">0.75</text>
+<line x1="878.0" y1="680.0" x2="1516.0" y2="680.0" stroke="#E4ECEF" stroke-width="1"/>
+<text x="868.0" y="685.0" text-anchor="end" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#526A75">1.00</text>
+<text x="984.3" y="1021.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#17313D">Coastal mainland / mixed</text>
+<text x="984.3" y="1041.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="11" font-weight="400" fill="#526A75">n=225</text>
+<line x1="984.3" y1="680.0" x2="984.3" y2="697.4" stroke="#176B87" stroke-width="2"/>
+<line x1="984.3" y1="800.6" x2="984.3" y2="919.5" stroke="#176B87" stroke-width="2"/>
+<line x1="959.7" y1="680.0" x2="1009.0" y2="680.0" stroke="#176B87" stroke-width="2"/>
+<line x1="959.7" y1="919.5" x2="1009.0" y2="919.5" stroke="#176B87" stroke-width="2"/>
+<rect x="947.3" y="697.4" width="74.0" height="103.2" fill="#176B87" fill-opacity="0.24" stroke="#176B87" stroke-width="2"/>
+<line x1="947.3" y1="734.6" x2="1021.3" y2="734.6" stroke="#17313D" stroke-width="3"/>
+<text x="1197.0" y="1021.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#17313D">Island / archipelagic</text>
+<text x="1197.0" y="1041.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="11" font-weight="400" fill="#526A75">n=95</text>
+<line x1="1197.0" y1="680.0" x2="1197.0" y2="722.7" stroke="#D97706" stroke-width="2"/>
+<line x1="1197.0" y1="787.1" x2="1197.0" y2="872.1" stroke="#D97706" stroke-width="2"/>
+<line x1="1172.3" y1="680.0" x2="1221.7" y2="680.0" stroke="#D97706" stroke-width="2"/>
+<line x1="1172.3" y1="872.1" x2="1221.7" y2="872.1" stroke="#D97706" stroke-width="2"/>
+<rect x="1160.0" y="722.7" width="74.0" height="64.4" fill="#D97706" fill-opacity="0.24" stroke="#D97706" stroke-width="2"/>
+<line x1="1160.0" y1="754.3" x2="1234.0" y2="754.3" stroke="#17313D" stroke-width="3"/>
+<circle cx="1188.6" cy="921.3" r="2.4" fill="#D97706" fill-opacity="0.55"/>
+<text x="1409.7" y="1021.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="12" font-weight="400" fill="#17313D">Landlocked</text>
+<text x="1409.7" y="1041.0" text-anchor="middle" font-family="Georgia, Segoe UI, sans-serif" font-size="11" font-weight="400" fill="#526A75">n=18</text>
+<line x1="1409.7" y1="680.0" x2="1409.7" y2="680.0" stroke="#2F855A" stroke-width="2"/>
+<line x1="1409.7" y1="680.0" x2="1409.7" y2="680.0" stroke="#2F855A" stroke-width="2"/>
+<line x1="1385.0" y1="680.0" x2="1434.3" y2="680.0" stroke="#2F855A" stroke-width="2"/>
+<line x1="1385.0" y1="680.0" x2="1434.3" y2="680.0" stroke="#2F855A" stroke-width="2"/>
+<rect x="1372.7" y="680.0" width="74.0" height="1.0" fill="#2F855A" fill-opacity="0.24" stroke="#2F855A" stroke-width="2"/>
+<line x1="1372.7" y1="680.0" x2="1446.7" y2="680.0" stroke="#17313D" stroke-width="3"/>
+<circle cx="1401.3" cy="759.3" r="2.4" fill="#2F855A" fill-opacity="0.55"/>
+</svg>

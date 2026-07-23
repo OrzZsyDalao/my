@@ -1,0 +1,22 @@
+{
+  "generated_at_utc": "2026-07-23T02:41:55.986833+00:00",
+  "input": "output\\public_traceroute_by_msmid\\all_measurements_service_country_geography_concentration.csv",
+  "paper_input": "output\\public_traceroute_by_msmid\\all_measurements_paper_service_country_geography_concentration.csv",
+  "country_geography_types_plotted": [
+    "coastal_mainland_or_mixed",
+    "island_or_archipelagic",
+    "landlocked"
+  ],
+  "excluded_from_main_figures": [
+    "unknown"
+  ],
+  "boxplot_definition": "Tukey: Q1-Q3 box, median line, whiskers within 1.5 IQR",
+  "rate_source_policy": "legacy and inter-region candidate-exposure rates are shown in separate panels",
+  "interpretation_boundary": "measurement-observed feasible-candidate statistics, not traffic volume, actual cable use, causal geography effects, or national resilience ground truth",
+  "outputs": [
+    "country_geography_candidate_exposure_boxplots.svg",
+    "country_geography_concentration_boxplots.svg",
+    "country_geography_sampling_boxplots.svg",
+    "country_geography_boxplot_statistics.csv"
+  ]
+}

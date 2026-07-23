@@ -100,6 +100,14 @@ python pipeline/merge_existing_country_geography_results.py
 
 This writes `all_measurements_service_country_geography_concentration.csv`, `all_measurements_country_geography_type_summary.csv`, `all_measurements_geography_concentration_tier_summary.csv`, `all_measurements_country_geography_catalog_resolved.csv`, `all_measurements_paper_service_country_geography_concentration.csv`, and a merge manifest under `output/public_traceroute_by_msmid/`. The paper table contains only rows whose existing cross-layer audit marks them auditable. Geography-rate summaries remain stratified by rate source so legacy exposure and newer inter-region exposure are never silently pooled.
 
+Generate country-geography boxplots without an additional plotting dependency:
+
+```bash
+python pipeline/plot_country_geography_boxplots.py
+```
+
+The command writes three SVG figures for candidate exposure, auditable cross-layer concentration, and measurement coverage, plus `country_geography_boxplot_statistics.csv` and a figure manifest. Legacy and inter-region exposure rates remain in separate panels.
+
 Key fields:
 
 | Field | Meaning |

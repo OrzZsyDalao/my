@@ -36,6 +36,14 @@ python pipeline/merge_existing_country_geography_results.py
 
 脚本会在 `output/public_traceroute_by_msmid/` 下生成 `all_measurements_service_country_geography_concentration.csv`、`all_measurements_country_geography_type_summary.csv`、`all_measurements_geography_concentration_tier_summary.csv`、`all_measurements_country_geography_catalog_resolved.csv`、`all_measurements_paper_service_country_geography_concentration.csv` 和合并 manifest。论文表只保留现有 cross-layer audit 已判定为可审计的行；国家类型 rate 汇总继续按 rate 来源分层，避免静默混合旧 exposure 与新版 inter-region exposure。
 
+无需额外绘图库即可生成国家类型箱线图：
+
+```bash
+python pipeline/plot_country_geography_boxplots.py
+```
+
+命令会生成候选 exposure、可审计跨层集中度和测量覆盖度三张 SVG，以及 `country_geography_boxplot_statistics.csv` 和图表 manifest。旧 exposure 与新版 inter-region exposure 始终分面显示。
+
 关键字段：
 
 | 字段 | 含义 |
