@@ -1358,6 +1358,9 @@ diameter `30/50/75 km` 和 RTT tolerance `0/5/10 ms`。输出
 candidate-bearing segments、unique/bounded 比例、可审计单元数、corridor
 Top-2 中位数、归一化 corridor entropy、归一化 entropy reduction，以及相对
 `50/50/5` 基线的分类一致率。
+当该 27 行汇总存在时，紧凑论文结果打包器还会将其复制到
+`results/july1_public_atlas_20260701/sensitivity/a_root_sensitivity_summary.csv`，
+并在 `bundle_manifest.json` 中记录参数组合数量和基线组合。
 - `hop_pair_as_class` 将 hop pair 分为 `cross_as_transition`、`intra_as_hop_pair` 和 `country_fallback`。同 AS hop pair 继续保留在完整同分母视图中，但不会进入 AS-boundary-only 视图。
 - `-1`、`0`、`NA`、`unknown` 等 ASN sentinel 会作为缺失值进入显式 country fallback；该规则只属于后处理语义，不修改 IP-to-AS 解析逻辑。
 

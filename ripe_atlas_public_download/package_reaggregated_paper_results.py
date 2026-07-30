@@ -464,6 +464,35 @@ def main() -> None:
             "sha256": sha256_file(run_index_path),
         }
     )
+    sensitivity_source = (
+        REPO_ROOT / "output" / "sensitivity_a_root" / "a_root_sensitivity_summary.csv"
+    )
+    sensitivity_accounting: Dict[str, Any] = {
+        "included": False,
+        "setting_count": 0,
+    }
+    if sensitivity_source.exists() and sensitivity_source.stat().st_size > 0:
+        sensitivity_frame = pd.read_csv(sensitivity_source)
+        if len(sensitivity_frame) != 27:
+            raise RuntimeError(
+                "Expected 27 A-Root sensitivity settings, found "
+                f"{len(sensitivity_frame)}."
+            )
+        sensitivity_target = (
+            destination_root / "sensitivity" / "a_root_sensitivity_summary.csv"
+        )
+        copy_if_compact(
+            sensitivity_source,
+            sensitivity_target,
+            max_bytes,
+            copied,
+            skipped,
+        )
+        sensitivity_accounting = {
+            "included": True,
+            "setting_count": int(len(sensitivity_frame)),
+            "baseline_setting": "catchment50_diameter50_rtt5",
+        }
 
     manifest = {
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -477,6 +506,7 @@ def main() -> None:
         "copied": copied,
         "skipped": skipped,
         "aggregate_source_accounting": aggregate_source_accounting,
+        "a_root_sensitivity": sensitivity_accounting,
         "large_runtime_outputs_not_packaged": [
             "cable_matching_output.json",
             "trace_candidate_support.csv",

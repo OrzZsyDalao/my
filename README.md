@@ -1344,6 +1344,10 @@ maximum diameter `30/50/75 km`, and RTT tolerance `0/5/10 ms`. It writes
 candidate-bearing segments, unique/bounded shares, auditable units, median
 Top-2 corridor share, normalized corridor entropy, normalized entropy
 reduction, and classification agreement against the `50/50/5` baseline.
+When the 27-row summary is available, the compact publication packager also
+copies it to
+`results/july1_public_atlas_20260701/sensitivity/a_root_sensitivity_summary.csv`
+and records the setting count and baseline in `bundle_manifest.json`.
 - `hop_pair_as_class` distinguishes `cross_as_transition`, `intra_as_hop_pair`, and `country_fallback`. Same-AS hop pairs remain in the complete same-population view but never enter the AS-boundary-only view.
 - ASN sentinels such as `-1`, `0`, `NA`, and `unknown` are treated as missing and use the explicit country fallback; this is post-processing semantics and does not alter IP-to-AS resolution.
 
