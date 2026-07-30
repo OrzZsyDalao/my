@@ -16,7 +16,7 @@ data/**
 !data/asrelationship/
 !data/asrelationship/.gitkeep
 !data/cable/
-!data/cable/.gitkeep
+!data/cable/**
 !data/ipinfo/
 !data/ipinfo/.gitkeep
 !data/owner2asn/

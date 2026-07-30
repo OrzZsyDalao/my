@@ -147,7 +147,9 @@ Application observation
 
 - `candidate_support`、`fused_candidate_support`、`normalized_candidate_support` 都是**证据分数**，不是 ground truth。
 - 排名第一的候选海缆，只表示在当前证据模型下最强的候选解释，不表示该路径真实使用了这根海缆。
-- 保留 cable-level 和 corridor-level 两种输出，是因为平行海缆会影响解释粒度。
+- `corridor_id` 表示无方向的“登陆区域对”，是用于聚合的类 SRLG 候选分组；它不能证明组内海缆在海底具有平行路由，也不能证明它们共享同一故障域。
+- `parallel_*` 字段表示同一登陆站分组仍保留多根可行海缆候选。论文宜称为“平行海缆候选”“共同登陆候选组”或“共享登陆区域走廊”，不应直接宣称为已确认的物理平行海缆。
+- 若要确认路由级平行关系，需要有序 branch topology 或海缆路由几何，并进行明确的空间重叠检验；当前海缆元数据不包含这些信息。
 
 ## 仓库结构
 
@@ -218,8 +220,8 @@ output/
 
 | 路径 | 被哪些流程使用 | 预期内容 | 作用 |
 | --- | --- | --- | --- |
-| `data/cable/landing-point-geo.json` | 第一阶段 | GeoJSON，`features[].properties.id` 为 landing station ID，geometry 为坐标 | landing station 坐标索引 |
-| `data/cable/*.json` | 第一阶段、第二阶段、AS 预处理 | 每根海缆一个 JSON，包含 `id`、`name`、`landing_points`、`owners` 等 | 海缆元数据、登陆站对、owner 信息 |
+| `data/cable/landing-point-geo.json` | 第一阶段 | GeoJSON，`features[].properties.id` 为 landing station ID，geometry 为点坐标 | landing station 坐标索引；随海缆快照一并纳入 Git |
+| `data/cable/*.json` | 第一阶段、第二阶段、AS 预处理 | 每根海缆一个 JSON，包含 `id`、`name`、`landing_points`、`owners` 等；不假设存在有序 branch topology 或路由折线 | 海缆元数据、登陆站可达性候选和 owner 信息；纳入 Git 以支持多电脑复现实验 |
 | `data/ipinfo/ipinfo_location.mmdb` | 第一阶段、第二阶段 | MMDB geolocation 数据库 | IP 到国家 / 城市的地理映射 |
 | `data/ipinfo/ipinfo_asn.mmdb` | 第一阶段、第二阶段 | IPinfo ASN MMDB 数据库 | 当前所有 hop、endpoint、target、service-entry、network-transition 的 IP 到 ASN 映射来源 |
 | `data/asrelationship/20260701.as-rel2.txt` | 第一阶段、AS 预处理 | CAIDA AS 关系文件（2026-07-01 快照） | AS-economic core 的关系图输入 |
@@ -545,12 +547,12 @@ RIPE Atlas probe 辅助脚本生成的本地提交回执。主要字段如下：
 | `cable_name`, `cable_id` | 候选海缆名称和 ID |
 | `segment` | 有向 landing station pair 字符串 |
 | `landing_pair` | 保留兼容用途的 landing pair 表达 |
-| `corridor_id` | corridor 的规范 ID |
-| `corridor_type` | corridor 类型，当前为 `exact_landing_pair` |
-| `parallel_group_id` | 平行海缆组 ID |
-| `parallel_group_size` | 该组内海缆数量 |
-| `is_parallel_ambiguous` | 是否属于平行海缆模糊组 |
-| `physical_candidate_group_id` | 类 SRLG 的物理候选分组 ID，当前与 corridor 级平行组保持一致 |
+| `corridor_id` | 无方向 landing-region pair 的规范 ID，不表示路由几何重叠 |
+| `corridor_type` | corridor 类型，当前为 `landing_region_pair` |
+| `parallel_group_id` | 当前与 `corridor_id` 对齐的兼容分组 ID，不能据此认定路由级平行 |
+| `parallel_group_size` | 精确 landing-station pair 最终可行候选数量的 deprecated alias |
+| `is_parallel_ambiguous` | 精确 landing-station pair 是否仍有多根可行海缆候选 |
+| `physical_candidate_group_id` | 类 SRLG 候选分组 ID，不是已确认的共享风险组或平行路由组 |
 | `physical_candidate_group_type` | 物理候选分组类型，当前为 `srlg_like_corridor_group` |
 | `link_physical_projection_class` | 为扁平化分析保留的 link 级物理投影类别 |
 

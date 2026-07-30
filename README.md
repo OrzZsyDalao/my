@@ -128,7 +128,9 @@ Key fields:
 
 - `candidate_support`, `fused_candidate_support`, and `normalized_candidate_support` are evidence scores, not ground-truth cable utilization.
 - A top-ranked candidate is the strongest explanation under the current evidence model, not proof that the path truly used that cable.
-- Cable-level and corridor-level outputs are both kept because parallel infrastructure can change the interpretation granularity.
+- `corridor_id` identifies an unordered landing-region pair. It is an SRLG-like candidate grouping for aggregation, not proof that the grouped cables follow parallel offshore routes or share a failure domain.
+- A `parallel_*` field means that multiple feasible cable candidates remain for the same landing-pair grouping. Paper text should use **parallel-cable candidates**, **co-landing candidate group**, or **shared landing-region corridor**, not claim confirmed physical parallel cables.
+- Confirming route-level parallelism would require ordered branch topology or cable-route geometry and an explicit spatial-overlap test; those data are not present in the current cable metadata.
 
 ## Repository Layout
 
@@ -221,8 +223,8 @@ Script roles:
 
 | Path | Used By | Expected Content | Purpose |
 | --- | --- | --- | --- |
-| `data/cable/landing-point-geo.json` | Stage 1 | GeoJSON features keyed by landing-station `id`, with coordinates | Landing-station coordinate lookup for spatial candidate generation |
-| `data/cable/*.json` | Stage 1, Stage 2, AS precompute | One JSON per cable, including `id`, `name`, `landing_points`, `owners` | Cable metadata, landing pairs, and owner metadata |
+| `data/cable/landing-point-geo.json` | Stage 1 | GeoJSON features keyed by landing-station `id`, with point coordinates | Landing-station coordinate lookup for spatial candidate generation; tracked in Git with the cable snapshot |
+| `data/cable/*.json` | Stage 1, Stage 2, AS precompute | One JSON per cable, including `id`, `name`, `landing_points`, `owners`; no ordered branch topology or route polyline is assumed | Cable metadata, landing-pair reachability candidates, and owner metadata; tracked in Git for reproducible multi-computer runs |
 | `data/ipinfo/ipinfo_location.mmdb` | Stage 1, Stage 2 | MMDB geolocation database | IP-to-country/city geolocation |
 | `data/ipinfo/ipinfo_asn.mmdb` | Stage 1, Stage 2 | IPinfo ASN MMDB database | Active IP-to-ASN lookup source for hop, endpoint, target, service-entry, and network-transition ASN fields |
 | `data/asrelationship/20260701.as-rel2.txt` | Stage 1, AS precompute | CAIDA AS relationships (`AS1|AS2|rel`), snapshot 2026-07-01 | AS-economic relationship model |
@@ -547,12 +549,12 @@ Spatial and candidate identity:
 | `cable_name`, `cable_id` | Candidate cable identity |
 | `segment` | Directed landing-station pair string |
 | `landing_pair` | Same landing-pair description retained for compatibility |
-| `corridor_id` | Canonical corridor identifier |
-| `corridor_type` | Corridor type, currently `exact_landing_pair` |
-| `parallel_group_id` | Parallel-candidate grouping identifier |
-| `parallel_group_size` | Number of cables in the same corridor group |
-| `is_parallel_ambiguous` | Whether this candidate belongs to a parallel corridor group |
-| `physical_candidate_group_id` | SRLG-like physical candidate group identifier, currently aligned with the corridor-level parallel bundle |
+| `corridor_id` | Canonical unordered landing-region-pair identifier; not a route-overlap assertion |
+| `corridor_type` | Corridor type, currently `landing_region_pair` |
+| `parallel_group_id` | Compatibility grouping identifier currently aligned with `corridor_id`; it does not establish route-level parallelism |
+| `parallel_group_size` | Deprecated alias of the final feasible multiplicity for the exact landing-station pair |
+| `is_parallel_ambiguous` | Whether multiple feasible cable candidates remain for the exact landing-station pair |
+| `physical_candidate_group_id` | SRLG-like candidate grouping identifier, not a confirmed shared-risk or parallel-route group |
 | `physical_candidate_group_type` | Physical grouping type, currently `srlg_like_corridor_group` |
 | `link_physical_projection_class` | Link-level projection class copied onto candidate rows for flattened analysis |
 
