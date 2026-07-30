@@ -1,10 +1,10 @@
 ﻿stage_order,accounting_stage,counting_unit,count,parent_stage,parent_count,retention_rate_within_parent,consistency_assertion_passed
 1,raw_traceroutes,trace,43667,,,,True
 2,valid_traceroutes,trace,43667,raw_traceroutes,43667.0,1.0,True
-3,traces_with_mappable_segments,trace,40514,valid_traceroutes,43667.0,0.9277944443172189,True
+3,traces_with_mappable_segments,trace,40869,valid_traceroutes,43667.0,0.9359241532507385,True
 4,mappable_atomic_segments,atomic_segment,332146,,,,True
 5,segments_with_complete_asn_labels,atomic_segment,297998,mappable_atomic_segments,332146.0,0.8971897900320943,True
-6,segments_with_landing_candidates,atomic_segment,42939,mappable_atomic_segments,332146.0,0.12927748640658024,True
-7,segments_with_feasible_corridors,atomic_segment,15221,segments_with_landing_candidates,42939.0,0.3544796106104008,True
-8,inter_region_candidate_bearing_segments,atomic_segment,13975,segments_with_feasible_corridors,15221.0,0.9181394126535707,True
-9,paper_auditable_country_service_units,country_service_unit,78,all_country_service_scope_units,366.0,0.21311475409836064,True
+6,segments_with_landing_candidates,atomic_segment,85583,mappable_atomic_segments,332146.0,0.25766680917427875,True
+7,segments_with_feasible_corridors,atomic_segment,28129,segments_with_landing_candidates,85583.0,0.3286750873421123,True
+8,inter_region_candidate_bearing_segments,atomic_segment,14755,segments_with_feasible_corridors,28129.0,0.5245476198940595,True
+9,paper_auditable_country_service_units,country_service_unit,87,all_country_service_scope_units,372.0,0.23387096774193547,True

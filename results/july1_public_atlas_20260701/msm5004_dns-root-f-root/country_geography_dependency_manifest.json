@@ -1,0 +1,33 @@
+{
+  "method_name": "country_geography_candidate_dependency_proxy_analysis",
+  "catalog_path": "data\\country_geography_types.json",
+  "catalog_sha256": "3a1bf97406baaff3acc5f64efb6e2c6b25f832aa39512555109fb1e97faf69f0",
+  "catalog_loaded": true,
+  "country_geography_types": [
+    "landlocked",
+    "island_or_archipelagic",
+    "coastal_mainland_or_mixed",
+    "unknown"
+  ],
+  "primary_rate": "traces_with_inter_region_candidates / total_valid_traces",
+  "conditional_rate": "traces_with_inter_region_candidates / mappable_traces",
+  "candidate_dependency_proxy_thresholds": {
+    "low": 0.05,
+    "moderate": 0.15,
+    "high": 0.3
+  },
+  "paper_filter": "auditable_paper_case == True",
+  "path_scope_strata": [
+    "all_publicly_visible",
+    "resolved_entry_only"
+  ],
+  "intra_region_treatment": "reported separately and excluded from the primary candidate dependency proxy",
+  "interpretation_boundary": "The dependency proxy is feasible inter-region submarine-corridor candidate exposure. It is not observed cable use, traffic volume, causal dependency, or resilience ground truth.",
+  "generated_outputs": [
+    "country_geography_candidate_dependency.csv",
+    "service_country_geography_candidate_dependency.csv",
+    "geography_type_candidate_dependency_summary.csv",
+    "paper_service_country_geography_candidate_dependency.csv",
+    "country_geography_catalog_resolved.csv"
+  ]
+}

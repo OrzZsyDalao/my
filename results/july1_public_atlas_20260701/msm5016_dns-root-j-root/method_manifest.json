@@ -1,5 +1,7 @@
 {
   "method_name": "application_network_corridor_distribution_audit",
+  "postprocess_schema_version": "postprocess_candidate_output_v3",
+  "identity_schema_version": "observation_identity_v1",
   "main_question": "whether application-visible network-transition diversity remains broad after projection onto feasible submarine-cable corridors",
   "claim_boundary": "feasible corridor support and observation concentration, not ground-truth cable attribution",
   "primary_analysis_unit": "probe_country_x_service_id",

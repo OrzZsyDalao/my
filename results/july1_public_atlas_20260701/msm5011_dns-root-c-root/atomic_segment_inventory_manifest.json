@@ -12,5 +12,6 @@
     "insufficiently_resolved_atomic_segments_total": "visible hop-pair lacking a country label at either end"
   },
   "input": "D:\\Workspace\\infocom26\\data\\traceroute_rundnsroot\\ripe_atlas_public_20260701_0000_0100\\dns-root_c-root_msm5011_20260701T000000Z_010000Z.json",
-  "output": "D:\\Workspace\\infocom26\\output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\atomic_segment_inventory.csv.gz"
+  "output": "D:\\Workspace\\infocom26\\output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\atomic_segment_inventory.csv.gz",
+  "identity_schema_version": "observation_identity_v1"
 }
