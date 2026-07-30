@@ -1,5 +1,5 @@
 ﻿metric,value
-candidate_rows,4085.0
+candidate_rows,3631.0
 unique_links,1134.0
 unique_units,61.0
 units_with_network_layer_diversity,99.0
@@ -9,7 +9,7 @@ units_with_network_physical_mismatch_cable,61.0
 units_with_network_physical_mismatch_corridor,61.0
 median_network_layer_diversity_score,4.466239164511983
 median_cable_physical_candidate_diversity_score,1.9956147251948186
-median_corridor_physical_candidate_diversity_score,1.789578587830613
+median_corridor_physical_candidate_diversity_score,1.736972521002593
 cable_mismatch_network_high_physical_low,10.0
 cable_mismatch_network_high_physical_high,21.0
 cable_mismatch_network_low_physical_low,21.0
@@ -22,6 +22,6 @@ cable_corridor_target_quadrant_preserved,5.0
 cable_corridor_target_quadrant_jaccard,0.3125
 cable_corridor_target_quadrant_recall_from_cable,0.5
 cable_corridor_target_quadrant_precision_to_corridor,0.45454545454545453
-mean_corridor_minus_cable_physical_diversity,-0.7553086845001364
+mean_corridor_minus_cable_physical_diversity,-0.7934988922124205
 cable_corridor_quadrant_agreement_rate,0.7377049180327869
-spearman_cable_corridor_physical_diversity_score,0.6742181799338646
+spearman_cable_corridor_physical_diversity_score,0.692976976267405

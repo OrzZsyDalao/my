@@ -966,3 +966,101 @@ def test_legacy_resolution_matching_is_nearest_time_and_one_to_one():
         "legacy-1": "inventory-1",
         "legacy-2": "inventory-2",
     }
+
+
+def test_candidate_rows_are_deduplicated_by_canonical_segment_and_candidate():
+    """Transport-container duplicates must not multiply candidate observations."""
+    rows = []
+    for trace_prefix in ["download-a", "download-b"]:
+        for cable_id, exact_pair in [
+            ("cable-1", "landing-a::landing-b"),
+            ("cable-2", "landing-a::landing-c"),
+        ]:
+            rows.append(
+                {
+                    "link_id": (
+                        f"{trace_prefix}|5001|100|1000|Hop 2 -> 3|"
+                        "192.0.2.1|192.0.2.2"
+                    ),
+                    "trace_id": f"{trace_prefix}:5001:100:1000:198.51.100.1",
+                    "msm_id": 5001,
+                    "probe_id": 100,
+                    "timestamp": 1000,
+                    "target_ip": "198.51.100.1",
+                    "cable_id": cable_id,
+                    "exact_landing_pair_id": exact_pair,
+                    "candidate_support": 0.5,
+                    "normalized_candidate_support": 0.25,
+                }
+            )
+
+    deduplicated, report = post.canonicalize_and_deduplicate_candidate_rows(
+        pd.DataFrame(rows),
+        candidate_view="all_feasible_segments",
+    )
+
+    assert len(deduplicated) == 2
+    assert deduplicated["link_id"].nunique() == 1
+    assert deduplicated["atomic_segment_id"].nunique() == 1
+    assert deduplicated["trace_id"].nunique() == 1
+    assert set(deduplicated["cable_id"]) == {"cable-1", "cable-2"}
+    assert report["candidate_rows_before"] == 4
+    assert report["candidate_rows_after"] == 2
+    assert report["duplicate_candidate_rows_removed"] == 2
+    assert report["links_renormalized_after_deduplication"] == 1
+    assert math.isclose(
+        float(deduplicated["normalized_candidate_support"].sum()),
+        1.0,
+    )
+
+
+def test_corridor_mass_uses_one_unit_for_repeated_downloaded_segment():
+    """Repeated files must not contribute multiple units of corridor mass."""
+    feasible = pd.DataFrame(
+        [
+            {
+                "link_id": (
+                    f"{trace_prefix}|5001|100|1000|Hop 2 -> 3|"
+                    "192.0.2.1|192.0.2.2"
+                ),
+                "msm_id": 5001,
+                "probe_id": 100,
+                "timestamp": 1000,
+                "target_ip": "198.51.100.1",
+                "src_country": "JP",
+                "dst_country": "US",
+                "src_asn": "AS64500",
+                "dst_asn": "AS64501",
+                "corridor_id": corridor_id,
+                "corridor_id_fallback": corridor_id,
+                "candidate_scope": "international_inter_region",
+                "cable_id": f"cable-{corridor_id}",
+                "exact_landing_pair_id": f"landing-{corridor_id}",
+                "fused_candidate_support": 0.5,
+            }
+            for trace_prefix in ["download-a", "download-b"]
+            for corridor_id in ["corridor-1", "corridor-2"]
+        ]
+    )
+
+    mass = post.build_segment_corridor_mass_frame(feasible)
+
+    assert mass["atomic_segment_id"].nunique() == 1
+    assert len(mass) == 2
+    assert math.isclose(float(mass["observation_mass"].sum()), 1.0)
+    assert set(mass["observation_mass"]) == {0.5}
+
+
+def test_unmapped_resolution_ids_do_not_become_nan():
+    """Resolution compatibility mapping must retain canonical IDs on misses."""
+    values = pd.Series(
+        [
+            "trace-a|5001|100|1000|Hop 2 -> 3|192.0.2.1|192.0.2.2",
+            "trace-b|5001|101|1000|Hop 2 -> 3|192.0.2.3|192.0.2.4",
+        ]
+    )
+
+    mapped = post.apply_resolution_id_map(values, {"not-present": "inventory-id"})
+
+    assert mapped.str.lower().ne("nan").all()
+    assert mapped.iloc[0] == "5001|100|1000|Hop 2 -> 3|192.0.2.1|192.0.2.2"

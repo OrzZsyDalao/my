@@ -24,6 +24,7 @@
   ],
   "normalized_entropy_definition": "Shannon entropy divided by log of the observed label count; zero for a one-label distribution",
   "observation_mass_note": "Observation mass reflects traceroute-observed path-transition segments and must not be interpreted as byte or packet traffic volume",
+  "candidate_row_deduplication_note": "Before any cross-layer aggregation, candidate rows use the same transport-file-independent canonical atomic segment identity as the inventory and are deduplicated by canonical segment, cable, and unordered exact landing pair",
   "candidate_support_note": "candidate_support and normalized_candidate_support are supplementary evidence scores inside the feasible set, not true cable-use probabilities",
   "paper_case_thresholds": {
     "minimum_mappable_segments": 30,
@@ -60,7 +61,8 @@
     "service_country_physical_mapping_resolution.csv",
     "bounded_candidate_set_size_distribution.csv",
     "uniquely_resolved_service_country_cross_layer_distribution.csv",
-    "pipeline_accounting.csv"
+    "pipeline_accounting.csv",
+    "candidate_row_deduplication_report.json"
   ],
   "supplementary_views": [
     "cable_level_support",

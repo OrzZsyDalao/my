@@ -59,7 +59,8 @@
     "service_country_physical_mapping_resolution.csv",
     "bounded_candidate_set_size_distribution.csv",
     "uniquely_resolved_service_country_cross_layer_distribution.csv",
-    "pipeline_accounting.csv"
+    "pipeline_accounting.csv",
+    "candidate_row_deduplication_report.json"
   ],
   "supplementary_frameworks": [
     "cable_level_support",

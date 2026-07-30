@@ -1280,6 +1280,7 @@ The paper-primary physical concentration view is now based on **corridor observa
 - A traceroute is decomposed into independently mappable hop-pair / country-transition segments.
 - Each segment is anchored to the near-side country of the transition.
 - Multiple feasible cable rows belonging to the same corridor are deduplicated within the same atomic segment.
+- Download-container duplicates are removed before every cross-layer aggregation. Candidate rows use a transport-file-independent canonical atomic segment ID and the deduplication key `canonical atomic segment + cable_id + unordered exact landing pair`.
 - Each atomic segment contributes one unit of observation mass, split uniformly across its distinct feasible corridors in the paper-primary view.
 - Observation mass reflects measurement-observed path-transition segments, not byte or packet traffic volume.
 - Unique feasible corridor count remains a candidate-breadth descriptor, not the paper-primary concentration metric.
@@ -1287,6 +1288,8 @@ The paper-primary physical concentration view is now based on **corridor observa
 New or newly promoted outputs:
 
 - `output/result/atomic_segment_id_diagnostics.json`: records the stable field bundle used to construct atomic segment IDs.
+- `output/result/candidate_row_deduplication_report.json`: reports candidate-row and atomic-segment counts before and after canonicalization for both `all_segments` and `all_feasible_segments`.
+- `results/july1_public_atlas_20260701/aggregate/all_measurements_candidate_row_deduplication_summary.csv`: combines the per-measurement reports so raw segment-ID collapse and candidate-row duplication can be audited separately across all 18 measurements.
 - `output/result/country_corridor_observation_distribution.csv`: country-level corridor observation-mass distribution. Key columns include `observation_mass`, `share_of_country_observation_mass`, and `rank_within_country`.
 - `output/result/service_country_corridor_observation_distribution.csv`: service-country corridor observation-mass distribution. Key columns include `observation_mass`, `share_of_unit_observation_mass`, and `rank_within_unit`.
 - `output/result/country_corridor_concentration_summary.csv`: paper-facing country summary with `top1_corridor_share`, `top3_corridor_share`, `effective_corridor_count`, `corridor_concentration_tier`, and `auditable_corridor_concentration`.
@@ -1312,6 +1315,8 @@ Interpretation update:
 - The cross-layer distribution audit compares concentration patterns over the same observed segment population; it does not equate AS-transition counts with corridor counts as identical units.
 - If both endpoint ASNs are available, the transition key is `AS<src>->AS<dst>`. If either ASN is unavailable, the segment remains in the denominator under the explicit key `COUNTRY_FALLBACK:<src_country>-><dst_country>`.
 - Candidate-row expansion never increases network observation counts: candidates are deduplicated to one row per analysis unit and atomic segment before computing \(N_u(t)\) and \(q_u(t)\).
+- Repeated copies of the same downloaded traceroute cannot multiply corridor observation mass. Distinct feasible cables or landing pairs for the same canonical segment remain preserved as uncertainty.
+- After duplicate candidates are removed, `normalized_candidate_support` is renormalized within each canonical atomic segment so legacy weighted views continue to sum to one.
 - `hop_pair_as_class` distinguishes `cross_as_transition`, `intra_as_hop_pair`, and `country_fallback`. Same-AS hop pairs remain in the complete same-population view but never enter the AS-boundary-only view.
 - ASN sentinels such as `-1`, `0`, `NA`, and `unknown` are treated as missing and use the explicit country fallback; this is post-processing semantics and does not alter IP-to-AS resolution.
 

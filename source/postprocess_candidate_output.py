@@ -1684,6 +1684,232 @@ def canonical_resolution_segment_id(value: Any) -> str:
     return text
 
 
+def apply_resolution_id_map(
+    values: pd.Series,
+    resolution_id_map: Dict[str, str] | None = None,
+) -> pd.Series:
+    """Map legacy IDs when possible and always return canonical segment IDs.
+
+    Unmapped rows retain their original ID before transport-file-dependent
+    prefixes are removed. This prevents ``Series.map`` misses from becoming
+    the literal segment ID ``nan``.
+    """
+    original = values.fillna("").astype(str)
+    if resolution_id_map:
+        normalized_map = {
+            str(source_id): canonical_resolution_segment_id(target_id)
+            for source_id, target_id in resolution_id_map.items()
+        }
+        mapped = original.map(normalized_map)
+        resolved = mapped.where(mapped.notna(), original)
+    else:
+        resolved = original
+    return resolved.apply(canonical_resolution_segment_id)
+
+
+def build_canonical_trace_id_series(frame: pd.DataFrame) -> pd.Series:
+    """Build file-independent RIPE Atlas traceroute observation identifiers."""
+    if frame.empty:
+        return pd.Series(index=frame.index, dtype=object)
+
+    def component(column: str) -> pd.Series:
+        values = frame.get(
+            column,
+            pd.Series("NA", index=frame.index),
+        ).fillna("NA").astype(str).str.strip()
+        return values.str.replace(r"\.0$", "", regex=True)
+
+    msm_id = component("msm_id")
+    probe_id = component("probe_id")
+    timestamp = component("timestamp")
+    target_ip = component("target_ip")
+    constructed = msm_id + ":" + probe_id + ":" + timestamp + ":" + target_ip
+    usable = (
+        msm_id.ne("NA")
+        & probe_id.ne("NA")
+        & timestamp.ne("NA")
+        & timestamp.ne("")
+    )
+    existing = frame.get(
+        "trace_id",
+        pd.Series("", index=frame.index),
+    ).fillna("").astype(str).str.strip()
+    return constructed.where(usable, existing)
+
+
+def canonicalize_trace_observation_ids(frame: pd.DataFrame) -> pd.DataFrame:
+    """Normalize traceroute IDs without changing any candidate evidence fields."""
+    if frame.empty:
+        return frame.copy()
+    result = frame.copy()
+    canonical = build_canonical_trace_id_series(result)
+    valid = canonical.ne("") & canonical.str.lower().ne("nan")
+    if "trace_id" not in result:
+        result["trace_id"] = canonical
+    else:
+        result.loc[valid, "trace_id"] = canonical.loc[valid]
+    return result
+
+
+def candidate_identity_series(frame: pd.DataFrame) -> pd.Series:
+    """Build the physical candidate identity used for duplicate-row removal."""
+    cable_id = frame.get(
+        "cable_id",
+        frame.get("cable_name", pd.Series("NA", index=frame.index)),
+    ).fillna("NA").astype(str).str.strip()
+    exact_pair = frame.get(
+        "exact_landing_pair_id",
+        frame.get(
+            "exact_corridor_id",
+            frame.get(
+                "landing_pair",
+                frame.get("segment", pd.Series("", index=frame.index)),
+            ),
+        ),
+    ).fillna("").astype(str).str.strip()
+    corridor = frame.get(
+        "corridor_id",
+        frame.get("corridor_id_fallback", pd.Series("", index=frame.index)),
+    ).fillna("").astype(str).str.strip()
+    exact_pair = exact_pair.where(exact_pair.ne(""), corridor)
+    return cable_id + "|" + exact_pair
+
+
+def canonicalize_and_deduplicate_candidate_rows(
+    frame: pd.DataFrame,
+    resolution_id_map: Dict[str, str] | None = None,
+    *,
+    candidate_view: str,
+) -> Tuple[pd.DataFrame, Dict[str, Any]]:
+    """Canonicalize and deduplicate candidate rows before any aggregation.
+
+    Downloaded RIPE Atlas files can repeat the same traceroute. Candidate rows
+    are therefore deduplicated by canonical atomic segment, cable, and
+    unordered exact landing pair. Distinct candidates for one segment remain
+    intact, so uncertainty is preserved.
+    """
+    report: Dict[str, Any] = {
+        "candidate_view": candidate_view,
+        "candidate_rows_before": int(len(frame)),
+        "candidate_rows_after": int(len(frame)),
+        "duplicate_candidate_rows_removed": 0,
+        "atomic_segments_before_canonicalization": 0,
+        "canonical_atomic_segments_after": 0,
+        "atomic_segment_ids_collapsed_by_canonicalization": 0,
+        "links_renormalized_after_deduplication": 0,
+        "max_normalized_support_sum_error_after": 0.0,
+        "canonicalization_mode": (
+            "inventory_compatible_mapping_then_transport_independent_segment_id"
+        ),
+        "deduplication_key": [
+            "canonical_atomic_segment_id",
+            "cable_id",
+            "unordered_exact_landing_pair_id",
+        ],
+    }
+    if frame.empty:
+        return frame.copy(), report
+
+    result = canonicalize_trace_observation_ids(frame)
+    original_ids = result.get(
+        "link_id",
+        result.get(
+            "atomic_segment_id",
+            pd.Series("", index=result.index),
+        ),
+    ).fillna("").astype(str)
+    missing_ids = original_ids.str.strip().eq("") | original_ids.str.lower().eq("nan")
+    if missing_ids.any():
+        generated = result.loc[missing_ids].apply(build_atomic_segment_id, axis=1)
+        original_ids.loc[missing_ids] = generated
+
+    report["atomic_segments_before_canonicalization"] = int(original_ids.nunique())
+    canonical_ids = apply_resolution_id_map(original_ids, resolution_id_map)
+    result["atomic_segment_id"] = canonical_ids
+    result["link_id"] = canonical_ids
+    result["_candidate_identity"] = candidate_identity_series(result)
+
+    sort_columns = [
+        column
+        for column in [
+            "atomic_segment_id",
+            "_candidate_identity",
+            "support_above_threshold",
+            "fused_candidate_support",
+            "candidate_support",
+            "normalized_candidate_support",
+        ]
+        if column in result.columns
+    ]
+    ascending = [
+        False if column in {
+            "support_above_threshold",
+            "fused_candidate_support",
+            "candidate_support",
+            "normalized_candidate_support",
+        } else True
+        for column in sort_columns
+    ]
+    if sort_columns:
+        result = result.sort_values(
+            sort_columns,
+            ascending=ascending,
+            kind="stable",
+            na_position="last",
+        )
+    result = result.drop_duplicates(
+        subset=["atomic_segment_id", "_candidate_identity"],
+        keep="first",
+    ).drop(columns=["_candidate_identity"])
+    result = result.sort_index().reset_index(drop=True)
+
+    if "normalized_candidate_support" in result:
+        normalized_before = pd.to_numeric(
+            result["normalized_candidate_support"],
+            errors="coerce",
+        ).fillna(0.0).clip(lower=0.0)
+        before_sums = normalized_before.groupby(result["link_id"]).transform("sum")
+        report["links_renormalized_after_deduplication"] = int(
+            (
+                normalized_before.groupby(result["link_id"]).sum().sub(1.0).abs()
+                > 1e-9
+            ).sum()
+        )
+        result["normalized_candidate_support"] = np.where(
+            before_sums.gt(0.0),
+            normalized_before / before_sums,
+            0.0,
+        )
+        after_sums = (
+            pd.to_numeric(
+                result["normalized_candidate_support"],
+                errors="coerce",
+            )
+            .fillna(0.0)
+            .groupby(result["link_id"])
+            .sum()
+        )
+        positive_sums = after_sums.loc[after_sums.gt(0.0)]
+        report["max_normalized_support_sum_error_after"] = (
+            float(positive_sums.sub(1.0).abs().max())
+            if not positive_sums.empty
+            else 0.0
+        )
+
+    report["candidate_rows_after"] = int(len(result))
+    report["duplicate_candidate_rows_removed"] = int(
+        report["candidate_rows_before"] - report["candidate_rows_after"]
+    )
+    report["canonical_atomic_segments_after"] = int(
+        result["atomic_segment_id"].nunique()
+    )
+    report["atomic_segment_ids_collapsed_by_canonicalization"] = int(
+        report["atomic_segments_before_canonicalization"]
+        - report["canonical_atomic_segments_after"]
+    )
+    return result, report
+
+
 def timestamp_agnostic_resolution_segment_id(value: Any) -> str:
     """Build a compatibility key for old Stage 1 outputs that stored endtime.
 
@@ -2779,7 +3005,7 @@ def prepare_atomic_segment_projection_frame(
         "dst_asn", pd.Series(index=working.index, dtype=object)
     ).apply(normalize_transition_asn)
     explicit_link_ids = working.get("link_id", pd.Series(index=working.index, dtype=object)).fillna("").astype(str).str.strip()
-    working["atomic_segment_id"] = explicit_link_ids
+    working["atomic_segment_id"] = apply_resolution_id_map(explicit_link_ids)
     missing_segment_mask = working["atomic_segment_id"].eq("") | working["atomic_segment_id"].str.lower().eq("nan")
     if missing_segment_mask.any():
         working.loc[missing_segment_mask, "atomic_segment_id"] = working.loc[missing_segment_mask].apply(
@@ -6168,6 +6394,7 @@ def build_method_manifest() -> Dict[str, Any]:
         ],
         "normalized_entropy_definition": "Shannon entropy divided by log of the observed label count; zero for a one-label distribution",
         "observation_mass_note": "Observation mass reflects traceroute-observed path-transition segments and must not be interpreted as byte or packet traffic volume",
+        "candidate_row_deduplication_note": "Before any cross-layer aggregation, candidate rows use the same transport-file-independent canonical atomic segment identity as the inventory and are deduplicated by canonical segment, cable, and unordered exact landing pair",
         "candidate_support_note": "candidate_support and normalized_candidate_support are supplementary evidence scores inside the feasible set, not true cable-use probabilities",
         "paper_case_thresholds": {
             "minimum_mappable_segments": MINIMUM_MAPPABLE_SEGMENTS,
@@ -6205,6 +6432,7 @@ def build_method_manifest() -> Dict[str, Any]:
             "bounded_candidate_set_size_distribution.csv",
             "uniquely_resolved_service_country_cross_layer_distribution.csv",
             "pipeline_accounting.csv",
+            "candidate_row_deduplication_report.json",
         ],
         "supplementary_views": [
             "cable_level_support",
@@ -7071,6 +7299,11 @@ def main() -> None:
         records = read_candidate_output(args.input)
         candidate_frame = explode_candidate_rows(records, unit_fields)
         feasible_frame = explode_feasible_candidate_rows(records, unit_fields)
+    atomic_segment_inventory = load_atomic_segment_inventory(args.output)
+    resolution_id_map = build_legacy_resolution_id_map(
+        atomic_segment_inventory,
+        feasible_frame,
+    )
     landing_region_model = load_corrected_landing_region_model()
     corridor_structure_report = write_corridor_structure_outputs(
         output_dir=args.output,
@@ -7079,6 +7312,46 @@ def main() -> None:
     )
     candidate_frame = remap_candidate_corridors(candidate_frame, landing_region_model)
     feasible_frame = remap_candidate_corridors(feasible_frame, landing_region_model)
+    candidate_frame, candidate_deduplication_report = (
+        canonicalize_and_deduplicate_candidate_rows(
+            candidate_frame,
+            resolution_id_map,
+            candidate_view="support_thresholded_all_segments",
+        )
+    )
+    feasible_frame, feasible_deduplication_report = (
+        canonicalize_and_deduplicate_candidate_rows(
+            feasible_frame,
+            resolution_id_map,
+            candidate_view="all_feasible_segments",
+        )
+    )
+    candidate_row_deduplication_report = {
+        "interpretation": (
+            "Repeated downloaded traceroute observations are removed before "
+            "cross-layer aggregation; distinct feasible candidates remain."
+        ),
+        "candidate_views": [
+            candidate_deduplication_report,
+            feasible_deduplication_report,
+        ],
+    }
+    candidate_deduplication_path = os.path.join(
+        args.output,
+        "candidate_row_deduplication_report.json",
+    )
+    with open(candidate_deduplication_path, "w", encoding="utf-8") as handle:
+        json.dump(
+            candidate_row_deduplication_report,
+            handle,
+            indent=2,
+            ensure_ascii=False,
+        )
+    print(
+        "Canonical candidate-row deduplication removed "
+        f"{feasible_deduplication_report['duplicate_candidate_rows_removed']} "
+        "rows from the feasible view."
+    )
     candidate_frame, feasible_frame = refresh_feasible_parallel_multiplicity(
         candidate_frame,
         feasible_frame,
@@ -7176,7 +7449,9 @@ def main() -> None:
             pd.DataFrame(columns=columns).to_csv(
                 os.path.join(args.output, filename), index=False, encoding="utf-8-sig"
             )
-        trace_observation_frame = load_trace_observation_summary(args.output)
+        trace_observation_frame = canonicalize_trace_observation_ids(
+            load_trace_observation_summary(args.output)
+        )
         trace_observation_frame = annotate_trace_candidate_scope_exposure(
             trace_observation_frame,
             pd.DataFrame(),
@@ -7365,7 +7640,9 @@ def main() -> None:
     trace_feasible_output = os.path.join(args.output, "trace_feasible_candidate_space.csv")
     candidate_frame.to_csv(trace_output, index=False, encoding="utf-8-sig")
     feasible_frame.to_csv(trace_feasible_output, index=False, encoding="utf-8-sig")
-    trace_observation_frame = load_trace_observation_summary(args.output)
+    trace_observation_frame = canonicalize_trace_observation_ids(
+        load_trace_observation_summary(args.output)
+    )
     trace_observation_frame = annotate_trace_candidate_scope_exposure(trace_observation_frame, feasible_frame)
     service_country_physical_exposure = build_service_country_physical_exposure_summary(trace_observation_frame)
     country_physical_exposure = build_country_physical_exposure_summary(trace_observation_frame)
@@ -7604,14 +7881,9 @@ def main() -> None:
         service_country_cross_layer_distribution_audit,
         service_audit_group_fields,
     )
-    atomic_segment_inventory = load_atomic_segment_inventory(args.output)
     stage1_stats = normalize_stage1_accounting_stats(
         stage1_stats,
         atomic_segment_inventory,
-    )
-    resolution_id_map = build_legacy_resolution_id_map(
-        atomic_segment_inventory,
-        feasible_frame,
     )
     (
         atomic_segment_mapping_resolution,
@@ -7635,10 +7907,13 @@ def main() -> None:
             "atomic_segment_id",
         ].astype(str)
     )
-    projection_resolution_ids = paper_inter_region_projection.get(
-        "atomic_segment_id",
-        pd.Series("", index=paper_inter_region_projection.index),
-    ).astype(str).map(resolution_id_map).apply(canonical_resolution_segment_id)
+    projection_resolution_ids = apply_resolution_id_map(
+        paper_inter_region_projection.get(
+            "atomic_segment_id",
+            pd.Series("", index=paper_inter_region_projection.index),
+        ),
+        resolution_id_map,
+    )
     unique_projection = paper_inter_region_projection.loc[
         projection_resolution_ids
         .isin(uniquely_resolved_ids)

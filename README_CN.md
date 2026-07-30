@@ -1295,6 +1295,7 @@ PeeringDB 继续保持 external-only：
 - 一条 traceroute 会被拆成多个可独立映射的 hop-pair / country-transition segment。
 - 每个 segment 按 near-side country 归属。
 - 同一个 atomic segment 内，如果多条 cable candidate 属于同一个 corridor，会先做 corridor 去重。
+- 所有跨层聚合开始前都会去除下载容器造成的重复记录。候选行统一使用与文件名无关的 canonical atomic segment ID，并按 `canonical atomic segment + cable_id + 无方向 exact landing pair` 去重。
 - 在论文主视图里，每个 atomic segment 贡献 1 单位 observation mass；若存在多个 feasible corridor，则在这些 corridor 之间做均匀分配。
 - 这里的 observation mass 表示 measurement-observed path-transition segments，不表示真实流量字节数或报文数。
 - unique feasible corridor count 继续保留，但它只表示 candidate breadth，不再是论文主集中度指标。
@@ -1302,6 +1303,8 @@ PeeringDB 继续保持 external-only：
 新增或提升为主输出的文件：
 
 - `output/result/atomic_segment_id_diagnostics.json`：记录 atomic segment ID 的稳定字段构造方式。
+- `output/result/candidate_row_deduplication_report.json`：分别报告 `all_segments` 与 `all_feasible_segments` 在 canonicalization 和去重前后的候选行及 atomic segment 数。
+- `results/july1_public_atlas_20260701/aggregate/all_measurements_candidate_row_deduplication_summary.csv`：合并 18 个 measurement 的去重诊断，分别审计 atomic segment ID 折叠与 candidate-row 重复。
 - `output/result/country_corridor_observation_distribution.csv`：country 级 corridor observation mass 分布表。关键字段包括 `observation_mass`、`share_of_country_observation_mass`、`rank_within_country`。
 - `output/result/service_country_corridor_observation_distribution.csv`：service-country 级 corridor observation mass 分布表。关键字段包括 `observation_mass`、`share_of_unit_observation_mass`、`rank_within_unit`。
 - `output/result/country_corridor_concentration_summary.csv`：country 级 corridor 集中度汇总，核心字段包括 `top1_corridor_share`、`top3_corridor_share`、`effective_corridor_count`、`corridor_concentration_tier`、`auditable_corridor_concentration`。
@@ -1327,6 +1330,8 @@ PeeringDB 继续保持 external-only：
 - cross-layer distribution audit 比较的是同一批 segment 上的分布形态，而不是把 AS-transition 数量和 corridor 数量当作同一种计量单位直接比较。
 - 当片段两端 ASN 都可获得时，转换键为 `AS<src>->AS<dst>`；任意一端 ASN 缺失时，该片段仍保留在分母中，并显式记为 `COUNTRY_FALLBACK:<src_country>-><dst_country>`。
 - candidate row 的展开不会放大网络观测数：计算 \(N_u(t)\) 和 \(q_u(t)\) 前，会按分析 unit 与 atomic segment 去重。
+- 同一 traceroute 在下载文件中重复出现时，不会重复增加 corridor observation mass；同一 canonical segment 下不同的可行 cable 或 landing pair 仍会作为不确定性候选保留。
+- 重复候选删除后，会在每个 canonical atomic segment 内重新归一化 `normalized_candidate_support`，保证旧 weighted 视图的 support 和仍为 1。
 - `hop_pair_as_class` 将 hop pair 分为 `cross_as_transition`、`intra_as_hop_pair` 和 `country_fallback`。同 AS hop pair 继续保留在完整同分母视图中，但不会进入 AS-boundary-only 视图。
 - `-1`、`0`、`NA`、`unknown` 等 ASN sentinel 会作为缺失值进入显式 country fallback；该规则只属于后处理语义，不修改 IP-to-AS 解析逻辑。
 

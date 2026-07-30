@@ -1,5 +1,5 @@
 ﻿metric,value
-candidate_rows,6207.0
+candidate_rows,4883.0
 unique_links,1818.0
 unique_units,49.0
 units_with_network_layer_diversity,98.0
@@ -22,6 +22,6 @@ cable_corridor_target_quadrant_preserved,3.0
 cable_corridor_target_quadrant_jaccard,0.42857142857142855
 cable_corridor_target_quadrant_recall_from_cable,0.42857142857142855
 cable_corridor_target_quadrant_precision_to_corridor,1.0
-mean_corridor_minus_cable_physical_diversity,-0.878060943667499
+mean_corridor_minus_cable_physical_diversity,-0.8614366363431579
 cable_corridor_quadrant_agreement_rate,0.7959183673469388
-spearman_cable_corridor_physical_diversity_score,0.6523607936177331
+spearman_cable_corridor_physical_diversity_score,0.6303607774201817

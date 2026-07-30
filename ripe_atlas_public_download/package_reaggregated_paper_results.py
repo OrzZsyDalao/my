@@ -47,6 +47,7 @@ MEASUREMENT_FILES = (
     "network_corridor_normalized_entropy_paired.svg",
     "network_corridor_normalized_entropy_cdf.svg",
     "atomic_segment_inventory_manifest.json",
+    "candidate_row_deduplication_report.json",
     "method_manifest.json",
 )
 
@@ -156,6 +157,28 @@ def combine_csvs(
         frames.append(frame)
     combined = pd.concat(frames, ignore_index=True, sort=False) if frames else pd.DataFrame()
     combined.to_csv(destination, index=False, encoding="utf-8-sig")
+
+
+def combine_candidate_deduplication_reports(
+    measurements: Iterable[Path],
+    destination: Path,
+) -> None:
+    """Flatten per-measurement candidate-row deduplication diagnostics."""
+    rows: List[Dict[str, Any]] = []
+    for measurement_dir in measurements:
+        source = measurement_dir / "candidate_row_deduplication_report.json"
+        if not source.exists():
+            continue
+        report = json.loads(source.read_text(encoding="utf-8"))
+        for view in report.get("candidate_views", []):
+            rows.append(
+                {
+                    "measurement_label": measurement_dir.name,
+                    "msm_id": measurement_id(measurement_dir),
+                    **view,
+                }
+            )
+    pd.DataFrame(rows).to_csv(destination, index=False, encoding="utf-8-sig")
 
 
 def write_aggregate_entropy_cdf(frame: pd.DataFrame, output: Path) -> None:
@@ -351,6 +374,21 @@ def main() -> None:
                 "sha256": sha256_file(output),
             }
         )
+    deduplication_aggregate = (
+        aggregate_dir
+        / "all_measurements_candidate_row_deduplication_summary.csv"
+    )
+    combine_candidate_deduplication_reports(
+        measurements,
+        deduplication_aggregate,
+    )
+    copied.append(
+        {
+            "path": str(deduplication_aggregate.relative_to(REPO_ROOT)),
+            "bytes": deduplication_aggregate.stat().st_size,
+            "sha256": sha256_file(deduplication_aggregate),
+        }
+    )
     entropy_aggregate = (
         aggregate_dir
         / "all_measurements_cross_layer_normalized_entropy_audit.csv"

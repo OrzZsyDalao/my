@@ -263,7 +263,7 @@ PH,landing_region_85b85b02a38f::landing_region_ea9847129f13,"Batangas, Philippin
 PH,landing_region_568e54040a5c::landing_region_85b85b02a38f,"Talisay, Philippines -> Batangas, Philippines",2.2477272727272726,12,12,6,3,3,48,24,0.008884297520661156,9,False,False,False,2.2477272727272726,0.0
 PH,landing_region_71e1260196d0::landing_region_f1cf3d89b00f,"Cavite, Philippines -> Pinamalayan, Philippines",2.1285714285714286,12,12,4,2,2,48,24,0.008413325804630152,10,False,False,False,2.1285714285714286,0.0
 PH,landing_region_85b85b02a38f::landing_region_f1cf3d89b00f,"Batangas, Philippines -> Pinamalayan, Philippines",2.1285714285714286,12,12,4,2,2,48,24,0.008413325804630152,11,False,False,False,2.1285714285714286,0.0
-PH,landing_region_71e1260196d0::landing_region_b424eda6e2a1,"Cavite, Philippines -> Cadiz City, Philippines",1.8727272727272728,9,9,4,2,2,48,24,0.00740208408192598,12,False,False,False,1.8727272727272728,0.0
+PH,landing_region_71e1260196d0::landing_region_b424eda6e2a1,"Cavite, Philippines -> Cadiz City, Philippines",1.8727272727272726,9,9,4,2,2,48,24,0.007402084081925979,12,False,False,False,1.8727272727272726,0.0
 PH,landing_region_568e54040a5c::landing_region_71e1260196d0,"Talisay, Philippines -> Cavite, Philippines",1.6477272727272727,9,9,6,3,3,48,24,0.006512756018684872,13,False,False,False,1.6477272727272727,0.0
 PH,landing_region_11a5fc08eb7a::landing_region_85b85b02a38f,"Caticlan, Philippines -> Batangas, Philippines",1.5,3,3,2,1,1,48,24,0.005928853754940711,14,False,False,False,1.5,0.0
 PH,landing_region_71e1260196d0::landing_region_73f9243dcd5b,"Cavite, Philippines -> Roxas City, Philippines",1.5,3,3,2,1,1,48,24,0.005928853754940711,15,False,False,False,1.5,0.0

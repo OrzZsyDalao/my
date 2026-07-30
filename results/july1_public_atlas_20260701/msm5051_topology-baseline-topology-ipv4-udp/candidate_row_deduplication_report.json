@@ -1,0 +1,35 @@
+{
+  "interpretation": "Repeated downloaded traceroute observations are removed before cross-layer aggregation; distinct feasible candidates remain.",
+  "candidate_views": [
+    {
+      "candidate_view": "support_thresholded_all_segments",
+      "candidate_rows_before": 14309,
+      "candidate_rows_after": 12219,
+      "duplicate_candidate_rows_removed": 2090,
+      "atomic_segments_before_canonicalization": 4525,
+      "canonical_atomic_segments_after": 4525,
+      "atomic_segment_ids_collapsed_by_canonicalization": 0,
+      "canonicalization_mode": "inventory_compatible_mapping_then_transport_independent_segment_id",
+      "deduplication_key": [
+        "canonical_atomic_segment_id",
+        "cable_id",
+        "unordered_exact_landing_pair_id"
+      ]
+    },
+    {
+      "candidate_view": "all_feasible_segments",
+      "candidate_rows_before": 81975,
+      "candidate_rows_after": 65266,
+      "duplicate_candidate_rows_removed": 16709,
+      "atomic_segments_before_canonicalization": 15221,
+      "canonical_atomic_segments_after": 15221,
+      "atomic_segment_ids_collapsed_by_canonicalization": 0,
+      "canonicalization_mode": "inventory_compatible_mapping_then_transport_independent_segment_id",
+      "deduplication_key": [
+        "canonical_atomic_segment_id",
+        "cable_id",
+        "unordered_exact_landing_pair_id"
+      ]
+    }
+  ]
+}
