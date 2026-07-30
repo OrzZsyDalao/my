@@ -987,6 +987,10 @@ def test_candidate_rows_are_deduplicated_by_canonical_segment_and_candidate():
                     "probe_id": 100,
                     "timestamp": 1000,
                     "target_ip": "198.51.100.1",
+                    "source_ttl": 2,
+                    "destination_ttl": 3,
+                    "src_ip": "192.0.2.1",
+                    "dst_ip": "192.0.2.2",
                     "cable_id": cable_id,
                     "exact_landing_pair_id": exact_pair,
                     "candidate_support": 0.5,
@@ -994,8 +998,13 @@ def test_candidate_rows_are_deduplicated_by_canonical_segment_and_candidate():
                 }
             )
 
+    frame = pd.DataFrame(rows)
+    inventory_ids = {
+        post.try_canonical_atomic_segment_id(frame.iloc[0]),
+    }
     deduplicated, report = post.canonicalize_and_deduplicate_candidate_rows(
-        pd.DataFrame(rows),
+        frame,
+        inventory_ids,
         candidate_view="all_feasible_segments",
     )
 
@@ -1064,3 +1073,51 @@ def test_unmapped_resolution_ids_do_not_become_nan():
 
     assert mapped.str.lower().ne("nan").all()
     assert mapped.iloc[0] == "5001|100|1000|Hop 2 -> 3|192.0.2.1|192.0.2.2"
+
+
+def test_shared_identity_keeps_target_ip_and_exact_timestamp():
+    """Multi-target and adjacent-period observations must remain distinct."""
+    base = {
+        "msm_id": 5051,
+        "probe_id": 100,
+        "timestamp": 1000,
+        "target_ip": "198.51.100.1",
+        "source_ttl": 2,
+        "destination_ttl": 3,
+        "src_ip": "192.0.2.1",
+        "dst_ip": "192.0.2.2",
+    }
+    other_target = {**base, "target_ip": "198.51.100.2"}
+    adjacent_period = {**base, "timestamp": 1001}
+
+    base_id = post.try_canonical_atomic_segment_id(pd.Series(base))
+
+    assert base_id != post.try_canonical_atomic_segment_id(pd.Series(other_target))
+    assert base_id != post.try_canonical_atomic_segment_id(pd.Series(adjacent_period))
+
+
+def test_candidate_identity_outside_inventory_is_removed():
+    """Exact candidate projection IDs outside inventory are removed before audit."""
+    row = {
+        "msm_id": 5001,
+        "probe_id": 100,
+        "timestamp": 1000,
+        "target_ip": "198.51.100.1",
+        "source_ttl": 2,
+        "destination_ttl": 3,
+        "src_ip": "192.0.2.1",
+        "dst_ip": "192.0.2.2",
+        "cable_id": "cable-1",
+        "exact_landing_pair_id": "a::b",
+    }
+
+    result, report = post.canonicalize_and_deduplicate_candidate_rows(
+        pd.DataFrame([row]),
+        {"different-inventory-id"},
+        candidate_view="all_feasible_segments",
+    )
+
+    assert result.empty
+    assert report["candidate_ids_outside_inventory_before_inner_join"] == 1
+    assert report["candidate_rows_outside_inventory_removed"] == 1
+    assert report["candidate_ids_outside_inventory"] == 0

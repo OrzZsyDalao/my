@@ -8,6 +8,7 @@ import hashlib
 import json
 import re
 import shutil
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
@@ -49,6 +50,11 @@ MEASUREMENT_FILES = (
     "atomic_segment_inventory_manifest.json",
     "candidate_row_deduplication_report.json",
     "method_manifest.json",
+    "country_geography_candidate_dependency.csv",
+    "service_country_geography_candidate_dependency.csv",
+    "geography_type_candidate_dependency_summary.csv",
+    "country_geography_catalog_resolved.csv",
+    "country_geography_dependency_manifest.json",
 )
 
 STRUCTURE_FILES = (
@@ -68,6 +74,9 @@ AGGREGATE_FILES = (
     "cross_layer_normalized_entropy_audit.csv",
     "uniquely_resolved_service_country_cross_layer_distribution.csv",
     "paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+    "country_geography_candidate_dependency.csv",
+    "service_country_geography_candidate_dependency.csv",
+    "geography_type_candidate_dependency_summary.csv",
 )
 
 
@@ -140,14 +149,24 @@ def combine_csvs(
     measurements: Iterable[Path],
     filename: str,
     destination: Path,
-) -> None:
+    *,
+    require_all_nonempty: bool = False,
+) -> Dict[str, int]:
     """Combine one compact per-measurement CSV with explicit measurement columns."""
     frames: List[pd.DataFrame] = []
+    source_file_count = 0
+    source_row_count = 0
     for measurement_dir in measurements:
         source = measurement_dir / filename
         if not source.exists():
+            if require_all_nonempty:
+                raise RuntimeError(f"Required source file is missing: {source}")
             continue
         frame = pd.read_csv(source, low_memory=False)
+        if require_all_nonempty and frame.empty:
+            raise RuntimeError(f"Required source file is empty: {source}")
+        source_file_count += 1
+        source_row_count += int(len(frame))
         source_msm_id = measurement_id(measurement_dir)
         if "msm_id" in frame:
             frame["msm_id"] = frame["msm_id"].fillna(source_msm_id)
@@ -156,7 +175,23 @@ def combine_csvs(
         frame.insert(0, "measurement_label", measurement_dir.name)
         frames.append(frame)
     combined = pd.concat(frames, ignore_index=True, sort=False) if frames else pd.DataFrame()
+    if require_all_nonempty and combined.empty:
+        raise RuntimeError(f"Aggregate output would be empty: {destination}")
     combined.to_csv(destination, index=False, encoding="utf-8-sig")
+    return {
+        "source_file_count": source_file_count,
+        "source_row_count": source_row_count,
+        "aggregate_row_count": int(len(combined)),
+    }
+
+
+def current_git_commit() -> str:
+    """Return the source commit used to generate the packaged artifacts."""
+    return subprocess.check_output(
+        ["git", "rev-parse", "HEAD"],
+        cwd=REPO_ROOT,
+        text=True,
+    ).strip()
 
 
 def combine_candidate_deduplication_reports(
@@ -364,9 +399,17 @@ def main() -> None:
 
     aggregate_dir = destination_root / "aggregate"
     aggregate_dir.mkdir(parents=True, exist_ok=True)
+    aggregate_source_accounting: Dict[str, Dict[str, int]] = {}
     for filename in AGGREGATE_FILES:
         output = aggregate_dir / f"all_measurements_{filename}"
-        combine_csvs(measurements, filename, output)
+        aggregate_source_accounting[filename] = combine_csvs(
+            measurements,
+            filename,
+            output,
+            require_all_nonempty=(
+                filename == "cross_layer_normalized_entropy_audit.csv"
+            ),
+        )
         copied.append(
             {
                 "path": str(output.relative_to(REPO_ROOT)),
@@ -424,6 +467,7 @@ def main() -> None:
 
     manifest = {
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+        "git_commit": current_git_commit(),
         "measurement_count": len(measurements),
         "source": str(source_root.relative_to(REPO_ROOT)),
         "interpretation": (
@@ -432,6 +476,7 @@ def main() -> None:
         ),
         "copied": copied,
         "skipped": skipped,
+        "aggregate_source_accounting": aggregate_source_accounting,
         "large_runtime_outputs_not_packaged": [
             "cable_matching_output.json",
             "trace_candidate_support.csv",
@@ -440,6 +485,28 @@ def main() -> None:
             "atomic_segment_mapping_resolution.csv.gz",
         ],
     }
+    method_manifests = [
+        json.loads(
+            (measurement / "method_manifest.json").read_text(encoding="utf-8")
+        )
+        for measurement in measurements
+    ]
+    postprocess_versions = {
+        item.get("postprocess_schema_version") for item in method_manifests
+    }
+    identity_versions = {
+        item.get("identity_schema_version") for item in method_manifests
+    }
+    if len(postprocess_versions) != 1 or None in postprocess_versions:
+        raise RuntimeError(
+            f"Inconsistent postprocess schema versions: {postprocess_versions}"
+        )
+    if len(identity_versions) != 1 or None in identity_versions:
+        raise RuntimeError(
+            f"Inconsistent identity schema versions: {identity_versions}"
+        )
+    manifest["postprocess_schema_version"] = next(iter(postprocess_versions))
+    manifest["identity_schema_version"] = next(iter(identity_versions))
     (destination_root / "bundle_manifest.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False),
         encoding="utf-8",

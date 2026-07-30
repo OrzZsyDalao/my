@@ -10,6 +10,12 @@ import numpy as np
 import pandas as pd
 
 from measurement_catalog import lookup_measurement
+from observation_identity import (
+    IDENTITY_SCHEMA_VERSION,
+    canonical_atomic_segment_id_from_mapping,
+    try_canonical_atomic_segment_id,
+    try_canonical_trace_id,
+)
 from physical_corridor_model import (
     LandingRegionModel,
     build_diameter_limited_landing_regions,
@@ -27,6 +33,7 @@ DEFAULT_COUNTRY_GEOGRAPHY_CATALOG = os.path.join(BASE_DIR, "data", "country_geog
 DEFAULT_CABLE_DIR = os.path.join(BASE_DIR, "data", "cable")
 DEFAULT_LANDING_GEO = os.path.join(DEFAULT_CABLE_DIR, "landing-point-geo.json")
 DEFAULT_LANDING_REGION_RADIUS_KM = 50.0
+POSTPROCESS_SCHEMA_VERSION = "postprocess_candidate_output_v3"
 DEFAULT_UNIT_FIELDS = ["probe_country", "service_id"]
 # Paper-primary relative target for the upper-bound mismatch view.
 TARGET_MISMATCH_CATEGORY = "network_high_physical_upper_low"
@@ -1678,6 +1685,8 @@ def load_atomic_segment_inventory(output_dir: str) -> pd.DataFrame:
 def canonical_resolution_segment_id(value: Any) -> str:
     """Normalize old and new link IDs to a transport-file-independent key."""
     text = str(value or "")
+    if text.startswith(f"{IDENTITY_SCHEMA_VERSION}|"):
+        return text
     parts = text.split("|")
     if len(parts) >= 7:
         return "|".join(parts[1:])
@@ -1708,33 +1717,43 @@ def apply_resolution_id_map(
 
 
 def build_canonical_trace_id_series(frame: pd.DataFrame) -> pd.Series:
-    """Build file-independent RIPE Atlas traceroute observation identifiers."""
+    """Build exact shared trace identities with legacy ID fallback."""
     if frame.empty:
         return pd.Series(index=frame.index, dtype=object)
-
-    def component(column: str) -> pd.Series:
-        values = frame.get(
-            column,
-            pd.Series("NA", index=frame.index),
-        ).fillna("NA").astype(str).str.strip()
-        return values.str.replace(r"\.0$", "", regex=True)
-
-    msm_id = component("msm_id")
-    probe_id = component("probe_id")
-    timestamp = component("timestamp")
-    target_ip = component("target_ip")
-    constructed = msm_id + ":" + probe_id + ":" + timestamp + ":" + target_ip
-    usable = (
-        msm_id.ne("NA")
-        & probe_id.ne("NA")
-        & timestamp.ne("NA")
-        & timestamp.ne("")
-    )
     existing = frame.get(
         "trace_id",
         pd.Series("", index=frame.index),
     ).fillna("").astype(str).str.strip()
-    return constructed.where(usable, existing)
+    exact = frame.apply(
+        lambda row: try_canonical_trace_id(row),
+        axis=1,
+    )
+    return exact.where(exact.notna(), existing)
+
+
+def canonicalize_atomic_inventory(inventory: pd.DataFrame) -> pd.DataFrame:
+    """Recompute inventory IDs from the shared exact observation identity."""
+    if inventory.empty:
+        return inventory.copy()
+    result = canonicalize_trace_observation_ids(inventory)
+    exact_ids = result.apply(
+        lambda row: try_canonical_atomic_segment_id(row),
+        axis=1,
+    )
+    if exact_ids.isna().any():
+        missing_count = int(exact_ids.isna().sum())
+        raise RuntimeError(
+            "Atomic inventory lacks fields required by the shared identity "
+            f"schema for {missing_count} rows. Rebuild the inventory first."
+        )
+    result["atomic_segment_id"] = exact_ids
+    if result["atomic_segment_id"].duplicated().any():
+        duplicate_count = int(result["atomic_segment_id"].duplicated().sum())
+        raise RuntimeError(
+            "Shared canonical atomic identity is not unique in inventory: "
+            f"{duplicate_count} duplicate rows."
+        )
+    return result
 
 
 def canonicalize_trace_observation_ids(frame: pd.DataFrame) -> pd.DataFrame:
@@ -1777,6 +1796,7 @@ def candidate_identity_series(frame: pd.DataFrame) -> pd.Series:
 
 def canonicalize_and_deduplicate_candidate_rows(
     frame: pd.DataFrame,
+    inventory_ids: set[str],
     resolution_id_map: Dict[str, str] | None = None,
     *,
     candidate_view: str,
@@ -1796,10 +1816,15 @@ def canonicalize_and_deduplicate_candidate_rows(
         "atomic_segments_before_canonicalization": 0,
         "canonical_atomic_segments_after": 0,
         "atomic_segment_ids_collapsed_by_canonicalization": 0,
+        "candidate_ids_outside_inventory": 0,
+        "candidate_ids_outside_inventory_before_inner_join": 0,
+        "candidate_rows_outside_inventory_removed": 0,
+        "exact_identity_candidate_rows": 0,
+        "legacy_identity_candidate_rows": 0,
         "links_renormalized_after_deduplication": 0,
         "max_normalized_support_sum_error_after": 0.0,
         "canonicalization_mode": (
-            "inventory_compatible_mapping_then_transport_independent_segment_id"
+            "shared_exact_identity_then_inventory_inner_join"
         ),
         "deduplication_key": [
             "canonical_atomic_segment_id",
@@ -1824,9 +1849,39 @@ def canonicalize_and_deduplicate_candidate_rows(
         original_ids.loc[missing_ids] = generated
 
     report["atomic_segments_before_canonicalization"] = int(original_ids.nunique())
-    canonical_ids = apply_resolution_id_map(original_ids, resolution_id_map)
+    exact_ids = result.apply(
+        lambda row: try_canonical_atomic_segment_id(row),
+        axis=1,
+    )
+    exact_mask = exact_ids.notna()
+    report["exact_identity_candidate_rows"] = int(exact_mask.sum())
+    canonical_ids = exact_ids.copy()
+    if (~exact_mask).any():
+        legacy_ids = apply_resolution_id_map(
+            original_ids.loc[~exact_mask],
+            resolution_id_map,
+        )
+        canonical_ids.loc[~exact_mask] = legacy_ids
+        report["legacy_identity_candidate_rows"] = int((~exact_mask).sum())
     result["atomic_segment_id"] = canonical_ids
     result["link_id"] = canonical_ids
+    candidate_projection_ids = set(
+        result["atomic_segment_id"].dropna().astype(str)
+    )
+    outside_ids = candidate_projection_ids - inventory_ids
+    report["candidate_ids_outside_inventory_before_inner_join"] = int(
+        len(outside_ids)
+    )
+    outside_mask = ~result["atomic_segment_id"].astype(str).isin(inventory_ids)
+    report["candidate_rows_outside_inventory_removed"] = int(outside_mask.sum())
+    result = result.loc[~outside_mask].copy()
+    remaining_ids = set(result["atomic_segment_id"].dropna().astype(str))
+    outside_after_join = remaining_ids - inventory_ids
+    report["candidate_ids_outside_inventory"] = int(len(outside_after_join))
+    if outside_after_join:
+        raise RuntimeError(
+            "Candidate projection IDs must be a subset of atomic inventory IDs."
+        )
     result["_candidate_identity"] = candidate_identity_series(result)
 
     sort_columns = [
@@ -2345,6 +2400,18 @@ def build_physical_mapping_resolution_tables(
     state_counts = ledger["mapping_resolution_state"].value_counts()
     if int(state_counts.sum()) != len(ledger):
         raise RuntimeError("Physical mapping-resolution states must partition atomic segments.")
+    inter_region_candidate_bearing_segments = int(
+        ledger["feasible_corridor_count"].gt(0).sum()
+    )
+    resolved_partition_segments = int(
+        state_counts.get("uniquely_resolved", 0)
+        + state_counts.get("bounded_candidate_set", 0)
+    )
+    if inter_region_candidate_bearing_segments != resolved_partition_segments:
+        raise RuntimeError(
+            "Inter-region candidate-bearing segments must equal uniquely "
+            "resolved plus bounded candidate-set segments."
+        )
     total_segments = len(ledger)
     inventory_manifest = atomic_inventory.attrs.get("inventory_manifest", {})
     total_valid_traces = int(
@@ -3215,7 +3282,19 @@ def build_segment_corridor_mass_frame(
         corridor_rows["atomic_segment_id"] = atomic_segment_id
         rows.extend(corridor_rows[columns].to_dict("records"))
 
-    return pd.DataFrame(rows, columns=columns)
+    result = pd.DataFrame(rows, columns=columns)
+    if not result.empty:
+        segment_mass = result.groupby("atomic_segment_id", dropna=False)[
+            "observation_mass"
+        ].sum()
+        max_segment_mass_error = float(segment_mass.sub(1.0).abs().max())
+        result.attrs["max_segment_mass_error"] = max_segment_mass_error
+        if max_segment_mass_error >= 1e-9:
+            raise RuntimeError(
+                "Each atomic segment must contribute exactly one unit of "
+                f"corridor observation mass; max error={max_segment_mass_error}."
+            )
+    return result
 
 
 def rank_within_group(frame: pd.DataFrame, group_fields: Sequence[str], value_col: str, out_col: str) -> pd.DataFrame:
@@ -6370,6 +6449,8 @@ def build_method_manifest() -> Dict[str, Any]:
     """Return the method manifest used to interpret post-processing outputs."""
     return {
         "method_name": "application_network_corridor_distribution_audit",
+        "postprocess_schema_version": POSTPROCESS_SCHEMA_VERSION,
+        "identity_schema_version": IDENTITY_SCHEMA_VERSION,
         "main_question": "whether application-visible network-transition diversity remains broad after projection onto feasible submarine-cable corridors",
         "claim_boundary": "feasible corridor support and observation concentration, not ground-truth cable attribution",
         "primary_analysis_unit": "probe_country_x_service_id",
@@ -7299,7 +7380,20 @@ def main() -> None:
         records = read_candidate_output(args.input)
         candidate_frame = explode_candidate_rows(records, unit_fields)
         feasible_frame = explode_feasible_candidate_rows(records, unit_fields)
-    atomic_segment_inventory = load_atomic_segment_inventory(args.output)
+    atomic_segment_inventory = canonicalize_atomic_inventory(
+        load_atomic_segment_inventory(args.output)
+    )
+    inventory_ids = set(
+        atomic_segment_inventory.get(
+            "atomic_segment_id",
+            pd.Series(dtype=object),
+        ).dropna().astype(str)
+    )
+    if (not candidate_frame.empty or not feasible_frame.empty) and not inventory_ids:
+        raise RuntimeError(
+            "Candidate aggregation requires a rebuilt atomic inventory using "
+            f"{IDENTITY_SCHEMA_VERSION}."
+        )
     resolution_id_map = build_legacy_resolution_id_map(
         atomic_segment_inventory,
         feasible_frame,
@@ -7315,6 +7409,7 @@ def main() -> None:
     candidate_frame, candidate_deduplication_report = (
         canonicalize_and_deduplicate_candidate_rows(
             candidate_frame,
+            inventory_ids,
             resolution_id_map,
             candidate_view="support_thresholded_all_segments",
         )
@@ -7322,6 +7417,7 @@ def main() -> None:
     feasible_frame, feasible_deduplication_report = (
         canonicalize_and_deduplicate_candidate_rows(
             feasible_frame,
+            inventory_ids,
             resolution_id_map,
             candidate_view="all_feasible_segments",
         )
@@ -7896,6 +7992,65 @@ def main() -> None:
         trace_observation_frame,
         resolution_id_map,
     )
+    resolution_counts = dict(
+        zip(
+            physical_mapping_resolution_summary.get(
+                "mapping_resolution_state",
+                pd.Series(dtype=object),
+            ),
+            physical_mapping_resolution_summary.get(
+                "atomic_segment_count",
+                pd.Series(dtype=int),
+            ),
+        )
+    )
+    inter_region_candidate_bearing_segments = int(
+        segment_corridor_mass.get(
+            "atomic_segment_id",
+            pd.Series(dtype=object),
+        ).nunique()
+    )
+    resolved_partition_segments = int(
+        resolution_counts.get("uniquely_resolved", 0)
+        + resolution_counts.get("bounded_candidate_set", 0)
+    )
+    max_segment_mass_error = float(
+        segment_corridor_mass.attrs.get("max_segment_mass_error", 0.0)
+    )
+    hard_assertions = {
+        "candidate_projection_ids_subset_inventory": True,
+        "candidate_ids_outside_inventory": 0,
+        "inter_region_equals_unique_plus_bounded": (
+            inter_region_candidate_bearing_segments
+            == resolved_partition_segments
+        ),
+        "inter_region_candidate_bearing_segments": (
+            inter_region_candidate_bearing_segments
+        ),
+        "uniquely_resolved_segments": int(
+            resolution_counts.get("uniquely_resolved", 0)
+        ),
+        "bounded_candidate_set_segments": int(
+            resolution_counts.get("bounded_candidate_set", 0)
+        ),
+        "max_segment_mass_error": max_segment_mass_error,
+        "max_segment_mass_error_below_1e_9": max_segment_mass_error < 1e-9,
+    }
+    if not hard_assertions["inter_region_equals_unique_plus_bounded"]:
+        raise RuntimeError(
+            "Inter-region candidate-bearing segments do not equal uniquely "
+            "resolved plus bounded candidate-set segments."
+        )
+    if not hard_assertions["max_segment_mass_error_below_1e_9"]:
+        raise RuntimeError("Atomic segment corridor mass does not sum to one.")
+    candidate_row_deduplication_report["hard_assertions"] = hard_assertions
+    with open(candidate_deduplication_path, "w", encoding="utf-8") as handle:
+        json.dump(
+            candidate_row_deduplication_report,
+            handle,
+            indent=2,
+            ensure_ascii=False,
+        )
     uniquely_resolved_ids = set(
         atomic_segment_mapping_resolution.loc[
             atomic_segment_mapping_resolution.get(

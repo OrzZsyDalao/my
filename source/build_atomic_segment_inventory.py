@@ -22,7 +22,6 @@ from main_analysis import (
     MMDB_PATH,
     PROBE_META_PATH,
     IPInfoASNResolver,
-    build_trace_id,
     get_geo_info,
     iter_traceroute_results,
     load_probe_metadata,
@@ -30,6 +29,11 @@ from main_analysis import (
     select_hop_reply,
 )
 from measurement_catalog import lookup_measurement
+from observation_identity import (
+    IDENTITY_SCHEMA_VERSION,
+    canonical_atomic_segment_id,
+    canonical_trace_id,
+)
 
 
 INVENTORY_COLUMNS = [
@@ -40,6 +44,7 @@ INVENTORY_COLUMNS = [
     "probe_country",
     "probe_asn",
     "timestamp",
+    "target_ip",
     "file_name",
     "service_id",
     "service_class",
@@ -77,20 +82,16 @@ def parse_args() -> argparse.Namespace:
 
 
 def build_atomic_segment_identifier(link: Dict[str, Any]) -> str:
-    """Build the same stable hop-pair identifier used by post-processing."""
-    hop_range = (
-        f"Hop {link['source']['hop_num']} -> {link['destination']['hop_num']}"
-    )
-    return "|".join(
-        [
-            str(link.get("trace_id", "NA")),
-            str(link.get("measurement_id", "NA")),
-            str(link.get("probe_id", "NA")),
-            str(link.get("timestamp", "NA")),
-            hop_range,
-            str(link["source"].get("ip", "NA")),
-            str(link["destination"].get("ip", "NA")),
-        ]
+    """Build the shared exact hop-pair identity used by post-processing."""
+    return canonical_atomic_segment_id(
+        link.get("measurement_id"),
+        link.get("probe_id"),
+        link.get("timestamp"),
+        link.get("target_ip"),
+        link.get("source_ttl"),
+        link.get("destination_ttl"),
+        link["source"].get("ip"),
+        link["destination"].get("ip"),
     )
 
 
@@ -172,6 +173,9 @@ def build_observable_atomic_links(
                         "timestamp": timestamp,
                         "file_name": file_name,
                         "trace_id": trace_metadata["trace_id"],
+                        "target_ip": trace_metadata["target_ip"],
+                        "source_ttl": source_ttl,
+                        "destination_ttl": destination_ttl,
                         "service_entry_resolved": resolved_entry,
                         "path_scope": path_scope,
                     }
@@ -223,8 +227,7 @@ def main() -> None:
                     or raw_result.get("dst_name")
                 )
                 target_asn = asn_resolver.get(target_ip) if target_ip else "-1"
-                trace_id = build_trace_id(
-                    input_file.name,
+                trace_id = canonical_trace_id(
                     msm_id,
                     probe_id,
                     timestamp,
@@ -292,6 +295,7 @@ def main() -> None:
                         "probe_country": probe_country,
                         "probe_asn": probe_asn,
                         "timestamp": timestamp,
+                        "target_ip": target_ip,
                         "file_name": input_file.name,
                         "service_id": service_meta["service_id"],
                         "service_class": service_meta["service_class"],
@@ -341,6 +345,7 @@ def main() -> None:
                 },
                 "input": str(args.traceroute_input),
                 "output": str(output_path),
+                "identity_schema_version": IDENTITY_SCHEMA_VERSION,
             },
             indent=2,
             ensure_ascii=False,

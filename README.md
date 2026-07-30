@@ -1317,6 +1317,33 @@ Interpretation update:
 - Candidate-row expansion never increases network observation counts: candidates are deduplicated to one row per analysis unit and atomic segment before computing \(N_u(t)\) and \(q_u(t)\).
 - Repeated copies of the same downloaded traceroute cannot multiply corridor observation mass. Distinct feasible cables or landing pairs for the same canonical segment remain preserved as uncertainty.
 - After duplicate candidates are removed, `normalized_candidate_support` is renormalized within each canonical atomic segment so legacy weighted views continue to sum to one.
+
+### Exact Observation Identity
+
+`source/observation_identity.py` is the single identity implementation used by
+the atomic inventory and post-processing stages.
+
+- Canonical trace identity is `(msm_id, probe_id, exact_timestamp, target_ip)`.
+- Canonical atomic-segment identity adds `(source_ttl, destination_ttl, src_ip, dst_ip)`.
+- `target_ip` is mandatory, so multi-target measurements such as 5051/5151 do not merge distinct destinations.
+- Exact timestamps are mandatory. The legacy nearest-time mapper is used only for rows that lack the new canonical fields and never defines duplicate observations.
+- Candidate rows are inner-joined to the atomic inventory before physical-candidate deduplication.
+- Every measurement asserts that projection IDs are a subset of inventory IDs, unique plus bounded resolution equals inter-region candidate-bearing segments, and each segment contributes corridor mass 1 within `1e-9`.
+
+### A-Root Sensitivity Grid
+
+Run the 27-setting resolution sensitivity audit with:
+
+```bash
+python pipeline/run_a_root_sensitivity.py --skip-existing
+```
+
+The grid evaluates landing catchment radius `30/50/75 km`, landing-region
+maximum diameter `30/50/75 km`, and RTT tolerance `0/5/10 ms`. It writes
+`output/sensitivity_a_root/a_root_sensitivity_summary.csv` with inter-region
+candidate-bearing segments, unique/bounded shares, auditable units, median
+Top-2 corridor share, normalized corridor entropy, normalized entropy
+reduction, and classification agreement against the `50/50/5` baseline.
 - `hop_pair_as_class` distinguishes `cross_as_transition`, `intra_as_hop_pair`, and `country_fallback`. Same-AS hop pairs remain in the complete same-population view but never enter the AS-boundary-only view.
 - ASN sentinels such as `-1`, `0`, `NA`, and `unknown` are treated as missing and use the explicit country fallback; this is post-processing semantics and does not alter IP-to-AS resolution.
 

@@ -20,7 +20,11 @@ def test_trace_identifier_ignores_transport_filename():
 
     left = main_analysis.build_trace_id("snapshot-a.json", 5009, 123, 1000, "192.0.2.1")
     right = main_analysis.build_trace_id("snapshot-b.json", 5009, 123, 1000, "192.0.2.1")
-    assert left == right == "5009:123:1000:192.0.2.1"
+    assert (
+        left
+        == right
+        == "observation_identity_v1|trace|5009|123|1000|192.0.2.1"
+    )
 
 
 def test_unordered_landing_set_does_not_create_direct_topology(tmp_path):

@@ -1332,6 +1332,32 @@ PeeringDB 继续保持 external-only：
 - candidate row 的展开不会放大网络观测数：计算 \(N_u(t)\) 和 \(q_u(t)\) 前，会按分析 unit 与 atomic segment 去重。
 - 同一 traceroute 在下载文件中重复出现时，不会重复增加 corridor observation mass；同一 canonical segment 下不同的可行 cable 或 landing pair 仍会作为不确定性候选保留。
 - 重复候选删除后，会在每个 canonical atomic segment 内重新归一化 `normalized_candidate_support`，保证旧 weighted 视图的 support 和仍为 1。
+
+### 精确 Observation Identity
+
+`source/observation_identity.py` 是 atomic inventory 与 postprocess 共用的唯一 identity 实现。
+
+- Canonical trace identity 为 `(msm_id, probe_id, exact_timestamp, target_ip)`。
+- Canonical atomic-segment identity 进一步加入 `(source_ttl, destination_ttl, src_ip, dst_ip)`。
+- `target_ip` 为必需字段，因此 5051/5151 等 multi-target measurement 不会错误合并不同目标。
+- exact timestamp 为必需字段。legacy 最近时间映射只用于缺少新 canonical 字段的旧数据兼容，不再定义重复 observation。
+- 物理候选去重前，candidate rows 必须与 atomic inventory 做 inner join。
+- 每个 measurement 都断言 projection IDs 是 inventory IDs 的子集、unique 加 bounded 等于 inter-region candidate-bearing segments，并且每个 segment 的 corridor mass 在 `1e-9` 误差内等于 1。
+
+### A-Root 敏感性网格
+
+运行 27 组 resolution sensitivity：
+
+```bash
+python pipeline/run_a_root_sensitivity.py --skip-existing
+```
+
+网格组合 landing catchment radius `30/50/75 km`、landing-region maximum
+diameter `30/50/75 km` 和 RTT tolerance `0/5/10 ms`。输出
+`output/sensitivity_a_root/a_root_sensitivity_summary.csv`，包含 inter-region
+candidate-bearing segments、unique/bounded 比例、可审计单元数、corridor
+Top-2 中位数、归一化 corridor entropy、归一化 entropy reduction，以及相对
+`50/50/5` 基线的分类一致率。
 - `hop_pair_as_class` 将 hop pair 分为 `cross_as_transition`、`intra_as_hop_pair` 和 `country_fallback`。同 AS hop pair 继续保留在完整同分母视图中，但不会进入 AS-boundary-only 视图。
 - `-1`、`0`、`NA`、`unknown` 等 ASN sentinel 会作为缺失值进入显式 country fallback；该规则只属于后处理语义，不修改 IP-to-AS 解析逻辑。
 

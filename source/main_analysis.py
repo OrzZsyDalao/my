@@ -21,6 +21,7 @@ from sklearn.neighbors import BallTree
 from tqdm import tqdm
 
 from measurement_catalog import lookup_measurement
+from observation_identity import canonical_trace_id
 from physical_corridor_model import (
     build_diameter_limited_landing_regions,
     write_corridor_structure_outputs,
@@ -713,7 +714,7 @@ def build_trace_id(file_name: str, msm_id: Any, probe_id: Any, timestamp: Any, t
     not change the denominator of measurement-observed traces.
     """
     del file_name
-    return f"{msm_id}:{probe_id}:{timestamp}:{target_ip}"
+    return canonical_trace_id(msm_id, probe_id, timestamp, target_ip)
 
 
 def parse_hops_to_links(
