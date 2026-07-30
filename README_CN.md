@@ -1383,7 +1383,7 @@ Stage 1 现在补充记录与论文方法定义对齐的元数据，但不改变
 
 - `--cable-availability-mode` 用于控制海缆生命周期过滤。论文主视图默认值为 `confirmed_active_only`，会排除在 traceroute 时间点已知为未来规划、已退役或生命周期未知的候选。`confirmed_active_plus_unknown` 只作为 robustness / coverage 视图使用，用来保留并标记生命周期未知的候选。
 - 非正数或明显噪声 RTT delta 会标记为 `rtt_feasibility_status = inconclusive`：这些候选会保留在 feasible set 中，并带有 `rtt_inconclusive` ambiguity tag，不作为硬不可行证据。只有有效 RTT 观测在考虑 tolerance 后仍违反下界约束时，才会被 hard-filter。
-- 可以通过 `--landing-region-override-file` 提供 landing-region 手工覆盖文件。该 JSON 将 `landing_station_id` 映射到 `landing_region_id` / `landing_region_name`；手工覆盖优先于自动 geographic connected component，并会记录在 manifest 中。
+- 可以通过 `--landing-region-override-file` 提供 landing-region 手工覆盖文件。该 JSON 将 `landing_station_id` 映射到 `landing_region_id` / `landing_region_name`；手工覆盖优先于自动有界直径 region，并会记录在 manifest 中。
 - traceroute link 生成阶段会在 hop 序列中观察到实际目标 ASN 时记录 service-entry 边界。后处理中的 trace summary 会输出该边界是否被解析，但物理投影仍然保持 hop-pair 粒度。
 - candidate 行新增海缆生命周期字段，例如 `cable_status`、`cable_rfs_date`、`cable_retired_date`、`cable_availability_status` 和 `availability_filter_passed`。
 - `output/result/supplementary_owner_concentration.csv` 汇总 feasible corridor observation mass 上的拆分 owner exposure。它只是补充描述表：owner 不作为 ground truth，也不能解释为真实流量体积或真实海缆使用量。
@@ -1397,3 +1397,51 @@ Stage 1 现在补充记录与论文方法定义对齐的元数据，但不改变
 - `data/ipinfo/ipinfo_location.mmdb` 继续用于国家、城市、经纬度 geolocation，不再作为主要 ASN 来源。
 - `data/pfx2as/202512.pfx2as` 和 `--pfx2as-file` 仅保留为旧实验兼容说明；当前主流程不再使用它进行 IP 到 ASN 映射。
 - 如需指定其他 IPinfo ASN 数据库，可以使用 `--asn-mmdb-path`。
+## 有界直径走廊、映射解析状态与统一计数
+
+Landing region 现在采用确定性的有界直径聚类。自动生成的 region 只有在任意两个成员 landing station 的距离均不超过 `landing_region_radius_km` 时才允许合并。默认 50 km 因此表示自动 region 的最大直径，而不是 single-linkage 的连边阈值；人工 override 仍单独标记。
+
+`strict parallel` 与 `corridor co-group` 的语义不同：
+
+- strict parallel-candidate relationship：两条 cable ID 共享同一个无方向 exact landing-station pair；
+- corridor co-group relationship：两条 cable ID 出现在同一个无方向 landing-region pair；
+- 两者都只是元数据层的候选关系。corridor 共组不能证明实际路由重合、共享海上路径、构成真实 SRLG 或实际使用某条海缆。
+
+修正后的物理结构诊断输出如下：
+
+| 输出文件 | 含义与主要字段 |
+| --- | --- |
+| `landing_region_summary.csv` | 每个 region 一行；包含 `landing_station_count`、`region_diameter_km`、配置上限和分配方法。 |
+| `exact_landing_pair_catalog.csv` | 无方向 exact station pair 及其 cable 成员；`cable_count` 表示严格平行候选数量。 |
+| `corridor_catalog.csv` | landing-region pair 分组；包含 `exact_landing_pair_count`、`cable_count` 和 strict/co-group 关系计数。 |
+| `corridor_parallel_relationship_summary.csv` | strict exact-pair 与 corridor co-group 关系的全局重合数、覆盖率、严格关系占比和 Jaccard。 |
+| `physical_corridor_structure_report.json` | station、region、exact pair、corridor 总数，以及 region size、diameter、每 corridor cable 数分布。 |
+
+`atomic_segment_mapping_resolution.csv.gz` 为每个可观测 atomic hop-pair 记录且只记录一种解析状态：`uniquely_resolved`、`bounded_candidate_set`、`no_matched_corridor` 或 `insufficiently_resolved`。论文主解析只计算可行 inter-region corridor；intra-region 候选保留在补充审计中。紧凑输出包括：
+
+| 输出文件 | 含义与主要字段 |
+| --- | --- |
+| `physical_mapping_resolution_summary.csv` | 四种状态的数量/比例，以及 RTT-conclusive/inconclusive 分层。 |
+| `service_country_physical_mapping_resolution.csv` | 按国家、服务和 path scope 分层的解析状态。 |
+| `bounded_candidate_set_size_distribution.csv` | bounded segment 按可行 corridor 集合大小统计的数量和比例。 |
+| `uniquely_resolved_service_country_cross_layer_distribution.csv` | 仅在 uniquely resolved 子集上重新计算的 Top-1、Top-2 和跨层结果。 |
+| `atomic_segment_inventory_manifest.json` | raw result、valid trace、observable segment、mappable segment 和 insufficient segment 总数。 |
+
+`network_transition_normalized_entropy` 与 `corridor_normalized_entropy` 使用 \(H^*=H/\log K\)。单标签分布取 0，无观测分布取缺失值。`cross_layer_normalized_entropy_audit.csv` 输出成对差值和 entropy reduction 标记；配套图为 `network_corridor_normalized_entropy_paired.svg` 与 `network_corridor_normalized_entropy_cdf.svg`。
+
+7 月 1 日紧凑结果包还会生成 `aggregate/all_measurements_cross_layer_normalized_entropy_audit.csv` 和 `aggregate/all_measurements_network_corridor_normalized_entropy_cdf.svg`。
+
+`pipeline_accounting.csv` 是统一总体台账，严格区分 traceroute、唯一 atomic segment 和 candidate row。`parent_stage`、`parent_count`、`retention_rate_within_parent` 与 `consistency_assertion_passed` 明确每一行的分母及包含关系。`framework_alignment_report.json` 分别使用 `stage1_atomic_segments_*`、`projection_atomic_segments_*` 和 `candidate_rows_*` 命名，避免混用统计层级。
+
+复用已有 Stage 1 候选结果进行重聚合，不重复执行候选匹配：
+
+```bash
+python ripe_atlas_public_download/run_per_measurement_pipeline.py --reaggregate-existing --skip-robustness
+python ripe_atlas_public_download/package_reaggregated_paper_results.py
+```
+
+如果 corrected corridor 的 flattened candidate 已存在，只刷新 resolution 输出：
+
+```bash
+python source/rebuild_mapping_resolution_outputs.py --output-dir output/public_traceroute_by_msmid/<measurement-folder>
+```

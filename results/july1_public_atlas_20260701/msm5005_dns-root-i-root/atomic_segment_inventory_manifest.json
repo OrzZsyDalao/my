@@ -1,0 +1,16 @@
+{
+  "raw_results_total": 27045,
+  "valid_traces_total": 27045,
+  "observable_atomic_segments_total": 174681,
+  "mappable_atomic_segments_total": 128156,
+  "insufficiently_resolved_atomic_segments_total": 46525,
+  "counting_units": {
+    "raw_results_total": "traceroute result",
+    "valid_traces_total": "non-empty unique traceroute",
+    "observable_atomic_segments_total": "visible hop-pair",
+    "mappable_atomic_segments_total": "visible hop-pair with country labels at both ends",
+    "insufficiently_resolved_atomic_segments_total": "visible hop-pair lacking a country label at either end"
+  },
+  "input": "D:\\Workspace\\infocom26\\data\\traceroute_rundnsroot\\ripe_atlas_public_20260701_0000_0100\\dns-root_i-root_msm5005_20260701T000000Z_010000Z.json",
+  "output": "D:\\Workspace\\infocom26\\output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\atomic_segment_inventory.csv.gz"
+}

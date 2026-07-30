@@ -27,6 +27,15 @@ PAPER_FILES = (
     "service_country_as_boundary_transition_distribution.csv",
     "service_country_as_boundary_transition_concentration_summary.csv",
     "network_corridor_segment_population_alignment.csv",
+    "pipeline_accounting.csv",
+    "atomic_segment_inventory_manifest.json",
+    "physical_mapping_resolution_summary.csv",
+    "service_country_physical_mapping_resolution.csv",
+    "bounded_candidate_set_size_distribution.csv",
+    "paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+    "cross_layer_normalized_entropy_audit.csv",
+    "network_corridor_normalized_entropy_paired.svg",
+    "network_corridor_normalized_entropy_cdf.svg",
     "paper_corridor_observation_concentration_cases.csv",
     "paper_network_broad_physical_concentrated_cases.csv",
     "paper_broad_corridor_distribution_cases.csv",
@@ -35,7 +44,11 @@ PAPER_FILES = (
     "method_manifest.json",
     "cable_matching_manifest.json",
     "landing_region_catalog.csv",
+    "landing_region_summary.csv",
+    "exact_landing_pair_catalog.csv",
     "corridor_catalog.csv",
+    "corridor_parallel_relationship_summary.csv",
+    "physical_corridor_structure_report.json",
 )
 REQUIRED_PAPER_FILES = tuple(filename for filename in PAPER_FILES if filename != "robustness_conservative_candidate_audit.csv")
 
@@ -76,6 +89,10 @@ def write_readme(path: Path, run_id: str) -> None:
         "## 12. Candidate breadth\nUnique corridor counts are candidate-space breadth descriptors, not the primary observation-concentration metric.",
         "## 13. Interpretation boundary\nNo table establishes real traffic volume, actual cable use, or ground-truth cable attribution.",
         "## 14. Country geography stratification\nThe country-geography table reports an inter-region feasible-corridor candidate-dependency proxy. Geography type is explanatory metadata only and never changes physical candidate construction.",
+        "## 15. Landing-region construction\nAutomatic landing regions use a deterministic maximum-diameter rule. Corridor co-grouping is broader than strict exact-landing-pair parallel-candidate membership and is not route-overlap proof.",
+        "## 16. Mapping resolution\nEvery observable atomic hop-pair is assigned exactly one state: uniquely resolved, bounded candidate set, no matched inter-region corridor, or insufficiently resolved.",
+        "## 17. Continuous cross-layer result\nNormalized entropy H/log(K) compares network-transition and corridor observation-distribution concentration without treating their label counts as interchangeable.",
+        "## 18. Accounting\nThe accounting table distinguishes raw/valid traceroutes, observable/mappable atomic segments, projection segments, and candidate rows with explicit denominators.",
     ]
     path.write_text("\n\n".join(sections) + "\n", encoding="utf-8")
 

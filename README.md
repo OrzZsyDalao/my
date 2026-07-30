@@ -1368,7 +1368,7 @@ Stage 1 now records additional paper-alignment metadata without changing the can
 
 - `--cable-availability-mode` controls conservative cable lifecycle filtering. The paper-primary default is `confirmed_active_only`, which excludes candidates that are known to be future/planned, retired, or lifecycle-unknown at the traceroute timestamp. Use `confirmed_active_plus_unknown` only as a robustness/coverage view that retains and marks unknown lifecycle metadata.
 - Non-positive or otherwise noisy RTT deltas are treated as `rtt_feasibility_status = inconclusive`: they are retained in the feasible set with an `rtt_inconclusive` ambiguity tag and are not used as hard infeasibility evidence. Only valid RTT observations that violate the lower-bound constraint after tolerance are hard-filtered.
-- Optional landing-region overrides can be supplied with `--landing-region-override-file`. The file maps `landing_station_id` to `landing_region_id` / `landing_region_name`; manual overrides take precedence over automatic geographic connected components and are recorded in the manifest.
+- Optional landing-region overrides can be supplied with `--landing-region-override-file`. The file maps `landing_station_id` to `landing_region_id` / `landing_region_name`; manual overrides take precedence over automatic diameter-limited regions and are recorded in the manifest.
 - Traceroute link generation records a service-entry boundary when the actual target ASN is observed in the hop sequence. Downstream trace summaries expose whether the service-entry point was resolved, while the physical projection remains hop-pair based.
 - Candidate rows carry cable lifecycle fields such as `cable_status`, `cable_rfs_date`, `cable_retired_date`, `cable_availability_status`, and `availability_filter_passed`.
 - `output/result/supplementary_owner_concentration.csv` summarizes split owner exposure over feasible corridor observation mass. It is supplementary only: owners are not used as ground truth, and this table must not be read as per-owner traffic volume or per-cable utilization.
@@ -1382,3 +1382,51 @@ All current IP-to-ASN lookups use `data/ipinfo/ipinfo_asn.mmdb`.
 - `data/ipinfo/ipinfo_location.mmdb` remains the geolocation source for country, city, latitude, and longitude; it is no longer the primary ASN source.
 - `data/pfx2as/202512.pfx2as` and `--pfx2as-file` are retained only for legacy compatibility notes; the current pipeline does not use them for IP-to-ASN lookup.
 - Use `--asn-mmdb-path` to point either stage at another IPinfo ASN MMDB file.
+## Diameter-Limited Corridors, Mapping Resolution, and Accounting
+
+Landing regions now use deterministic diameter-limited clustering. An automatically generated region may contain multiple landing stations only when every member remains within `landing_region_radius_km` of every other member. The default 50 km value is therefore a maximum automatic region diameter, not a single-linkage edge threshold. Manual overrides remain explicit.
+
+`strict parallel` and `corridor co-group` have different meanings:
+
+- A strict parallel-candidate relationship means that two cable IDs share the same unordered exact landing-station pair.
+- A corridor co-group relationship means that two cable IDs occur in the same unordered landing-region pair.
+- Both are metadata-level candidate relations. Corridor co-grouping does not prove route overlap, a shared offshore path, an SRLG, or actual cable use.
+
+The corrected physical-structure diagnostics are:
+
+| Output | Meaning and principal fields |
+| --- | --- |
+| `landing_region_summary.csv` | One row per region; `landing_station_count`, `region_diameter_km`, configured limit, and assignment methods. |
+| `exact_landing_pair_catalog.csv` | Exact unordered station pairs and their cable memberships; `cable_count` describes strict parallel candidates. |
+| `corridor_catalog.csv` | Landing-region-pair groups; `exact_landing_pair_count`, `cable_count`, and strict/co-group relationship counts. |
+| `corridor_parallel_relationship_summary.csv` | Global overlap, coverage, strict share, and Jaccard comparison between strict exact-pair and corridor co-group relations. |
+| `physical_corridor_structure_report.json` | Station/region/pair/corridor totals plus region size, diameter, and cables-per-corridor distributions. |
+
+Physical mapping resolution is reported for every observable atomic hop-pair in `atomic_segment_mapping_resolution.csv.gz`. The mutually exclusive states are `uniquely_resolved`, `bounded_candidate_set`, `no_matched_corridor`, and `insufficiently_resolved`. Paper-primary resolution counts only feasible inter-region corridors; intra-region candidates remain supplementary. Compact outputs are:
+
+| Output | Meaning and principal fields |
+| --- | --- |
+| `physical_mapping_resolution_summary.csv` | Counts/shares for all four states and RTT-conclusive/inconclusive partitions. |
+| `service_country_physical_mapping_resolution.csv` | Resolution states by country, service, and path-scope stratum. |
+| `bounded_candidate_set_size_distribution.csv` | Number and share of bounded segments by feasible corridor-set size. |
+| `uniquely_resolved_service_country_cross_layer_distribution.csv` | Top-1/Top-2 and cross-layer results recomputed on the uniquely resolved subset. |
+| `atomic_segment_inventory_manifest.json` | Raw-result, valid-trace, observable-segment, mappable-segment, and insufficient-segment totals. |
+
+`network_transition_normalized_entropy` and `corridor_normalized_entropy` use \(H^*=H/\log K\), with zero for a one-label distribution and missing for a zero-observation distribution. `cross_layer_normalized_entropy_audit.csv` reports the paired difference and reduction indicator. The paired and CDF figures are `network_corridor_normalized_entropy_paired.svg` and `network_corridor_normalized_entropy_cdf.svg`.
+
+The compact July 1 package additionally writes `aggregate/all_measurements_cross_layer_normalized_entropy_audit.csv` and `aggregate/all_measurements_network_corridor_normalized_entropy_cdf.svg`.
+
+`pipeline_accounting.csv` is the ordered population ledger. Its rows distinguish traceroutes, unique atomic segments, and candidate rows; `parent_stage`, `parent_count`, `retention_rate_within_parent`, and `consistency_assertion_passed` make each denominator explicit. `framework_alignment_report.json` separately uses `stage1_atomic_segments_*`, `projection_atomic_segments_*`, and `candidate_rows_*` names.
+
+Reaggregate existing Stage 1 outputs without repeating candidate matching:
+
+```bash
+python ripe_atlas_public_download/run_per_measurement_pipeline.py --reaggregate-existing --skip-robustness
+python ripe_atlas_public_download/package_reaggregated_paper_results.py
+```
+
+For a resolution-only refresh after flattened candidates already use the corrected corridors:
+
+```bash
+python source/rebuild_mapping_resolution_outputs.py --output-dir output/public_traceroute_by_msmid/<measurement-folder>
+```

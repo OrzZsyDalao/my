@@ -1,1168 +1,2611 @@
 {
-  "generated_at_utc": "2026-07-14T11:40:52.921551+00:00",
+  "generated_at_utc": "2026-07-30T06:04:59.848599+00:00",
+  "measurement_count": 18,
   "source": "output\\public_traceroute_by_msmid",
-  "interpretation": "paper-facing aggregate measurement-observed transition and feasible-corridor audit CSVs; no raw traffic-volume claim",
-  "copied_files": [
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\dataset_summary.csv",
-      "bytes": 1289
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\filtering_breakdown.csv",
-      "bytes": 744
-    },
+  "interpretation": "Corrected diameter-limited corridor reaggregation and physical mapping resolution audit; candidate relations are not ground-truth cable use.",
+  "copied": [
     {
       "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\candidate_space_profile.csv",
-      "bytes": 14530
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\country_corridor_observation_distribution.csv",
-      "bytes": 52056
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\service_country_corridor_observation_distribution.csv",
-      "bytes": 138461
+      "bytes": 14588,
+      "sha256": "45c8ac07866bd2d68ef5e3d175c23211d77dfbf9e8a9af542ccf5f2ca6ce5457"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\country_corridor_concentration_summary.csv",
-      "bytes": 28826
+      "bytes": 32541,
+      "sha256": "f106998465ce65543570d41d2e9133ea853fadd2f21dd9301df9f3e37ba422ac"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\service_country_corridor_concentration_summary.csv",
-      "bytes": 41615
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\country_network_transition_concentration_summary.csv",
-      "bytes": 18181
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 36542
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\country_corridor_observation_distribution.csv",
+      "bytes": 74357,
+      "sha256": "4f5a313744f6143c7322e2e7e6754925ba30525f82047deca3bb3510e6f76838"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\country_cross_layer_distribution_audit.csv",
-      "bytes": 27819
+      "bytes": 35232,
+      "sha256": "a9851b91f5957182fac6ac910fcf6a50a15a98423e5032dc88ce00039e055796"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 49424
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\country_network_transition_concentration_summary.csv",
+      "bytes": 22525,
+      "sha256": "b3bf8712cb8671bbfe11588d6aad6ff3fde4107e02f4caa927694a42089ea3b6"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\country_physical_exposure_summary.csv",
-      "bytes": 8023
+      "bytes": 8023,
+      "sha256": "655325c07b5b18c5a935a7aa5e31f301d8bf42ad71f63a80eadd181e1d890dff"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 3472
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\dataset_summary.csv",
+      "bytes": 1301,
+      "sha256": "626cad24fe149842b8a137a291de6c86ee0a271a5f0c3f9b5b668350ac1f04a3"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 4495
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 9053
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\paper_physical_exposure_cases.csv",
-      "bytes": 8135
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\filtering_breakdown.csv",
+      "bytes": 744,
+      "sha256": "3392be547f9a66131ba81b34148c45f4e21d6c3591aabf59b0f674edfae09507"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\framework_alignment_report.json",
-      "bytes": 2054
+      "bytes": 5342,
+      "sha256": "43e3ca35a6ea73c7888c47d96ec921738d357f126a7e6de8e18e5439782c335f"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\dataset_summary.csv",
-      "bytes": 1332
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 19042,
+      "sha256": "a0f63e1fd6386a8e2d8c7f08880836ddb3577abf758f7605faa7530a5bcf04b3"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\filtering_breakdown.csv",
-      "bytes": 744
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 2874,
+      "sha256": "37fc725e1eaa925bee0456a8ee3dad1ca7b20247cfd62e277868ee790a138990"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 3358,
+      "sha256": "3de2cb77372e2a118243f353f0f4523b8316969ce9bad9ced51db85d55e7c064"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\paper_physical_exposure_cases.csv",
+      "bytes": 9651,
+      "sha256": "aa55161bbd023cd37ae899a454b3c9c979f6760663ea50f5451f3092431b279d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\service_country_corridor_concentration_summary.csv",
+      "bytes": 158049,
+      "sha256": "8c14d16018ec94b7e37e78977ce6307e6317b9cafb8bac4c63317dc43ace1fc9"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\service_country_corridor_observation_distribution.csv",
+      "bytes": 390093,
+      "sha256": "7bd60379d7c3b6e1e461164d145007973c50859034da490d09b6f4b6778435d4"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 175829,
+      "sha256": "6151ab8a4d571dc13184f76ced240f5596a5b663c93899a853290af2a30c585e"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 131690,
+      "sha256": "481a1f6c5d372cc0805b6ce872567754b669e56ad4d79e5cda29a13d1c91171d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\physical_mapping_resolution_summary.csv",
+      "bytes": 907,
+      "sha256": "5e1325b37a2789fad27f381196267812d40c31b0f702a1e7e7c790eeb0cdc787"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\service_country_physical_mapping_resolution.csv",
+      "bytes": 42076,
+      "sha256": "95abd1a865bb995f223f3af8f96e7096c519efcd47530b01de531a771bfcd77d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 415,
+      "sha256": "0220e4327e809296a3031a7a5213794ac77e12e24878539acbe377e6fdcdd30f"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 102189,
+      "sha256": "ca378ace9bcdeb51b1d03e68c70852b5e883f31c5bde7eb6f6ba02486fdceab3"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 9053,
+      "sha256": "b28ca442363ed67459de2c62db6a4b239d6b0d3f3d1347342e9700b60bc58a7e"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\pipeline_accounting.csv",
+      "bytes": 1004,
+      "sha256": "367305557a00135e78514cc7d4a69ab25adc3da0e129d15e10664737c92a2c41"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 175829,
+      "sha256": "6151ab8a4d571dc13184f76ced240f5596a5b663c93899a853290af2a30c585e"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 2447,
+      "sha256": "dd6afbf4253a8f500ea526902b97cf37f49f41e4c3cc2859b33ca9b6f4320b46"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1441,
+      "sha256": "c4d7504bc1a260d635394e94ac6d59603b6ac14d7a08c471986b8d4cebe9dabc"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\atomic_segment_inventory_manifest.json",
+      "bytes": 976,
+      "sha256": "5f0fe0cdf0b5bb790b5f831d5c161dad006cc0e9b672a1f24ba823d92d27fd31"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176517335_edge-localization-extension-netflix-assets\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\candidate_space_profile.csv",
-      "bytes": 14201
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\country_corridor_observation_distribution.csv",
-      "bytes": 50889
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\service_country_corridor_observation_distribution.csv",
-      "bytes": 118898
+      "bytes": 14261,
+      "sha256": "17bb54af961a2185c1dc6717b6559e4a42ab6003b954d791ccb1084f1257eb63"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\country_corridor_concentration_summary.csv",
-      "bytes": 31262
+      "bytes": 35108,
+      "sha256": "9538edcbb862174a6dc8185639d807a6599aea7243d9a6f3695afa724623ef42"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\service_country_corridor_concentration_summary.csv",
-      "bytes": 40791
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\country_network_transition_concentration_summary.csv",
-      "bytes": 20504
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 35464
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\country_corridor_observation_distribution.csv",
+      "bytes": 74251,
+      "sha256": "5e03e7bc0d736229025f49d473f03bce11001aed8870cae00f4535c63413f931"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\country_cross_layer_distribution_audit.csv",
-      "bytes": 31327
+      "bytes": 38894,
+      "sha256": "89d06a08c5cc4a8dcb8bd1a9c05fddd91922942d712ad40e3baf983ecb9bc0e1"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 48849
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\country_network_transition_concentration_summary.csv",
+      "bytes": 25234,
+      "sha256": "c0d1cc399d4107c5572cc6bbf741aa48de6d09e0a4e3c5f829953994bae1f9f0"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\country_physical_exposure_summary.csv",
-      "bytes": 8513
+      "bytes": 8513,
+      "sha256": "a4d0858282d9afbc59d37939d9cf2579d471bd9a6d1f1d501f103beb62fcc6a0"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 7248
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\dataset_summary.csv",
+      "bytes": 1303,
+      "sha256": "29eea4ca53aed5a80ac6f97752b304715e215f12a58780d02e58d9f87747472e"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 7132
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 5478
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\paper_physical_exposure_cases.csv",
-      "bytes": 7017
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\filtering_breakdown.csv",
+      "bytes": 744,
+      "sha256": "dcaae5c1d485e2a38ca67f3ce049aeb4f5a65570ab57af9cd7c72fbdefb68e1b"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\framework_alignment_report.json",
-      "bytes": 2057
+      "bytes": 5343,
+      "sha256": "2f7de1d971ce225c9343a830cc238f340a964bb1b1c9e54cff87b582fbaf7fe5"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\dataset_summary.csv",
-      "bytes": 1306
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 12190,
+      "sha256": "4605eae11099003520f77e753e8de8e0d0c3b0aeb909498369ea5ec3e66720f7"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\filtering_breakdown.csv",
-      "bytes": 749
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 9317,
+      "sha256": "6359e93e44bd02ba711ef82fa9f24767624a5bd6c87f2c2918848e15c404a855"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 7636,
+      "sha256": "990dfa771919bdeeeda389feddc893b4cd8ed551b386301e029ac56086b13bf1"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\paper_physical_exposure_cases.csv",
+      "bytes": 8084,
+      "sha256": "537bb0c4342ed529aa8d97ab43567d8c95e2e84300e8faf31c2998c4491d6c1d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\service_country_corridor_concentration_summary.csv",
+      "bytes": 153890,
+      "sha256": "8a2fc6ed18cd00f4febe6cff01954ee222c336c0cdd04e1629b956a487272ebc"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\service_country_corridor_observation_distribution.csv",
+      "bytes": 342280,
+      "sha256": "268370fa192354c81f11d0fac3482b94affd8b1099519b03090ffbc32383721a"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 171890,
+      "sha256": "07c4538d4dfd024e40092a0c9c3795efd67e76c6f84bc2e6a3d7697faa59b0cd"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 127042,
+      "sha256": "e64842dd6f91bffb2a499cec1b2f19d4ab86597760d2992eb24777537034073b"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\physical_mapping_resolution_summary.csv",
+      "bytes": 888,
+      "sha256": "527aea92c6fbf4d69e75f0e6c692f187ccfe93b73c402366f2084dd6e8124793"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\service_country_physical_mapping_resolution.csv",
+      "bytes": 40148,
+      "sha256": "0dde0ed8ebd560923544e7f9e94151ecd22614fb58be93e1cac47de6591e91a1"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 297,
+      "sha256": "73c5df0f2fa250a2f771a753b8152a7cc01b04126c24c08e561bdc1736e73b1b"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 101316,
+      "sha256": "e15cea69f7c1babd4e2df4c3d12e9d5af4aae13be7a8cce12bdb6427fe345e62"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 9770,
+      "sha256": "2c6054d466329f2e1b152c00d1ad361ae1c916de1040311a6b47cd44d81db411"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\pipeline_accounting.csv",
+      "bytes": 1004,
+      "sha256": "207432afe33257d068809927b52d1ce890db627d2611ff18f820e0cbf540d70a"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 171890,
+      "sha256": "07c4538d4dfd024e40092a0c9c3795efd67e76c6f84bc2e6a3d7697faa59b0cd"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 2358,
+      "sha256": "5922cf60291ba51f9ee16421be3d3336cefda13ade823d7978b7d52959b80235"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1412,
+      "sha256": "58675f12a1aa132a711ff87b63902ae722b23f37f1d2041562f3983af445ea38"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\atomic_segment_inventory_manifest.json",
+      "bytes": 944,
+      "sha256": "14b0574c88308c6347e45dd850b749935ba32316380a6831819b300a6eace82f"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm176906957_popular-application-reddit\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\candidate_space_profile.csv",
-      "bytes": 14882
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\country_corridor_observation_distribution.csv",
-      "bytes": 51176
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\service_country_corridor_observation_distribution.csv",
-      "bytes": 128549
+      "bytes": 14925,
+      "sha256": "aa08de197f1070d029a42dd28f3bf8cb5d181c65cf59c7ce433b17e91b97ecbb"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\country_corridor_concentration_summary.csv",
-      "bytes": 26859
+      "bytes": 30041,
+      "sha256": "44242883ce404600d9acb93e5e71cb3b3bca676e9b5f8ebf34028adf10461d7b"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\service_country_corridor_concentration_summary.csv",
-      "bytes": 40575
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\country_network_transition_concentration_summary.csv",
-      "bytes": 18882
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 34828
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\country_corridor_observation_distribution.csv",
+      "bytes": 73051,
+      "sha256": "fa32036c2a95ae25e423421055759db7178f6bf72dfda542fd854181fd1914e0"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\country_cross_layer_distribution_audit.csv",
-      "bytes": 28610
+      "bytes": 35396,
+      "sha256": "503f02d1af1af8e58ca81594e6b714e04398572aa9bb08d94068711f3b37c308"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 48897
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\country_network_transition_concentration_summary.csv",
+      "bytes": 22805,
+      "sha256": "03300b2f8b3686f43f864b8ec2ea7f941bf8682a0e8adb81213f6b2f72e61b05"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\country_physical_exposure_summary.csv",
-      "bytes": 8045
+      "bytes": 8045,
+      "sha256": "655b516757a18788e3fa733d647f35a5943dec9a06ba3f844d6dd6e3d2fcf7ec"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 5620
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\dataset_summary.csv",
+      "bytes": 1317,
+      "sha256": "13c264a8fb50c06a80075c0580afd39f0c8b25fdb61a05b93f69d67a0d77fa05"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 5495
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 9240
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\paper_physical_exposure_cases.csv",
-      "bytes": 6678
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\filtering_breakdown.csv",
+      "bytes": 749,
+      "sha256": "b4c4e0536815a2e7a2cab447a88b28ebd83e4a5be06c6dd8b552122de5d2bfb3"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\framework_alignment_report.json",
-      "bytes": 2057
+      "bytes": 5344,
+      "sha256": "00f1c6565465f435953515a6b5d546d69c671440578030ef3f82fc51a66532a0"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\dataset_summary.csv",
-      "bytes": 1287
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 18903,
+      "sha256": "f22a7c16612198f5902cb7625393e5ce78605fe517678c464e6f20a210f44a52"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\filtering_breakdown.csv",
-      "bytes": 743
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 8501,
+      "sha256": "77ed8cd86cb3af519d46aae9cc940fa51c51022d564f61943ba2f43ee8edb3b4"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 5866,
+      "sha256": "3cdabd1dbf2429b2c11b9173b555314a7add843440ec55c68c99330f0852824c"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\paper_physical_exposure_cases.csv",
+      "bytes": 10460,
+      "sha256": "d2b4826b2dfbcba5dafd12412452c41e070d5f41d503adbde44b83180546232c"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\service_country_corridor_concentration_summary.csv",
+      "bytes": 151069,
+      "sha256": "2bbb5a9c08a3c3de38daa47bba78ce488cd154c48d34ceb5dd90ee93ddc658cc"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\service_country_corridor_observation_distribution.csv",
+      "bytes": 359360,
+      "sha256": "0da2de34223f762e76a45767e6610fee367cdebd144d9d3318665064a68b9932"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 170424,
+      "sha256": "c067a0dfbbf44f734416eab5abdd95211c183670ed123653aad4aea1cdb116e1"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 123624,
+      "sha256": "05ef9b9a0c61bfa8fa02f1cddc9417105b8603ea43ea99ee2b9bf2185f6f9251"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 889,
+      "sha256": "b905e2c3aedb2d93032262a17ff64e1f5ed62c4b9b0cde04f2bdf1ec75cd9c90"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 39413,
+      "sha256": "79f90e2556f92ce0bd79020fc5f665e4fe972cc5f20e15a11766fde31ae9f8e9"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 413,
+      "sha256": "609e406c56362a38201532c140d763f8e125b997f5db6d3ae33647f9da5ab589"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 86586,
+      "sha256": "f691e63e8647dabbf72a08afd29ac5ff50a021755e421245305b01cdf3336b4e"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 8211,
+      "sha256": "94ec579afb0d6e37a6d48ba24fd82eb653e99f8adbe8d267a76e7a2e751fe5b2"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\pipeline_accounting.csv",
+      "bytes": 1006,
+      "sha256": "769c9c81029a2e0bc10ab6acfb91bc865d355861426566892161a025a49576eb"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 170424,
+      "sha256": "c067a0dfbbf44f734416eab5abdd95211c183670ed123653aad4aea1cdb116e1"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 2799,
+      "sha256": "bfcf6060321466fc1a2da8316bab9185458d38dc006a627eb6c6f36b520f2ae5"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1551,
+      "sha256": "afb3ff5df18f6f65f0ccc8e98ac454620a0f29f9608f22ef1cc1111e3b704a79"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\atomic_segment_inventory_manifest.json",
+      "bytes": 912,
+      "sha256": "2309c7d471b50b743a31ebb6f41632ece8aaf13fbc3116471da9a20a1c14b58e"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5001_dns-root-k-root\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\candidate_space_profile.csv",
-      "bytes": 10920
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\country_corridor_observation_distribution.csv",
-      "bytes": 47036
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\service_country_corridor_observation_distribution.csv",
-      "bytes": 93053
+      "bytes": 10967,
+      "sha256": "7c8fdd6da2465e8c38db344ace060870028c444b85348e446fa76be69db837e7"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\country_corridor_concentration_summary.csv",
-      "bytes": 27305
+      "bytes": 30351,
+      "sha256": "0f03a058b0ab100841dce517d205d86be966f4e4644d290a26c502a34d54893a"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\service_country_corridor_concentration_summary.csv",
-      "bytes": 33170
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\country_network_transition_concentration_summary.csv",
-      "bytes": 19095
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 28577
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\country_corridor_observation_distribution.csv",
+      "bytes": 67504,
+      "sha256": "4a64523447589996b380c229b5a437d80b8f9ea34e570517da0a7c53ffcac85b"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\country_cross_layer_distribution_audit.csv",
-      "bytes": 28728
+      "bytes": 35183,
+      "sha256": "8bd25f6c487d096bdaaa5c5f78ddde76adcc57d8f44a19e4efa8691392c3ba04"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 39541
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\country_network_transition_concentration_summary.csv",
+      "bytes": 23155,
+      "sha256": "1f6e4916afa1215a0e899fff9ab9fb54d74979374cfcd8308b6963af87f67c8c"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\country_physical_exposure_summary.csv",
-      "bytes": 7900
+      "bytes": 7900,
+      "sha256": "ba625d3f4fd9406473036007f1f95f6c13d342c10bc1fd103e94b52530a50722"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 4048
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\dataset_summary.csv",
+      "bytes": 1314,
+      "sha256": "850cefec2cb266a67bda6d263a50392f6608c6bcda86e724abb269b3202f26fe"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 5328
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 4765
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\paper_physical_exposure_cases.csv",
-      "bytes": 5837
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\filtering_breakdown.csv",
+      "bytes": 743,
+      "sha256": "939f1a2c1089e1fd291f4f267c431188e11f70d8a0f6b7cecac46cfb60db858a"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\framework_alignment_report.json",
-      "bytes": 2053
+      "bytes": 5334,
+      "sha256": "59ee50f92d7e5aa9e803b0c260f7feeb82cbefcf7d5d60a261b831fdd2a87ccb"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\dataset_summary.csv",
-      "bytes": 1302
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 6189,
+      "sha256": "972fd9d940506f57f97c5d719afd1d41f1a103e6d725b64b1b8c1862e5bc929f"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\filtering_breakdown.csv",
-      "bytes": 743
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 4314,
+      "sha256": "451d1eb4eae1709e41b464955a7c85c40e5be5427d26cfb889a99ed2a20801e5"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 5410,
+      "sha256": "5c2e8eb4449428a73e475774e25bdb642abd025fc30b3810bbb061d8f6e237c4"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\paper_physical_exposure_cases.csv",
+      "bytes": 3872,
+      "sha256": "f071740a98c643708b9c96cdc806663f3807e587e81df9a929487e1856b6ec86"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\service_country_corridor_concentration_summary.csv",
+      "bytes": 131315,
+      "sha256": "bb2229d6ace7deac229b72697a7e514bc3b2ad9a3e85f3e074415f796eb10aea"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\service_country_corridor_observation_distribution.csv",
+      "bytes": 144877,
+      "sha256": "ea98a1ed4bb5d6276fcfb504fbfb45dce8f395ecf8ff5e975abe87f49988a602"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 138295,
+      "sha256": "6acaa329e0eed142a46c278597f616d99fe40f06bb3dad9cfd05a495b3bb817a"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 109653,
+      "sha256": "e03211b89491f8619e94999789be77d50969bc073e8becdd2788997409bba395"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 902,
+      "sha256": "7d99d74771c9e9222097d49fd7e9d192173800657d12022a3a7fd1b1a87559e8"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 24890,
+      "sha256": "0ea1ca468eff0d9008b5e24e8578e87814cf1785f234ef682c03f7761473e8c8"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 412,
+      "sha256": "366f665877f78474ba1704d837378d3dbf5bc29113ae737abc0d4f6ac1446809"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 43954,
+      "sha256": "28eefcbac413fdf5e96df79e173746f8410876724b84a3e7798ff759c33d56d5"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 2927,
+      "sha256": "4dbb3836e06237a0a5a183aee2ef2bd75ceff05a4b8dd1e2256e70a3fb12c586"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\pipeline_accounting.csv",
+      "bytes": 1001,
+      "sha256": "908e0f52046af7fb2f67078bd34ace0349249c1c5530f6ac72f536c6f36c4e24"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 138295,
+      "sha256": "6acaa329e0eed142a46c278597f616d99fe40f06bb3dad9cfd05a495b3bb817a"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 2095,
+      "sha256": "f68982ee2c59321c38780a46a8c803070a21b2a50780719a556e82d6a7cf2df5"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1329,
+      "sha256": "ce8f9ae87d46e78de31688445fda28db3e31c3ef9927f659894318baae8d645d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\atomic_segment_inventory_manifest.json",
+      "bytes": 911,
+      "sha256": "f8becd3d65ee61fc126b50a642de611333a9bc8f4f1f4a83d4d278b61614cb28"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5004_dns-root-f-root\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\candidate_space_profile.csv",
-      "bytes": 14644
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\country_corridor_observation_distribution.csv",
-      "bytes": 50452
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\service_country_corridor_observation_distribution.csv",
-      "bytes": 127219
+      "bytes": 14750,
+      "sha256": "a5b9ddf62893c6c742b52aff8d27220e8c234e503b6a6e7f436e9158496746bc"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\country_corridor_concentration_summary.csv",
-      "bytes": 27764
+      "bytes": 31276,
+      "sha256": "0b085e1502f5220a59269328cb2d1861f18b574f90f660d4332b4b5d63cb5df2"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\service_country_corridor_concentration_summary.csv",
-      "bytes": 39658
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\country_network_transition_concentration_summary.csv",
-      "bytes": 19452
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 33660
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\country_corridor_observation_distribution.csv",
+      "bytes": 71526,
+      "sha256": "d3e3acb9cd3158dbb247c9d642317a42a3573a2a4476b50243913851298719f6"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\country_cross_layer_distribution_audit.csv",
-      "bytes": 29411
+      "bytes": 36976,
+      "sha256": "859d529c3da25e4d1a83ce2cf7b91a7b79c62d09309c123dd7cd21b32319c1fd"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 48019
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\country_network_transition_concentration_summary.csv",
+      "bytes": 24461,
+      "sha256": "015d9bc28e81e7563d22deed5f38504c7c031762bbdeba6761a77b08ad4f08f3"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\country_physical_exposure_summary.csv",
-      "bytes": 7989
+      "bytes": 7989,
+      "sha256": "627754274f6ccf2e4a4300ba50d470bf98a2f6623dd029082c450a0a788d45bc"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 6696
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\dataset_summary.csv",
+      "bytes": 1302,
+      "sha256": "3017e0f9a75996ab17be7b0abc25425f158084f7b02a407ef629f3d724216ea0"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 5544
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 8078
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\paper_physical_exposure_cases.csv",
-      "bytes": 6570
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\filtering_breakdown.csv",
+      "bytes": 743,
+      "sha256": "2361f64ed814b20c49ce68279be0e521aaef617aa9168a9fb9757522820902e7"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\framework_alignment_report.json",
-      "bytes": 2053
+      "bytes": 5338,
+      "sha256": "14072c25baf5057c811328fcfe641fc53b85d22b966bb07655212aac3c375158"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\dataset_summary.csv",
-      "bytes": 1335
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 4562,
+      "sha256": "742d7892684991c2c67c0847d3c4e1320a3147c9a407f6f1435475cbb301d457"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\filtering_breakdown.csv",
-      "bytes": 753
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 1502,
+      "sha256": "c09fde98d21d77b9c9af9a758a4cb7a051e111354c536ba75e2a77c03e9bcb5c"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 907,
+      "sha256": "060cce0ab0ceefdcb264295b6641559a973811e428918ed93be3687846148d24"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\paper_physical_exposure_cases.csv",
+      "bytes": 2825,
+      "sha256": "316bfc4549a9a9c83b5305eb8a8ad60e92cb8b8d8a54946b78ae568010522e99"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\service_country_corridor_concentration_summary.csv",
+      "bytes": 135903,
+      "sha256": "f0f3f3d5be2af07a888c05d09e74b69bc7d83f231476e7537f02be99bb2a723a"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\service_country_corridor_observation_distribution.csv",
+      "bytes": 177228,
+      "sha256": "bc9faa4708a7b54a6818ae56b4ccb380d3acf9c705187358927bad4fd9dc670c"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 145142,
+      "sha256": "9f5e3fe742c74e11e7ddc80a4c5974088417539c65ac016bb685a71bd7e77828"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 113653,
+      "sha256": "c9ffa99489d93e51819da3bc57b56137183fe7ce21d56271546224ee0dab6f3c"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 905,
+      "sha256": "a1014567db243fc0c24f4ec456aed8572bb300c2b5606b882ec3e1773b444fe0"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 21440,
+      "sha256": "e4daf77b9e79f924d5fc426cd033ba8ee753ea0230f511dc5d764b3d24bd925f"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 384,
+      "sha256": "aa18983f5a796fc1a13bbee24f135c23e7e52507a81b2af2c451c45ecdc4f0b3"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 50024,
+      "sha256": "f160c5e442693495f25c5bd6f4794a9f55b4a05438bd792e0ef4b3159ac1762b"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 3188,
+      "sha256": "d139cd0b9122e7112798d96b8f3734f66d3fb931583cc831d3ca950848380de5"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\pipeline_accounting.csv",
+      "bytes": 1001,
+      "sha256": "dbec02925853be8c8f26c3cc31d51d91849082183074f849ea245886d523b56f"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 145142,
+      "sha256": "9f5e3fe742c74e11e7ddc80a4c5974088417539c65ac016bb685a71bd7e77828"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 1830,
+      "sha256": "c57b23930ef1396f990d60adf974f25002170bfd52a69e874f2c45c14f3bb819"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1245,
+      "sha256": "54b7c3b9fcf3812fc070c0c2ae5a9b11eafaf0351d9ed8c592292ca2bfd3fb6e"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\atomic_segment_inventory_manifest.json",
+      "bytes": 912,
+      "sha256": "76e32f4d44548ce6af82e2de7f2df04714ccb6be1179b26b89bad68fcfb2b231"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5005_dns-root-i-root\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\candidate_space_profile.csv",
-      "bytes": 19711
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\country_corridor_observation_distribution.csv",
-      "bytes": 51746
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\service_country_corridor_observation_distribution.csv",
-      "bytes": 167825
+      "bytes": 19818,
+      "sha256": "4f1c8ae9a516757b9874707615fe41cf288504b887c373b4ad71d9a4493fcd0c"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\country_corridor_concentration_summary.csv",
-      "bytes": 28464
+      "bytes": 32475,
+      "sha256": "128cac39ae46c63ebf57b947cff5ad065b50967315f1831b919e23efac2a7d7a"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\service_country_corridor_concentration_summary.csv",
-      "bytes": 47478
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\country_network_transition_concentration_summary.csv",
-      "bytes": 19963
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 40718
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\country_corridor_observation_distribution.csv",
+      "bytes": 74614,
+      "sha256": "322f524ec64c2c14ecbb45dd03aedae95aec3a3909bbbef848b2391f3eedcc1c"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\country_cross_layer_distribution_audit.csv",
-      "bytes": 30431
+      "bytes": 38884,
+      "sha256": "f23e006b4b1074d385774ac487b02588a005c51e6110e290f62c823800c8a01c"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 57878
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\country_network_transition_concentration_summary.csv",
+      "bytes": 25299,
+      "sha256": "4b7666ef932c8d40d3d672eef61f98d7fca4c7c3a6251e81656d88ea4b4b3e30"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\country_physical_exposure_summary.csv",
-      "bytes": 8012
+      "bytes": 8012,
+      "sha256": "5730f9036faedc4ef789c1d8eb24d7f859fe92b465fc1d022066c5fd16480ae1"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 6178
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\dataset_summary.csv",
+      "bytes": 1304,
+      "sha256": "9fbb489f34a5f4f4b7a6d840e51ff022cb181242e608431c50be11df22be1ff3"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 5592
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 10787
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\paper_physical_exposure_cases.csv",
-      "bytes": 7354
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\filtering_breakdown.csv",
+      "bytes": 753,
+      "sha256": "72f6e4d4c26d03853b84fcc571c50d35e9b60c9f90eccb05f3bec57a48fef8e5"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\framework_alignment_report.json",
-      "bytes": 2059
+      "bytes": 5346,
+      "sha256": "d2f613d1863dff32999284438ff9d8b456f5defce1ad949e8fdb1ed35406e7cb"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\dataset_summary.csv",
-      "bytes": 1336
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 14292,
+      "sha256": "07163582ffc58241c103cb0cb4b394266ea9d3e9587a578a66733cf2901a3c8d"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\filtering_breakdown.csv",
-      "bytes": 759
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 4952,
+      "sha256": "376fe4e8d75aa9f028a04595359d57f49aa55a9b9a06308ac2c1b2f3e7f5dfe9"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 2683,
+      "sha256": "0d49f730e7949dde3a7dcd7af5cbbaa4950e52b4ed6a32774310811a315feb0e"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\paper_physical_exposure_cases.csv",
+      "bytes": 7329,
+      "sha256": "b7defa7414235e11678e3d3f6b3a03e80ae77d9792a49cde7817614f4a96828d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\service_country_corridor_concentration_summary.csv",
+      "bytes": 165399,
+      "sha256": "61e5b9ff6a0211ff9f276cd602b439d337e665759ae44dea1043dc971c2e1643"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\service_country_corridor_observation_distribution.csv",
+      "bytes": 527796,
+      "sha256": "1e9bcc4e78d5df06d7bffd92911aa1b678537b8d11bf44f6edefad0b0d9a33e0"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 192535,
+      "sha256": "fe68348c45070d12f9503c14ec0d8f9b80c5367adc4f2f74a8c96d9a201521c2"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 135320,
+      "sha256": "feec0059bee48f03e5cb2174bf30ca3be306b09e223157343b1a0ddfad3ed8a8"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 909,
+      "sha256": "c7697ffb86e61c3c1a339e3c4ae1ea12b02fbbbdfdd0c8aba4b78fcf179f3973"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 41336,
+      "sha256": "37dee282c70c8e5325d46c40d5324a52c3e50e517555c7f01d8d2568efde7cc2"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 418,
+      "sha256": "3b50e542aff7b3f9555bc35a0604eba64e84aa1b7609b5ee511b015e9b28a567"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 104938,
+      "sha256": "cce19bd759fe09bfb34e15031160e9da8516933cd751c7bd7decb918dda46cf2"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 9456,
+      "sha256": "70b0f1c5bcd687ab28ceec2dd1614b543a9c29561374d1068e77377b20094b10"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\pipeline_accounting.csv",
+      "bytes": 1021,
+      "sha256": "b785313c54537a4a22254fb486754d8a938506a20536fcd002e3bd768f909b39"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 192535,
+      "sha256": "fe68348c45070d12f9503c14ec0d8f9b80c5367adc4f2f74a8c96d9a201521c2"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 2271,
+      "sha256": "499be8bba8807f9af2879dba7c6482873222281f68f6e332779dc2d579f58759"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1385,
+      "sha256": "d479d4a507c458df6e36865078be432ec8d5cba230d3fb9a21769fa059529b57"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\atomic_segment_inventory_manifest.json",
+      "bytes": 912,
+      "sha256": "9d3e3c1173f001b80528ea5f15e0a1620834e32116ff08a70f717f9269990ea2"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5006_dns-root-m-root\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\candidate_space_profile.csv",
-      "bytes": 16679
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\country_corridor_observation_distribution.csv",
-      "bytes": 52137
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\service_country_corridor_observation_distribution.csv",
-      "bytes": 150209
+      "bytes": 16685,
+      "sha256": "7e22295c41b1e07757a19b1795db13cd2fb02dd5a16a2c532e0792d5ec45ca48"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\country_corridor_concentration_summary.csv",
-      "bytes": 28488
+      "bytes": 32659,
+      "sha256": "742cc35543faf47d99ac2c7db73b3ab63159f04734fef618c26e0cbf52bc0c08"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\service_country_corridor_concentration_summary.csv",
-      "bytes": 42666
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\country_network_transition_concentration_summary.csv",
-      "bytes": 19215
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 35907
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\country_corridor_observation_distribution.csv",
+      "bytes": 72792,
+      "sha256": "394871b8c774544a3699265f9d0f1d4b895e45fda4de57f34c2f335177aab8a3"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\country_cross_layer_distribution_audit.csv",
-      "bytes": 30219
+      "bytes": 38767,
+      "sha256": "c830c2e11146be2500d536d9cd606c73056e7017b6fbb7b8dac1336f56f20dd1"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 51730
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\country_network_transition_concentration_summary.csv",
+      "bytes": 24786,
+      "sha256": "c852c2a7cdaa2de9113aed12793f1c6570cfbdb3588616602d018c8f95bb243e"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\country_physical_exposure_summary.csv",
-      "bytes": 8201
+      "bytes": 8201,
+      "sha256": "df27829a1c04edb3c4a2fb463ef8c85c55da5eb0e8b8da5b213794970173ff74"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 7045
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\dataset_summary.csv",
+      "bytes": 1320,
+      "sha256": "52d16e58ee97412a6c1c9e067dde856a17186621cd2b38d03424cd35f631413e"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 6048
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 10239
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\paper_physical_exposure_cases.csv",
-      "bytes": 8203
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\filtering_breakdown.csv",
+      "bytes": 759,
+      "sha256": "5322c664178cb3ba04229440b80b53b62598bb75cbd5fc83bd43bb8ea6979636"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\framework_alignment_report.json",
-      "bytes": 2059
+      "bytes": 5349,
+      "sha256": "1f8eb50952b705d6fc43d361262fd6ccebe9f608889da9b44807229f05d5a612"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\dataset_summary.csv",
-      "bytes": 1298
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 16796,
+      "sha256": "6aa1d9f71ea1b50bf58c52255d4a202aa59fdbaef33b6d5ae4f21550a6e79858"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\filtering_breakdown.csv",
-      "bytes": 738
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 10362,
+      "sha256": "e32a5f41488b8d4cac69a78a806ec28b5f062e7ea3bc6137f925dfc2efb09760"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 4451,
+      "sha256": "f33a94d7dd5276e9be503189b62ae3ce84e497e62a7ff95d07a2f795e289b83d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\paper_physical_exposure_cases.csv",
+      "bytes": 10802,
+      "sha256": "dfc30eef28d29dca3de2842b49c456b9c42ba1e7949aa18154cc58fad3ca1006"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\service_country_corridor_concentration_summary.csv",
+      "bytes": 152898,
+      "sha256": "9cffc7f3504c119c8aee4e8e4e2451672c2be7a805b3cedf4c45f60159de7ee8"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\service_country_corridor_observation_distribution.csv",
+      "bytes": 412789,
+      "sha256": "741ab50895156eb0273d1e3119149cc3b0314315fd12aa47197bb3073055b1b7"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 175094,
+      "sha256": "02c912b4dd40386ebea426134e835fcfbe48b1fce260e6e6c60b3f39ad1b3d4d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 124550,
+      "sha256": "c7915515f41bdad9bc9f7ab21c4b6284014b693d6f11b14110cc8703a5ba4060"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 907,
+      "sha256": "feced82bfd012438c3ef704ef2071540263db62cd36cec89a730b617fd8e0fb3"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 39881,
+      "sha256": "d4bbdf03010a1c49e1714df92ce1658981f5c736850aec579897c38b40dbb190"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 409,
+      "sha256": "29b96d418d225f65f1fc7fbfde89082218c4a604af1c34ccd5786a3d98e6053c"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 116635,
+      "sha256": "1c0fcc10fc161593a9ca999010f421d59a32a68c8c860f9b067941047bbd1037"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 16422,
+      "sha256": "fada7c00317689f8dd47b905606893e73462dceaff089ebee82f8ca2545b14d9"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\pipeline_accounting.csv",
+      "bytes": 1008,
+      "sha256": "0f12f606477ce4ca3274b6b5b59ab46d530aaa71b2e27117504f43b4d95d47a5"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 175094,
+      "sha256": "02c912b4dd40386ebea426134e835fcfbe48b1fce260e6e6c60b3f39ad1b3d4d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 2800,
+      "sha256": "ccb3dc209cc474c3855c9340c3efbb2c8236981e3c9e1b439b48e82d986b98f9"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1550,
+      "sha256": "24c9644e32576ab853fc6b1599c972168f4eca09b27722ca6059d8ccbb8cbe20"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\atomic_segment_inventory_manifest.json",
+      "bytes": 913,
+      "sha256": "aeee7d2dd0349cd4d783093013b721775a29b43f68300f102bde60aab52cdd82"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5008_dns-root-l-root\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\candidate_space_profile.csv",
-      "bytes": 11881
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\country_corridor_observation_distribution.csv",
-      "bytes": 46806
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\service_country_corridor_observation_distribution.csv",
-      "bytes": 104960
+      "bytes": 11960,
+      "sha256": "cc92bf4300eb7b961aafc263503624c6328162bc88b7b26792069313d9753209"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\country_corridor_concentration_summary.csv",
-      "bytes": 24130
+      "bytes": 27374,
+      "sha256": "dc881b644da78561ebc60ae4acd6c380077f8f639f15d0056be56f0d5ccf374e"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\service_country_corridor_concentration_summary.csv",
-      "bytes": 33106
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\country_network_transition_concentration_summary.csv",
-      "bytes": 16706
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 28236
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\country_corridor_observation_distribution.csv",
+      "bytes": 69106,
+      "sha256": "1f43418ca2fcd2005b19dce000d169716b8d7d37f483eda5dc9401e5e4fb25a9"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\country_cross_layer_distribution_audit.csv",
-      "bytes": 25420
+      "bytes": 31267,
+      "sha256": "f684e912109f4d89e377453e205708f1df1785a70d59b4e5f5a0e09b30f2ab07"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 39798
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\country_network_transition_concentration_summary.csv",
+      "bytes": 19619,
+      "sha256": "3e71122e7aa6e21ef0117943b85aac639dfff3ff711dd3d6bdae59c4eea6825f"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\country_physical_exposure_summary.csv",
-      "bytes": 7152
+      "bytes": 7152,
+      "sha256": "3e7ff75c71edcd7f272cc55a159c769ae7ed1a86f25506874bbfdaa3bc68f489"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 3640
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\dataset_summary.csv",
+      "bytes": 1297,
+      "sha256": "b8d641d62ab53116f4539c51f05f6e07f8d31bf6fb7ceb006ba475e1f4252f1d"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 2346
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 7036
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\paper_physical_exposure_cases.csv",
-      "bytes": 4462
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\filtering_breakdown.csv",
+      "bytes": 738,
+      "sha256": "a01a84472146c46acf7472f3d2c7ac77107f4516b4de47146b946b12b9994334"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\framework_alignment_report.json",
-      "bytes": 2051
+      "bytes": 5332,
+      "sha256": "e3325351db682b2caa9ece8521b3c7e39eacdcf85822db21919786e499a663a8"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\dataset_summary.csv",
-      "bytes": 1317
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 12068,
+      "sha256": "662f589e7518a4f294a716bc28d4a6497cd230cf157cc52a13e17287ca92c02a"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\filtering_breakdown.csv",
-      "bytes": 741
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 3824,
+      "sha256": "ce3d4644a9b345d04f9c9e0d320513675d04e1371e43d39e6d16933ee06d33c7"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 2642,
+      "sha256": "81cb2f65904b845e6b755df2bfd6be40b645da42809048e0bdf28dfb197ae7ea"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\paper_physical_exposure_cases.csv",
+      "bytes": 4970,
+      "sha256": "a2431c1d2a630b3c2f6a63567aaf4cfd95bb4c06e62d77fe766b0b0fb0590597"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\service_country_corridor_concentration_summary.csv",
+      "bytes": 119983,
+      "sha256": "4bd0ab90f4d5369fe5c4b524933e376a178040dabe250e14d1f7f39c01f90972"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\service_country_corridor_observation_distribution.csv",
+      "bytes": 157461,
+      "sha256": "8a076350fcb58ea3aaa99a35c54da7b1b505acbcf1f074abefca9bb1ad446c39"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 127417,
+      "sha256": "b6671f5adff217479eb67b316d4fdd00a1c985909f6e4fc90c926f1c322834bb"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 99931,
+      "sha256": "c6b0c37c846460d41037f0c4dfbffc1af77be468d1019f1f0e7485dac4709ebc"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 897,
+      "sha256": "5401d289cd258a6d2b5811b97f85460176e34d020646045158db464613194420"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 18157,
+      "sha256": "f3b537d1a97fa12a467d59a61d36650d355b6945f9b3f570b2ddb6840fe0f854"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 439,
+      "sha256": "d0b0fa8b7fcf1b1a6d325676fca3c215f21c7d86496068fccecd0bc36811ba93"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 43602,
+      "sha256": "b56ebf28a7c36222c95957c5add8332ad8fc2b22455db7ce325acaa0a0441316"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 5478,
+      "sha256": "4185caac0c906141fca6044feafc1d333b9599fb80c8ffd9ec5bd01d687fd460"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\pipeline_accounting.csv",
+      "bytes": 997,
+      "sha256": "4029f8398275bbaa6f47181bc8ba0d124456813f0cf442d02baf8345aca0766a"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 127417,
+      "sha256": "b6671f5adff217479eb67b316d4fdd00a1c985909f6e4fc90c926f1c322834bb"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 2536,
+      "sha256": "d1aab58260e9617e79905b3dd1bbc09d8599a209a676a6339a6ddfb262e0453e"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1467,
+      "sha256": "0a9238a2dad82bd0969e7c685737761482254cc1ef622f1b46618dfa8b900099"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\atomic_segment_inventory_manifest.json",
+      "bytes": 910,
+      "sha256": "076a32798f6b869a2fe33d7b1ac9997376c6eed3c91545323ee813a0ba76994b"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5009_dns-root-a-root\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\candidate_space_profile.csv",
-      "bytes": 14569
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\country_corridor_observation_distribution.csv",
-      "bytes": 52950
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\service_country_corridor_observation_distribution.csv",
-      "bytes": 130650
+      "bytes": 14641,
+      "sha256": "be7ed84662267321e4d7c7def78d4035277b57c98e1755fc9270f21d99ad4d67"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\country_corridor_concentration_summary.csv",
-      "bytes": 28569
+      "bytes": 32784,
+      "sha256": "9af28d70a22d7dbee515c05be69ae351e89a021d52494644aeae9d89aa26f7fa"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\service_country_corridor_concentration_summary.csv",
-      "bytes": 40261
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\country_network_transition_concentration_summary.csv",
-      "bytes": 20107
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 34532
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\country_corridor_observation_distribution.csv",
+      "bytes": 75588,
+      "sha256": "6976f1ef7707a6fc5f30f9149d5944e9e343dc6dfbd37302912b0d2f57c34e81"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\country_cross_layer_distribution_audit.csv",
-      "bytes": 30195
+      "bytes": 37262,
+      "sha256": "84ed6e9c0493e28ace2d6392137bc4706a5c55c6eae3f4a5b60923b56eb298c6"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 48608
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\country_network_transition_concentration_summary.csv",
+      "bytes": 23880,
+      "sha256": "b170fa0c11f4837339edc8d69f4818661730ef994b8dbef579d28b273f1eefaa"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\country_physical_exposure_summary.csv",
-      "bytes": 7839
+      "bytes": 7839,
+      "sha256": "45a0d8266fd5bb1eaee468e0774f583cdbe1686795c789fecd2c46e75d5aefa6"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 4481
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\dataset_summary.csv",
+      "bytes": 1332,
+      "sha256": "f2e9be3c4660037999ccfdd5d57818798bb9a60ae606893953e04cf987515dde"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 3677
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 8095
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\paper_physical_exposure_cases.csv",
-      "bytes": 5319
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\filtering_breakdown.csv",
+      "bytes": 741,
+      "sha256": "4f28d1db41cc132896cf404b9f36a65de0e8aa38c0aa771b2fc4a1508d9d2333"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\framework_alignment_report.json",
-      "bytes": 2035
+      "bytes": 5319,
+      "sha256": "5b83ad2b695599051c51ca8cdbaf5c4585d34eae7f01de0ffcd3db887db9604d"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\dataset_summary.csv",
-      "bytes": 1301
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 12889,
+      "sha256": "c685eadbda7b7576f845975af2b5830aa5c641fdbbbce409f9524ad2531c9b7d"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\filtering_breakdown.csv",
-      "bytes": 744
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 5611,
+      "sha256": "4edef9c88264c2aace1c2f6539d15587544e5dfb73edc99ded22692fd1efd68b"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 3727,
+      "sha256": "5fab97b522dd95e379e2cda5c83b749e5bacb343b75f2da68dca345a3f50345a"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\paper_physical_exposure_cases.csv",
+      "bytes": 5710,
+      "sha256": "d42168f2076e3ec11d73877c5d7d6e70a7075f298c2f5c3a533089028b835a5c"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\service_country_corridor_concentration_summary.csv",
+      "bytes": 133415,
+      "sha256": "95caecb67c383382be4fbd7b308fedcfdc07452ec07f7169e457d5428271106c"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\service_country_corridor_observation_distribution.csv",
+      "bytes": 186894,
+      "sha256": "537b9fbb25850ce7550080f3c7cbe4194b770a482d20f135f9468c8403e14cf1"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 142820,
+      "sha256": "a7a16b8cab16c0691fcaf21dbc678342a415a41dcd52cd09e629c3eb8db1fe97"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 110745,
+      "sha256": "438b7fb8e506c3282a3498f776be09d24190dad381f9ef315d860c1b4d209c82"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 898,
+      "sha256": "f865fb38e92e132a2da7e1265ce932dd34b5f2fd6a0f43e75528421931cca140"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 20237,
+      "sha256": "2cb329cd86974ef26d8c6ce2fdcfa9469e254d3ab7dde6cf32f31d1001e22300"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 412,
+      "sha256": "c63a160d46f4aca79cb4adcd6d677b9234052124788c2c04838115d959a0bbab"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 53106,
+      "sha256": "a8047f80ad50c8a538d51f430c6e36a6853891e06a8f665611da33aac1b710e9"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 7981,
+      "sha256": "f54db6b6b0053bd42059c5b4311d29aa42be49ce4d4229a4e517108284c6833d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\pipeline_accounting.csv",
+      "bytes": 999,
+      "sha256": "9cbdf9cab1da95056ca69b6a4db88a0ba90ce789cd04d94ee1c8a0f3b5c3b513"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 142820,
+      "sha256": "a7a16b8cab16c0691fcaf21dbc678342a415a41dcd52cd09e629c3eb8db1fe97"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 2800,
+      "sha256": "4d41817a746f1bf5b0f7ac7fc5e8d7fe2bcd609394f897d701ade8ac4538adb6"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1551,
+      "sha256": "9191eed01b872a7a8e90b2808ee37fde1e58efa1d1fee72d80a4b3d84c28604e"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\atomic_segment_inventory_manifest.json",
+      "bytes": 911,
+      "sha256": "645a43c3d1c5d74bffea7b0b4ddedfa197069292c018e0ebbdb16381a6f3c340"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5010_dns-root-b-root\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\candidate_space_profile.csv",
-      "bytes": 15817
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\country_corridor_observation_distribution.csv",
-      "bytes": 53134
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\service_country_corridor_observation_distribution.csv",
-      "bytes": 132560
+      "bytes": 15898,
+      "sha256": "610f8bd4a991f3569d43f4c9891c237c83b8c82bd74c07bd541dedaf229041f3"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\country_corridor_concentration_summary.csv",
-      "bytes": 27863
+      "bytes": 31748,
+      "sha256": "b1c537eca474c1df036a50d0f3376cfc6e3181f11c0a42a768ea214cd9ee8336"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\service_country_corridor_concentration_summary.csv",
-      "bytes": 42744
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\country_network_transition_concentration_summary.csv",
-      "bytes": 19168
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 36646
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\country_corridor_observation_distribution.csv",
+      "bytes": 74785,
+      "sha256": "7a3eaa00bb24aa1ccab455155fa3051ca551eaa469419ccdf2e76cfa3b3f3cc1"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\country_cross_layer_distribution_audit.csv",
-      "bytes": 29699
+      "bytes": 36457,
+      "sha256": "44e99d54b59af63a0c1d553947f31e2660959a659868808a33e72656c2910556"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 51682
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\country_network_transition_concentration_summary.csv",
+      "bytes": 22794,
+      "sha256": "9b632f7eb6a3ff27c9e0a03f8cea1f70ac210f1125f73a5e061bb49326771c0e"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\country_physical_exposure_summary.csv",
-      "bytes": 8056
+      "bytes": 8056,
+      "sha256": "ff42b89664986b01b1be1175cc8f0832e19b294fcb8d0953602d9873c79288fc"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 7767
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\dataset_summary.csv",
+      "bytes": 1302,
+      "sha256": "242c614290a4f2f98fab81ca5b20adfdaa6147f8f705ab6377fe99ca5c1dff99"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 5206
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 8891
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\paper_physical_exposure_cases.csv",
-      "bytes": 6973
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\filtering_breakdown.csv",
+      "bytes": 744,
+      "sha256": "3485ea3abd35f93bc9d33cf684952e27ac14b7ad921b1f0e47d4f5dd17dbef85"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\framework_alignment_report.json",
-      "bytes": 2054
+      "bytes": 5342,
+      "sha256": "a486e5265d390aa304856a2c5e5f71e28e7036958f1db27058237432e123e36c"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\dataset_summary.csv",
-      "bytes": 1288
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 20118,
+      "sha256": "973454f5561c9934b6332a6a6f976b7c5749aedee4a6b2748933bc6d7e5d10e7"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\filtering_breakdown.csv",
-      "bytes": 739
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 14987,
+      "sha256": "0d2810703c9327289022f383e17d5c0a3536c6890d9cbb424d4eb84c3e5bac55"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 10491,
+      "sha256": "3a796d3c020830b6f062c913821eeab8c615eb4049bb1bc752272e239e4e8a72"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\paper_physical_exposure_cases.csv",
+      "bytes": 13699,
+      "sha256": "24533790778ee33e9738a3580facbd3d9eef6400d4ca61fecd2554b296e99b07"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\service_country_corridor_concentration_summary.csv",
+      "bytes": 149432,
+      "sha256": "25260ab980e07744eba415369c19523fa1c37b4c65a7f629c086a461fea0d6c5"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\service_country_corridor_observation_distribution.csv",
+      "bytes": 366537,
+      "sha256": "9f9505de690a30e4fc4410fc1121a7885f69b68a31eefa30ed43e1a7971dc6bf"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 169587,
+      "sha256": "9f2b95dc5b5f7a4bcaecaad9ce930ef011f86ac1aae2c034c3b264cb8ad97699"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 120754,
+      "sha256": "fdfb498d95908697cacfe930d3d83bbf17360cfe797d0feb3f32528572693130"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 910,
+      "sha256": "65dcfec1af6bd35e0f36257ad2cad5501fe9790758154ff9aea666a3a8ab0ed4"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 40045,
+      "sha256": "d2aa72c4269311e4648f01bbad7576fda7254080dd0cc0abf40ab8d3d869201a"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 382,
+      "sha256": "b4054f77803c566b0b1a2c790d8a9004cdcc8adcd98713ba4ed4c01993ebdeef"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 95228,
+      "sha256": "f2e39a0801b8d305745195e29c4e8f2f7d50f2a8e63524246965036ab978e2f6"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 14081,
+      "sha256": "fed4d7c4bbcea77e5ffdad2c29f104ccee5c270208e6dd921b4d736b5df19842"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\pipeline_accounting.csv",
+      "bytes": 1004,
+      "sha256": "e91bf4ef69dd23a59ffaab56e7f1b494414dc660464915684c4e717cd7e18135"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 169587,
+      "sha256": "9f2b95dc5b5f7a4bcaecaad9ce930ef011f86ac1aae2c034c3b264cb8ad97699"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 3416,
+      "sha256": "b693a6a92b713e85c6369f74c9b5995d3bd6bab37b7c98c580225d93245fade5"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1745,
+      "sha256": "91ad793868c0291f7ef02bd4e6dcd7b2cdcf4f30b03ed75188abdb6e724b979b"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\atomic_segment_inventory_manifest.json",
+      "bytes": 912,
+      "sha256": "4105b678ae69706ef2a064e5fd908614fa7d06cf52d6acf806c00009d4cad300"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5011_dns-root-c-root\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\candidate_space_profile.csv",
-      "bytes": 12434
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\country_corridor_observation_distribution.csv",
-      "bytes": 49091
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\service_country_corridor_observation_distribution.csv",
-      "bytes": 99238
+      "bytes": 12476,
+      "sha256": "362ea8bc82baaaad66012785d5da584655e5ace1f631fae88eecac16793b5973"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\country_corridor_concentration_summary.csv",
-      "bytes": 27926
+      "bytes": 30925,
+      "sha256": "51a4a3c291990629a523f1e52ea7b14e0ada0bc7a1e7d5dd16279584ae2fed3b"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\service_country_corridor_concentration_summary.csv",
-      "bytes": 34435
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\country_network_transition_concentration_summary.csv",
-      "bytes": 19333
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 29676
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\country_corridor_observation_distribution.csv",
+      "bytes": 71733,
+      "sha256": "44e0b016b097597b7f0e8a84f28dc73bf420e49ef8f523ad727658c91cffc3b6"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\country_cross_layer_distribution_audit.csv",
-      "bytes": 29370
+      "bytes": 36662,
+      "sha256": "0deb37e16736366b04456774fc1fb5b5f2af6b56c6207832caef964cddc69d8f"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 41511
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\country_network_transition_concentration_summary.csv",
+      "bytes": 24188,
+      "sha256": "74f891a0fd2740b6d2755fad2cfacf2655ff6e75300aff36fbb6d3b77ecf4c8d"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\country_physical_exposure_summary.csv",
-      "bytes": 7846
+      "bytes": 7846,
+      "sha256": "3f643f85ccc41fba8800cba69c952dc74dd93ebf18950f94e1e0770495dc350b"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 3557
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\dataset_summary.csv",
+      "bytes": 1317,
+      "sha256": "e4d5e0a1ab32f99c1557e5336212a2da838c1595a47e1820788fc3440681c62e"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 3121
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 7429
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\paper_physical_exposure_cases.csv",
-      "bytes": 6278
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\filtering_breakdown.csv",
+      "bytes": 739,
+      "sha256": "cc580206e4d9a8d314f25dfb4811c774c55366716431ff6077db89e7bad50db1"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\framework_alignment_report.json",
-      "bytes": 2052
+      "bytes": 5337,
+      "sha256": "1791831f5793a6ee81ce12802dccaa792c7bd6b386f99371f33c30338552fc84"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\dataset_summary.csv",
-      "bytes": 1317
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 15278,
+      "sha256": "997776aacdc751b5e98fdbd9a682aa75888817e50dde244ffd3bb53eb0e9eafc"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\filtering_breakdown.csv",
-      "bytes": 738
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 3874,
+      "sha256": "a56b7b1ecfa682d24e97d66826f9fac810abc5963f86ae36a0e281281e8998fb"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 2077,
+      "sha256": "c62e4a2b9474222a5b798db8d1efb7e81f538b37212c5b4bbf77a0324d471ebc"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\paper_physical_exposure_cases.csv",
+      "bytes": 9174,
+      "sha256": "a756939280812bed02c8b2dabf2d678b736a9f18a63f1413b2f51da5d0b113b9"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\service_country_corridor_concentration_summary.csv",
+      "bytes": 144712,
+      "sha256": "0515df4b60f94d887696cf2db7177190c9a045964e0cc3988a67a568f0fec78e"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\service_country_corridor_observation_distribution.csv",
+      "bytes": 290480,
+      "sha256": "5d132b0c1968581946726385b05fe4c5bc4a063cd06688271f3d13363d2240aa"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 159005,
+      "sha256": "2954f48914c5a913ed3d3a16b00dc389df620366d2492a519bc86bc4a32bea1b"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 119787,
+      "sha256": "890bf5c08dabfd37e26068718f5e8960bfbc2bacbaeedb64ce64f0fc1d8d83a3"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 904,
+      "sha256": "807b8465d4f40e7607979f0913a199c3532107fd1ee4eedaff979f667e0ffedd"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 37721,
+      "sha256": "593141b805060a1afc0450faf8a7c5f46f2730bc07fb3ab5780fb7999c46bab3"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 437,
+      "sha256": "735f5175d85b18d00a8c4c94fad97bdf5fd137479931fbcc8688904840dd9f4f"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 72186,
+      "sha256": "dc4b9a2f0da8f1c3214da772e22e35a561825131a2f3e479f3557f39ac1755ec"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 4655,
+      "sha256": "fd3e45b7d7249fbc58a0965399afc9431fee001cc4de2b17d2fd14ffd09904c2"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\pipeline_accounting.csv",
+      "bytes": 1014,
+      "sha256": "20e21cbc41033299a44c25553b073b8e3b5e3d01758a75fb594ab2e963ced13d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 159005,
+      "sha256": "2954f48914c5a913ed3d3a16b00dc389df620366d2492a519bc86bc4a32bea1b"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 2535,
+      "sha256": "d0edf52a17d485e74a4af551cc82fa5542688629bd521ac54947962e4e810133"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1467,
+      "sha256": "80a0c8e0efe006bb7ff8d238f94219985a138218eb76e25507d5bfda7568bdac"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\atomic_segment_inventory_manifest.json",
+      "bytes": 912,
+      "sha256": "fe1eb2843d883da980f49928793b6869e3cf2be7d7b47a727bd63159d247409b"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5012_dns-root-d-root\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\candidate_space_profile.csv",
-      "bytes": 10904
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\country_corridor_observation_distribution.csv",
-      "bytes": 45844
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\service_country_corridor_observation_distribution.csv",
-      "bytes": 91288
+      "bytes": 10976,
+      "sha256": "665feb95c7c491f172ab7175669ebe4cf9dd368d3ef002f4feabd7d7448b3531"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\country_corridor_concentration_summary.csv",
-      "bytes": 26497
+      "bytes": 29413,
+      "sha256": "553ef5c69d53fb954fcb1ca932105502b9a9e44c50dfcae7937f1a1a14475283"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\service_country_corridor_concentration_summary.csv",
-      "bytes": 31477
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\country_network_transition_concentration_summary.csv",
-      "bytes": 18568
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 27337
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\country_corridor_observation_distribution.csv",
+      "bytes": 64729,
+      "sha256": "1204a0698e0530492c24aae5688fa2a327fe74e1dc46309d17819047481dbaff"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\country_cross_layer_distribution_audit.csv",
-      "bytes": 27840
+      "bytes": 34523,
+      "sha256": "9f410c427568a6168882a530ca9032923364d73bad715e48fb318bcfef359765"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 37805
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\country_network_transition_concentration_summary.csv",
+      "bytes": 23030,
+      "sha256": "687451157ed6956a0bd5d2b18cc92101f708ce372137d373c3528ddb376f1e02"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\country_physical_exposure_summary.csv",
-      "bytes": 7880
+      "bytes": 7880,
+      "sha256": "a54735e47333171fe4fe54fb92601bc71ae56c52fd55bae0a1a200eb4c79e5d7"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 4059
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\dataset_summary.csv",
+      "bytes": 1287,
+      "sha256": "74d55fd83984e245243c3a062a9b62e8c9c8f534bba52a87d531b1ee510fd213"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 5347
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 4761
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\paper_physical_exposure_cases.csv",
-      "bytes": 5800
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\filtering_breakdown.csv",
+      "bytes": 738,
+      "sha256": "7fee9dd26fe1faadc15e59142579ff9ff63f1496d57ba25a3eb45379120d05b1"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\framework_alignment_report.json",
-      "bytes": 2053
+      "bytes": 5306,
+      "sha256": "d0962d5d985e60832367fc50de9aa56c26432ea100eedfd1ed4fe4d23b977047"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\dataset_summary.csv",
-      "bytes": 1315
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 8118,
+      "sha256": "f455a9e60ce7f3ff40d03b01e9be6678c1dbce6e9855f59f4e4a13a50cfeafa7"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\filtering_breakdown.csv",
-      "bytes": 743
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 3626,
+      "sha256": "22716e13b671f7b8e43ffe9bff02230644c881bb0b17e57227ccd58195096e56"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 4438,
+      "sha256": "70ac4ec54e6dcdf97dcf4b3df34dc45d0355dd4ef36b09eea25395ffa96973c1"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\paper_physical_exposure_cases.csv",
+      "bytes": 4118,
+      "sha256": "c59118eb43f505498cbcd42edf6731283da349abb5db28890e32e87768630396"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\service_country_corridor_concentration_summary.csv",
+      "bytes": 137297,
+      "sha256": "c5080be15149b1088d7a1647e7670f85d432e18b3ec492529a4c561848ba8f30"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\service_country_corridor_observation_distribution.csv",
+      "bytes": 192090,
+      "sha256": "39a31d0e4c602a131a07fcb244eb211bc4ea122d3a3762e640e50919cf6bdd82"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 146744,
+      "sha256": "28309183942ce85a2f7e11cf192b3e05b267a8c6bede1d52e99e9787e408f8bd"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 114503,
+      "sha256": "e70b2104cb0b417a9c22fcfa170d31df31172ca9fe780307cd944ef2ef8edce7"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 901,
+      "sha256": "16981eca7db1649b25e51bf34c91caf58119d37240635803979f23900e24b71c"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 32414,
+      "sha256": "42c5101c174ef4d8c9f217ddcd8b379eb98bb73ab64fa0e0818eaca2430931ca"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 372,
+      "sha256": "efaad11d49a578c295d6aca464f8af499b5ea3078a6cf7b37df90ccd4daa3272"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 46518,
+      "sha256": "26756a540601d1a0e3a8d4ad1b26293ae4fa5b5723969af86e98b25089ef93fe"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 2590,
+      "sha256": "7b7d402f77f6af1b9634e4321edc155aa63083a26a92b423e5ad725b61f1bcdb"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\pipeline_accounting.csv",
+      "bytes": 997,
+      "sha256": "eb6fb4c3a8d39050234280c5d4384b201d2be86f1c4c82e7e203d83779f8aecd"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 146744,
+      "sha256": "28309183942ce85a2f7e11cf192b3e05b267a8c6bede1d52e99e9787e408f8bd"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 1830,
+      "sha256": "d147cd48404d83b878265fbfa96f7de492a2f446b9354ced27b1c775f712b2bf"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1245,
+      "sha256": "e87cdea14cfa276445e8c86340bbef6473ba87bf38ad64c9c215bed2d59c3228"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\atomic_segment_inventory_manifest.json",
+      "bytes": 911,
+      "sha256": "2ac277a9ced9fea8f05b4f789806e46a7a6e07f13d55006b7da7aeaa5280d688"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5013_dns-root-e-root\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\candidate_space_profile.csv",
-      "bytes": 16377
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\country_corridor_observation_distribution.csv",
-      "bytes": 53920
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\service_country_corridor_observation_distribution.csv",
-      "bytes": 129966
+      "bytes": 16629,
+      "sha256": "0a0a222801708213d3fda201ee72be196c489b3527b6b1357286ca1b86a73b65"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\country_corridor_concentration_summary.csv",
-      "bytes": 28506
+      "bytes": 32296,
+      "sha256": "044445bf02dcd04688a0ab0f6704c96dc598f411fb5b0a8c3c17e1083110ed3b"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\service_country_corridor_concentration_summary.csv",
-      "bytes": 43250
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\country_network_transition_concentration_summary.csv",
-      "bytes": 19915
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 37274
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\country_corridor_observation_distribution.csv",
+      "bytes": 77609,
+      "sha256": "78e3361ef0bfe8c4dce95eb9223b191cbe421c8893c3562437305b676c4f34e1"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\country_cross_layer_distribution_audit.csv",
-      "bytes": 30333
+      "bytes": 36957,
+      "sha256": "1b3dad9213cf8e959a0d9a53b75165170a9b28d3011d30338c39658f9fa8c20f"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 52370
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\country_network_transition_concentration_summary.csv",
+      "bytes": 23475,
+      "sha256": "2f5977c6add86a0dd6f6e80337e03ae8097941514a2a4c2dd4db0fcacae20a47"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\country_physical_exposure_summary.csv",
-      "bytes": 8033
+      "bytes": 8033,
+      "sha256": "14456a8e675f9ef9a0b97cace223c95016bd05d0d3b314c754f2f592382e1866"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 8046
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\dataset_summary.csv",
+      "bytes": 1318,
+      "sha256": "c748c6daa2d4903f4d9faad31ef76ef4d4b1efe7ccdb22dea8703db8584ca2f7"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 7517
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 8458
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\paper_physical_exposure_cases.csv",
-      "bytes": 5905
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\filtering_breakdown.csv",
+      "bytes": 743,
+      "sha256": "7005bee128d4d1c28dd75edc65f557eb7dcac94e55698284a6757988d35433bf"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\framework_alignment_report.json",
-      "bytes": 2055
+      "bytes": 5345,
+      "sha256": "e4f213636982b81694bfcee4c2e864392912eac74c16124c5132e2b7800244a5"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\dataset_summary.csv",
-      "bytes": 1286
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 15105,
+      "sha256": "97b0eaeafc78c62e249b8e1869ea7d5891e1df912df324e0995b3b05f50b64d1"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\filtering_breakdown.csv",
-      "bytes": 744
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 7469,
+      "sha256": "6545c3eda32b2f9c4375a227aee9cd504887e67687ee15eaaa93bc6e51aa89da"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 6888,
+      "sha256": "4fa2b7c9130e38116513941c75d8c9a15baf78e9c304703ee53d661ca184473b"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\paper_physical_exposure_cases.csv",
+      "bytes": 7596,
+      "sha256": "e3a65d96d7d16f3279ff75458e3398d5f3852cd92178c2afaf309fd827c768f9"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\service_country_corridor_concentration_summary.csv",
+      "bytes": 133704,
+      "sha256": "67176c5a98eab4d43e3ddc0ca43b2742d8c004ea5b4cbccd2b528354b1bd2d60"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\service_country_corridor_observation_distribution.csv",
+      "bytes": 191437,
+      "sha256": "f02e4f9cc0668b1a4f0b9a0ae83d72e05858b17b4dfae532fa17f0d2f8dd9dfe"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 143860,
+      "sha256": "fbcf2cc4b9d49ac201d63b2613e148502a29f47681f31157719d209943b3432a"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 110656,
+      "sha256": "8d34df9a942fff2df9a96b472f54f6abf4b7f00b0098087dd147d046ecceb593"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 907,
+      "sha256": "0415ddea6435720e19a73d433b5adee2b175c65b8c0b08bf9bc8c59a06d4ce3d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 20870,
+      "sha256": "03028ea44de24096f1ce4a39213bf46b62ebfb49b89f9696658a704f924aea22"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 371,
+      "sha256": "c986fe0836fa0382d70c3628ef39d3f2cc7a986abb1632941d35bdd2c4533dfb"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 54830,
+      "sha256": "798693e284312dde5d1f2f8ea5f69a178a7bc0590bd9d8a64648ab598c9f25d5"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 13199,
+      "sha256": "10af3b84f7351be0b915d756dc990fe7212852f6ea529012ec3ab1b3b89d4b4a"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\pipeline_accounting.csv",
+      "bytes": 1003,
+      "sha256": "a36a7666ef345b53eb5193612e6bf99640278c5d636d329be836f674400db249"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 143860,
+      "sha256": "fbcf2cc4b9d49ac201d63b2613e148502a29f47681f31157719d209943b3432a"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 3504,
+      "sha256": "bc5b34ecbc6e0da1a7ede4475d05afa151eb525310008eaf4d69fd92b4796a5d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1775,
+      "sha256": "796d4b9c80e2b769391e1dbeb001af77028f3fb66ba40a9f849bf118e4720b79"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\atomic_segment_inventory_manifest.json",
+      "bytes": 912,
+      "sha256": "61f2e54af218e1851140accbc462e495e48afa93c966bbf66d4c60c14afc6b94"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5014_dns-root-g-root\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\candidate_space_profile.csv",
-      "bytes": 13340
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\country_corridor_observation_distribution.csv",
-      "bytes": 50923
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\service_country_corridor_observation_distribution.csv",
-      "bytes": 120911
+      "bytes": 13354,
+      "sha256": "b45e53d91deac27f2fba3d5015c2cc03072d8623ea8f5a4359818b7f847df28d"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\country_corridor_concentration_summary.csv",
-      "bytes": 25604
+      "bytes": 28805,
+      "sha256": "48a5a99a52bd84ba356a60f4435a7038a916fa7f8bb4e3fc3d27d986642d1ec9"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\service_country_corridor_concentration_summary.csv",
-      "bytes": 36275
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\country_network_transition_concentration_summary.csv",
-      "bytes": 18003
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 31301
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\country_corridor_observation_distribution.csv",
+      "bytes": 72140,
+      "sha256": "12ab11a3aa19a6e5b47f0f55b0ddb204e71d5ff71c20b6080475e42c9badf6c9"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\country_cross_layer_distribution_audit.csv",
-      "bytes": 27410
+      "bytes": 33684,
+      "sha256": "d10b696f8e3d55bec61451262c16b2768cf3fef828c34ae457d4d7f1ca2f4da7"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 43745
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\country_network_transition_concentration_summary.csv",
+      "bytes": 21192,
+      "sha256": "861431654384e6a866118ede1bb955fdeb79a99fd3e8c19ef5e6812996afdf96"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\country_physical_exposure_summary.csv",
-      "bytes": 7864
+      "bytes": 7864,
+      "sha256": "0890b83d4570afd1705a8894c4f0a207703e73100121f0f6ce41b27babfaae2e"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 5600
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\dataset_summary.csv",
+      "bytes": 1319,
+      "sha256": "ca3864fb20e823eda7cd82a70c2aeecffa6acfd21b96fb54b2c2cebc51669196"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 4447
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 9358
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\paper_physical_exposure_cases.csv",
-      "bytes": 6167
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\filtering_breakdown.csv",
+      "bytes": 744,
+      "sha256": "a88b228d963b7239cd237fd164e6cdc78d402132d315a6281e6b1bac2e08de34"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\framework_alignment_report.json",
-      "bytes": 2054
+      "bytes": 5342,
+      "sha256": "dd221d0bba6ad7f80b062a9382feabc1d47cf7eefbdd4d26a42f25551923ec74"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\dataset_summary.csv",
-      "bytes": 1299
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 14666,
+      "sha256": "92e4fd2e72072365705603d5d9a37dccd18a2927286efb197e8dc3ccd063a9bc"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\filtering_breakdown.csv",
-      "bytes": 745
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 6942,
+      "sha256": "113dc37bc42e0894d74741c96fd7898dc40133124e23f730a8eeb1df5e99f8d3"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 6114,
+      "sha256": "da56cd203e040f414a75000192f504b312b507e6bc0fd752e8e8a5ebbddd2922"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\paper_physical_exposure_cases.csv",
+      "bytes": 10475,
+      "sha256": "48d0e97ea1dfc21eacf2c4393e3d6d1b7265366948b5b720de0d22e72fcc18c5"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\service_country_corridor_concentration_summary.csv",
+      "bytes": 143674,
+      "sha256": "065ce86bce464ed4f502f80231be2025be6cae01e255984888eb1688e1bf94c9"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\service_country_corridor_observation_distribution.csv",
+      "bytes": 325111,
+      "sha256": "f6e5e7d2197f789bd3e9badb3a3c2a8e8345fa4b7d81161e0a72db7dfb1d7c40"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 160027,
+      "sha256": "ff1964b587bb43eaa055f5c1af25944d76538083476b674f064c6d1870a88a26"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 117412,
+      "sha256": "3d9cde21737b3d374b9cc462adac81a7ce34a6368aa53edb45775aa8837f5653"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 902,
+      "sha256": "ccb3b388f6ea92d4edf08ad8b409110eaf51d250213dce34bf76652e52214db1"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 38394,
+      "sha256": "e3cceb9eb049c073cd9096d6c4100439a0332e660350cc5b830ab0ce2aa78e2f"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 413,
+      "sha256": "89cbfef0590312f6110f71d075053135213e3bd82f42ae0ddd4091008ca2c1a8"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 73603,
+      "sha256": "de68ca914132306ae5ee239d164e35e51ab7a0e3be7c459e6aad4a987dec603b"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 8458,
+      "sha256": "f132edad84fef87008e12ae851aae241af90463d8ed9de4359d762d215289f22"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\pipeline_accounting.csv",
+      "bytes": 1004,
+      "sha256": "478d1ae01dbb584bb22643cadaa56e8b59a8d9e3721fe795ebdabab20141b705"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 160027,
+      "sha256": "ff1964b587bb43eaa055f5c1af25944d76538083476b674f064c6d1870a88a26"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 2800,
+      "sha256": "2953f6327c25046554c86d18244eb4a4d94f4092d2a6d038f2d17c65e390ccee"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1551,
+      "sha256": "65f3a8342dd722edf21d2726cb5719ecf63f269ec1661510b906286ac2f7ae90"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\atomic_segment_inventory_manifest.json",
+      "bytes": 912,
+      "sha256": "ff29c81daccf7f4cbe7394cda2c2257ae0534107035755d0943330a7f6db3057"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5015_dns-root-h-root\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\candidate_space_profile.csv",
-      "bytes": 13464
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\country_corridor_observation_distribution.csv",
-      "bytes": 47383
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\service_country_corridor_observation_distribution.csv",
-      "bytes": 108749
+      "bytes": 13554,
+      "sha256": "67154e8cf3086f2c7748308d2db4c3baae7da9555d44b10dae0d0f3b0764cb61"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\country_corridor_concentration_summary.csv",
-      "bytes": 27285
+      "bytes": 30589,
+      "sha256": "4ad9d918c22861c663b7e78c2a3a414220a7daad59e05715c61fb79d9a226a7e"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\service_country_corridor_concentration_summary.csv",
-      "bytes": 36847
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\country_network_transition_concentration_summary.csv",
-      "bytes": 19248
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 31712
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\country_corridor_observation_distribution.csv",
+      "bytes": 68629,
+      "sha256": "794e5ebf369ab2394988f4c62c1639a9852178b92f90157743d0a967309c76ec"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\country_cross_layer_distribution_audit.csv",
-      "bytes": 29057
+      "bytes": 35383,
+      "sha256": "087fb476abe0d29e5c9855b775548fc63507873b70ce45877b04eb1a51205e6f"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 44591
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\country_network_transition_concentration_summary.csv",
+      "bytes": 22697,
+      "sha256": "ac7735299cdd5f7e952d03d9d2c114c82b47fd7f6d6d379916af653ae8673a13"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\country_physical_exposure_summary.csv",
-      "bytes": 8099
+      "bytes": 8099,
+      "sha256": "79099df892d28bd0239cba1874a68496cebd02ebf90c6a3292d09fd26134e3b5"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 4996
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\dataset_summary.csv",
+      "bytes": 1300,
+      "sha256": "ac2de8d46c800ed60e5afe25a7fcb76b3ccf7aa34560784ac34e217a6448316b"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 5355
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 6172
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\paper_physical_exposure_cases.csv",
-      "bytes": 6093
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\filtering_breakdown.csv",
+      "bytes": 745,
+      "sha256": "c6a897284b18c967078726704fc299b80fb77ddd40fe8bfa3aa06c2cf478366c"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\framework_alignment_report.json",
-      "bytes": 2053
+      "bytes": 5335,
+      "sha256": "4b3493a780121941468a303fa178c2e67412dc2cd281e308932a22d06ed57ba2"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\dataset_summary.csv",
-      "bytes": 1307
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 9873,
+      "sha256": "72a1a59623a4f40965f5a116166f9a19866f7af6d2a776423ef54b2c5219f9a3"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\filtering_breakdown.csv",
-      "bytes": 743
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 5967,
+      "sha256": "0e1375f964ef47062fd235af471c6074094c293ce00216e89e2e91bc7dc22c50"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 5516,
+      "sha256": "14a87cb283ac74ef3711c5b970062cdffb0831b7d9c3d6881cdd654c41cc8f20"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\paper_physical_exposure_cases.csv",
+      "bytes": 5637,
+      "sha256": "b979210ad6036173adba3145569c105da246ce05de676220424f88bf9a821a6d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\service_country_corridor_concentration_summary.csv",
+      "bytes": 130923,
+      "sha256": "0509ef14d0069eab8806df36c953fe1854bab157a79778cf09f685c91b8c448d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\service_country_corridor_observation_distribution.csv",
+      "bytes": 163289,
+      "sha256": "7a1e6f6b301ae01962979a559f47aa5d918543fbb32b65ef5052ab95d99b2b6e"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 139164,
+      "sha256": "75dbe248e9688d7a960d9882c8723f0488915739282c1331372e42ab23d913c5"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 109285,
+      "sha256": "0eb2d3c8b40156ceabd25ace212c2f5761138063e88997173bf5da016c5dd0b4"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 906,
+      "sha256": "1a69cda7489d2ea1462d00199e886b0c94241b9ecfc50fa36608dfb9a1c94620"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 19577,
+      "sha256": "e44ca7baf49a21b75bf38449acb7660d59f9f6949cc111d1b9da041526b3fb22"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 414,
+      "sha256": "2da1e82daf5664b17251da61d355d6261209b771f2607d59a69dbeb2ffcf22f6"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 46466,
+      "sha256": "0609bb9a29857ec0790d160727ae7575290968c1b5f746fdd97008e4a81d3e8f"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 6143,
+      "sha256": "2f17a6997326bf7632fb209b93a2adb9c2ac577346ff15981eff872e6a44cd7c"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\pipeline_accounting.csv",
+      "bytes": 1019,
+      "sha256": "46d70e7112e15d4d7cf11d60903880491e2449fc8bc134d26618e7ea48db7058"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 139164,
+      "sha256": "75dbe248e9688d7a960d9882c8723f0488915739282c1331372e42ab23d913c5"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 2798,
+      "sha256": "7cbf0607af737ac43b1a23e73e67366960d02cc9cf86dc98256a693798df89bc"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1549,
+      "sha256": "1ff2663098d75b1c3e359cec0a001fde97aca8fa4f9f05052159fd88e01bbc4d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\atomic_segment_inventory_manifest.json",
+      "bytes": 912,
+      "sha256": "e368347f076f1e85435f559f5ec1c6d81fa8bfb07d002dfcbe0b1dea52bf9774"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5016_dns-root-j-root\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\candidate_space_profile.csv",
+      "bytes": 30543,
+      "sha256": "9f04d83dfa42997a8314580a821813945a74df6474cbffab86b52d6558d48d91"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\country_corridor_concentration_summary.csv",
+      "bytes": 40709,
+      "sha256": "e579667fa0211ed19500843ed1f9caef346c0406b3676bf9a1bd352731a9d169"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\country_corridor_observation_distribution.csv",
+      "bytes": 166612,
+      "sha256": "72746359feb28fbd71271ffe2caac80a7ae9be572f54dcbae1c462e478b998db"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\country_cross_layer_distribution_audit.csv",
+      "bytes": 46413,
+      "sha256": "d79fa810194c98a16d6adf3a04f723165c01b426e1be67a07b3e47c4410dbac6"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\country_network_transition_concentration_summary.csv",
+      "bytes": 28505,
+      "sha256": "2c359ae12179578af0f6e93bcc496e4365f99889d1ab91903c2e9a32ab50f81a"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\country_physical_exposure_summary.csv",
+      "bytes": 9669,
+      "sha256": "b674955f8c54db7589519be03e9408bc1b460aa51cbaa0ef33a760b0ce5eae6f"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\dataset_summary.csv",
+      "bytes": 1336,
+      "sha256": "492ba6cad82d4c885be0418678330520177b1605c8f53db725eed4ca387ca4a6"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\filtering_breakdown.csv",
+      "bytes": 755,
+      "sha256": "46a2ddc3ee211d9c2e31e42fa52d2e43df9becb1441d5a58a1d774d9baf75b33"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\framework_alignment_report.json",
+      "bytes": 5362,
+      "sha256": "07391330ed4c79e1559ee60fe14a079da7e1869d01d0b065c384775b0d94973e"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 60991,
+      "sha256": "6b36c889738f16b536cec68be0fb8e1136665c24bd52c3d548e4bd4295042320"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 4010,
+      "sha256": "91ce4e418aea7f25fd9dc1ebeceb18650a38e2da0dde03142e49447c756c3da4"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 4303,
+      "sha256": "bd6a404b013de0c4d415013fe94bb9f4db1f4394982b0b1cb4dff093ee8a78fb"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\paper_physical_exposure_cases.csv",
+      "bytes": 25110,
+      "sha256": "d04d3928d4a9a7467d2ed3c45d21fa5eee8403d46b9e019b32b880fd765e7cc5"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\service_country_corridor_concentration_summary.csv",
+      "bytes": 184618,
+      "sha256": "c0456235c989753c7a4e9e955e336ccfe21c86cd89edbeaa56511d91d882474f"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\service_country_corridor_observation_distribution.csv",
+      "bytes": 2312545,
+      "sha256": "fcd42668b0e4c42e503f19f0ed36df6de389244554790c544fb830bc4a4290b3"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 222222,
+      "sha256": "eb4d8a6ab24062e64ca7eadbce4420ac6f4045133f7c7632aa37b1f424f47185"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 149315,
+      "sha256": "c56b94aa7dec0d78c86afbc43aa6ba3d50d84ef68149165ba433503f74061d69"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\physical_mapping_resolution_summary.csv",
+      "bytes": 909,
+      "sha256": "a667dd0253cc7518504a2d18d9b2fbd577cad971f18d62dc1ae8553a987c2aa4"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\service_country_physical_mapping_resolution.csv",
+      "bytes": 49246,
+      "sha256": "4c1a75eec66e4d89cd3a876269c4d84a432d34574ef74c0c32baf3174f854401"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 418,
+      "sha256": "97bd9db93d8a9979e36848903f24ef8db20821092160602ae5a1ca7f72ea10ce"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 185343,
+      "sha256": "deb3304eaba2058d546c7529ef09c3fa76b5738859de290fa18af7a1a901c5b8"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 39450,
+      "sha256": "b9026b38b148f8fc15af12be1154204b8f3317c37593029a2cff860a0e73e7c8"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\pipeline_accounting.csv",
+      "bytes": 1007,
+      "sha256": "cca062f5c7aa9cbaaf6e570d51df4b290b9c2c34e7b942c273266b0bae5d17a2"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 222222,
+      "sha256": "eb4d8a6ab24062e64ca7eadbce4420ac6f4045133f7c7632aa37b1f424f47185"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 5176,
+      "sha256": "d63a0ecd966d7b11f5e672a0f3abcf6f0ab85698375ce2a4ee9847fce1393acc"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 2305,
+      "sha256": "ce642383e7ededa27963671e13c7b4033b891a552b141dc8bee0c07620fb3900"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\atomic_segment_inventory_manifest.json",
+      "bytes": 952,
+      "sha256": "b3a9a3add8fbae6ab2c979de9f3e59d6c4b46ca97e0eb227a8a20fc42c42ed17"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5051_topology-baseline-topology-ipv4-udp\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\candidate_space_profile.csv",
-      "bytes": 24958
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\country_corridor_observation_distribution.csv",
-      "bytes": 89651
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\service_country_corridor_observation_distribution.csv",
-      "bytes": 542268
+      "bytes": 25149,
+      "sha256": "1cdbcf6cc775b2ea04e45e98e919030272962617c86a6f4d7aa69ee1d01684b5"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\country_corridor_concentration_summary.csv",
-      "bytes": 33100
+      "bytes": 36822,
+      "sha256": "e0be26bffc28cacaca08163ec2890d65124a1485e8dcb61af820b2e7951f9e75"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\service_country_corridor_concentration_summary.csv",
-      "bytes": 66669
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\country_network_transition_concentration_summary.csv",
-      "bytes": 21339
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 56265
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\country_corridor_observation_distribution.csv",
+      "bytes": 126474,
+      "sha256": "f43bc0ee484784caa314ccbc12558d70668b101a4b17d547029fe9ce6fe3d4d1"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\country_cross_layer_distribution_audit.csv",
-      "bytes": 32978
+      "bytes": 40716,
+      "sha256": "39d240f1b7639f84337b81740ab2899be5f5ebee33a91c7e10aaafb6df000e13"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 78780
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\country_network_transition_concentration_summary.csv",
+      "bytes": 25472,
+      "sha256": "8d52823383562e38fb52684fd835187b2f6e0c960d01183cd37a8824656054e3"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\country_physical_exposure_summary.csv",
-      "bytes": 8552
+      "bytes": 8552,
+      "sha256": "8113d7cd14429e9dc51893b5a14d2899548276a32f088052b0e1cdeb4a553b0b"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 2518
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\dataset_summary.csv",
+      "bytes": 1322,
+      "sha256": "a364289fd49a5823d52da44a582c87a3cd44336b13953a9c2f298c9e277631eb"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 2418
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 20904
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_physical_exposure_cases.csv",
-      "bytes": 9576
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\filtering_breakdown.csv",
+      "bytes": 743,
+      "sha256": "a52f90a2762dfd38c24529b9c41a01277ba32f496a90a9e72e4058a7474374d4"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\framework_alignment_report.json",
-      "bytes": 2061
+      "bytes": 5346,
+      "sha256": "c9634679e46d209df5489893b7cbf2b67b52fbe7880e10d8b35b7984cec5cbfe"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\dataset_summary.csv",
-      "bytes": 1316
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 42248,
+      "sha256": "798db1083ed02f32bd277a7dcb461ad9371ee9bce490f205e6e28ce732db5d6d"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\filtering_breakdown.csv",
-      "bytes": 744
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 2668,
+      "sha256": "4490a7e482fa3e7842d295d4590ef6c5150d604abdb76c2bcd5b69890a85c82d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 2633,
+      "sha256": "75c24e62cbccbd71da31a51b0f44f50278bdf82cdfd1b7357eca8e0ba687ec58"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_physical_exposure_cases.csv",
+      "bytes": 15861,
+      "sha256": "6c0118fc86619271ea72c750edea02a0abb6e99a383d10ab2578097099390945"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\service_country_corridor_concentration_summary.csv",
+      "bytes": 176025,
+      "sha256": "565187f38e0d5ab0248f965cf5fad31bf07414e7b073777118f1e771c9aabfd0"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\service_country_corridor_observation_distribution.csv",
+      "bytes": 1291050,
+      "sha256": "6d642589e42655e1609599122da6ce485a5e6343d72e27735ca4b3506ff3e924"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 205532,
+      "sha256": "fe95a23db409403757792d397bf4dd0b0b8a8d117207d00294b4c34b5fe3d698"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 142937,
+      "sha256": "a97c1475f56bdc12555ff20273fe49d73084a781abac06673a83de13fc7e4dce"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\physical_mapping_resolution_summary.csv",
+      "bytes": 903,
+      "sha256": "3b0ac0dc6288aba339cfc49e71af6faab977317e3743b3f15b51980447428c36"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\service_country_physical_mapping_resolution.csv",
+      "bytes": 45294,
+      "sha256": "41878c5965ea1603104f0bcf05e941feb77bfdc05fc1cbd112087ccfea31d5cf"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 412,
+      "sha256": "c5a949982f2bc5c544b901c63ef52bccb27c72fd39390059f7019ce4365b1fe1"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 153011,
+      "sha256": "ca8dcbdd70ba226ee1d5e044a92bc3c49a83916ba698f92d6b0d770394102f5e"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 20307,
+      "sha256": "fd06c6bfc0b3cf7f505534610b1c03fc884fc63124955e73b2db5bb559cf56b9"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\pipeline_accounting.csv",
+      "bytes": 1002,
+      "sha256": "d37654bbb392754899e35d3ed8cf0741b780a5fe15a53b4e74902e0edc07d768"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 205532,
+      "sha256": "fe95a23db409403757792d397bf4dd0b0b8a8d117207d00294b4c34b5fe3d698"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 3591,
+      "sha256": "2f23d1c9b8c9004af56465b287e9287c8803aa89d8f545821e8e04d342aa0245"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1803,
+      "sha256": "080378d99429539ab0a73e490040d8f7c7a454443cb9b1ca8e761d1dfc545e06"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\atomic_segment_inventory_manifest.json",
+      "bytes": 954,
+      "sha256": "b776dc9b5d1ffcc3e918758f701dfe036db6f7c98c32c0735e759f38aaa061ac"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm5151_topology-baseline-topology-ipv4-icmp\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\candidate_space_profile.csv",
-      "bytes": 14138
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\country_corridor_observation_distribution.csv",
-      "bytes": 52817
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\service_country_corridor_observation_distribution.csv",
-      "bytes": 141776
+      "bytes": 14200,
+      "sha256": "2c3bab373fcc6113718a99f140fecc2861cadf0a370055a54ce2f249555cfdc8"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\country_corridor_concentration_summary.csv",
-      "bytes": 29268
+      "bytes": 33059,
+      "sha256": "7f568213a2e570db4ed5e0d4f191fbd30a705e3dcea31f9333bcfa4b1a3cb523"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\service_country_corridor_concentration_summary.csv",
-      "bytes": 39916
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\country_network_transition_concentration_summary.csv",
-      "bytes": 19123
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\service_country_network_transition_concentration_summary.csv",
-      "bytes": 34696
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\country_corridor_observation_distribution.csv",
+      "bytes": 75131,
+      "sha256": "fffac6d2574b353eda7a7500323377e021797d01b0b0ddf44192125d7afb13fd"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\country_cross_layer_distribution_audit.csv",
-      "bytes": 29331
+      "bytes": 36966,
+      "sha256": "713d73efaa998b523e5eae1fbad7e1be66cc1f0280325e579297b998e6243106"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\service_country_cross_layer_distribution_audit.csv",
-      "bytes": 47847
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\country_network_transition_concentration_summary.csv",
+      "bytes": 23568,
+      "sha256": "a914968efd74e2b332897e04fcd45d460341d4bc114d8630be34a6e4226db14f"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\country_physical_exposure_summary.csv",
-      "bytes": 7873
+      "bytes": 7873,
+      "sha256": "df1da4cf87fdee3646012793909232a7cea31111e5b8799a1f4d30ba60488346"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\paper_corridor_observation_concentration_cases.csv",
-      "bytes": 6843
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\dataset_summary.csv",
+      "bytes": 1305,
+      "sha256": "7b9478aebb771b264a7b597a16371004c9c619571e88da3c4cf3b20a8656bb7b"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\paper_network_broad_physical_concentrated_cases.csv",
-      "bytes": 5742
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\paper_broad_corridor_distribution_cases.csv",
-      "bytes": 7847
-    },
-    {
-      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\paper_physical_exposure_cases.csv",
-      "bytes": 6426
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\filtering_breakdown.csv",
+      "bytes": 744,
+      "sha256": "f161f402da1bd36697b0040af3addec78006f3cb48fc91826944eaece95d138c"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\framework_alignment_report.json",
-      "bytes": 2054
+      "bytes": 5336,
+      "sha256": "505e50ab1e1ee1a3536d6f279b44883cbeb9c57c529ae6286d3d84c80e3f42d7"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\paper_broad_corridor_distribution_cases.csv",
+      "bytes": 19215,
+      "sha256": "92602e7885bedfbb90ec94f8f8e87e5b26bd7876eb98c2523e6e95506eb5dca2"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\paper_corridor_observation_concentration_cases.csv",
+      "bytes": 6031,
+      "sha256": "28957e406313f60923a9d9b7dcd714eec1a80a5e58d5e46e0f16fda391ba871f"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\paper_network_broad_physical_concentrated_cases.csv",
+      "bytes": 5009,
+      "sha256": "38243b2719e71292b790fea84a6343a7d608ebd476edbd643d425cbcdaba819b"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\paper_physical_exposure_cases.csv",
+      "bytes": 9910,
+      "sha256": "2ea9d95c7cfe8c2b3228f8cd1b293e3e1a76580518437cb8efe79aded18949df"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\service_country_corridor_concentration_summary.csv",
+      "bytes": 155080,
+      "sha256": "5457684f2c6a94b17f9c6a17fa48b7dd57006f33a709fa70cf2c7e01408ca55c"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\service_country_corridor_observation_distribution.csv",
+      "bytes": 401243,
+      "sha256": "b0dc737bd4084ea37758ffa763e67e310c4a81561512cc514757dc0215bb3f2d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 174011,
+      "sha256": "3cb13d4495c870a6b0ef0a8126e8985c1cb44a06e31d3a4ca144bb3eea2ecc89"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\service_country_network_transition_concentration_summary.csv",
+      "bytes": 128236,
+      "sha256": "fecfddbace5b9efd93002daace7eb1559eb558809574306a7b23e89cb0872766"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\physical_mapping_resolution_summary.csv",
+      "bytes": 908,
+      "sha256": "b53e4b64193b91e0db2cf0d76abbcf2614140d3e74277f7e15421c2388ff87ea"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\service_country_physical_mapping_resolution.csv",
+      "bytes": 41253,
+      "sha256": "613a170438a10f91871e90c4c95e6fd2e655af06c737a58e1162273a1ae64280"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 412,
+      "sha256": "98aac244dc801fd543316fdc33c1236dcd689fc76371a191d3dfbe6355ed86d1"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 99743,
+      "sha256": "5ad71d87180242a3349bdd6f61aca09ab1885cdfb1677826d2d30e7bea1a73f5"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 14350,
+      "sha256": "3936fc5c0c59f6eb85f2c8fa08160485fbfc16acb744dbe1870bcfdf39316c93"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\pipeline_accounting.csv",
+      "bytes": 1005,
+      "sha256": "026ecff3a804274bbd5b403089898dcaef2c9de4a3fc30d29139a999293e430d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 174011,
+      "sha256": "3cb13d4495c870a6b0ef0a8126e8985c1cb44a06e31d3a4ca144bb3eea2ecc89"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\network_corridor_normalized_entropy_paired.svg",
+      "bytes": 2623,
+      "sha256": "9b9738c4b235259eb7cf8012448e62195f7dbda2ee46af70e062cce486c5d59e"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 1494,
+      "sha256": "52c971eb77977488c8fbe312309e5bb29e97b7e66adafd14b8da4d7aa2d54a9b"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\atomic_segment_inventory_manifest.json",
+      "bytes": 948,
+      "sha256": "804c266c82e2eea1e462e75d71cb4a1ba10debfa3fba085ba76562f5c02314a2"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\msm86710103_popular-application-wikipedia\\method_manifest.json",
+      "bytes": 7914,
+      "sha256": "0b56428dd89bd580263a2dd67b97ee2f66a2a2e2e012c4d35e2720ca5be34efd"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\physical_structure\\landing_region_catalog.csv",
+      "bytes": 327456,
+      "sha256": "7e63b1a55d7fd28a63a107a8edfc35eb0ccbec58c0f6683cfb310797c243015d"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\physical_structure\\landing_region_summary.csv",
+      "bytes": 189856,
+      "sha256": "0d18249641fe7252a6f660706eecb2897291dc28b2bba3ca6f4260a15a5d546c"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\physical_structure\\exact_landing_pair_catalog.csv",
+      "bytes": 5450856,
+      "sha256": "22db427abaad6cca143ff19a200ceec6b9cdde97048174b07e012b4cafdb4700"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\physical_structure\\corridor_catalog.csv",
+      "bytes": 1929558,
+      "sha256": "4a640bd1b792a89683e34cfb78728456ba38410eebdfb5084594153be43106c6"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\physical_structure\\corridor_parallel_relationship_summary.csv",
+      "bytes": 549,
+      "sha256": "104cf9a8d2e49ee67889c782d7507745f042df71f729508ffb8fa652c43884e9"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\physical_structure\\physical_corridor_structure_report.json",
+      "bytes": 1705,
+      "sha256": "38077f16e672ef6f1b9b7bf69233562fcabb40576063fb3efc2c7297162b9d9f"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\aggregate\\all_measurements_physical_mapping_resolution_summary.csv",
+      "bytes": 14811,
+      "sha256": "8778d5941b5902c87b5d1301852fd25f45e3ced05b574a08bdf4deff32522914"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\aggregate\\all_measurements_service_country_physical_mapping_resolution.csv",
+      "bytes": 801210,
+      "sha256": "c8ea89d8d067d29c02d6149e70027195884dfc9de9bf578c691ab4a5ddd25e03"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\aggregate\\all_measurements_bounded_candidate_set_size_distribution.csv",
+      "bytes": 13040,
+      "sha256": "92067cbc7c298f8331542ac1a2bd85e8ad6da8ea52aff0e0c215cf649e7654a2"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\aggregate\\all_measurements_pipeline_accounting.csv",
+      "bytes": 21529,
+      "sha256": "231b74bcf231d93211ac71e89aed781fb1f339d41948a890aff444af917925d8"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\aggregate\\all_measurements_cross_layer_normalized_entropy_audit.csv",
+      "bytes": 3152747,
+      "sha256": "7049850bea26fb1f11648b4fbbf3d6d9efc813988e649edfa6f9f753d4872c19"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\aggregate\\all_measurements_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 1611930,
+      "sha256": "dc6c5068a3d39078d2a74a31edb15ba8ca93171d89c8570a5dd915a402d48c5b"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\aggregate\\all_measurements_paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 191205,
+      "sha256": "0dbd546496c537ad9c3e8fd5dfedb3241948f59b401cc8ad102b5455a79b2fdb"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\aggregate\\all_measurements_network_corridor_normalized_entropy_cdf.svg",
+      "bytes": 74447,
+      "sha256": "a348a923410355371dddad2b2adf18024ab8e20e0fff6ae19ed4768b78581b56"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\per_msmid_run_index.csv",
-      "bytes": 2826
+      "bytes": 1953,
+      "sha256": "ddcdf82b4c19859497100e944ea1ba62744b73c242920c28ab1a1e6245d6efb9"
     }
   ],
-  "skipped_files": []
+  "skipped": [],
+  "large_runtime_outputs_not_packaged": [
+    "cable_matching_output.json",
+    "trace_candidate_support.csv",
+    "trace_feasible_candidate_space.csv",
+    "atomic_segment_inventory.csv.gz",
+    "atomic_segment_mapping_resolution.csv.gz"
+  ]
 }

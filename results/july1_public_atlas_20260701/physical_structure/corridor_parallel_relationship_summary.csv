@@ -1,0 +1,2 @@
+﻿strict_parallel_candidate_relationships,corridor_cogroup_relationships,overlap_relationships,strict_relationship_covered_by_corridor_share,corridor_cogroup_relationship_strict_share,relationship_jaccard,strict_definition,corridor_cogroup_definition,interpretation_boundary
+517,1177,517,1.0,0.4392523364485981,0.4392523364485981,two distinct cable IDs share an exact unordered landing-station pair,two distinct cable IDs occur in the same unordered landing-region pair,"both are metadata-level candidate relationships, not route-geometry proof"

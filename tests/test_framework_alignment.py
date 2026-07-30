@@ -1,3 +1,4 @@
+import json
 import math
 import sys
 from pathlib import Path
@@ -14,6 +15,7 @@ if str(SOURCE_DIR) not in sys.path:
     sys.path.insert(0, str(SOURCE_DIR))
 
 import postprocess_candidate_output as post
+import physical_corridor_model as corridor_model
 
 
 def test_country_geography_catalog_classifies_operational_types():
@@ -721,3 +723,246 @@ def test_feasible_candidate_dedup_key_is_direction_independent():
     forward = {"cable_id": "cable-x", "exact_landing_pair_id": "a::b", "segment": "a -> b"}
     reverse = {"cable_id": "cable-x", "exact_landing_pair_id": "a::b", "segment": "b -> a"}
     assert main_analysis.build_feasible_candidate_dedup_key(forward) == main_analysis.build_feasible_candidate_dedup_key(reverse)
+
+
+def test_landing_region_clustering_enforces_maximum_diameter():
+    """A single-linkage chain must not produce a region wider than the configured bound."""
+    coordinates = {
+        "a": (0.0, 0.0),
+        "b": (0.0, 0.36),
+        "c": (0.0, 0.72),
+    }
+    model = corridor_model.build_diameter_limited_landing_regions(
+        coordinates,
+        {station_id: station_id.upper() for station_id in coordinates},
+        radius_km=50.0,
+    )
+    summary = corridor_model.build_landing_region_summary(model)
+
+    assert summary["landing_region_id"].nunique() == 2
+    assert summary["region_diameter_km"].max() <= 50.0
+    assert summary["diameter_within_configured_radius"].all()
+
+
+def test_corridor_structure_distinguishes_strict_parallel_from_region_cogroup(tmp_path):
+    """Exact-pair parallelism should be a strict subset of landing-region co-grouping."""
+    coordinates = {
+        "a1": (0.0, 0.0),
+        "a2": (0.0, 0.01),
+        "b1": (1.0, 1.0),
+        "b2": (1.0, 1.01),
+    }
+    model = corridor_model.build_diameter_limited_landing_regions(
+        coordinates,
+        {station_id: station_id.upper() for station_id in coordinates},
+        radius_km=5.0,
+    )
+    cables = [
+        ("cable-1", ["a1", "b1"]),
+        ("cable-2", ["a1", "b1"]),
+        ("cable-3", ["a2", "b2"]),
+    ]
+    for cable_id, landing_ids in cables:
+        (tmp_path / f"{cable_id}.json").write_text(
+            json.dumps(
+                {
+                    "id": cable_id,
+                    "name": cable_id,
+                    "landing_points": [{"id": item} for item in landing_ids],
+                }
+            ),
+            encoding="utf-8",
+        )
+
+    _, corridors, overlap, report = corridor_model.build_corridor_structure_tables(
+        model,
+        tmp_path,
+    )
+
+    assert len(corridors) == 1
+    assert corridors.iloc[0]["cable_count"] == 3
+    assert overlap.iloc[0]["strict_parallel_candidate_relationships"] == 1
+    assert overlap.iloc[0]["corridor_cogroup_relationships"] == 3
+    assert overlap.iloc[0]["corridor_cogroup_relationship_strict_share"] == pytest.approx(1 / 3)
+    assert report["cables_per_corridor_distribution"]["max"] == 3
+
+
+def test_mapping_resolution_states_partition_every_atomic_segment():
+    """The four resolution states must be mutually exclusive and collectively exhaustive."""
+    inventory = pd.DataFrame(
+        [
+            {
+                "atomic_segment_id": "unique",
+                "trace_id": "t1",
+                "probe_country": "US",
+                "service_id": "svc",
+                "segment_resolution_sufficient": True,
+                "rtt_evidence_state": "rtt_conclusive",
+            },
+            {
+                "atomic_segment_id": "bounded",
+                "trace_id": "t2",
+                "probe_country": "US",
+                "service_id": "svc",
+                "segment_resolution_sufficient": True,
+                "rtt_evidence_state": "rtt_inconclusive",
+            },
+            {
+                "atomic_segment_id": "none",
+                "trace_id": "t3",
+                "probe_country": "US",
+                "service_id": "svc",
+                "segment_resolution_sufficient": True,
+                "rtt_evidence_state": "rtt_conclusive",
+            },
+            {
+                "atomic_segment_id": "insufficient",
+                "trace_id": "t4",
+                "probe_country": "US",
+                "service_id": "svc",
+                "segment_resolution_sufficient": False,
+                "rtt_evidence_state": "rtt_inconclusive",
+            },
+        ]
+    )
+    feasible = pd.DataFrame(
+        [
+            {
+                "link_id": "unique",
+                "cable_id": "c1",
+                "corridor_id": "r1::r2",
+                "candidate_scope": "international_inter_region",
+                "src_country": "US",
+                "dst_country": "GB",
+            },
+            {
+                "link_id": "bounded",
+                "cable_id": "c2",
+                "corridor_id": "r1::r2",
+                "candidate_scope": "international_inter_region",
+                "src_country": "US",
+                "dst_country": "GB",
+            },
+            {
+                "link_id": "bounded",
+                "cable_id": "c3",
+                "corridor_id": "r1::r3",
+                "candidate_scope": "international_inter_region",
+                "src_country": "US",
+                "dst_country": "FR",
+            },
+        ]
+    )
+
+    ledger, summary, _, bounded = post.build_physical_mapping_resolution_tables(
+        inventory,
+        feasible,
+        pd.DataFrame(),
+    )
+    states = dict(zip(ledger["atomic_segment_id"], ledger["mapping_resolution_state"]))
+
+    assert states == {
+        "unique": "uniquely_resolved",
+        "bounded": "bounded_candidate_set",
+        "none": "no_matched_corridor",
+        "insufficient": "insufficiently_resolved",
+    }
+    assert summary["atomic_segment_count"].sum() == len(inventory)
+    assert bounded.iloc[0]["feasible_corridor_count"] == 2
+
+
+def test_normalized_entropy_is_comparable_across_label_counts():
+    """Normalized entropy is zero for one label and one for a uniform distribution."""
+    assert post.compute_normalized_entropy([1.0]) == 0.0
+    assert post.compute_normalized_entropy([0.5, 0.5]) == pytest.approx(1.0)
+    assert post.compute_normalized_entropy([0.25, 0.25, 0.25, 0.25]) == pytest.approx(1.0)
+    assert post.compute_normalized_entropy([]) != post.compute_normalized_entropy([])
+
+
+def test_pipeline_accounting_rejects_atomic_subset_overflow():
+    """An atomic-segment subset cannot exceed its declared parent population."""
+    with pytest.raises(RuntimeError, match="exceeds"):
+        post.build_pipeline_accounting_table(
+            pd.DataFrame(),
+            pd.DataFrame(),
+            pd.DataFrame(),
+            {
+                "raw_results_total": 1,
+                "valid_traces_total": 1,
+                "atomic_segments_total": 2,
+                "atomic_segments_with_network_transition": 3,
+            },
+        )
+
+
+def test_resolution_compatibility_key_handles_legacy_endtime_without_file_prefix():
+    """Old endtime-based link IDs should align without weakening the primary stable ID."""
+    current = (
+        "5009:100:1000:198.51.100.1|5009|100|1000|"
+        "Hop 2 -> 3|192.0.2.1|192.0.2.2"
+    )
+    legacy = (
+        "sample.json:5009:100:1015:198.51.100.1|5009|100|1015|"
+        "Hop 2 -> 3|192.0.2.1|192.0.2.2"
+    )
+
+    assert post.canonical_resolution_segment_id(current) != post.canonical_resolution_segment_id(legacy)
+    assert (
+        post.timestamp_agnostic_resolution_segment_id(current)
+        == post.timestamp_agnostic_resolution_segment_id(legacy)
+    )
+
+
+def test_legacy_resolution_matching_is_nearest_time_and_one_to_one():
+    """Repeated probe/hop pairs should map by nearest time without reusing inventory rows."""
+    inventory = pd.DataFrame(
+        [
+            {
+                "atomic_segment_id": "inventory-1",
+                "msm_id": 5009,
+                "probe_id": 100,
+                "timestamp": 1000,
+                "hop_range": "Hop 2 -> 3",
+                "src_ip": "192.0.2.1",
+                "dst_ip": "192.0.2.2",
+            },
+            {
+                "atomic_segment_id": "inventory-2",
+                "msm_id": 5009,
+                "probe_id": 100,
+                "timestamp": 1100,
+                "hop_range": "Hop 2 -> 3",
+                "src_ip": "192.0.2.1",
+                "dst_ip": "192.0.2.2",
+            },
+        ]
+    )
+    feasible = pd.DataFrame(
+        [
+            {
+                "atomic_segment_id": "legacy-1",
+                "link_id": "sample|5009|100|1015|Hop 2 -> 3|0",
+                "msm_id": 5009,
+                "probe_id": 100,
+                "timestamp": 1015,
+                "src_ip": "192.0.2.1",
+                "dst_ip": "192.0.2.2",
+            },
+            {
+                "atomic_segment_id": "legacy-2",
+                "link_id": "sample|5009|100|1110|Hop 2 -> 3|1",
+                "msm_id": 5009,
+                "probe_id": 100,
+                "timestamp": 1110,
+                "src_ip": "192.0.2.1",
+                "dst_ip": "192.0.2.2",
+            },
+        ]
+    )
+
+    mapping = post.build_legacy_resolution_id_map(inventory, feasible)
+
+    assert mapping == {
+        "legacy-1": "inventory-1",
+        "legacy-2": "inventory-2",
+    }

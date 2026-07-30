@@ -1,0 +1,16 @@
+{
+  "raw_results_total": 51252,
+  "valid_traces_total": 51252,
+  "observable_atomic_segments_total": 287428,
+  "mappable_atomic_segments_total": 196991,
+  "insufficiently_resolved_atomic_segments_total": 90437,
+  "counting_units": {
+    "raw_results_total": "traceroute result",
+    "valid_traces_total": "non-empty unique traceroute",
+    "observable_atomic_segments_total": "visible hop-pair",
+    "mappable_atomic_segments_total": "visible hop-pair with country labels at both ends",
+    "insufficiently_resolved_atomic_segments_total": "visible hop-pair lacking a country label at either end"
+  },
+  "input": "D:\\Workspace\\infocom26\\data\\traceroute_rundnsroot\\ripe_atlas_public_20260701_0000_0100\\popular-application_reddit_msm176906957_20260701T000000Z_010000Z.json",
+  "output": "D:\\Workspace\\infocom26\\output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\atomic_segment_inventory.csv.gz"
+}

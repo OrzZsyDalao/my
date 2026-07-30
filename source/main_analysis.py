@@ -21,6 +21,10 @@ from sklearn.neighbors import BallTree
 from tqdm import tqdm
 
 from measurement_catalog import lookup_measurement
+from physical_corridor_model import (
+    build_diameter_limited_landing_regions,
+    write_corridor_structure_outputs,
+)
 
 
 SOURCE_DIR = os.path.dirname(os.path.abspath(__file__)) if "__file__" in locals() else "."
@@ -888,53 +892,17 @@ class CableMatcher:
     AS_GRAPH_UNKNOWN_COST = 4.0
 
     def build_landing_region_map(self) -> Dict[str, str]:
-        """Cluster landing stations into deterministic connected landing regions."""
-        station_ids = sorted(self.ls_geo.keys())
-        parent = {station_id: station_id for station_id in station_ids}
-
-        def find(item: str) -> str:
-            while parent[item] != item:
-                parent[item] = parent[parent[item]]
-                item = parent[item]
-            return item
-
-        def union(left: str, right: str) -> None:
-            root_left = find(left)
-            root_right = find(right)
-            if root_left == root_right:
-                return
-            if root_left < root_right:
-                parent[root_right] = root_left
-            else:
-                parent[root_left] = root_right
-
-        for index, station_a in enumerate(station_ids):
-            for station_b in station_ids[index + 1:]:
-                if haversine_km(self.ls_geo[station_a], self.ls_geo[station_b]) <= self.landing_region_radius_km:
-                    union(station_a, station_b)
-
-        components: Dict[str, List[str]] = {}
-        for station_id in station_ids:
-            components.setdefault(find(station_id), []).append(station_id)
-
-        landing_region_map: Dict[str, str] = {}
-        for component_index, (_, members) in enumerate(sorted(components.items()), start=1):
-            region_id = f"landing_region_{component_index:04d}"
-            for station_id in members:
-                landing_region_map[station_id] = region_id
-                self.landing_region_method_map[station_id] = "geographic_connected_component"
-            representative = min(members)
-            representative_name = self.landing_station_names.get(representative, representative)
-            self.landing_region_label_map.setdefault(region_id, representative_name)
-
-        for station_id, override in self.landing_region_override.items():
-            if station_id not in self.ls_geo:
-                continue
-            region_id = override["landing_region_id"]
-            landing_region_map[station_id] = region_id
-            self.landing_region_label_map[region_id] = override.get("landing_region_name") or region_id
-            self.landing_region_method_map[station_id] = "manual_override"
-        return landing_region_map
+        """Cluster stations into deterministic regions with bounded diameter."""
+        model = build_diameter_limited_landing_regions(
+            coordinates=self.ls_geo,
+            station_names=self.landing_station_names,
+            radius_km=self.landing_region_radius_km,
+            overrides=self.landing_region_override,
+        )
+        self.landing_region_label_map.update(model.region_labels)
+        self.landing_region_method_map.update(model.assignment_methods)
+        self.landing_region_model = model
+        return dict(model.station_to_region)
 
     def __init__(
         self,
@@ -1802,7 +1770,7 @@ class CableMatcher:
                         self.landing_region_method_map.get(ls_a_id),
                         self.landing_region_method_map.get(ls_b_id),
                     }
-                    else "geographic_connected_component"
+                    else "diameter_limited_complete_link_greedy"
                 )
                 parallel_group_id = corridor_id
                 lifecycle_surviving_by_exact_pair = sum(
@@ -2173,48 +2141,10 @@ def write_physical_catalogs(matcher: CableMatcher, output_dir: str) -> None:
     Catalog rows document the projection vocabulary.  They are metadata, not a
     claim that any listed corridor carried a particular measurement.
     """
-    with open(LS_GEO_PATH, "r", encoding="utf-8") as handle:
-        features = json.load(handle).get("features", [])
-    names = {
-        str(feature.get("properties", {}).get("id")): str(feature.get("properties", {}).get("name") or feature.get("properties", {}).get("id"))
-        for feature in features
-        if feature.get("properties", {}).get("id")
-    }
-    region_rows = []
-    for station_id, region_id in sorted(matcher.landing_region_map.items()):
-        lat, lon = matcher.ls_coord_map[station_id]
-        region_rows.append({
-            "landing_station_id": station_id,
-            "landing_station_name": names.get(station_id, station_id),
-            "landing_region_id": region_id,
-            "landing_region_label": matcher.landing_region_label_map.get(region_id, region_id),
-            "latitude": lat,
-            "longitude": lon,
-            "region_assignment_method": matcher.landing_region_method_map.get(station_id, "geographic_connected_component"),
-        })
-    pd.DataFrame(region_rows).to_csv(
-        os.path.join(output_dir, "landing_region_catalog.csv"), index=False, encoding="utf-8-sig"
-    )
-    corridor_rows = []
-    for (left, right), cable_rows in sorted(matcher.segment_to_cables.items()):
-        region_left = matcher.landing_region_map.get(left, left)
-        region_right = matcher.landing_region_map.get(right, right)
-        corridor_id = "::".join(sorted((region_left, region_right)))
-        label = " <-> ".join(sorted((matcher.landing_region_label_map.get(region_left, region_left), matcher.landing_region_label_map.get(region_right, region_right))))
-        corridor_rows.append({
-            "corridor_id": corridor_id,
-            "corridor_label": label,
-            "landing_station_a_id": left,
-            "landing_station_a_name": names.get(left, left),
-            "landing_station_b_id": right,
-            "landing_station_b_name": names.get(right, right),
-            "candidate_cable_count": len(cable_rows),
-            "candidate_cable_ids": json.dumps(sorted({str(item["cable_id"]) for item in cable_rows})),
-            "topology_types": json.dumps(sorted({str(item.get("candidate_topology_type")) for item in cable_rows})),
-            "interpretation": "feasible-candidate topology catalog; not observed cable use",
-        })
-    pd.DataFrame(corridor_rows).to_csv(
-        os.path.join(output_dir, "corridor_catalog.csv"), index=False, encoding="utf-8-sig"
+    write_corridor_structure_outputs(
+        output_dir=output_dir,
+        model=matcher.landing_region_model,
+        cable_dir=CABLE_DIR,
     )
 
 
@@ -2374,7 +2304,7 @@ def parse_args() -> argparse.Namespace:
         "--landing-region-radius-km",
         type=float,
         default=50.0,
-        help="Connected-component distance threshold for landing-region corridor grouping.",
+        help="Maximum automatic landing-region diameter for corridor grouping.",
     )
     parser.add_argument(
         "--landing-region-override-file",

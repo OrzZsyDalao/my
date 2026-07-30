@@ -1,0 +1,16 @@
+{
+  "raw_results_total": 38459,
+  "valid_traces_total": 38459,
+  "observable_atomic_segments_total": 219497,
+  "mappable_atomic_segments_total": 149981,
+  "insufficiently_resolved_atomic_segments_total": 69516,
+  "counting_units": {
+    "raw_results_total": "traceroute result",
+    "valid_traces_total": "non-empty unique traceroute",
+    "observable_atomic_segments_total": "visible hop-pair",
+    "mappable_atomic_segments_total": "visible hop-pair with country labels at both ends",
+    "insufficiently_resolved_atomic_segments_total": "visible hop-pair lacking a country label at either end"
+  },
+  "input": "D:\\Workspace\\infocom26\\data\\traceroute_rundnsroot\\ripe_atlas_public_20260701_0000_0100\\edge-localization-extension_netflix-assets_msm176517335_20260701T000000Z_010000Z.json",
+  "output": "D:\\Workspace\\infocom26\\output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\atomic_segment_inventory.csv.gz"
+}

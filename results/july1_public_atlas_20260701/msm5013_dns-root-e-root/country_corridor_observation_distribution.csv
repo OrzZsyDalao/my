@@ -1,299 +1,355 @@
-﻿country,corridor_id,corridor_label,observation_mass,raw_segment_count_with_corridor_feasible,unique_atomic_segments,unique_traceroutes,unique_probes,unique_probe_asns,share_of_country_observation_mass,rank_within_country,is_top1_corridor,is_top2_corridor,is_top3_corridor,domestic_segment_mass,international_segment_mass
-AE,landing_region_0337::landing_region_0377,landing_region_0337 -> landing_region_0377,6.0,6,6,3,2,1,1.0,1,True,False,False,6.0,0.0
-AT,landing_region_0376::landing_region_0376,landing_region_0376 -> landing_region_0376,16.0,16,16,12,6,4,1.0,1,True,False,False,6.0,10.0
-AU,landing_region_0041::landing_region_0625,landing_region_0041 -> landing_region_0625,6.0,6,6,6,3,2,0.24,1,True,False,False,6.0,0.0
-AU,landing_region_0009::landing_region_0041,landing_region_0009 -> landing_region_0041,4.0,4,4,4,2,2,0.16,2,False,True,False,4.0,0.0
-AU,landing_region_0041::landing_region_0266,landing_region_0041 -> landing_region_0266,4.0,4,4,4,2,1,0.16,3,False,False,True,0.0,4.0
-AU,landing_region_0009::landing_region_0945,landing_region_0009 -> landing_region_0945,3.0,3,3,3,2,2,0.12,4,False,False,False,3.0,0.0
-AU,landing_region_0041::landing_region_0041,landing_region_0041 -> landing_region_0041,2.0,2,2,2,1,1,0.08,5,False,False,False,2.0,0.0
-AU,landing_region_0041::landing_region_0635,landing_region_0041 -> landing_region_0635,2.0,4,4,3,2,2,0.08,6,False,False,False,2.0,0.0
-AU,landing_region_0041::landing_region_0735,landing_region_0041 -> landing_region_0735,2.0,2,2,2,1,1,0.08,7,False,False,False,2.0,0.0
-AU,landing_region_0041::landing_region_0945,landing_region_0041 -> landing_region_0945,2.0,4,4,3,2,2,0.08,8,False,False,False,2.0,0.0
-AX,landing_region_0415::landing_region_0693,landing_region_0415 -> landing_region_0693,3.0,6,6,2,1,1,0.5,1,True,False,False,2.0,1.0
-AX,landing_region_0415::landing_region_0415,landing_region_0415 -> landing_region_0415,2.0,4,4,2,1,1,0.3333333333333333,2,False,True,False,2.0,0.0
-AX,landing_region_0415::landing_region_0512,landing_region_0415 -> landing_region_0512,1.0,2,2,2,1,1,0.16666666666666666,3,False,False,True,0.0,1.0
-BH,landing_region_0035::landing_region_0035,landing_region_0035 -> landing_region_0035,2.0,2,2,2,1,1,1.0,1,True,False,False,2.0,0.0
-BJ,landing_region_0297::landing_region_0556,landing_region_0297 -> landing_region_0556,2.0,2,2,2,1,1,1.0,1,True,False,False,0.0,2.0
-BR,landing_region_0770::landing_region_0809,landing_region_0770 -> landing_region_0809,9.0,9,9,7,4,4,0.5625,1,True,False,False,9.0,0.0
-BR,landing_region_0174::landing_region_0770,landing_region_0174 -> landing_region_0770,2.0,2,2,2,1,1,0.125,2,False,True,False,0.0,2.0
-BR,landing_region_0370::landing_region_0828,landing_region_0370 -> landing_region_0828,2.0,2,2,2,1,1,0.125,3,False,False,True,2.0,0.0
-BR,landing_region_0763::landing_region_0770,landing_region_0763 -> landing_region_0770,2.0,2,2,2,2,2,0.125,4,False,False,False,2.0,0.0
-BR,landing_region_0763::landing_region_0809,landing_region_0763 -> landing_region_0809,1.0,1,1,1,1,1,0.0625,5,False,False,False,1.0,0.0
-CA,landing_region_0008::landing_region_0008,landing_region_0008 -> landing_region_0008,10.866666666666667,39,39,31,16,6,0.18735632183908046,1,True,False,False,10.866666666666667,0.0
-CA,landing_region_0008::landing_region_0293,landing_region_0008 -> landing_region_0293,10.866666666666667,39,39,31,16,6,0.18735632183908046,2,False,True,False,10.866666666666667,0.0
-CA,landing_region_0293::landing_region_0293,landing_region_0293 -> landing_region_0293,10.866666666666667,39,39,31,16,6,0.18735632183908046,3,False,False,True,10.866666666666667,0.0
-CA,landing_region_0008::landing_region_0223,landing_region_0008 -> landing_region_0223,7.866666666666667,28,28,12,6,5,0.135632183908046,4,False,False,False,3.2,4.666666666666666
-CA,landing_region_0223::landing_region_0293,landing_region_0223 -> landing_region_0293,7.866666666666667,28,28,12,6,5,0.135632183908046,5,False,False,False,3.2,4.666666666666666
-CA,landing_region_0200::landing_region_0944,landing_region_0200 -> landing_region_0944,6.0,6,6,6,3,3,0.10344827586206896,6,False,False,False,2.0,4.0
-CA,landing_region_0223::landing_region_0223,landing_region_0223 -> landing_region_0223,2.6666666666666665,8,8,8,4,3,0.04597701149425287,7,False,False,False,0.0,2.6666666666666665
-CA,landing_region_0095::landing_region_0893,landing_region_0095 -> landing_region_0893,1.0,1,1,1,1,1,0.017241379310344827,8,False,False,False,1.0,0.0
-CH,landing_region_0376::landing_region_0376,landing_region_0376 -> landing_region_0376,275.0,275,275,175,90,26,1.0,1,True,False,False,273.0,2.0
-CL,landing_region_0242::landing_region_0975,landing_region_0242 -> landing_region_0975,10.0,10,10,8,4,4,0.625,1,True,False,False,10.0,0.0
-CL,landing_region_0770::landing_region_0975,landing_region_0770 -> landing_region_0975,4.0,4,4,4,2,2,0.25,2,False,True,False,0.0,4.0
-CL,landing_region_0242::landing_region_0836,landing_region_0242 -> landing_region_0836,2.0,2,2,2,1,1,0.125,3,False,False,True,2.0,0.0
-CM,landing_region_0333::landing_region_0556,landing_region_0333 -> landing_region_0556,1.0,2,2,2,1,1,0.5,1,True,False,False,0.0,1.0
-CM,landing_region_0556::landing_region_0577,landing_region_0556 -> landing_region_0577,1.0,2,2,2,1,1,0.5,2,False,True,False,0.0,1.0
-CN,landing_region_0230::landing_region_0230,landing_region_0230 -> landing_region_0230,31.0,31,31,21,12,6,0.7209302325581395,1,True,False,False,25.0,6.0
-CN,landing_region_0230::landing_region_0270,landing_region_0230 -> landing_region_0270,5.5,11,11,11,8,4,0.12790697674418605,2,False,True,False,0.0,5.5
-CN,landing_region_0230::landing_region_0579,landing_region_0230 -> landing_region_0579,5.5,11,11,11,8,4,0.12790697674418605,3,False,False,True,0.0,5.5
-CN,landing_region_0141::landing_region_0306,landing_region_0141 -> landing_region_0306,1.0,1,1,1,1,1,0.023255813953488372,4,False,False,False,1.0,0.0
-CV,landing_region_0239::landing_region_0769,landing_region_0239 -> landing_region_0769,1.0,2,2,2,1,1,0.5,1,True,False,False,0.0,1.0
-CV,landing_region_0769::landing_region_0872,landing_region_0769 -> landing_region_0872,1.0,2,2,2,1,1,0.5,2,False,True,False,0.0,1.0
-CW,landing_region_0174::landing_region_0603,landing_region_0174 -> landing_region_0603,2.0,2,2,2,2,2,1.0,1,True,False,False,0.0,2.0
-CY,landing_region_0431::landing_region_0734,landing_region_0431 -> landing_region_0734,4.0,8,8,8,5,3,0.3333333333333333,1,True,False,False,0.0,4.0
-CY,landing_region_0431::landing_region_1009,landing_region_0431 -> landing_region_1009,4.0,8,8,8,5,3,0.3333333333333333,2,False,True,False,0.0,4.0
-CY,landing_region_0734::landing_region_1009,landing_region_0734 -> landing_region_1009,4.0,4,4,4,2,1,0.3333333333333333,3,False,False,True,4.0,0.0
-DE,landing_region_0376::landing_region_0376,landing_region_0376 -> landing_region_0376,20.0,20,20,20,12,6,0.8333333333333334,1,True,False,False,2.0,18.0
-DE,landing_region_0388::landing_region_0388,landing_region_0388 -> landing_region_0388,4.0,4,4,2,1,1,0.16666666666666666,2,False,True,False,4.0,0.0
-DJ,landing_region_0330::landing_region_0431,landing_region_0330 -> landing_region_0431,5.0,5,5,5,3,2,1.0,1,True,False,False,0.0,5.0
-DK,landing_region_0524::landing_region_0524,landing_region_0524 -> landing_region_0524,106.66666666666667,126,126,70,35,11,0.6095238095238096,1,True,False,False,106.66666666666667,0.0
-DK,landing_region_0051::landing_region_0051,landing_region_0051 -> landing_region_0051,26.166666666666668,39,39,36,19,14,0.14952380952380953,2,False,True,False,23.666666666666668,2.5
-DK,landing_region_0051::landing_region_0512,landing_region_0051 -> landing_region_0512,16.0,16,16,16,8,3,0.09142857142857143,3,False,False,True,0.0,16.0
-DK,landing_region_0181::landing_region_0388,landing_region_0181 -> landing_region_0388,13.0,30,30,30,16,4,0.07428571428571429,4,False,False,False,13.0,0.0
-DK,landing_region_0176::landing_region_0176,landing_region_0176 -> landing_region_0176,10.0,10,10,10,5,2,0.05714285714285714,5,False,False,False,10.0,0.0
-DK,landing_region_0051::landing_region_0181,landing_region_0051 -> landing_region_0181,2.5,5,5,5,3,3,0.014285714285714285,6,False,False,False,0.0,2.5
-DK,landing_region_0388::landing_region_0388,landing_region_0388 -> landing_region_0388,0.6666666666666666,2,2,2,1,1,0.0038095238095238095,7,False,False,False,0.6666666666666666,0.0
-DO,landing_region_0174::landing_region_0213,landing_region_0174 -> landing_region_0213,4.0,4,4,4,2,2,1.0,1,True,False,False,0.0,4.0
-EE,landing_region_0351::landing_region_0640,landing_region_0351 -> landing_region_0640,5.0,5,5,5,3,2,0.38461538461538464,1,True,False,False,5.0,0.0
-EE,landing_region_0351::landing_region_0512,landing_region_0351 -> landing_region_0512,4.0,8,8,8,4,3,0.3076923076923077,2,False,True,False,0.0,4.0
-EE,landing_region_0512::landing_region_0640,landing_region_0512 -> landing_region_0640,4.0,8,8,8,4,3,0.3076923076923077,3,False,False,True,0.0,4.0
-ES,landing_region_0239::landing_region_0268,landing_region_0239 -> landing_region_0268,10.0,10,10,10,5,2,0.625,1,True,False,False,0.0,10.0
-ES,landing_region_0162::landing_region_0186,landing_region_0162 -> landing_region_0186,4.0,4,4,4,3,2,0.25,2,False,True,False,0.0,4.0
-ES,landing_region_0126::landing_region_0431,landing_region_0126 -> landing_region_0431,2.0,2,2,2,1,1,0.125,3,False,False,True,0.0,2.0
-FI,landing_region_0351::landing_region_0640,landing_region_0351 -> landing_region_0640,107.5,207,207,103,52,16,0.5,1,True,False,False,107.5,0.0
-FI,landing_region_0351::landing_region_0528,landing_region_0351 -> landing_region_0528,74.5,145,145,77,39,7,0.34651162790697676,2,False,True,False,74.5,0.0
-FI,landing_region_0351::landing_region_0420,landing_region_0351 -> landing_region_0420,13.0,42,42,18,9,7,0.06046511627906977,3,False,False,True,13.0,0.0
-FI,landing_region_0351::landing_region_0417,landing_region_0351 -> landing_region_0417,12.333333333333332,40,40,18,9,7,0.05736434108527131,4,False,False,False,12.333333333333332,0.0
-FI,landing_region_0417::landing_region_0420,landing_region_0417 -> landing_region_0420,3.6666666666666665,14,14,8,4,2,0.017054263565891473,5,False,False,False,3.6666666666666665,0.0
-FI,landing_region_0351::landing_region_0512,landing_region_0351 -> landing_region_0512,2.0,4,4,4,3,2,0.009302325581395349,6,False,False,False,0.0,2.0
-FI,landing_region_0512::landing_region_0640,landing_region_0512 -> landing_region_0640,2.0,4,4,4,3,2,0.009302325581395349,7,False,False,False,0.0,2.0
-FJ,landing_region_0041::landing_region_0903,landing_region_0041 -> landing_region_0903,4.0,4,4,4,2,2,1.0,1,True,False,False,0.0,4.0
-FR,landing_region_0431::landing_region_0431,landing_region_0431 -> landing_region_0431,9.0,9,9,9,5,4,0.75,1,True,False,False,9.0,0.0
-FR,landing_region_0187::landing_region_0195,landing_region_0187 -> landing_region_0195,3.0,3,3,3,2,2,0.25,2,False,True,False,3.0,0.0
-GB,landing_region_0406::landing_region_0406,landing_region_0406 -> landing_region_0406,3.0,3,3,3,2,2,0.6,1,True,False,False,3.0,0.0
-GB,landing_region_0039::landing_region_0159,landing_region_0039 -> landing_region_0159,2.0,2,2,2,1,1,0.4,2,False,True,False,0.0,2.0
-GH,landing_region_0006::landing_region_0556,landing_region_0006 -> landing_region_0556,6.0,6,6,6,3,3,1.0,1,True,False,False,0.0,6.0
-GP,landing_region_0105::landing_region_0106,landing_region_0105 -> landing_region_0106,1.0,2,2,2,1,1,0.25,1,True,False,False,0.0,1.0
-GP,landing_region_0105::landing_region_0202,landing_region_0105 -> landing_region_0202,1.0,2,2,2,1,1,0.25,2,False,True,False,0.0,1.0
-GP,landing_region_0106::landing_region_0106,landing_region_0106 -> landing_region_0106,1.0,2,2,2,1,1,0.25,3,False,False,True,1.0,0.0
-GP,landing_region_0106::landing_region_0202,landing_region_0106 -> landing_region_0202,1.0,2,2,2,1,1,0.25,4,False,False,False,1.0,0.0
-GQ,landing_region_0556::landing_region_0577,landing_region_0556 -> landing_region_0577,2.0,2,2,2,1,1,1.0,1,True,False,False,0.0,2.0
-GT,landing_region_0174::landing_region_0785,landing_region_0174 -> landing_region_0785,2.0,2,2,2,1,1,1.0,1,True,False,False,0.0,2.0
-GU,landing_region_0014::landing_region_0266,landing_region_0014 -> landing_region_0266,20.0,20,20,20,10,5,0.47619047619047616,1,True,False,False,0.0,20.0
-GU,landing_region_0014::landing_region_0014,landing_region_0014 -> landing_region_0014,11.0,22,22,12,6,3,0.2619047619047619,2,False,True,False,11.0,0.0
-GU,landing_region_0014::landing_region_0813,landing_region_0014 -> landing_region_0813,11.0,22,22,12,6,3,0.2619047619047619,3,False,False,True,11.0,0.0
-HK,landing_region_0230::landing_region_0230,landing_region_0230 -> landing_region_0230,7.0,7,7,7,4,4,0.5833333333333334,1,True,False,False,7.0,0.0
-HK,landing_region_0132::landing_region_0230,landing_region_0132 -> landing_region_0230,2.0,2,2,2,1,1,0.16666666666666666,2,False,True,False,0.0,2.0
-HK,landing_region_0230::landing_region_0266,landing_region_0230 -> landing_region_0266,2.0,2,2,2,1,1,0.16666666666666666,3,False,False,True,0.0,2.0
-HK,landing_region_0230::landing_region_0719,landing_region_0230 -> landing_region_0719,1.0,1,1,1,1,1,0.08333333333333333,4,False,False,False,0.0,1.0
-HN,landing_region_0174::landing_region_0775,landing_region_0174 -> landing_region_0775,5.5,11,11,11,8,6,0.5,1,True,False,False,0.0,5.5
-HN,landing_region_0174::landing_region_0779,landing_region_0174 -> landing_region_0779,5.5,11,11,11,8,6,0.5,2,False,True,False,0.0,5.5
-ID,landing_region_0061::landing_region_0061,landing_region_0061 -> landing_region_0061,51.0,51,51,37,18,14,0.6144578313253012,1,True,False,False,51.0,0.0
-ID,landing_region_0061::landing_region_0499,landing_region_0061 -> landing_region_0499,10.0,10,10,10,5,5,0.12048192771084337,2,False,True,False,10.0,0.0
-ID,landing_region_0061::landing_region_0124,landing_region_0061 -> landing_region_0124,4.0,8,8,8,4,3,0.04819277108433735,3,False,False,True,4.0,0.0
-ID,landing_region_0061::landing_region_0132,landing_region_0061 -> landing_region_0132,4.0,4,4,4,2,1,0.04819277108433735,4,False,False,False,0.0,4.0
-ID,landing_region_0061::landing_region_0600,landing_region_0061 -> landing_region_0600,4.0,8,8,8,4,3,0.04819277108433735,5,False,False,False,4.0,0.0
-ID,landing_region_0132::landing_region_0633,landing_region_0132 -> landing_region_0633,4.0,4,4,4,2,1,0.04819277108433735,6,False,False,False,0.0,4.0
-ID,landing_region_0110::landing_region_0110,landing_region_0110 -> landing_region_0110,3.0,4,4,4,2,2,0.03614457831325301,7,False,False,False,3.0,0.0
-ID,landing_region_0061::landing_region_0274,landing_region_0061 -> landing_region_0274,2.0,2,2,2,1,1,0.024096385542168676,8,False,False,False,2.0,0.0
-ID,landing_region_0140::landing_region_0140,landing_region_0140 -> landing_region_0140,1.0,2,2,2,1,1,0.012048192771084338,9,False,False,False,1.0,0.0
-IL,landing_region_0083::landing_region_0083,landing_region_0083 -> landing_region_0083,65.0,65,65,34,17,9,1.0,1,True,False,False,65.0,0.0
-IM,landing_region_0169::landing_region_0334,landing_region_0169 -> landing_region_0334,4.0,4,4,4,2,2,1.0,1,True,False,False,0.0,4.0
-IN,landing_region_0260::landing_region_0663,landing_region_0260 -> landing_region_0663,5.0,5,5,5,4,3,1.0,1,True,False,False,5.0,0.0
-IT,landing_region_0217::landing_region_0276,landing_region_0217 -> landing_region_0276,2.0,2,2,2,1,1,0.3333333333333333,1,True,False,False,2.0,0.0
-IT,landing_region_0389::landing_region_0431,landing_region_0389 -> landing_region_0431,2.0,2,2,2,1,1,0.3333333333333333,2,False,True,False,0.0,2.0
-IT,landing_region_0276::landing_region_0572,landing_region_0276 -> landing_region_0572,0.6666666666666666,2,2,2,1,1,0.1111111111111111,3,False,False,True,0.6666666666666666,0.0
-IT,landing_region_0364::landing_region_0460,landing_region_0364 -> landing_region_0460,0.6666666666666666,2,2,2,1,1,0.1111111111111111,4,False,False,False,0.6666666666666666,0.0
-IT,landing_region_0364::landing_region_0572,landing_region_0364 -> landing_region_0572,0.6666666666666666,2,2,2,1,1,0.1111111111111111,5,False,False,False,0.6666666666666666,0.0
-JM,landing_region_0174::landing_region_0201,landing_region_0174 -> landing_region_0201,2.0,2,2,2,1,1,1.0,1,True,False,False,0.0,2.0
-JP,landing_region_0024::landing_region_0266,landing_region_0024 -> landing_region_0266,114.5,199,199,135,71,31,0.5228310502283106,1,True,False,False,114.5,0.0
-JP,landing_region_0266::landing_region_0266,landing_region_0266 -> landing_region_0266,84.5,169,169,120,64,30,0.3858447488584475,2,False,True,False,84.5,0.0
-JP,landing_region_0266::landing_region_0950,landing_region_0266 -> landing_region_0950,5.0,11,11,11,6,4,0.0228310502283105,3,False,False,True,5.0,0.0
-JP,landing_region_0024::landing_region_0867,landing_region_0024 -> landing_region_0867,3.0,9,9,9,5,3,0.0136986301369863,4,False,False,False,3.0,0.0
-JP,landing_region_0266::landing_region_0867,landing_region_0266 -> landing_region_0867,3.0,9,9,9,5,3,0.0136986301369863,5,False,False,False,3.0,0.0
-JP,landing_region_0132::landing_region_0266,landing_region_0132 -> landing_region_0266,2.0,2,2,2,1,1,0.0091324200913242,6,False,False,False,0.0,2.0
-JP,landing_region_0266::landing_region_0892,landing_region_0266 -> landing_region_0892,2.0,2,2,2,1,1,0.0091324200913242,7,False,False,False,0.0,2.0
-JP,landing_region_0024::landing_region_0456,landing_region_0024 -> landing_region_0456,1.5,3,3,3,2,2,0.00684931506849315,8,False,False,False,1.5,0.0
-JP,landing_region_0266::landing_region_0456,landing_region_0266 -> landing_region_0456,1.5,3,3,3,2,2,0.00684931506849315,9,False,False,False,1.5,0.0
-JP,landing_region_0019::landing_region_0024,landing_region_0019 -> landing_region_0024,0.5,1,1,1,1,1,0.00228310502283105,10,False,False,False,0.5,0.0
-JP,landing_region_0019::landing_region_0266,landing_region_0019 -> landing_region_0266,0.5,1,1,1,1,1,0.00228310502283105,11,False,False,False,0.5,0.0
-JP,landing_region_0133::landing_region_0266,landing_region_0133 -> landing_region_0266,0.5,1,1,1,1,1,0.00228310502283105,12,False,False,False,0.0,0.5
-JP,landing_region_0250::landing_region_0266,landing_region_0250 -> landing_region_0266,0.5,1,1,1,1,1,0.00228310502283105,13,False,False,False,0.0,0.5
-KE,landing_region_0312::landing_region_0650,landing_region_0312 -> landing_region_0650,6.0,6,6,6,3,2,1.0,1,True,False,False,0.0,6.0
-KY,landing_region_0174::landing_region_0412,landing_region_0174 -> landing_region_0412,2.0,2,2,2,1,1,1.0,1,True,False,False,0.0,2.0
-LC,landing_region_0156::landing_region_0156,landing_region_0156 -> landing_region_0156,1.0,4,4,4,2,2,0.14285714285714285,1,True,False,False,1.0,0.0
-LC,landing_region_0156::landing_region_0246,landing_region_0156 -> landing_region_0246,1.0,4,4,4,2,2,0.14285714285714285,2,False,True,False,1.0,0.0
-LC,landing_region_0156::landing_region_0564,landing_region_0156 -> landing_region_0564,1.0,4,4,4,2,2,0.14285714285714285,3,False,False,True,1.0,0.0
-LC,landing_region_0246::landing_region_0564,landing_region_0246 -> landing_region_0564,1.0,4,4,4,2,2,0.14285714285714285,4,False,False,False,1.0,0.0
-LC,landing_region_0105::landing_region_0246,landing_region_0105 -> landing_region_0246,0.75,3,3,3,2,2,0.10714285714285714,5,False,False,False,0.0,0.75
-LC,landing_region_0105::landing_region_0564,landing_region_0105 -> landing_region_0564,0.75,3,3,3,2,2,0.10714285714285714,6,False,False,False,0.0,0.75
-LC,landing_region_0202::landing_region_0246,landing_region_0202 -> landing_region_0246,0.75,3,3,3,2,2,0.10714285714285714,7,False,False,False,0.0,0.75
-LC,landing_region_0202::landing_region_0564,landing_region_0202 -> landing_region_0564,0.75,3,3,3,2,2,0.10714285714285714,8,False,False,False,0.0,0.75
-LI,landing_region_0376::landing_region_0376,landing_region_0376 -> landing_region_0376,10.0,10,10,8,4,4,1.0,1,True,False,False,6.0,4.0
-LK,landing_region_0132::landing_region_0288,landing_region_0132 -> landing_region_0288,4.0,4,4,4,3,3,1.0,1,True,False,False,0.0,4.0
-ME,landing_region_0338::landing_region_0341,landing_region_0338 -> landing_region_0341,2.0,2,2,2,1,1,1.0,1,True,False,False,2.0,0.0
-MM,landing_region_0132::landing_region_0926,landing_region_0132 -> landing_region_0926,2.0,2,2,2,2,2,1.0,1,True,False,False,0.0,2.0
-MP,landing_region_0014::landing_region_0824,landing_region_0014 -> landing_region_0824,1.0,2,2,2,1,1,0.5,1,True,False,False,0.0,1.0
-MP,landing_region_0813::landing_region_0824,landing_region_0813 -> landing_region_0824,1.0,2,2,2,1,1,0.5,2,False,True,False,0.0,1.0
-MT,landing_region_0102::landing_region_0102,landing_region_0102 -> landing_region_0102,13.0,26,26,19,9,3,0.40625,1,True,False,False,13.0,0.0
-MT,landing_region_0102::landing_region_0623,landing_region_0102 -> landing_region_0623,13.0,26,26,19,9,3,0.40625,2,False,True,False,13.0,0.0
-MT,landing_region_0102::landing_region_0431,landing_region_0102 -> landing_region_0431,4.0,4,4,4,2,2,0.125,3,False,False,True,0.0,4.0
-MT,landing_region_0102::landing_region_0572,landing_region_0102 -> landing_region_0572,2.0,2,2,2,1,1,0.0625,4,False,False,False,0.0,2.0
-MV,landing_region_0439::landing_region_0663,landing_region_0439 -> landing_region_0663,15.0,15,15,15,8,1,0.8823529411764706,1,True,False,False,0.0,15.0
-MV,landing_region_0288::landing_region_0439,landing_region_0288 -> landing_region_0439,2.0,2,2,2,1,1,0.11764705882352941,2,False,True,False,0.0,2.0
-MX,landing_region_0174::landing_region_0226,landing_region_0174 -> landing_region_0226,2.0,2,2,2,1,1,1.0,1,True,False,False,0.0,2.0
-NL,landing_region_0149::landing_region_0159,landing_region_0149 -> landing_region_0159,3.0,3,3,3,2,2,1.0,1,True,False,False,0.0,3.0
-NO,landing_region_0335::landing_region_0335,landing_region_0335 -> landing_region_0335,16.333333333333332,42,42,36,18,10,0.1967871485943775,1,True,False,False,16.333333333333332,0.0
-NO,landing_region_0335::landing_region_0562,landing_region_0335 -> landing_region_0562,15.0,42,42,36,18,10,0.18072289156626506,2,False,True,False,15.0,0.0
-NO,landing_region_0235::landing_region_0335,landing_region_0235 -> landing_region_0335,11.333333333333332,34,34,28,14,8,0.1365461847389558,3,False,False,True,11.333333333333332,0.0
-NO,landing_region_0335::landing_region_0345,landing_region_0335 -> landing_region_0345,5.333333333333333,12,12,12,6,3,0.0642570281124498,4,False,False,False,5.333333333333333,0.0
-NO,landing_region_0335::landing_region_0536,landing_region_0335 -> landing_region_0536,5.333333333333333,12,12,12,6,3,0.0642570281124498,5,False,False,False,5.333333333333333,0.0
-NO,landing_region_0190::landing_region_0675,landing_region_0190 -> landing_region_0675,4.0,4,4,4,2,1,0.04819277108433735,6,False,False,False,4.0,0.0
-NO,landing_region_0175::landing_region_0190,landing_region_0175 -> landing_region_0190,3.0,3,3,3,1,1,0.03614457831325301,7,False,False,False,3.0,0.0
-NO,landing_region_0063::landing_region_0063,landing_region_0063 -> landing_region_0063,2.0,6,6,2,1,1,0.024096385542168676,8,False,False,False,2.0,0.0
-NO,landing_region_0063::landing_region_0190,landing_region_0063 -> landing_region_0190,2.0,4,4,4,2,2,0.024096385542168676,9,False,False,False,2.0,0.0
-NO,landing_region_0063::landing_region_0365,landing_region_0063 -> landing_region_0365,2.0,6,6,2,1,1,0.024096385542168676,10,False,False,False,2.0,0.0
-NO,landing_region_0079::landing_region_0335,landing_region_0079 -> landing_region_0335,2.0,6,6,4,2,2,0.024096385542168676,11,False,False,False,2.0,0.0
-NO,landing_region_0335::landing_region_0535,landing_region_0335 -> landing_region_0535,2.0,6,6,4,2,2,0.024096385542168676,12,False,False,False,2.0,0.0
-NO,landing_region_0365::landing_region_0365,landing_region_0365 -> landing_region_0365,2.0,6,6,2,1,1,0.024096385542168676,13,False,False,False,2.0,0.0
-NO,landing_region_0335::landing_region_0583,landing_region_0335 -> landing_region_0583,1.3333333333333333,4,4,4,2,2,0.01606425702811245,14,False,False,False,1.3333333333333333,0.0
-NO,landing_region_0190::landing_region_0190,landing_region_0190 -> landing_region_0190,1.0,2,2,2,1,1,0.012048192771084338,15,False,False,False,1.0,0.0
-NO,landing_region_0190::landing_region_0365,landing_region_0190 -> landing_region_0365,1.0,2,2,2,1,1,0.012048192771084338,16,False,False,False,1.0,0.0
-NO,landing_region_0158::landing_region_0158,landing_region_0158 -> landing_region_0158,0.6666666666666666,2,2,2,1,1,0.008032128514056224,17,False,False,False,0.6666666666666666,0.0
-NO,landing_region_0158::landing_region_0442,landing_region_0158 -> landing_region_0442,0.6666666666666666,2,2,2,1,1,0.008032128514056224,18,False,False,False,0.6666666666666666,0.0
-NO,landing_region_0158::landing_region_0536,landing_region_0158 -> landing_region_0536,0.6666666666666666,2,2,2,1,1,0.008032128514056224,19,False,False,False,0.6666666666666666,0.0
-NO,landing_region_0079::landing_region_0345,landing_region_0079 -> landing_region_0345,0.3333333333333333,2,2,2,1,1,0.004016064257028112,20,False,False,False,0.3333333333333333,0.0
-NO,landing_region_0079::landing_region_0535,landing_region_0079 -> landing_region_0535,0.3333333333333333,2,2,2,1,1,0.004016064257028112,21,False,False,False,0.3333333333333333,0.0
-NO,landing_region_0079::landing_region_0536,landing_region_0079 -> landing_region_0536,0.3333333333333333,2,2,2,1,1,0.004016064257028112,22,False,False,False,0.3333333333333333,0.0
-NO,landing_region_0079::landing_region_0562,landing_region_0079 -> landing_region_0562,0.3333333333333333,2,2,2,1,1,0.004016064257028112,23,False,False,False,0.3333333333333333,0.0
-NO,landing_region_0079::landing_region_0583,landing_region_0079 -> landing_region_0583,0.3333333333333333,2,2,2,1,1,0.004016064257028112,24,False,False,False,0.3333333333333333,0.0
-NO,landing_region_0235::landing_region_0345,landing_region_0235 -> landing_region_0345,0.3333333333333333,2,2,2,1,1,0.004016064257028112,25,False,False,False,0.3333333333333333,0.0
-NO,landing_region_0235::landing_region_0536,landing_region_0235 -> landing_region_0536,0.3333333333333333,2,2,2,1,1,0.004016064257028112,26,False,False,False,0.3333333333333333,0.0
-NO,landing_region_0345::landing_region_0535,landing_region_0345 -> landing_region_0535,0.3333333333333333,2,2,2,1,1,0.004016064257028112,27,False,False,False,0.3333333333333333,0.0
-NO,landing_region_0345::landing_region_0562,landing_region_0345 -> landing_region_0562,0.3333333333333333,2,2,2,1,1,0.004016064257028112,28,False,False,False,0.3333333333333333,0.0
-NO,landing_region_0345::landing_region_0583,landing_region_0345 -> landing_region_0583,0.3333333333333333,2,2,2,1,1,0.004016064257028112,29,False,False,False,0.3333333333333333,0.0
-NO,landing_region_0535::landing_region_0536,landing_region_0535 -> landing_region_0536,0.3333333333333333,2,2,2,1,1,0.004016064257028112,30,False,False,False,0.3333333333333333,0.0
-NO,landing_region_0535::landing_region_0562,landing_region_0535 -> landing_region_0562,0.3333333333333333,2,2,2,1,1,0.004016064257028112,31,False,False,False,0.3333333333333333,0.0
-NO,landing_region_0535::landing_region_0583,landing_region_0535 -> landing_region_0583,0.3333333333333333,2,2,2,1,1,0.004016064257028112,32,False,False,False,0.3333333333333333,0.0
-NO,landing_region_0536::landing_region_0562,landing_region_0536 -> landing_region_0562,0.3333333333333333,2,2,2,1,1,0.004016064257028112,33,False,False,False,0.3333333333333333,0.0
-NO,landing_region_0536::landing_region_0583,landing_region_0536 -> landing_region_0583,0.3333333333333333,2,2,2,1,1,0.004016064257028112,34,False,False,False,0.3333333333333333,0.0
-NO,landing_region_0562::landing_region_0583,landing_region_0562 -> landing_region_0583,0.3333333333333333,2,2,2,1,1,0.004016064257028112,35,False,False,False,0.3333333333333333,0.0
-NU,landing_region_0048::landing_region_0073,landing_region_0048 -> landing_region_0073,2.0,2,2,2,1,1,1.0,1,True,False,False,0.0,2.0
-NZ,landing_region_0089::landing_region_0362,landing_region_0089 -> landing_region_0362,8.0,8,8,8,4,4,0.38095238095238093,1,True,False,False,8.0,0.0
-NZ,landing_region_0089::landing_region_0089,landing_region_0089 -> landing_region_0089,4.0,4,4,4,4,1,0.19047619047619047,2,False,True,False,4.0,0.0
-NZ,landing_region_0089::landing_region_0271,landing_region_0089 -> landing_region_0271,3.0,3,3,3,2,2,0.14285714285714285,3,False,False,True,3.0,0.0
-NZ,landing_region_0041::landing_region_0089,landing_region_0041 -> landing_region_0089,2.0,4,4,4,2,2,0.09523809523809523,4,False,False,False,0.0,2.0
-NZ,landing_region_0041::landing_region_0615,landing_region_0041 -> landing_region_0615,2.0,4,4,4,2,2,0.09523809523809523,5,False,False,False,0.0,2.0
-NZ,landing_region_0089::landing_region_0799,landing_region_0089 -> landing_region_0799,2.0,2,2,2,2,2,0.09523809523809523,6,False,False,False,2.0,0.0
-PA,landing_region_0107::landing_region_0287,landing_region_0107 -> landing_region_0287,2.0,2,2,2,1,1,1.0,1,True,False,False,2.0,0.0
-PE,landing_region_0591::landing_region_0770,landing_region_0591 -> landing_region_0770,2.0,2,2,2,2,2,1.0,1,True,False,False,0.0,2.0
-PG,landing_region_0041::landing_region_0758,landing_region_0041 -> landing_region_0758,2.0,2,2,2,1,1,1.0,1,True,False,False,0.0,2.0
-PH,landing_region_0133::landing_region_0250,landing_region_0133 -> landing_region_0250,67.1,80,80,58,32,17,0.5122137404580153,1,True,False,False,67.1,0.0
-PH,landing_region_0230::landing_region_0250,landing_region_0230 -> landing_region_0250,19.0,34,34,34,18,8,0.1450381679389313,2,False,True,False,0.0,19.0
-PH,landing_region_0133::landing_region_0230,landing_region_0133 -> landing_region_0230,15.0,30,30,30,17,8,0.11450381679389313,3,False,False,True,0.0,15.0
-PH,landing_region_0133::landing_region_0133,landing_region_0133 -> landing_region_0133,7.3,17,17,15,8,6,0.055725190839694655,4,False,False,False,7.3,0.0
-PH,landing_region_0132::landing_region_0133,landing_region_0132 -> landing_region_0133,3.5,7,7,7,4,4,0.026717557251908396,5,False,False,False,0.0,3.5
-PH,landing_region_0132::landing_region_0250,landing_region_0132 -> landing_region_0250,3.5,7,7,7,4,4,0.026717557251908396,6,False,False,False,0.0,3.5
-PH,landing_region_0133::landing_region_0743,landing_region_0133 -> landing_region_0743,1.6,8,8,4,2,2,0.012213740458015267,7,False,False,False,1.6,0.0
-PH,landing_region_0250::landing_region_0743,landing_region_0250 -> landing_region_0743,1.6,8,8,4,2,2,0.012213740458015267,8,False,False,False,1.6,0.0
-PH,landing_region_0133::landing_region_0172,landing_region_0133 -> landing_region_0172,0.8,4,4,2,1,1,0.0061068702290076335,9,False,False,False,0.8,0.0
-PH,landing_region_0133::landing_region_0815,landing_region_0133 -> landing_region_0815,0.8,4,4,2,1,1,0.0061068702290076335,10,False,False,False,0.8,0.0
-PH,landing_region_0133::landing_region_0835,landing_region_0133 -> landing_region_0835,0.8,4,4,2,1,1,0.0061068702290076335,11,False,False,False,0.8,0.0
-PH,landing_region_0045::landing_region_0133,landing_region_0045 -> landing_region_0133,0.6666666666666666,2,2,2,1,1,0.0050890585241730275,12,False,False,False,0.6666666666666666,0.0
-PH,landing_region_0045::landing_region_0250,landing_region_0045 -> landing_region_0250,0.6666666666666666,2,2,2,1,1,0.0050890585241730275,13,False,False,False,0.6666666666666666,0.0
-PH,landing_region_0250::landing_region_0570,landing_region_0250 -> landing_region_0570,0.6666666666666666,2,2,2,1,1,0.0050890585241730275,14,False,False,False,0.6666666666666666,0.0
-PH,landing_region_0133::landing_region_0216,landing_region_0133 -> landing_region_0216,0.5,2,2,2,1,1,0.003816793893129771,15,False,False,False,0.5,0.0
-PH,landing_region_0133::landing_region_0224,landing_region_0133 -> landing_region_0224,0.5,2,2,2,1,1,0.003816793893129771,16,False,False,False,0.5,0.0
-PH,landing_region_0133::landing_region_0901,landing_region_0133 -> landing_region_0901,0.5,2,2,2,1,1,0.003816793893129771,17,False,False,False,0.5,0.0
-PH,landing_region_0179::landing_region_0179,landing_region_0179 -> landing_region_0179,0.5,2,2,2,1,1,0.003816793893129771,18,False,False,False,0.5,0.0
-PH,landing_region_0179::landing_region_0220,landing_region_0179 -> landing_region_0220,0.5,2,2,2,1,1,0.003816793893129771,19,False,False,False,0.5,0.0
-PH,landing_region_0179::landing_region_0814,landing_region_0179 -> landing_region_0814,0.5,2,2,2,1,1,0.003816793893129771,20,False,False,False,0.5,0.0
-PH,landing_region_0199::landing_region_0250,landing_region_0199 -> landing_region_0250,0.5,2,2,2,1,1,0.003816793893129771,21,False,False,False,0.5,0.0
-PH,landing_region_0220::landing_region_0814,landing_region_0220 -> landing_region_0814,0.5,2,2,2,1,1,0.003816793893129771,22,False,False,False,0.5,0.0
-PH,landing_region_0098::landing_region_0133,landing_region_0098 -> landing_region_0133,0.4,2,2,2,1,1,0.0030534351145038168,23,False,False,False,0.4,0.0
-PH,landing_region_0099::landing_region_0250,landing_region_0099 -> landing_region_0250,0.4,2,2,2,1,1,0.0030534351145038168,24,False,False,False,0.4,0.0
-PH,landing_region_0133::landing_region_0177,landing_region_0133 -> landing_region_0177,0.4,2,2,2,1,1,0.0030534351145038168,25,False,False,False,0.4,0.0
-PH,landing_region_0133::landing_region_0254,landing_region_0133 -> landing_region_0254,0.4,2,2,2,1,1,0.0030534351145038168,26,False,False,False,0.4,0.0
-PH,landing_region_0250::landing_region_0254,landing_region_0250 -> landing_region_0254,0.4,2,2,2,1,1,0.0030534351145038168,27,False,False,False,0.4,0.0
-PH,landing_region_0098::landing_region_0177,landing_region_0098 -> landing_region_0177,0.2222222222222222,2,2,2,1,1,0.0016963528413910093,28,False,False,False,0.2222222222222222,0.0
-PH,landing_region_0098::landing_region_0254,landing_region_0098 -> landing_region_0254,0.2222222222222222,2,2,2,1,1,0.0016963528413910093,29,False,False,False,0.2222222222222222,0.0
-PH,landing_region_0098::landing_region_0594,landing_region_0098 -> landing_region_0594,0.2222222222222222,2,2,2,1,1,0.0016963528413910093,30,False,False,False,0.2222222222222222,0.0
-PH,landing_region_0099::landing_region_0177,landing_region_0099 -> landing_region_0177,0.2222222222222222,2,2,2,1,1,0.0016963528413910093,31,False,False,False,0.2222222222222222,0.0
-PH,landing_region_0177::landing_region_0177,landing_region_0177 -> landing_region_0177,0.2222222222222222,2,2,2,1,1,0.0016963528413910093,32,False,False,False,0.2222222222222222,0.0
-PH,landing_region_0177::landing_region_0254,landing_region_0177 -> landing_region_0254,0.2222222222222222,2,2,2,1,1,0.0016963528413910093,33,False,False,False,0.2222222222222222,0.0
-PH,landing_region_0177::landing_region_0594,landing_region_0177 -> landing_region_0594,0.2222222222222222,2,2,2,1,1,0.0016963528413910093,34,False,False,False,0.2222222222222222,0.0
-PH,landing_region_0254::landing_region_0254,landing_region_0254 -> landing_region_0254,0.2222222222222222,2,2,2,1,1,0.0016963528413910093,35,False,False,False,0.2222222222222222,0.0
-PH,landing_region_0254::landing_region_0594,landing_region_0254 -> landing_region_0594,0.2222222222222222,2,2,2,1,1,0.0016963528413910093,36,False,False,False,0.2222222222222222,0.0
-PK,landing_region_0132::landing_region_0485,landing_region_0132 -> landing_region_0485,14.0,14,14,14,7,4,1.0,1,True,False,False,0.0,14.0
-PR,landing_region_0174::landing_region_0290,landing_region_0174 -> landing_region_0290,2.0,4,4,4,2,2,0.5,1,True,False,False,0.0,2.0
-PR,landing_region_0174::landing_region_0751,landing_region_0174 -> landing_region_0751,2.0,4,4,4,2,2,0.5,2,False,True,False,0.0,2.0
-PT,landing_region_0204::landing_region_0239,landing_region_0204 -> landing_region_0239,8.0,8,8,8,4,2,0.5,1,True,False,False,8.0,0.0
-PT,landing_region_0239::landing_region_0239,landing_region_0239 -> landing_region_0239,3.0,6,6,6,3,3,0.1875,2,False,True,False,3.0,0.0
-PT,landing_region_0239::landing_region_0872,landing_region_0239 -> landing_region_0872,3.0,6,6,6,3,3,0.1875,3,False,False,True,3.0,0.0
-PT,landing_region_0380::landing_region_0380,landing_region_0380 -> landing_region_0380,1.0,2,2,2,1,1,0.0625,4,False,False,False,1.0,0.0
-PT,landing_region_0380::landing_region_0765,landing_region_0380 -> landing_region_0765,1.0,2,2,2,1,1,0.0625,5,False,False,False,1.0,0.0
-QA,landing_region_0031::landing_region_0035,landing_region_0031 -> landing_region_0035,1.0,2,2,2,1,1,0.25,1,True,False,False,1.0,0.0
-QA,landing_region_0031::landing_region_0337,landing_region_0031 -> landing_region_0337,1.0,2,2,2,1,1,0.25,2,False,True,False,0.0,1.0
-QA,landing_region_0031::landing_region_0414,landing_region_0031 -> landing_region_0414,1.0,2,2,2,1,1,0.25,3,False,False,True,1.0,0.0
-QA,landing_region_0035::landing_region_0337,landing_region_0035 -> landing_region_0337,1.0,2,2,2,1,1,0.25,4,False,False,False,0.0,1.0
-SE,landing_region_0051::landing_region_0512,landing_region_0051 -> landing_region_0512,46.5,69,69,63,32,15,0.21040723981900453,1,True,False,False,26.5,20.0
-SE,landing_region_0051::landing_region_0051,landing_region_0051 -> landing_region_0051,43.0,81,81,73,38,19,0.19457013574660634,2,False,True,False,13.5,29.5
-SE,landing_region_0051::landing_region_0181,landing_region_0051 -> landing_region_0181,37.0,75,75,71,37,19,0.167420814479638,3,False,False,True,7.5,29.5
-SE,landing_region_0181::landing_region_0512,landing_region_0181 -> landing_region_0512,22.5,45,45,41,21,10,0.10180995475113122,4,False,False,False,22.5,0.0
-SE,landing_region_0351::landing_region_0512,landing_region_0351 -> landing_region_0512,20.5,41,41,41,33,11,0.09276018099547512,5,False,False,False,0.0,20.5
-SE,landing_region_0512::landing_region_0640,landing_region_0512 -> landing_region_0640,20.5,41,41,41,33,11,0.09276018099547512,6,False,False,False,0.0,20.5
-SE,landing_region_0428::landing_region_0428,landing_region_0428 -> landing_region_0428,11.0,12,12,7,4,3,0.049773755656108594,7,False,False,False,11.0,0.0
-SE,landing_region_0512::landing_region_0699,landing_region_0512 -> landing_region_0699,11.0,12,12,8,4,3,0.049773755656108594,8,False,False,False,11.0,0.0
-SE,landing_region_0209::landing_region_0699,landing_region_0209 -> landing_region_0699,2.0,2,2,2,1,1,0.00904977375565611,9,False,False,False,2.0,0.0
-SE,landing_region_0415::landing_region_0512,landing_region_0415 -> landing_region_0512,2.0,4,4,4,2,1,0.00904977375565611,10,False,False,False,2.0,0.0
-SE,landing_region_0415::landing_region_0693,landing_region_0415 -> landing_region_0693,2.0,4,4,4,2,1,0.00904977375565611,11,False,False,False,2.0,0.0
-SE,landing_region_0181::landing_region_0181,landing_region_0181 -> landing_region_0181,1.0,3,3,3,2,1,0.004524886877828055,12,False,False,False,1.0,0.0
-SE,landing_region_0209::landing_region_0512,landing_region_0209 -> landing_region_0512,1.0,2,2,2,1,1,0.004524886877828055,13,False,False,False,1.0,0.0
-SE,landing_region_0428::landing_region_0881,landing_region_0428 -> landing_region_0881,1.0,2,2,2,1,1,0.004524886877828055,14,False,False,False,1.0,0.0
-SG,landing_region_0132::landing_region_0132,landing_region_0132 -> landing_region_0132,5.166666666666666,16,16,16,8,5,0.27192982456140347,1,True,False,False,5.166666666666666,0.0
-SG,landing_region_0132::landing_region_0487,landing_region_0132 -> landing_region_0487,5.166666666666666,16,16,16,8,5,0.27192982456140347,2,False,True,False,5.166666666666666,0.0
-SG,landing_region_0132::landing_region_0807,landing_region_0132 -> landing_region_0807,5.166666666666666,16,16,16,8,5,0.27192982456140347,3,False,False,True,5.166666666666666,0.0
-SG,landing_region_0132::landing_region_0230,landing_region_0132 -> landing_region_0230,2.0,2,2,2,2,2,0.10526315789473684,4,False,False,False,0.0,2.0
-SG,landing_region_0132::landing_region_0663,landing_region_0132 -> landing_region_0663,1.0,1,1,1,1,1,0.05263157894736842,5,False,False,False,0.0,1.0
-SG,landing_region_0132::landing_region_0641,landing_region_0132 -> landing_region_0641,0.5,2,2,2,1,1,0.02631578947368421,6,False,False,False,0.5,0.0
-SN,landing_region_0239::landing_region_0308,landing_region_0239 -> landing_region_0308,2.0,2,2,2,1,1,1.0,1,True,False,False,0.0,2.0
-TH,landing_region_0741::landing_region_0892,landing_region_0741 -> landing_region_0892,24.0,24,24,14,7,4,0.7741935483870968,1,True,False,False,24.0,0.0
-TH,landing_region_0132::landing_region_0892,landing_region_0132 -> landing_region_0892,3.0,3,3,3,2,2,0.0967741935483871,2,False,True,False,0.0,3.0
-TH,landing_region_0520::landing_region_0887,landing_region_0520 -> landing_region_0887,2.0,2,2,2,1,1,0.06451612903225806,3,False,False,True,2.0,0.0
-TH,landing_region_0741::landing_region_0887,landing_region_0741 -> landing_region_0887,1.0,2,2,2,1,1,0.03225806451612903,4,False,False,False,1.0,0.0
-TH,landing_region_0887::landing_region_0892,landing_region_0887 -> landing_region_0892,1.0,2,2,2,1,1,0.03225806451612903,5,False,False,False,1.0,0.0
-TO,landing_region_0701::landing_region_0903,landing_region_0701 -> landing_region_0903,2.0,2,2,2,1,1,1.0,1,True,False,False,0.0,2.0
-TW,landing_region_0719::landing_region_1011,landing_region_0719 -> landing_region_1011,21.5,25,25,22,12,7,0.43,1,True,False,False,21.5,0.0
-TW,landing_region_0719::landing_region_0719,landing_region_0719 -> landing_region_0719,18.5,21,21,13,7,5,0.37,2,False,True,False,18.5,0.0
-TW,landing_region_0196::landing_region_0719,landing_region_0196 -> landing_region_0719,2.333333333333333,5,5,5,3,3,0.04666666666666666,3,False,False,True,2.333333333333333,0.0
-TW,landing_region_0306::landing_region_0719,landing_region_0306 -> landing_region_0719,2.0,2,2,2,2,1,0.04,4,False,False,False,0.0,2.0
-TW,landing_region_0196::landing_region_1011,landing_region_0196 -> landing_region_1011,1.5,3,3,2,1,1,0.03,5,False,False,False,1.5,0.0
-TW,landing_region_0441::landing_region_1011,landing_region_0441 -> landing_region_1011,1.5,3,3,2,1,1,0.03,6,False,False,False,1.5,0.0
-TW,landing_region_0317::landing_region_0719,landing_region_0317 -> landing_region_0719,1.3333333333333333,3,3,3,2,2,0.026666666666666665,7,False,False,False,1.3333333333333333,0.0
-TW,landing_region_0230::landing_region_0719,landing_region_0230 -> landing_region_0719,1.0,1,1,1,1,1,0.02,8,False,False,False,0.0,1.0
-TW,landing_region_0441::landing_region_0719,landing_region_0441 -> landing_region_0719,0.3333333333333333,1,1,1,1,1,0.006666666666666666,9,False,False,False,0.3333333333333333,0.0
-US,landing_region_0149::landing_region_0149,landing_region_0149 -> landing_region_0149,208.5,381,381,252,138,50,0.38256880733944953,1,True,False,False,208.5,0.0
-US,landing_region_0149::landing_region_0610,landing_region_0149 -> landing_region_0610,204.5,377,377,258,144,50,0.37522935779816513,2,False,True,False,204.5,0.0
-US,landing_region_0223::landing_region_0223,landing_region_0223 -> landing_region_0223,72.33333333333333,84,84,50,25,12,0.1327217125382263,3,False,False,True,72.33333333333333,0.0
-US,landing_region_0200::landing_region_0944,landing_region_0200 -> landing_region_0944,23.0,23,23,23,16,6,0.04220183486238532,4,False,False,False,2.0,21.0
-US,landing_region_0223::landing_region_0293,landing_region_0223 -> landing_region_0293,6.333333333333333,18,18,18,9,6,0.011620795107033639,5,False,False,False,6.333333333333333,0.0
-US,landing_region_0008::landing_region_0223,landing_region_0008 -> landing_region_0223,5.333333333333333,16,16,16,8,5,0.009785932721712538,6,False,False,False,5.333333333333333,0.0
-US,landing_region_0174::landing_region_0465,landing_region_0174 -> landing_region_0465,4.0,4,4,4,2,2,0.007339449541284404,7,False,False,False,4.0,0.0
-US,landing_region_0174::landing_region_0981,landing_region_0174 -> landing_region_0981,4.0,4,4,2,1,1,0.007339449541284404,8,False,False,False,4.0,0.0
-US,landing_region_0125::landing_region_0125,landing_region_0125 -> landing_region_0125,3.0,6,6,4,2,1,0.005504587155963303,9,False,False,False,3.0,0.0
-US,landing_region_0125::landing_region_0416,landing_region_0125 -> landing_region_0416,3.0,6,6,4,2,1,0.005504587155963303,10,False,False,False,3.0,0.0
-US,landing_region_0348::landing_region_0843,landing_region_0348 -> landing_region_0843,3.0,3,3,3,2,2,0.005504587155963303,11,False,False,False,3.0,0.0
-US,landing_region_0060::landing_region_0223,landing_region_0060 -> landing_region_0223,2.0,2,2,2,1,1,0.003669724770642202,12,False,False,False,2.0,0.0
-US,landing_region_0125::landing_region_0348,landing_region_0125 -> landing_region_0348,2.0,2,2,2,1,1,0.003669724770642202,13,False,False,False,2.0,0.0
-US,landing_region_0125::landing_region_0493,landing_region_0125 -> landing_region_0493,2.0,2,2,2,1,1,0.003669724770642202,14,False,False,False,2.0,0.0
-US,landing_region_0174::landing_region_0213,landing_region_0174 -> landing_region_0213,1.0,1,1,1,1,1,0.001834862385321101,15,False,False,False,0.0,1.0
-US,landing_region_0348::landing_region_0426,landing_region_0348 -> landing_region_0426,1.0,1,1,1,1,1,0.001834862385321101,16,False,False,False,1.0,0.0
-VE,landing_region_0225::landing_region_0425,landing_region_0225 -> landing_region_0425,2.0,2,2,2,1,1,1.0,1,True,False,False,2.0,0.0
-VI,landing_region_0174::landing_region_0208,landing_region_0174 -> landing_region_0208,4.0,4,4,4,2,1,0.5,1,True,False,False,0.0,4.0
-VI,landing_region_0115::landing_region_0115,landing_region_0115 -> landing_region_0115,1.3333333333333333,4,4,4,2,1,0.16666666666666666,2,False,True,False,1.3333333333333333,0.0
-VI,landing_region_0115::landing_region_0208,landing_region_0115 -> landing_region_0208,1.3333333333333333,4,4,4,2,1,0.16666666666666666,3,False,False,True,1.3333333333333333,0.0
-VI,landing_region_0208::landing_region_0208,landing_region_0208 -> landing_region_0208,1.3333333333333333,4,4,4,2,1,0.16666666666666666,4,False,False,False,1.3333333333333333,0.0
-VN,landing_region_0230::landing_region_0988,landing_region_0230 -> landing_region_0988,15.0,15,15,15,8,4,0.7894736842105263,1,True,False,False,0.0,15.0
-VN,landing_region_0132::landing_region_0988,landing_region_0132 -> landing_region_0988,2.0,2,2,2,1,1,0.10526315789473684,2,False,True,False,0.0,2.0
-VN,landing_region_0230::landing_region_0311,landing_region_0230 -> landing_region_0311,2.0,2,2,2,2,2,0.10526315789473684,3,False,False,True,0.0,2.0
-ZA,landing_region_0233::landing_region_0233,landing_region_0233 -> landing_region_0233,26.0,26,26,16,8,6,1.0,1,True,False,False,26.0,0.0
+﻿country,corridor_id,corridor_label,observation_mass,raw_segment_count_with_corridor_feasible,unique_atomic_segments,unique_traceroutes,unique_probes,unique_probe_asns,group_unique_probes,group_unique_probe_asns,share_of_country_observation_mass,rank_within_country,is_top1_corridor,is_top2_corridor,is_top3_corridor,domestic_segment_mass,international_segment_mass
+AE,landing_region_1392e3aea9b8::landing_region_8dc97f28b4d0,"Fujairah, United Arab Emirates -> Sharjah, United Arab Emirates",6.0,6,6,3,2,1,2,1,1.0,1,True,False,False,6.0,0.0
+AU,landing_region_58084817cbe7::landing_region_b3ff0e144e34,"Paddington, NSW, Australia -> Maroochydore, QLD, Australia",6.0,6,6,6,3,1,11,8,0.2608695652173913,1,True,False,False,6.0,0.0
+AU,landing_region_58084817cbe7::landing_region_b204db5c9fda,"Paddington, NSW, Australia -> Adelaide, SA, Australia",4.0,4,4,4,2,2,11,8,0.17391304347826086,2,False,True,False,4.0,0.0
+AU,landing_region_58084817cbe7::landing_region_ea9847129f13,"Paddington, NSW, Australia -> Maruyama, Japan",4.0,4,4,4,2,1,11,8,0.17391304347826086,3,False,False,True,0.0,4.0
+AU,landing_region_b204db5c9fda::landing_region_cf432e5aaa09,"Adelaide, SA, Australia -> Torquay, VIC, Australia",3.0,3,3,3,2,2,11,8,0.13043478260869565,4,False,False,False,3.0,0.0
+AU,landing_region_149acfcae34c::landing_region_58084817cbe7,"Melbourne, VIC, Australia -> Paddington, NSW, Australia",2.0,4,4,3,2,2,11,8,0.08695652173913043,5,False,False,False,2.0,0.0
+AU,landing_region_3996aeca3c5e::landing_region_58084817cbe7,"Perth, WA, Australia -> Paddington, NSW, Australia",2.0,2,2,2,1,1,11,8,0.08695652173913043,6,False,False,False,2.0,0.0
+AU,landing_region_58084817cbe7::landing_region_cf432e5aaa09,"Paddington, NSW, Australia -> Torquay, VIC, Australia",2.0,4,4,3,2,2,11,8,0.08695652173913043,7,False,False,False,2.0,0.0
+AX,landing_region_3eb4f4d89687::landing_region_f4011a851fe0,"Hamnäs, Finland -> Östhammar, Sweden",5.0,6,6,2,1,1,1,1,0.8333333333333334,1,True,False,False,4.0,1.0
+AX,landing_region_3eb4f4d89687::landing_region_71db3ba08a92,"Hamnäs, Finland -> Stockholm, Sweden",1.0,2,2,2,1,1,1,1,0.16666666666666666,2,False,True,False,0.0,1.0
+BJ,landing_region_30beda532e6f::landing_region_8afa8229a8fd,"Lagos, Nigeria -> Cotonou, Benin",2.0,2,2,2,1,0,1,0,1.0,1,True,False,False,0.0,2.0
+BR,landing_region_5113b57f1083::landing_region_7f124bf07cd8,"Praia Grande, Brazil -> Rio de Janeiro, Brazil",9.0,9,9,7,4,4,9,9,0.5625,1,True,False,False,9.0,0.0
+BR,landing_region_0c894d5ef6d3::landing_region_5113b57f1083,"Dania Beach, FL, United States -> Praia Grande, Brazil",2.0,2,2,2,1,1,9,9,0.125,2,False,True,False,0.0,2.0
+BR,landing_region_38c81e7bfa6f::landing_region_5113b57f1083,"Porto Alegre, Brazil -> Praia Grande, Brazil",2.0,2,2,2,2,2,9,9,0.125,3,False,False,True,2.0,0.0
+BR,landing_region_a33078e57a08::landing_region_e7752fc032df,"Fortaleza, Brazil -> Salvador, Brazil",2.0,2,2,2,1,1,9,9,0.125,4,False,False,False,2.0,0.0
+BR,landing_region_38c81e7bfa6f::landing_region_7f124bf07cd8,"Porto Alegre, Brazil -> Rio de Janeiro, Brazil",1.0,1,1,1,1,1,9,9,0.0625,5,False,False,False,1.0,0.0
+CA,landing_region_ad2e1f237edf::landing_region_df3d1db01d0e,"Buffalo, NY, United States -> Toronto, ON, Canada",6.0,6,6,6,3,2,22,10,0.10344827586206896,1,True,False,False,2.0,4.0
+CA,landing_region_94c53aa4a6d7::landing_region_fee5a5fdbba8,"Vancouver, BC, Canada -> Cama Beach, WA, United States",4.733333333333333,28,28,12,6,5,22,10,0.08160919540229886,2,False,True,False,2.1333333333333333,2.6
+CA,landing_region_f41a83b9b5b3::landing_region_fee5a5fdbba8,"Cordova Bay, BC, Canada -> Cama Beach, WA, United States",4.733333333333333,28,28,12,6,5,22,10,0.08160919540229886,3,False,False,True,2.1333333333333333,2.6
+CA,landing_region_19da5dac2df8::landing_region_70abce74b352,"Eastbourne, BC, Canada -> Snaw-naw-as, BC, Canada",4.100865800865801,39,39,31,16,5,22,10,0.0707045827735483,4,False,False,False,4.100865800865801,0.0
+CA,landing_region_19da5dac2df8::landing_region_94c53aa4a6d7,"Eastbourne, BC, Canada -> Vancouver, BC, Canada",4.100865800865801,39,39,31,16,5,22,10,0.0707045827735483,5,False,False,False,4.100865800865801,0.0
+CA,landing_region_70abce74b352::landing_region_94c53aa4a6d7,"Snaw-naw-as, BC, Canada -> Vancouver, BC, Canada",4.100865800865801,39,39,31,16,5,22,10,0.0707045827735483,6,False,False,False,4.100865800865801,0.0
+CA,landing_region_94c53aa4a6d7::landing_region_f41a83b9b5b3,"Vancouver, BC, Canada -> Cordova Bay, BC, Canada",4.100865800865801,39,39,31,16,5,22,10,0.0707045827735483,7,False,False,False,4.100865800865801,0.0
+CA,landing_region_4da2bf713882::landing_region_70abce74b352,"Bowser, BC, Canada -> Snaw-naw-as, BC, Canada",2.7675324675324675,31,31,31,16,5,22,10,0.04771607702642185,8,False,False,False,2.7675324675324675,0.0
+CA,landing_region_4da2bf713882::landing_region_94c53aa4a6d7,"Bowser, BC, Canada -> Vancouver, BC, Canada",2.7675324675324675,31,31,31,16,5,22,10,0.04771607702642185,9,False,False,False,2.7675324675324675,0.0
+CA,landing_region_70abce74b352::landing_region_ed5425cf5b7d,"Snaw-naw-as, BC, Canada -> Powell River, BC, Canada",2.7675324675324675,31,31,31,16,5,22,10,0.04771607702642185,10,False,False,False,2.7675324675324675,0.0
+CA,landing_region_94c53aa4a6d7::landing_region_ed5425cf5b7d,"Vancouver, BC, Canada -> Powell River, BC, Canada",2.7675324675324675,31,31,31,16,5,22,10,0.04771607702642185,11,False,False,False,2.7675324675324675,0.0
+CA,landing_region_5f578929a68a::landing_region_94c53aa4a6d7,"Harbour Pointe, WA, United States -> Vancouver, BC, Canada",2.6,12,12,12,6,5,22,10,0.04482758620689655,12,False,False,False,0.0,2.6
+CA,landing_region_5f578929a68a::landing_region_f41a83b9b5b3,"Harbour Pointe, WA, United States -> Cordova Bay, BC, Canada",2.6,12,12,12,6,5,22,10,0.04482758620689655,13,False,False,False,0.0,2.6
+CA,landing_region_19da5dac2df8::landing_region_4da2bf713882,"Eastbourne, BC, Canada -> Bowser, BC, Canada",1.9675324675324677,23,23,23,12,2,22,10,0.03392297357814599,14,False,False,False,1.9675324675324677,0.0
+CA,landing_region_19da5dac2df8::landing_region_ed5425cf5b7d,"Eastbourne, BC, Canada -> Powell River, BC, Canada",1.9675324675324677,23,23,23,12,2,22,10,0.03392297357814599,15,False,False,False,1.9675324675324677,0.0
+CA,landing_region_5f578929a68a::landing_region_fee5a5fdbba8,"Harbour Pointe, WA, United States -> Cama Beach, WA, United States",1.6,8,8,8,4,3,22,10,0.027586206896551727,16,False,False,False,0.0,1.6
+CA,landing_region_4d0aa9fbe6f5::landing_region_7aaa0727bd23,"St. Martins, NB, Canada -> Aylesford, NS, Canada",1.0,1,1,1,1,1,22,10,0.017241379310344827,17,False,False,False,1.0,0.0
+CA,landing_region_4da2bf713882::landing_region_ed5425cf5b7d,"Bowser, BC, Canada -> Powell River, BC, Canada",0.4675324675324675,8,8,8,4,2,22,10,0.00806090461262875,18,False,False,False,0.4675324675324675,0.0
+CA,landing_region_10ed1e7f3a53::landing_region_19da5dac2df8,"Comox, BC, Canada -> Eastbourne, BC, Canada",0.2857142857142857,6,6,6,3,1,22,10,0.0049261083743842365,19,False,False,False,0.2857142857142857,0.0
+CA,landing_region_10ed1e7f3a53::landing_region_4da2bf713882,"Comox, BC, Canada -> Bowser, BC, Canada",0.2857142857142857,6,6,6,3,1,22,10,0.0049261083743842365,20,False,False,False,0.2857142857142857,0.0
+CA,landing_region_10ed1e7f3a53::landing_region_70abce74b352,"Comox, BC, Canada -> Snaw-naw-as, BC, Canada",0.2857142857142857,6,6,6,3,1,22,10,0.0049261083743842365,21,False,False,False,0.2857142857142857,0.0
+CA,landing_region_10ed1e7f3a53::landing_region_94c53aa4a6d7,"Comox, BC, Canada -> Vancouver, BC, Canada",0.2857142857142857,6,6,6,3,1,22,10,0.0049261083743842365,22,False,False,False,0.2857142857142857,0.0
+CA,landing_region_10ed1e7f3a53::landing_region_ed5425cf5b7d,"Comox, BC, Canada -> Powell River, BC, Canada",0.2857142857142857,6,6,6,3,1,22,10,0.0049261083743842365,23,False,False,False,0.2857142857142857,0.0
+CA,landing_region_19da5dac2df8::landing_region_49c51c03c37a,"Eastbourne, BC, Canada -> Toquaht Bay, BC, Canada",0.2857142857142857,6,6,6,3,1,22,10,0.0049261083743842365,24,False,False,False,0.2857142857142857,0.0
+CA,landing_region_49c51c03c37a::landing_region_4da2bf713882,"Toquaht Bay, BC, Canada -> Bowser, BC, Canada",0.2857142857142857,6,6,6,3,1,22,10,0.0049261083743842365,25,False,False,False,0.2857142857142857,0.0
+CA,landing_region_49c51c03c37a::landing_region_70abce74b352,"Toquaht Bay, BC, Canada -> Snaw-naw-as, BC, Canada",0.2857142857142857,6,6,6,3,1,22,10,0.0049261083743842365,26,False,False,False,0.2857142857142857,0.0
+CA,landing_region_49c51c03c37a::landing_region_94c53aa4a6d7,"Toquaht Bay, BC, Canada -> Vancouver, BC, Canada",0.2857142857142857,6,6,6,3,1,22,10,0.0049261083743842365,27,False,False,False,0.2857142857142857,0.0
+CA,landing_region_49c51c03c37a::landing_region_ed5425cf5b7d,"Toquaht Bay, BC, Canada -> Powell River, BC, Canada",0.2857142857142857,6,6,6,3,1,22,10,0.0049261083743842365,28,False,False,False,0.2857142857142857,0.0
+CL,landing_region_382ef3579d8a::landing_region_8c0e5886c6bc,"Cartagena, Chile -> Valparaíso, Chile",10.0,10,10,8,4,3,7,4,0.625,1,True,False,False,10.0,0.0
+CL,landing_region_5113b57f1083::landing_region_8c0e5886c6bc,"Praia Grande, Brazil -> Valparaíso, Chile",4.0,4,4,4,2,1,7,4,0.25,2,False,True,False,0.0,4.0
+CL,landing_region_382ef3579d8a::landing_region_94fe61014b45,"Cartagena, Chile -> San Pedro de la Paz, Chile",2.0,2,2,2,1,1,7,4,0.125,3,False,False,True,2.0,0.0
+CM,landing_region_30beda532e6f::landing_region_3ac9da776834,"Lagos, Nigeria -> Limbe, Cameroon",1.0,2,2,2,1,1,1,1,0.5,1,True,False,False,0.0,1.0
+CM,landing_region_30beda532e6f::landing_region_99a747248ab4,"Lagos, Nigeria -> Douala, Cameroon",1.0,2,2,2,1,1,1,1,0.5,2,False,True,False,0.0,1.0
+CN,landing_region_319252418c1f::landing_region_6d0b3b188139,"Deep Water Bay, China -> Zhuhai, China",31.0,31,31,21,12,5,20,6,0.7209302325581395,1,True,False,False,25.0,6.0
+CN,landing_region_271ad44782a4::landing_region_319252418c1f,"Chongming, China -> Deep Water Bay, China",5.5,11,11,11,8,3,20,6,0.12790697674418605,2,False,True,False,0.0,5.5
+CN,landing_region_319252418c1f::landing_region_6de47797807a,"Deep Water Bay, China -> Lingang, China",5.5,11,11,11,8,3,20,6,0.12790697674418605,3,False,False,True,0.0,5.5
+CN,landing_region_aa031a8137e8::landing_region_baee86a03f35,"Xiju, Taiwan -> Guningtou, Taiwan",0.5,1,1,1,1,0,20,6,0.011627906976744186,4,False,False,False,0.5,0.0
+CN,landing_region_baee86a03f35::landing_region_fb7d8cbeac7e,"Guningtou, Taiwan -> Beigan, Taiwan",0.5,1,1,1,1,0,20,6,0.011627906976744186,5,False,False,False,0.5,0.0
+CV,landing_region_0e3c71b8e5bb::landing_region_c78987ebb9a4,"Vila do Maio, Cape Verde -> Sines, Portugal",1.0,2,2,2,1,1,1,1,0.5,1,True,False,False,0.0,1.0
+CV,landing_region_0e3c71b8e5bb::landing_region_c88b92706e9c,"Vila do Maio, Cape Verde -> Seixal, Portugal",1.0,2,2,2,1,1,1,1,0.5,2,False,True,False,0.0,1.0
+CW,landing_region_0c894d5ef6d3::landing_region_83c1ffe3b901,"Dania Beach, FL, United States -> Mahuma, Curaçao",2.0,2,2,2,2,2,2,2,1.0,1,True,False,False,0.0,2.0
+CY,landing_region_08ea81d123b5::landing_region_3e7b4a85e943,"Marseille, France -> Pentaskhinos, Cyprus",4.0,8,8,8,5,3,5,3,0.3333333333333333,1,True,False,False,0.0,4.0
+CY,landing_region_08ea81d123b5::landing_region_a09a1e953122,"Marseille, France -> Yeroskipos, Cyprus",4.0,8,8,8,5,3,5,3,0.3333333333333333,2,False,True,False,0.0,4.0
+CY,landing_region_3e7b4a85e943::landing_region_a09a1e953122,"Pentaskhinos, Cyprus -> Yeroskipos, Cyprus",4.0,4,4,4,2,1,5,3,0.3333333333333333,3,False,False,True,4.0,0.0
+DE,landing_region_363f6a205e8d::landing_region_8c8eca82b223,"Rodbyhavn, Denmark -> Markgrafenheide, Germany",4.0,4,4,2,1,1,1,1,1.0,1,True,False,False,4.0,0.0
+DJ,landing_region_08ea81d123b5::landing_region_173727a59ebb,"Marseille, France -> Djibouti City, Djibouti",2.5,5,5,5,3,2,3,2,0.5,1,True,False,False,0.0,2.5
+DJ,landing_region_173727a59ebb::landing_region_b368d05deae2,"Djibouti City, Djibouti -> La Tour Fondue, France",2.5,5,5,5,3,2,3,2,0.5,2,False,True,False,0.0,2.5
+DK,landing_region_1c12bbea2f36::landing_region_363f6a205e8d,"Borbby Strandbad, Sweden -> Rodbyhavn, Denmark",30.0,30,30,30,16,4,27,9,0.5882352941176471,1,True,False,False,30.0,0.0
+DK,landing_region_1ce0b85cd8b9::landing_region_e1a72a298b9d,"Uto, Sweden -> Dragor, Denmark",16.0,16,16,16,8,3,27,9,0.3137254901960784,2,False,True,False,0.0,16.0
+DK,landing_region_1c12bbea2f36::landing_region_e1a72a298b9d,"Borbby Strandbad, Sweden -> Dragor, Denmark",5.0,5,5,5,3,3,27,9,0.09803921568627451,3,False,False,True,0.0,5.0
+DO,landing_region_0c894d5ef6d3::landing_region_bf457e1b83fe,"Dania Beach, FL, United States -> Haina, Dominican Republic",4.0,4,4,4,2,2,2,2,1.0,1,True,False,False,0.0,4.0
+EE,landing_region_5631d1801aee::landing_region_65aa8d7cf62e,"Tallinn, Estonia -> Espoo, Finland",5.0,5,5,5,3,1,7,4,0.38461538461538464,1,True,False,False,5.0,0.0
+EE,landing_region_5631d1801aee::landing_region_71db3ba08a92,"Tallinn, Estonia -> Stockholm, Sweden",4.0,8,8,8,4,3,7,4,0.3076923076923077,2,False,True,False,0.0,4.0
+EE,landing_region_65aa8d7cf62e::landing_region_71db3ba08a92,"Espoo, Finland -> Stockholm, Sweden",4.0,8,8,8,4,3,7,4,0.3076923076923077,3,False,False,True,0.0,4.0
+ES,landing_region_c88b92706e9c::landing_region_fe9debdbb175,"Seixal, Portugal -> Chipiona, Spain",10.0,10,10,10,5,2,9,5,0.625,1,True,False,False,0.0,10.0
+ES,landing_region_1159954a018c::landing_region_1a00bf1d418e,"Brean, United Kingdom -> Bilbao, Spain",4.0,4,4,4,3,2,9,5,0.25,2,False,True,False,0.0,4.0
+ES,landing_region_08ea81d123b5::landing_region_8eb611963dd1,"Marseille, France -> Barcelona, Spain",2.0,2,2,2,1,1,9,5,0.125,3,False,False,True,0.0,2.0
+FI,landing_region_5631d1801aee::landing_region_65aa8d7cf62e,"Tallinn, Estonia -> Espoo, Finland",107.5,207,207,103,52,15,56,16,0.5,1,True,False,False,107.5,0.0
+FI,landing_region_65aa8d7cf62e::landing_region_6a085d7da78f,"Espoo, Finland -> Kotka, Finland",74.5,145,145,77,39,6,56,16,0.34651162790697676,2,False,True,False,74.5,0.0
+FI,landing_region_5ff6ee2e39f7::landing_region_65aa8d7cf62e,"Haradsholm, Finland -> Espoo, Finland",13.0,42,42,18,9,6,56,16,0.06046511627906977,3,False,False,True,13.0,0.0
+FI,landing_region_1497f5544d8d::landing_region_65aa8d7cf62e,"Hanko, Finland -> Espoo, Finland",12.333333333333332,40,40,18,9,6,56,16,0.05736434108527131,4,False,False,False,12.333333333333332,0.0
+FI,landing_region_1497f5544d8d::landing_region_5ff6ee2e39f7,"Hanko, Finland -> Haradsholm, Finland",3.6666666666666665,14,14,8,4,1,56,16,0.017054263565891473,5,False,False,False,3.6666666666666665,0.0
+FI,landing_region_5631d1801aee::landing_region_71db3ba08a92,"Tallinn, Estonia -> Stockholm, Sweden",2.0,4,4,4,3,1,56,16,0.009302325581395349,6,False,False,False,0.0,2.0
+FI,landing_region_65aa8d7cf62e::landing_region_71db3ba08a92,"Espoo, Finland -> Stockholm, Sweden",2.0,4,4,4,3,1,56,16,0.009302325581395349,7,False,False,False,0.0,2.0
+FJ,landing_region_1cece50a3587::landing_region_58084817cbe7,"Suva, Fiji -> Paddington, NSW, Australia",4.0,4,4,4,2,1,2,1,1.0,1,True,False,False,0.0,4.0
+FR,landing_region_64561d142765::landing_region_ef749c24fbd2,"Bredene, Belgium -> Broadstairs, United Kingdom",3.0,3,3,3,2,1,2,1,1.0,1,True,False,False,3.0,0.0
+GB,landing_region_120836cdab0e::landing_region_a3a3679614fb,"Callantsoog, Netherlands -> Winterton-on-Sea, United Kingdom",1.0,2,2,2,1,1,1,1,0.5,1,True,False,False,0.0,1.0
+GB,landing_region_c0cd1a04639b::landing_region_c2e186b4690c,"Sizewell, United Kingdom -> Zandvoort, Netherlands",1.0,2,2,2,1,1,1,1,0.5,2,False,True,False,0.0,1.0
+GH,landing_region_2e263771884f::landing_region_30beda532e6f,"Accra, Ghana -> Lagos, Nigeria",6.0,6,6,6,3,3,3,3,1.0,1,True,False,False,0.0,6.0
+GP,landing_region_24728f09c1b8::landing_region_89faef27b517,"Beausejour, Guadeloupe -> Capesterre-Belle-Eau, Guadeloupe",1.0,2,2,2,1,1,1,1,0.25,1,True,False,False,1.0,0.0
+GP,landing_region_881c7f4b78b6::landing_region_89faef27b517,"Morris Bay, Antigua and Barbuda -> Capesterre-Belle-Eau, Guadeloupe",1.0,2,2,2,1,1,1,1,0.25,2,False,True,False,1.0,0.0
+GP,landing_region_881c7f4b78b6::landing_region_b221e27b3993,"Morris Bay, Antigua and Barbuda -> Philipsburg, Sint Maarten",0.5,2,2,2,1,1,1,1,0.125,3,False,False,True,0.0,0.5
+GP,landing_region_881c7f4b78b6::landing_region_b69228a09b14,"Morris Bay, Antigua and Barbuda -> Basseterre, Saint Kitts and Nevis",0.5,2,2,2,1,1,1,1,0.125,4,False,False,False,0.0,0.5
+GP,landing_region_89faef27b517::landing_region_b221e27b3993,"Capesterre-Belle-Eau, Guadeloupe -> Philipsburg, Sint Maarten",0.5,2,2,2,1,1,1,1,0.125,5,False,False,False,0.0,0.5
+GP,landing_region_89faef27b517::landing_region_b69228a09b14,"Capesterre-Belle-Eau, Guadeloupe -> Basseterre, Saint Kitts and Nevis",0.5,2,2,2,1,1,1,1,0.125,6,False,False,False,0.0,0.5
+GQ,landing_region_30beda532e6f::landing_region_3ac9da776834,"Lagos, Nigeria -> Limbe, Cameroon",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
+GT,landing_region_0c894d5ef6d3::landing_region_ac0b942bb0ee,"Dania Beach, FL, United States -> Puerto San Jose, Guatemala",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
+GU,landing_region_a13562362d3c::landing_region_bc6c664daa8f,"Rota, Northern Mariana Islands -> Alupang, Guam",22.0,22,22,12,6,3,10,5,0.5238095238095238,1,True,False,False,22.0,0.0
+GU,landing_region_bc6c664daa8f::landing_region_ea9847129f13,"Alupang, Guam -> Maruyama, Japan",20.0,20,20,20,10,5,10,5,0.47619047619047616,2,False,True,False,0.0,20.0
+HK,landing_region_319252418c1f::landing_region_6d0b3b188139,"Deep Water Bay, China -> Zhuhai, China",7.0,7,7,7,4,3,7,4,0.5833333333333334,1,True,False,False,7.0,0.0
+HK,landing_region_319252418c1f::landing_region_d0ecf913edd7,"Deep Water Bay, China -> Katong, Singapore",2.0,2,2,2,1,1,7,4,0.16666666666666666,2,False,True,False,0.0,2.0
+HK,landing_region_319252418c1f::landing_region_ea9847129f13,"Deep Water Bay, China -> Maruyama, Japan",2.0,2,2,2,1,0,7,4,0.16666666666666666,3,False,False,True,0.0,2.0
+HK,landing_region_319252418c1f::landing_region_3362110f86da,"Deep Water Bay, China -> Pa Li, Taiwan",0.5,1,1,1,1,0,7,4,0.041666666666666664,4,False,False,False,0.0,0.5
+HK,landing_region_319252418c1f::landing_region_8eebb9f0ec75,"Deep Water Bay, China -> Toucheng, Taiwan",0.5,1,1,1,1,0,7,4,0.041666666666666664,5,False,False,False,0.0,0.5
+HN,landing_region_0c894d5ef6d3::landing_region_10c60941f915,"Dania Beach, FL, United States -> Puerto Barrios, Guatemala",5.5,11,11,11,8,5,8,5,0.5,1,True,False,False,0.0,5.5
+HN,landing_region_0c894d5ef6d3::landing_region_620bdff3a2d2,"Dania Beach, FL, United States -> Puerto Cortes, Honduras",5.5,11,11,11,8,5,8,5,0.5,2,False,True,False,0.0,5.5
+ID,landing_region_58934ccdf4e7::landing_region_ce5716d12955,"Kendal, Indonesia -> Ancol, Indonesia",10.0,10,10,10,5,5,14,11,0.3125,1,True,False,False,10.0,0.0
+ID,landing_region_16506ee61a44::landing_region_d0ecf913edd7,"Medan, Indonesia -> Katong, Singapore",4.0,4,4,4,2,0,14,11,0.125,2,False,True,False,0.0,4.0
+ID,landing_region_26e606e1a782::landing_region_ce5716d12955,"Gresik, Indonesia -> Ancol, Indonesia",4.0,8,8,8,4,3,14,11,0.125,3,False,False,True,4.0,0.0
+ID,landing_region_282fd8dbb423::landing_region_ce5716d12955,"Madura, Indonesia -> Ancol, Indonesia",4.0,8,8,8,4,3,14,11,0.125,4,False,False,False,4.0,0.0
+ID,landing_region_8b50d5cb7b72::landing_region_9e102cfed296,"Senggigi, Indonesia -> Padang Galak, Indonesia",3.0,4,4,4,2,2,14,11,0.09375,5,False,False,False,3.0,0.0
+ID,landing_region_149ad599e1a3::landing_region_ce5716d12955,"Tanjung Bemban, Indonesia -> Ancol, Indonesia",2.0,4,4,4,2,1,14,11,0.0625,6,False,False,False,0.0,2.0
+ID,landing_region_150b225bb130::landing_region_ce5716d12955,"Cirebon, Indonesia -> Ancol, Indonesia",2.0,2,2,2,1,1,14,11,0.0625,7,False,False,False,2.0,0.0
+ID,landing_region_ce5716d12955::landing_region_d0ecf913edd7,"Ancol, Indonesia -> Katong, Singapore",2.0,4,4,4,2,1,14,11,0.0625,8,False,False,False,0.0,2.0
+ID,landing_region_12a650616015::landing_region_95097cb3ef8d,"Beculuk, Indonesia -> Candikusuma, Indonesia",1.0,2,2,2,1,1,14,11,0.03125,9,False,False,False,1.0,0.0
+IL,landing_region_7559ef31b258::landing_region_c6ca70161fbc,"Netanya, Israel -> Rishon Le’Zion, Israel",23.0,65,65,34,17,8,17,8,0.35384615384615387,1,True,False,False,23.0,0.0
+IL,landing_region_7559ef31b258::landing_region_d42b6ba4dd12,"Netanya, Israel -> Haifa, Israel",21.0,63,63,32,16,8,17,8,0.3230769230769231,2,False,True,False,21.0,0.0
+IL,landing_region_c6ca70161fbc::landing_region_d42b6ba4dd12,"Rishon Le’Zion, Israel -> Haifa, Israel",21.0,63,63,32,16,8,17,8,0.3230769230769231,3,False,False,True,21.0,0.0
+IM,landing_region_08337e5ad0be::landing_region_3e66a317c0e3,"Silecroft Beach, United Kingdom -> Port Grenaugh, Isle of Man",4.0,4,4,4,2,2,2,2,1.0,1,True,False,False,0.0,4.0
+IN,landing_region_0074f164da96::landing_region_32509493c7f4,"Mumbai, India -> Chennai, India",5.0,5,5,5,4,3,4,3,1.0,1,True,False,False,5.0,0.0
+IT,landing_region_08ea81d123b5::landing_region_a98ab4a2cae2,"Marseille, France -> Genoa, Italy",2.0,2,2,2,1,1,3,3,0.3333333333333333,1,True,False,False,0.0,2.0
+IT,landing_region_2e571d30f06e::landing_region_83784f5eb7a1,"Cagliari, Italy -> Civitavecchia, Italy",2.0,2,2,2,1,1,3,3,0.3333333333333333,2,False,True,False,2.0,0.0
+IT,landing_region_1d5c9bdda1cc::landing_region_21eee101671e,"Rome, Italy -> Marsala, Italy",0.6666666666666666,2,2,2,1,1,3,3,0.1111111111111111,3,False,False,True,0.6666666666666666,0.0
+IT,landing_region_1d5c9bdda1cc::landing_region_ea98b74befe5,"Rome, Italy -> Isola delle Femmine, Italy",0.6666666666666666,2,2,2,1,1,3,3,0.1111111111111111,4,False,False,False,0.6666666666666666,0.0
+IT,landing_region_21eee101671e::landing_region_83784f5eb7a1,"Marsala, Italy -> Civitavecchia, Italy",0.6666666666666666,2,2,2,1,1,3,3,0.1111111111111111,5,False,False,False,0.6666666666666666,0.0
+JM,landing_region_0c894d5ef6d3::landing_region_4b188f8b0733,"Dania Beach, FL, United States -> Morant Point, Jamaica",1.0,2,2,2,1,0,1,0,0.5,1,True,False,False,0.0,1.0
+JM,landing_region_0c894d5ef6d3::landing_region_b2eb6ff00cc4,"Dania Beach, FL, United States -> Bull Bay, Jamaica",1.0,2,2,2,1,0,1,0,0.5,2,False,True,False,0.0,1.0
+JP,landing_region_cfeb44e542fb::landing_region_d84551d28c05,"Ajigaura, Japan -> Ninomiya, Japan",71.33333333333333,199,199,135,71,30,82,34,0.3257229832572298,1,True,False,False,71.33333333333333,0.0
+JP,landing_region_cfeb44e542fb::landing_region_ea9847129f13,"Ajigaura, Japan -> Maruyama, Japan",69.33333333333333,197,197,135,71,30,82,34,0.3165905631659056,2,False,True,False,69.33333333333333,0.0
+JP,landing_region_d84551d28c05::landing_region_ea9847129f13,"Ninomiya, Japan -> Maruyama, Japan",56.33333333333333,169,169,120,64,29,82,34,0.2572298325722983,3,False,False,True,56.33333333333333,0.0
+JP,landing_region_a995dae8d34a::landing_region_ea9847129f13,"Toyohashi, Japan -> Maruyama, Japan",4.25,11,11,11,6,3,82,34,0.019406392694063926,4,False,False,False,4.25,0.0
+JP,landing_region_cfeb44e542fb::landing_region_d77c3f65b5a6,"Ajigaura, Japan -> Shima, Japan",2.25,9,9,9,5,2,82,34,0.010273972602739725,5,False,False,False,2.25,0.0
+JP,landing_region_d77c3f65b5a6::landing_region_d84551d28c05,"Shima, Japan -> Ninomiya, Japan",2.25,9,9,9,5,2,82,34,0.010273972602739725,6,False,False,False,2.25,0.0
+JP,landing_region_d77c3f65b5a6::landing_region_ea9847129f13,"Shima, Japan -> Maruyama, Japan",2.25,9,9,9,5,2,82,34,0.010273972602739725,7,False,False,False,2.25,0.0
+JP,landing_region_b8a30afb11ed::landing_region_ea9847129f13,"Sriracha, Thailand -> Maruyama, Japan",2.0,2,2,2,1,0,82,34,0.0091324200913242,8,False,False,False,0.0,2.0
+JP,landing_region_ea9847129f13::landing_region_f25f62ad46f6,"Maruyama, Japan -> Kitaibaraki, Japan",2.0,6,6,6,3,2,82,34,0.0091324200913242,9,False,False,False,2.0,0.0
+JP,landing_region_149ad599e1a3::landing_region_ea9847129f13,"Tanjung Bemban, Indonesia -> Maruyama, Japan",1.0,2,2,2,1,0,82,34,0.0045662100456621,10,False,False,False,0.0,1.0
+JP,landing_region_1f776bd1cb70::landing_region_cfeb44e542fb,"Ishikari, Japan -> Ajigaura, Japan",1.0,3,3,3,2,1,82,34,0.0045662100456621,11,False,False,False,1.0,0.0
+JP,landing_region_1f776bd1cb70::landing_region_d84551d28c05,"Ishikari, Japan -> Ninomiya, Japan",1.0,3,3,3,2,1,82,34,0.0045662100456621,12,False,False,False,1.0,0.0
+JP,landing_region_1f776bd1cb70::landing_region_ea9847129f13,"Ishikari, Japan -> Maruyama, Japan",1.0,3,3,3,2,1,82,34,0.0045662100456621,13,False,False,False,1.0,0.0
+JP,landing_region_d0ecf913edd7::landing_region_ea9847129f13,"Katong, Singapore -> Maruyama, Japan",1.0,2,2,2,1,0,82,34,0.0045662100456621,14,False,False,False,0.0,1.0
+JP,landing_region_71e1260196d0::landing_region_ea9847129f13,"Cavite, Philippines -> Maruyama, Japan",0.5,1,1,1,1,1,82,34,0.00228310502283105,15,False,False,False,0.0,0.5
+JP,landing_region_85b85b02a38f::landing_region_ea9847129f13,"Batangas, Philippines -> Maruyama, Japan",0.5,1,1,1,1,1,82,34,0.00228310502283105,16,False,False,False,0.0,0.5
+JP,landing_region_cfeb44e542fb::landing_region_eaf653d4b51e,"Ajigaura, Japan -> Naha, Japan",0.3333333333333333,1,1,1,1,0,82,34,0.0015220700152207,17,False,False,False,0.3333333333333333,0.0
+JP,landing_region_d84551d28c05::landing_region_eaf653d4b51e,"Ninomiya, Japan -> Naha, Japan",0.3333333333333333,1,1,1,1,0,82,34,0.0015220700152207,18,False,False,False,0.3333333333333333,0.0
+JP,landing_region_ea9847129f13::landing_region_eaf653d4b51e,"Maruyama, Japan -> Naha, Japan",0.3333333333333333,1,1,1,1,0,82,34,0.0015220700152207,19,False,False,False,0.3333333333333333,0.0
+KE,landing_region_5524694c9ae5::landing_region_57424b247075,"Dar Es Salaam, Tanzania -> Nyali, Kenya",6.0,6,6,6,3,2,3,2,1.0,1,True,False,False,0.0,6.0
+KY,landing_region_0c894d5ef6d3::landing_region_6a990cca53f4,"Dania Beach, FL, United States -> Half Moon Bay, Cayman Islands",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
+LC,landing_region_47af17c54e44::landing_region_588e014b726d,"Schoelcher, Martinique -> Kingstown, Saint Vincent and the Grenadines",1.0,4,4,4,2,2,2,2,0.14285714285714285,1,True,False,False,1.0,0.0
+LC,landing_region_47af17c54e44::landing_region_c92fc361db9a,"Schoelcher, Martinique -> Rodney Bay, Saint Lucia",1.0,4,4,4,2,2,2,2,0.14285714285714285,2,False,True,False,1.0,0.0
+LC,landing_region_588e014b726d::landing_region_c92fc361db9a,"Kingstown, Saint Vincent and the Grenadines -> Rodney Bay, Saint Lucia",1.0,4,4,4,2,2,2,2,0.14285714285714285,3,False,False,True,1.0,0.0
+LC,landing_region_588e014b726d::landing_region_f9d6bc049512,"Kingstown, Saint Vincent and the Grenadines -> Owia, Saint Vincent and the Grenadines",1.0,4,4,4,2,2,2,2,0.14285714285714285,4,False,False,False,1.0,0.0
+LC,landing_region_47af17c54e44::landing_region_56b1e3c6dc7d,"Schoelcher, Martinique -> Dickenson Bay, Antigua and Barbuda",0.375,3,3,3,2,2,2,2,0.05357142857142857,5,False,False,False,0.0,0.375
+LC,landing_region_47af17c54e44::landing_region_881c7f4b78b6,"Schoelcher, Martinique -> Morris Bay, Antigua and Barbuda",0.375,3,3,3,2,2,2,2,0.05357142857142857,6,False,False,False,0.0,0.375
+LC,landing_region_47af17c54e44::landing_region_b221e27b3993,"Schoelcher, Martinique -> Philipsburg, Sint Maarten",0.375,3,3,3,2,2,2,2,0.05357142857142857,7,False,False,False,0.0,0.375
+LC,landing_region_47af17c54e44::landing_region_b69228a09b14,"Schoelcher, Martinique -> Basseterre, Saint Kitts and Nevis",0.375,3,3,3,2,2,2,2,0.05357142857142857,8,False,False,False,0.0,0.375
+LC,landing_region_56b1e3c6dc7d::landing_region_c92fc361db9a,"Dickenson Bay, Antigua and Barbuda -> Rodney Bay, Saint Lucia",0.375,3,3,3,2,2,2,2,0.05357142857142857,9,False,False,False,0.0,0.375
+LC,landing_region_881c7f4b78b6::landing_region_c92fc361db9a,"Morris Bay, Antigua and Barbuda -> Rodney Bay, Saint Lucia",0.375,3,3,3,2,2,2,2,0.05357142857142857,10,False,False,False,0.0,0.375
+LC,landing_region_b221e27b3993::landing_region_c92fc361db9a,"Philipsburg, Sint Maarten -> Rodney Bay, Saint Lucia",0.375,3,3,3,2,2,2,2,0.05357142857142857,11,False,False,False,0.0,0.375
+LC,landing_region_b69228a09b14::landing_region_c92fc361db9a,"Basseterre, Saint Kitts and Nevis -> Rodney Bay, Saint Lucia",0.375,3,3,3,2,2,2,2,0.05357142857142857,12,False,False,False,0.0,0.375
+LK,landing_region_465d1b4e7da4::landing_region_d0ecf913edd7,"Mt. Lavinia, Sri Lanka -> Katong, Singapore",4.0,4,4,4,3,3,3,3,1.0,1,True,False,False,0.0,4.0
+ME,landing_region_7adde3db3d0d::landing_region_ac34543a7a05,"Dubrovnik, Croatia -> Durres, Albania",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,2.0,0.0
+MM,landing_region_a314ea9d2330::landing_region_d0ecf913edd7,"Thanlyin, Myanmar -> Katong, Singapore",2.0,2,2,2,2,2,2,2,1.0,1,True,False,False,0.0,2.0
+MP,landing_region_3602b9b9f277::landing_region_a13562362d3c,"Tinian, Northern Mariana Islands -> Rota, Northern Mariana Islands",1.0,2,2,2,1,1,1,1,0.5,1,True,False,False,0.0,1.0
+MP,landing_region_3602b9b9f277::landing_region_bc6c664daa8f,"Tinian, Northern Mariana Islands -> Alupang, Guam",1.0,2,2,2,1,1,1,1,0.5,2,False,True,False,0.0,1.0
+MT,landing_region_9e2ae58b14d4::landing_region_9e3a5ff856b9,"Marina di Ragusa, Italy -> Balluta Bay, Malta",26.0,26,26,19,9,2,9,2,0.8125,1,True,False,False,26.0,0.0
+MT,landing_region_08ea81d123b5::landing_region_9e3a5ff856b9,"Marseille, France -> Balluta Bay, Malta",4.0,4,4,4,2,1,9,2,0.125,2,False,True,False,0.0,4.0
+MT,landing_region_21eee101671e::landing_region_9e3a5ff856b9,"Marsala, Italy -> Balluta Bay, Malta",2.0,2,2,2,1,1,9,2,0.0625,3,False,False,True,0.0,2.0
+MV,landing_region_0074f164da96::landing_region_3e5f0fe5028c,"Mumbai, India -> Male, Maldives",15.0,15,15,15,8,1,9,2,0.8823529411764706,1,True,False,False,0.0,15.0
+MV,landing_region_3e5f0fe5028c::landing_region_465d1b4e7da4,"Male, Maldives -> Mt. Lavinia, Sri Lanka",2.0,2,2,2,1,1,9,2,0.11764705882352941,2,False,True,False,0.0,2.0
+MX,landing_region_0c894d5ef6d3::landing_region_2899c8b816f4,"Dania Beach, FL, United States -> Cancún, Mexico",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
+NL,landing_region_120836cdab0e::landing_region_35391ab448ed,"Callantsoog, Netherlands -> Brookhaven, NY, United States",3.0,3,3,3,2,1,2,1,1.0,1,True,False,False,0.0,3.0
+NO,landing_region_2f1f6d8f7ce5::landing_region_d514e04d4eb8,"Oslo, Norway -> Drøbak, Norway",10.8,42,42,36,18,9,32,13,0.13012048192771086,1,True,False,False,10.8,0.0
+NO,landing_region_2f1f6d8f7ce5::landing_region_d8238f687690,"Oslo, Norway -> Larvik, Norway",9.133333333333333,42,42,36,18,9,32,13,0.11004016064257027,2,False,True,False,9.133333333333333,0.0
+NO,landing_region_d514e04d4eb8::landing_region_d8238f687690,"Drøbak, Norway -> Larvik, Norway",9.133333333333333,42,42,36,18,9,32,13,0.11004016064257027,3,False,False,True,9.133333333333333,0.0
+NO,landing_region_1a418f57bf9f::landing_region_2f1f6d8f7ce5,"Capri Strand, Sweden -> Oslo, Norway",6.800000000000001,34,34,28,14,7,32,13,0.0819277108433735,4,False,False,False,6.800000000000001,0.0
+NO,landing_region_1a418f57bf9f::landing_region_d514e04d4eb8,"Capri Strand, Sweden -> Drøbak, Norway",6.800000000000001,34,34,28,14,7,32,13,0.0819277108433735,5,False,False,False,6.800000000000001,0.0
+NO,landing_region_68c2a6f2eb92::landing_region_fe6b66210668,"Brekstad, Norway -> Narvik, Norway",4.0,4,4,4,2,1,32,13,0.04819277108433735,6,False,False,False,4.0,0.0
+NO,landing_region_47fa1bef57a5::landing_region_68c2a6f2eb92,"Bodø, Norway -> Brekstad, Norway",3.0,3,3,3,1,1,32,13,0.03614457831325301,7,False,False,False,3.0,0.0
+NO,landing_region_2f1f6d8f7ce5::landing_region_59507011995d,"Oslo, Norway -> Kårstø, Norway",2.75,12,12,12,6,3,32,13,0.03313253012048193,8,False,False,False,2.75,0.0
+NO,landing_region_2f1f6d8f7ce5::landing_region_9f0445306e12,"Oslo, Norway -> Egersund, Norway",2.75,12,12,12,6,3,32,13,0.03313253012048193,9,False,False,False,2.75,0.0
+NO,landing_region_59507011995d::landing_region_d514e04d4eb8,"Kårstø, Norway -> Drøbak, Norway",2.75,12,12,12,6,3,32,13,0.03313253012048193,10,False,False,False,2.75,0.0
+NO,landing_region_9f0445306e12::landing_region_d514e04d4eb8,"Egersund, Norway -> Drøbak, Norway",2.75,12,12,12,6,3,32,13,0.03313253012048193,11,False,False,False,2.75,0.0
+NO,landing_region_28d81b327182::landing_region_51738c738daf,"Lefdal, Norway -> Herlandsvika, Norway",1.0,6,6,2,1,1,32,13,0.012048192771084338,12,False,False,False,1.0,0.0
+NO,landing_region_28d81b327182::landing_region_bd7d4cf4f8a1,"Lefdal, Norway -> Åheim, Norway",1.0,6,6,2,1,1,32,13,0.012048192771084338,13,False,False,False,1.0,0.0
+NO,landing_region_28d81b327182::landing_region_f8ebd95c71ce,"Lefdal, Norway -> Molde, Norway",1.0,6,6,2,1,1,32,13,0.012048192771084338,14,False,False,False,1.0,0.0
+NO,landing_region_2f1f6d8f7ce5::landing_region_734e5f248738,"Oslo, Norway -> Kristiansand, Norway",1.0,6,6,4,2,2,32,13,0.012048192771084338,15,False,False,False,1.0,0.0
+NO,landing_region_2f1f6d8f7ce5::landing_region_b89ae8b4224f,"Oslo, Norway -> Arendal, Norway",1.0,6,6,4,2,2,32,13,0.012048192771084338,16,False,False,False,1.0,0.0
+NO,landing_region_51738c738daf::landing_region_bd7d4cf4f8a1,"Herlandsvika, Norway -> Åheim, Norway",1.0,6,6,2,1,1,32,13,0.012048192771084338,17,False,False,False,1.0,0.0
+NO,landing_region_51738c738daf::landing_region_f8ebd95c71ce,"Herlandsvika, Norway -> Molde, Norway",1.0,6,6,2,1,1,32,13,0.012048192771084338,18,False,False,False,1.0,0.0
+NO,landing_region_59507011995d::landing_region_5c0c91ea8e24,"Kårstø, Norway -> Øygarden, Norway",1.0,2,2,2,1,1,32,13,0.012048192771084338,19,False,False,False,1.0,0.0
+NO,landing_region_5c0c91ea8e24::landing_region_84394d1aa7f2,"Øygarden, Norway -> Hyllestad, Norway",1.0,2,2,2,1,1,32,13,0.012048192771084338,20,False,False,False,1.0,0.0
+NO,landing_region_734e5f248738::landing_region_d514e04d4eb8,"Kristiansand, Norway -> Drøbak, Norway",1.0,6,6,4,2,2,32,13,0.012048192771084338,21,False,False,False,1.0,0.0
+NO,landing_region_b89ae8b4224f::landing_region_d514e04d4eb8,"Arendal, Norway -> Drøbak, Norway",1.0,6,6,4,2,2,32,13,0.012048192771084338,22,False,False,False,1.0,0.0
+NO,landing_region_bd7d4cf4f8a1::landing_region_f8ebd95c71ce,"Åheim, Norway -> Molde, Norway",1.0,6,6,2,1,1,32,13,0.012048192771084338,23,False,False,False,1.0,0.0
+NO,landing_region_2f1f6d8f7ce5::landing_region_613d7c7fc2a1,"Oslo, Norway -> Lista, Norway",0.6666666666666666,4,4,4,2,2,32,13,0.008032128514056224,24,False,False,False,0.6666666666666666,0.0
+NO,landing_region_613d7c7fc2a1::landing_region_d514e04d4eb8,"Lista, Norway -> Drøbak, Norway",0.6666666666666666,4,4,4,2,2,32,13,0.008032128514056224,25,False,False,False,0.6666666666666666,0.0
+NO,landing_region_68c2a6f2eb92::landing_region_f8ebd95c71ce,"Brekstad, Norway -> Molde, Norway",0.65,4,4,4,2,2,32,13,0.00783132530120482,26,False,False,False,0.65,0.0
+NO,landing_region_85af16a4a5ec::landing_region_f8ebd95c71ce,"Hitra, Norway -> Molde, Norway",0.65,4,4,4,2,2,32,13,0.00783132530120482,27,False,False,False,0.65,0.0
+NO,landing_region_56f5968b4284::landing_region_68c2a6f2eb92,"Edøya, Norway -> Brekstad, Norway",0.4,2,2,2,1,1,32,13,0.004819277108433735,28,False,False,False,0.4,0.0
+NO,landing_region_56f5968b4284::landing_region_85af16a4a5ec,"Edøya, Norway -> Hitra, Norway",0.4,2,2,2,1,1,32,13,0.004819277108433735,29,False,False,False,0.4,0.0
+NO,landing_region_68c2a6f2eb92::landing_region_85af16a4a5ec,"Brekstad, Norway -> Hitra, Norway",0.4,2,2,2,1,1,32,13,0.004819277108433735,30,False,False,False,0.4,0.0
+NO,landing_region_59507011995d::landing_region_613d7c7fc2a1,"Kårstø, Norway -> Lista, Norway",0.3333333333333333,2,2,2,1,1,32,13,0.004016064257028112,31,False,False,False,0.3333333333333333,0.0
+NO,landing_region_59507011995d::landing_region_734e5f248738,"Kårstø, Norway -> Kristiansand, Norway",0.3333333333333333,2,2,2,1,1,32,13,0.004016064257028112,32,False,False,False,0.3333333333333333,0.0
+NO,landing_region_59507011995d::landing_region_b89ae8b4224f,"Kårstø, Norway -> Arendal, Norway",0.3333333333333333,2,2,2,1,1,32,13,0.004016064257028112,33,False,False,False,0.3333333333333333,0.0
+NO,landing_region_613d7c7fc2a1::landing_region_734e5f248738,"Lista, Norway -> Kristiansand, Norway",0.3333333333333333,2,2,2,1,1,32,13,0.004016064257028112,34,False,False,False,0.3333333333333333,0.0
+NO,landing_region_613d7c7fc2a1::landing_region_9f0445306e12,"Lista, Norway -> Egersund, Norway",0.3333333333333333,2,2,2,1,1,32,13,0.004016064257028112,35,False,False,False,0.3333333333333333,0.0
+NO,landing_region_613d7c7fc2a1::landing_region_b89ae8b4224f,"Lista, Norway -> Arendal, Norway",0.3333333333333333,2,2,2,1,1,32,13,0.004016064257028112,36,False,False,False,0.3333333333333333,0.0
+NO,landing_region_613d7c7fc2a1::landing_region_d8238f687690,"Lista, Norway -> Larvik, Norway",0.3333333333333333,2,2,2,1,1,32,13,0.004016064257028112,37,False,False,False,0.3333333333333333,0.0
+NO,landing_region_734e5f248738::landing_region_9f0445306e12,"Kristiansand, Norway -> Egersund, Norway",0.3333333333333333,2,2,2,1,1,32,13,0.004016064257028112,38,False,False,False,0.3333333333333333,0.0
+NO,landing_region_734e5f248738::landing_region_b89ae8b4224f,"Kristiansand, Norway -> Arendal, Norway",0.3333333333333333,2,2,2,1,1,32,13,0.004016064257028112,39,False,False,False,0.3333333333333333,0.0
+NO,landing_region_734e5f248738::landing_region_d8238f687690,"Kristiansand, Norway -> Larvik, Norway",0.3333333333333333,2,2,2,1,1,32,13,0.004016064257028112,40,False,False,False,0.3333333333333333,0.0
+NO,landing_region_9f0445306e12::landing_region_b89ae8b4224f,"Egersund, Norway -> Arendal, Norway",0.3333333333333333,2,2,2,1,1,32,13,0.004016064257028112,41,False,False,False,0.3333333333333333,0.0
+NO,landing_region_b89ae8b4224f::landing_region_d8238f687690,"Arendal, Norway -> Larvik, Norway",0.3333333333333333,2,2,2,1,1,32,13,0.004016064257028112,42,False,False,False,0.3333333333333333,0.0
+NO,landing_region_1a418f57bf9f::landing_region_59507011995d,"Capri Strand, Sweden -> Kårstø, Norway",0.25,2,2,2,1,1,32,13,0.0030120481927710845,43,False,False,False,0.25,0.0
+NO,landing_region_1a418f57bf9f::landing_region_9f0445306e12,"Capri Strand, Sweden -> Egersund, Norway",0.25,2,2,2,1,1,32,13,0.0030120481927710845,44,False,False,False,0.25,0.0
+NO,landing_region_28d81b327182::landing_region_68c2a6f2eb92,"Lefdal, Norway -> Brekstad, Norway",0.25,2,2,2,1,1,32,13,0.0030120481927710845,45,False,False,False,0.25,0.0
+NO,landing_region_28d81b327182::landing_region_85af16a4a5ec,"Lefdal, Norway -> Hitra, Norway",0.25,2,2,2,1,1,32,13,0.0030120481927710845,46,False,False,False,0.25,0.0
+NO,landing_region_51738c738daf::landing_region_68c2a6f2eb92,"Herlandsvika, Norway -> Brekstad, Norway",0.25,2,2,2,1,1,32,13,0.0030120481927710845,47,False,False,False,0.25,0.0
+NO,landing_region_51738c738daf::landing_region_85af16a4a5ec,"Herlandsvika, Norway -> Hitra, Norway",0.25,2,2,2,1,1,32,13,0.0030120481927710845,48,False,False,False,0.25,0.0
+NO,landing_region_59507011995d::landing_region_d8238f687690,"Kårstø, Norway -> Larvik, Norway",0.25,2,2,2,1,1,32,13,0.0030120481927710845,49,False,False,False,0.25,0.0
+NO,landing_region_68c2a6f2eb92::landing_region_bd7d4cf4f8a1,"Brekstad, Norway -> Åheim, Norway",0.25,2,2,2,1,1,32,13,0.0030120481927710845,50,False,False,False,0.25,0.0
+NO,landing_region_85af16a4a5ec::landing_region_bd7d4cf4f8a1,"Hitra, Norway -> Åheim, Norway",0.25,2,2,2,1,1,32,13,0.0030120481927710845,51,False,False,False,0.25,0.0
+NO,landing_region_9f0445306e12::landing_region_d8238f687690,"Egersund, Norway -> Larvik, Norway",0.25,2,2,2,1,1,32,13,0.0030120481927710845,52,False,False,False,0.25,0.0
+NU,landing_region_0601a73acabb::landing_region_3b96281acedd,"Apia, Samoa -> Alofi, Niue",2.0,2,2,2,1,0,1,0,1.0,1,True,False,False,0.0,2.0
+NZ,landing_region_0850a0fd663e::landing_region_64abd2b76b5b,"Oteranga Bay, New Zealand -> Takapuna, New Zealand",4.0,8,8,8,4,4,10,9,0.23529411764705882,1,True,False,False,4.0,0.0
+NZ,landing_region_202dc066a01e::landing_region_64abd2b76b5b,"Paraparaumu, New Zealand -> Takapuna, New Zealand",4.0,8,8,8,4,4,10,9,0.23529411764705882,2,False,True,False,4.0,0.0
+NZ,landing_region_64abd2b76b5b::landing_region_c0018732c600,"Takapuna, New Zealand -> Christchurch, New Zealand",3.0,3,3,3,2,1,10,9,0.17647058823529413,3,False,False,True,3.0,0.0
+NZ,landing_region_58084817cbe7::landing_region_64abd2b76b5b,"Paddington, NSW, Australia -> Takapuna, New Zealand",2.0,4,4,4,2,2,10,9,0.11764705882352941,4,False,False,False,0.0,2.0
+NZ,landing_region_58084817cbe7::landing_region_a0bc6376e75d,"Paddington, NSW, Australia -> Mangawhai, New Zealand",2.0,4,4,4,2,2,10,9,0.11764705882352941,5,False,False,False,0.0,2.0
+NZ,landing_region_64abd2b76b5b::landing_region_fee4652f607a,"Takapuna, New Zealand -> Raglan, New Zealand",2.0,2,2,2,2,2,10,9,0.11764705882352941,6,False,False,False,2.0,0.0
+PA,landing_region_466f092d0a6e::landing_region_9e23da50dbe5,"Fort Amador, Panama -> Colón, Panama",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,2.0,0.0
+PE,landing_region_4d0efd9bb45b::landing_region_5113b57f1083,"Lurin, Peru -> Praia Grande, Brazil",2.0,2,2,2,2,2,2,2,1.0,1,True,False,False,0.0,2.0
+PG,landing_region_58084817cbe7::landing_region_a4275bfd77b7,"Paddington, NSW, Australia -> Port Moresby, Papua New Guinea",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
+PH,landing_region_71e1260196d0::landing_region_85b85b02a38f,"Cavite, Philippines -> Batangas, Philippines",66.91904761904762,80,80,58,32,16,36,20,0.5108324245728826,1,True,False,False,66.91904761904762,0.0
+PH,landing_region_319252418c1f::landing_region_71e1260196d0,"Deep Water Bay, China -> Cavite, Philippines",19.0,34,34,34,18,7,36,20,0.1450381679389313,2,False,True,False,0.0,19.0
+PH,landing_region_319252418c1f::landing_region_85b85b02a38f,"Deep Water Bay, China -> Batangas, Philippines",15.0,30,30,30,17,7,36,20,0.11450381679389313,3,False,False,True,0.0,15.0
+PH,landing_region_85b85b02a38f::landing_region_f4e40485a2a8,"Batangas, Philippines -> Lucena, Philippines",7.119047619047619,17,17,15,8,6,36,20,0.05434387495456197,4,False,False,False,7.119047619047619,0.0
+PH,landing_region_71e1260196d0::landing_region_d0ecf913edd7,"Cavite, Philippines -> Katong, Singapore",3.5,7,7,7,4,4,36,20,0.026717557251908396,5,False,False,False,0.0,3.5
+PH,landing_region_85b85b02a38f::landing_region_d0ecf913edd7,"Batangas, Philippines -> Katong, Singapore",3.5,7,7,7,4,4,36,20,0.026717557251908396,6,False,False,False,0.0,3.5
+PH,landing_region_71e1260196d0::landing_region_f1cf3d89b00f,"Cavite, Philippines -> Pinamalayan, Philippines",1.4190476190476191,8,8,4,2,2,36,20,0.010832424572882589,7,False,False,False,1.4190476190476191,0.0
+PH,landing_region_85b85b02a38f::landing_region_f1cf3d89b00f,"Batangas, Philippines -> Pinamalayan, Philippines",1.4190476190476191,8,8,4,2,2,36,20,0.010832424572882589,8,False,False,False,1.4190476190476191,0.0
+PH,landing_region_68949973e697::landing_region_85b85b02a38f,"Roxas, Philippines -> Batangas, Philippines",0.8,4,4,2,1,1,36,20,0.0061068702290076335,9,False,False,False,0.8,0.0
+PH,landing_region_85b85b02a38f::landing_region_e1fca807130d,"Batangas, Philippines -> San Jose, Philippines",0.8,4,4,2,1,1,36,20,0.0061068702290076335,10,False,False,False,0.8,0.0
+PH,landing_region_07c15c5c24ef::landing_region_11a5fc08eb7a,"Calatrava, Philippines -> Caticlan, Philippines",0.6666666666666666,2,2,2,1,1,36,20,0.0050890585241730275,11,False,False,False,0.6666666666666666,0.0
+PH,landing_region_07c15c5c24ef::landing_region_73f9243dcd5b,"Calatrava, Philippines -> Roxas City, Philippines",0.6666666666666666,2,2,2,1,1,36,20,0.0050890585241730275,12,False,False,False,0.6666666666666666,0.0
+PH,landing_region_11a5fc08eb7a::landing_region_73f9243dcd5b,"Caticlan, Philippines -> Roxas City, Philippines",0.6666666666666666,2,2,2,1,1,36,20,0.0050890585241730275,13,False,False,False,0.6666666666666666,0.0
+PH,landing_region_5cf0b30d1e13::landing_region_71e1260196d0,"Bulan, Philippines -> Cavite, Philippines",0.6666666666666666,2,2,2,1,1,36,20,0.0050890585241730275,14,False,False,False,0.6666666666666666,0.0
+PH,landing_region_6bfc07cf0a74::landing_region_85b85b02a38f,"Matnog, Philippines -> Batangas, Philippines",0.6666666666666666,2,2,2,1,1,36,20,0.0050890585241730275,15,False,False,False,0.6666666666666666,0.0
+PH,landing_region_71e1260196d0::landing_region_ca8ba064dbbf,"Cavite, Philippines -> Legazpi City, Philippines",0.6666666666666666,2,2,2,1,1,36,20,0.0050890585241730275,16,False,False,False,0.6666666666666666,0.0
+PH,landing_region_b2f951a0073c::landing_region_f4e40485a2a8,"Boac, Philippines -> Lucena, Philippines",0.6190476190476191,4,4,2,1,1,36,20,0.004725554343874954,17,False,False,False,0.6190476190476191,0.0
+PH,landing_region_f1cf3d89b00f::landing_region_f4e40485a2a8,"Pinamalayan, Philippines -> Lucena, Philippines",0.6190476190476191,4,4,2,1,1,36,20,0.004725554343874954,18,False,False,False,0.6190476190476191,0.0
+PH,landing_region_2fee20529ebb::landing_region_f4e40485a2a8,"Surigao City, Philippines -> Lucena, Philippines",0.5,2,2,2,1,1,36,20,0.003816793893129771,19,False,False,False,0.5,0.0
+PH,landing_region_71e1260196d0::landing_region_c51cb80e0473,"Cavite, Philippines -> Buenavista, Philippines",0.5,2,2,2,1,1,36,20,0.003816793893129771,20,False,False,False,0.5,0.0
+PH,landing_region_cc1ec3c30a7f::landing_region_f4e40485a2a8,"Camiguin Island, Philippines -> Lucena, Philippines",0.5,2,2,2,1,1,36,20,0.003816793893129771,21,False,False,False,0.5,0.0
+PH,landing_region_f4e40485a2a8::landing_region_fe894cd39e7f,"Lucena, Philippines -> Siargao Island, Philippines",0.5,2,2,2,1,1,36,20,0.003816793893129771,22,False,False,False,0.5,0.0
+PH,landing_region_85b85b02a38f::landing_region_b2f951a0073c,"Batangas, Philippines -> Boac, Philippines",0.2857142857142857,2,2,2,1,1,36,20,0.0021810250817884402,23,False,False,False,0.2857142857142857,0.0
+PH,landing_region_00c458c2b5c8::landing_region_85b85b02a38f,"Palompon, Philippines -> Batangas, Philippines",0.18181818181818182,2,2,2,1,1,36,20,0.0013879250520471894,24,False,False,False,0.18181818181818182,0.0
+PH,landing_region_00c458c2b5c8::landing_region_f4e40485a2a8,"Palompon, Philippines -> Lucena, Philippines",0.18181818181818182,2,2,2,1,1,36,20,0.0013879250520471894,25,False,False,False,0.18181818181818182,0.0
+PH,landing_region_523d74a2945b::landing_region_85b85b02a38f,"San Carlos, Philippines -> Batangas, Philippines",0.18181818181818182,2,2,2,1,1,36,20,0.0013879250520471894,26,False,False,False,0.18181818181818182,0.0
+PH,landing_region_523d74a2945b::landing_region_f4e40485a2a8,"San Carlos, Philippines -> Lucena, Philippines",0.18181818181818182,2,2,2,1,1,36,20,0.0013879250520471894,27,False,False,False,0.18181818181818182,0.0
+PH,landing_region_568e54040a5c::landing_region_71e1260196d0,"Talisay, Philippines -> Cavite, Philippines",0.18181818181818182,2,2,2,1,1,36,20,0.0013879250520471894,28,False,False,False,0.18181818181818182,0.0
+PH,landing_region_568e54040a5c::landing_region_85b85b02a38f,"Talisay, Philippines -> Batangas, Philippines",0.18181818181818182,2,2,2,1,1,36,20,0.0013879250520471894,29,False,False,False,0.18181818181818182,0.0
+PH,landing_region_568e54040a5c::landing_region_f4e40485a2a8,"Talisay, Philippines -> Lucena, Philippines",0.18181818181818182,2,2,2,1,1,36,20,0.0013879250520471894,30,False,False,False,0.18181818181818182,0.0
+PH,landing_region_71e1260196d0::landing_region_b424eda6e2a1,"Cavite, Philippines -> Cadiz City, Philippines",0.18181818181818182,2,2,2,1,1,36,20,0.0013879250520471894,31,False,False,False,0.18181818181818182,0.0
+PH,landing_region_73d583aa73b2::landing_region_85b85b02a38f,"San Remigio, Philippines -> Batangas, Philippines",0.18181818181818182,2,2,2,1,1,36,20,0.0013879250520471894,32,False,False,False,0.18181818181818182,0.0
+PH,landing_region_85b85b02a38f::landing_region_e0e5e838eb99,"Batangas, Philippines -> Tagbilaran, Philippines",0.18181818181818182,2,2,2,1,1,36,20,0.0013879250520471894,33,False,False,False,0.18181818181818182,0.0
+PH,landing_region_e0e5e838eb99::landing_region_f4e40485a2a8,"Tagbilaran, Philippines -> Lucena, Philippines",0.18181818181818182,2,2,2,1,1,36,20,0.0013879250520471894,34,False,False,False,0.18181818181818182,0.0
+PH,landing_region_00c458c2b5c8::landing_region_164e038b4e26,"Palompon, Philippines -> Maasin, Philippines",0.14285714285714285,2,2,2,1,1,36,20,0.0010905125408942201,35,False,False,False,0.14285714285714285,0.0
+PH,landing_region_00c458c2b5c8::landing_region_523d74a2945b,"Palompon, Philippines -> San Carlos, Philippines",0.14285714285714285,2,2,2,1,1,36,20,0.0010905125408942201,36,False,False,False,0.14285714285714285,0.0
+PH,landing_region_00c458c2b5c8::landing_region_568e54040a5c,"Palompon, Philippines -> Talisay, Philippines",0.14285714285714285,2,2,2,1,1,36,20,0.0010905125408942201,37,False,False,False,0.14285714285714285,0.0
+PH,landing_region_00c458c2b5c8::landing_region_73d583aa73b2,"Palompon, Philippines -> San Remigio, Philippines",0.14285714285714285,2,2,2,1,1,36,20,0.0010905125408942201,38,False,False,False,0.14285714285714285,0.0
+PH,landing_region_00c458c2b5c8::landing_region_b424eda6e2a1,"Palompon, Philippines -> Cadiz City, Philippines",0.14285714285714285,2,2,2,1,1,36,20,0.0010905125408942201,39,False,False,False,0.14285714285714285,0.0
+PH,landing_region_00c458c2b5c8::landing_region_e0e5e838eb99,"Palompon, Philippines -> Tagbilaran, Philippines",0.14285714285714285,2,2,2,1,1,36,20,0.0010905125408942201,40,False,False,False,0.14285714285714285,0.0
+PH,landing_region_164e038b4e26::landing_region_523d74a2945b,"Maasin, Philippines -> San Carlos, Philippines",0.14285714285714285,2,2,2,1,1,36,20,0.0010905125408942201,41,False,False,False,0.14285714285714285,0.0
+PH,landing_region_164e038b4e26::landing_region_568e54040a5c,"Maasin, Philippines -> Talisay, Philippines",0.14285714285714285,2,2,2,1,1,36,20,0.0010905125408942201,42,False,False,False,0.14285714285714285,0.0
+PH,landing_region_164e038b4e26::landing_region_e0e5e838eb99,"Maasin, Philippines -> Tagbilaran, Philippines",0.14285714285714285,2,2,2,1,1,36,20,0.0010905125408942201,43,False,False,False,0.14285714285714285,0.0
+PH,landing_region_523d74a2945b::landing_region_568e54040a5c,"San Carlos, Philippines -> Talisay, Philippines",0.14285714285714285,2,2,2,1,1,36,20,0.0010905125408942201,44,False,False,False,0.14285714285714285,0.0
+PH,landing_region_523d74a2945b::landing_region_73d583aa73b2,"San Carlos, Philippines -> San Remigio, Philippines",0.14285714285714285,2,2,2,1,1,36,20,0.0010905125408942201,45,False,False,False,0.14285714285714285,0.0
+PH,landing_region_568e54040a5c::landing_region_73d583aa73b2,"Talisay, Philippines -> San Remigio, Philippines",0.14285714285714285,2,2,2,1,1,36,20,0.0010905125408942201,46,False,False,False,0.14285714285714285,0.0
+PH,landing_region_568e54040a5c::landing_region_e0e5e838eb99,"Talisay, Philippines -> Tagbilaran, Philippines",0.14285714285714285,2,2,2,1,1,36,20,0.0010905125408942201,47,False,False,False,0.14285714285714285,0.0
+PH,landing_region_73d583aa73b2::landing_region_e0e5e838eb99,"San Remigio, Philippines -> Tagbilaran, Philippines",0.14285714285714285,2,2,2,1,1,36,20,0.0010905125408942201,48,False,False,False,0.14285714285714285,0.0
+PK,landing_region_1b3a8d836a7d::landing_region_d0ecf913edd7,"Karachi, Pakistan -> Katong, Singapore",14.0,14,14,14,7,3,7,3,1.0,1,True,False,False,0.0,14.0
+PR,landing_region_0c894d5ef6d3::landing_region_222235fff376,"Dania Beach, FL, United States -> Ponce, PR, United States",2.0,4,4,4,2,1,2,1,0.5,1,True,False,False,0.0,2.0
+PR,landing_region_0c894d5ef6d3::landing_region_822747b0ce7e,"Dania Beach, FL, United States -> Miramar, PR, United States",2.0,4,4,4,2,1,2,1,0.5,2,False,True,False,0.0,2.0
+PT,landing_region_a2ee20dddede::landing_region_c88b92706e9c,"Burgau, Portugal -> Seixal, Portugal",8.0,8,8,8,4,2,8,6,0.5,1,True,False,False,8.0,0.0
+PT,landing_region_c78987ebb9a4::landing_region_c88b92706e9c,"Sines, Portugal -> Seixal, Portugal",6.0,6,6,6,3,3,8,6,0.375,2,False,True,False,6.0,0.0
+PT,landing_region_88cdc9b92bbf::landing_region_bafbcb4f2540,"Machico, Portugal -> Porto Santo, Portugal",2.0,2,2,2,1,1,8,6,0.125,3,False,False,True,2.0,0.0
+QA,landing_region_14db368b2428::landing_region_f0ff9789c5ea,"Halul Island, Qatar -> Al-Kheesa, Qatar",1.0,2,2,2,1,1,1,1,0.25,1,True,False,False,1.0,0.0
+QA,landing_region_445416594174::landing_region_8dc97f28b4d0,"Amwaj Island, Bahrain -> Sharjah, United Arab Emirates",1.0,2,2,2,1,1,1,1,0.25,2,False,True,False,0.0,1.0
+QA,landing_region_445416594174::landing_region_f0ff9789c5ea,"Amwaj Island, Bahrain -> Al-Kheesa, Qatar",1.0,2,2,2,1,1,1,1,0.25,3,False,False,True,1.0,0.0
+QA,landing_region_8dc97f28b4d0::landing_region_f0ff9789c5ea,"Sharjah, United Arab Emirates -> Al-Kheesa, Qatar",1.0,2,2,2,1,1,1,1,0.25,4,False,False,False,0.0,1.0
+SE,landing_region_1c12bbea2f36::landing_region_e1a72a298b9d,"Borbby Strandbad, Sweden -> Dragor, Denmark",73.0,75,75,71,37,18,100,34,0.3395348837209302,1,True,False,False,14.0,59.0
+SE,landing_region_1ce0b85cd8b9::landing_region_e1a72a298b9d,"Uto, Sweden -> Dragor, Denmark",46.5,69,69,63,32,14,100,34,0.21627906976744185,2,False,True,False,26.5,20.0
+SE,landing_region_1c12bbea2f36::landing_region_1ce0b85cd8b9,"Borbby Strandbad, Sweden -> Uto, Sweden",22.5,45,45,41,21,9,100,34,0.10465116279069768,3,False,False,True,22.5,0.0
+SE,landing_region_5631d1801aee::landing_region_71db3ba08a92,"Tallinn, Estonia -> Stockholm, Sweden",20.5,41,41,41,33,10,100,34,0.09534883720930233,4,False,False,False,0.0,20.5
+SE,landing_region_65aa8d7cf62e::landing_region_71db3ba08a92,"Espoo, Finland -> Stockholm, Sweden",20.5,41,41,41,33,10,100,34,0.09534883720930233,5,False,False,False,0.0,20.5
+SE,landing_region_1ce0b85cd8b9::landing_region_3d94d1c98c16,"Uto, Sweden -> Näsby, Sweden",11.0,12,12,8,4,3,100,34,0.05116279069767442,6,False,False,False,11.0,0.0
+SE,landing_region_3db43e0add05::landing_region_599c2c879d37,"Kungsbacka, Sweden -> Laeso, Denmark",11.0,12,12,7,4,3,100,34,0.05116279069767442,7,False,False,False,11.0,0.0
+SE,landing_region_1348c2f18d19::landing_region_3d94d1c98c16,"Byxelkrok, Sweden -> Näsby, Sweden",2.0,2,2,2,1,1,100,34,0.009302325581395349,8,False,False,False,2.0,0.0
+SE,landing_region_3eb4f4d89687::landing_region_71db3ba08a92,"Hamnäs, Finland -> Stockholm, Sweden",2.0,4,4,4,2,1,100,34,0.009302325581395349,9,False,False,False,2.0,0.0
+SE,landing_region_3eb4f4d89687::landing_region_f4011a851fe0,"Hamnäs, Finland -> Östhammar, Sweden",2.0,4,4,4,2,1,100,34,0.009302325581395349,10,False,False,False,2.0,0.0
+SE,landing_region_1348c2f18d19::landing_region_1ce0b85cd8b9,"Byxelkrok, Sweden -> Uto, Sweden",1.0,2,2,2,1,1,100,34,0.004651162790697674,11,False,False,False,1.0,0.0
+SE,landing_region_1c12bbea2f36::landing_region_5f83f61dba62,"Borbby Strandbad, Sweden -> Rønne, Denmark",1.0,3,3,3,2,1,100,34,0.004651162790697674,12,False,False,False,1.0,0.0
+SE,landing_region_599c2c879d37::landing_region_d51ce847b879,"Laeso, Denmark -> Skalvik, Sweden",1.0,2,2,2,1,1,100,34,0.004651162790697674,13,False,False,False,1.0,0.0
+SE,landing_region_5f83f61dba62::landing_region_e1a72a298b9d,"Rønne, Denmark -> Dragor, Denmark",1.0,3,3,3,2,1,100,34,0.004651162790697674,14,False,False,False,1.0,0.0
+SG,landing_region_149ad599e1a3::landing_region_b0fe5c69b187,"Tanjung Bemban, Indonesia -> Rengit, Malaysia",5.066666666666666,16,16,16,8,4,11,7,0.26666666666666666,1,True,False,False,5.066666666666666,0.0
+SG,landing_region_149ad599e1a3::landing_region_d0ecf913edd7,"Tanjung Bemban, Indonesia -> Katong, Singapore",5.066666666666666,16,16,16,8,4,11,7,0.26666666666666666,2,False,True,False,5.066666666666666,0.0
+SG,landing_region_149ad599e1a3::landing_region_e9a4eab3ab1c,"Tanjung Bemban, Indonesia -> Karimun, Indonesia",5.066666666666666,16,16,16,8,4,11,7,0.26666666666666666,3,False,False,True,5.066666666666666,0.0
+SG,landing_region_319252418c1f::landing_region_d0ecf913edd7,"Deep Water Bay, China -> Katong, Singapore",2.0,2,2,2,2,2,11,7,0.10526315789473684,4,False,False,False,0.0,2.0
+SG,landing_region_0074f164da96::landing_region_d0ecf913edd7,"Mumbai, India -> Katong, Singapore",1.0,1,1,1,1,1,11,7,0.05263157894736842,5,False,False,False,0.0,1.0
+SG,landing_region_149ad599e1a3::landing_region_e2bda68c9220,"Tanjung Bemban, Indonesia -> Mersing, Malaysia",0.4,2,2,2,1,1,11,7,0.021052631578947368,6,False,False,False,0.4,0.0
+SG,landing_region_d0ecf913edd7::landing_region_e2bda68c9220,"Katong, Singapore -> Mersing, Malaysia",0.4,2,2,2,1,1,11,7,0.021052631578947368,7,False,False,False,0.4,0.0
+SN,landing_region_9d5009d65552::landing_region_c88b92706e9c,"Dakar, Senegal -> Seixal, Portugal",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
+TH,landing_region_25a669da6890::landing_region_b8a30afb11ed,"Phetchaburi, Thailand -> Sriracha, Thailand",24.0,24,24,14,7,4,10,6,0.7741935483870968,1,True,False,False,24.0,0.0
+TH,landing_region_b8a30afb11ed::landing_region_d0ecf913edd7,"Sriracha, Thailand -> Katong, Singapore",3.0,3,3,3,2,1,10,6,0.0967741935483871,2,False,True,False,0.0,3.0
+TH,landing_region_04269067e649::landing_region_2fb85abccfbf,"Songkhla, Thailand -> Koh Samui, Thailand",2.0,2,2,2,1,1,10,6,0.06451612903225806,3,False,False,True,2.0,0.0
+TH,landing_region_04269067e649::landing_region_25a669da6890,"Songkhla, Thailand -> Phetchaburi, Thailand",1.0,2,2,2,1,1,10,6,0.03225806451612903,4,False,False,False,1.0,0.0
+TH,landing_region_04269067e649::landing_region_b8a30afb11ed,"Songkhla, Thailand -> Sriracha, Thailand",1.0,2,2,2,1,1,10,6,0.03225806451612903,5,False,False,False,1.0,0.0
+TO,landing_region_1cece50a3587::landing_region_ab5fcb6a28e2,"Suva, Fiji -> Nuku'alofa, Tonga",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
+TW,landing_region_3362110f86da::landing_region_7a95dbddaa36,"Pa Li, Taiwan -> Yuanli, Taiwan",24.0,25,25,22,12,6,16,6,0.7058823529411765,1,True,False,False,24.0,0.0
+TW,landing_region_3362110f86da::landing_region_ddcc0ff066ef,"Pa Li, Taiwan -> Budai, Taiwan",2.333333333333333,5,5,5,3,2,16,6,0.06862745098039215,2,False,True,False,2.333333333333333,0.0
+TW,landing_region_3362110f86da::landing_region_baee86a03f35,"Pa Li, Taiwan -> Guningtou, Taiwan",2.0,2,2,2,2,0,16,6,0.058823529411764705,3,False,False,True,0.0,2.0
+TW,landing_region_7a95dbddaa36::landing_region_bc12e2110b5f,"Yuanli, Taiwan -> Magong, Taiwan",1.5,3,3,2,1,1,16,6,0.04411764705882353,4,False,False,False,1.5,0.0
+TW,landing_region_7a95dbddaa36::landing_region_ddcc0ff066ef,"Yuanli, Taiwan -> Budai, Taiwan",1.5,3,3,2,1,1,16,6,0.04411764705882353,5,False,False,False,1.5,0.0
+TW,landing_region_3362110f86da::landing_region_ef18f60e8ea4,"Pa Li, Taiwan -> Dawu, Taiwan",1.3333333333333333,3,3,3,2,1,16,6,0.0392156862745098,6,False,False,False,1.3333333333333333,0.0
+TW,landing_region_319252418c1f::landing_region_3362110f86da,"Deep Water Bay, China -> Pa Li, Taiwan",0.5,1,1,1,1,0,16,6,0.014705882352941176,7,False,False,False,0.0,0.5
+TW,landing_region_319252418c1f::landing_region_8eebb9f0ec75,"Deep Water Bay, China -> Toucheng, Taiwan",0.5,1,1,1,1,0,16,6,0.014705882352941176,8,False,False,False,0.0,0.5
+TW,landing_region_3362110f86da::landing_region_bc12e2110b5f,"Pa Li, Taiwan -> Magong, Taiwan",0.3333333333333333,1,1,1,1,1,16,6,0.00980392156862745,9,False,False,False,0.3333333333333333,0.0
+US,landing_region_35391ab448ed::landing_region_b3d356cd3c9f,"Brookhaven, NY, United States -> Wall Township, NJ, United States",192.66666666666666,377,377,258,144,49,200,68,0.3535168195718654,1,True,False,False,192.66666666666666,0.0
+US,landing_region_35391ab448ed::landing_region_a4e660c6c620,"Brookhaven, NY, United States -> Island Park, NY, United States",182.66666666666666,377,377,249,137,48,200,68,0.3351681957186544,2,False,True,False,182.66666666666666,0.0
+US,landing_region_5f578929a68a::landing_region_fee5a5fdbba8,"Harbour Pointe, WA, United States -> Cama Beach, WA, United States",70.0,84,84,50,25,11,200,68,0.12844036697247707,3,False,False,True,70.0,0.0
+US,landing_region_35391ab448ed::landing_region_59a210e88c9e,"Brookhaven, NY, United States -> New Haven, CT, United States",37.666666666666664,95,95,61,31,8,200,68,0.0691131498470948,4,False,False,False,37.666666666666664,0.0
+US,landing_region_ad2e1f237edf::landing_region_df3d1db01d0e,"Buffalo, NY, United States -> Toronto, ON, Canada",23.0,23,23,23,16,5,200,68,0.04220183486238532,5,False,False,False,2.0,21.0
+US,landing_region_0c894d5ef6d3::landing_region_a160581162b2,"Dania Beach, FL, United States -> Vero Beach, FL, United States",4.0,4,4,2,1,1,200,68,0.007339449541284404,6,False,False,False,4.0,0.0
+US,landing_region_0c894d5ef6d3::landing_region_af7df63397a0,"Dania Beach, FL, United States -> Jacksonville, FL, United States",4.0,4,4,4,2,1,200,68,0.007339449541284404,7,False,False,False,4.0,0.0
+US,landing_region_5f578929a68a::landing_region_f41a83b9b5b3,"Harbour Pointe, WA, United States -> Cordova Bay, BC, Canada",4.0,18,18,18,9,5,200,68,0.007339449541284404,8,False,False,False,4.0,0.0
+US,landing_region_f41a83b9b5b3::landing_region_fee5a5fdbba8,"Cordova Bay, BC, Canada -> Cama Beach, WA, United States",3.666666666666667,17,17,17,9,5,200,68,0.006727828746177371,9,False,False,False,3.666666666666667,0.0
+US,landing_region_5f578929a68a::landing_region_94c53aa4a6d7,"Harbour Pointe, WA, United States -> Vancouver, BC, Canada",3.3333333333333335,16,16,16,8,4,200,68,0.0061162079510703364,10,False,False,False,3.3333333333333335,0.0
+US,landing_region_661389eca7bf::landing_region_df61fea74887,"Santa Barbara, CA, United States -> El Segundo, CA, United States",3.0,3,3,3,2,2,200,68,0.005504587155963303,11,False,False,False,3.0,0.0
+US,landing_region_94c53aa4a6d7::landing_region_fee5a5fdbba8,"Vancouver, BC, Canada -> Cama Beach, WA, United States",3.0,15,15,15,8,4,200,68,0.005504587155963303,12,False,False,False,3.0,0.0
+US,landing_region_5f578929a68a::landing_region_a2016c77cbfd,"Harbour Pointe, WA, United States -> Portage, AK, United States",2.0,2,2,2,1,1,200,68,0.003669724770642202,13,False,False,False,2.0,0.0
+US,landing_region_91000f65ec77::landing_region_c227a3796213,"Kapolei, HI, United States -> Keawaula, HI, United States",2.0,6,6,4,2,1,200,68,0.003669724770642202,14,False,False,False,2.0,0.0
+US,landing_region_91000f65ec77::landing_region_ce80c3fde7f3,"Kapolei, HI, United States -> Kaunakakai, HI, United States",2.0,6,6,4,2,1,200,68,0.003669724770642202,15,False,False,False,2.0,0.0
+US,landing_region_c227a3796213::landing_region_ce80c3fde7f3,"Keawaula, HI, United States -> Kaunakakai, HI, United States",2.0,6,6,4,2,1,200,68,0.003669724770642202,16,False,False,False,2.0,0.0
+US,landing_region_0c894d5ef6d3::landing_region_bf457e1b83fe,"Dania Beach, FL, United States -> Haina, Dominican Republic",1.0,1,1,1,1,1,200,68,0.001834862385321101,17,False,False,False,0.0,1.0
+US,landing_region_1a3ed4fe187f::landing_region_91000f65ec77,"Kawaihae, HI, United States -> Kapolei, HI, United States",1.0,2,2,2,1,1,200,68,0.001834862385321101,18,False,False,False,1.0,0.0
+US,landing_region_1a3ed4fe187f::landing_region_c227a3796213,"Kawaihae, HI, United States -> Keawaula, HI, United States",1.0,2,2,2,1,1,200,68,0.001834862385321101,19,False,False,False,1.0,0.0
+US,landing_region_34040dee7bd1::landing_region_df61fea74887,"Hillsboro, OR, United States -> El Segundo, CA, United States",1.0,1,1,1,1,1,200,68,0.001834862385321101,20,False,False,False,1.0,0.0
+US,landing_region_91000f65ec77::landing_region_df61fea74887,"Kapolei, HI, United States -> El Segundo, CA, United States",1.0,2,2,2,1,1,200,68,0.001834862385321101,21,False,False,False,1.0,0.0
+US,landing_region_c227a3796213::landing_region_df61fea74887,"Keawaula, HI, United States -> El Segundo, CA, United States",1.0,2,2,2,1,1,200,68,0.001834862385321101,22,False,False,False,1.0,0.0
+VE,landing_region_8812d6f6982d::landing_region_9329cea6236f,"Higuerote, Venezuela -> Maiquetia, Venezuela",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,2.0,0.0
+VI,landing_region_0c894d5ef6d3::landing_region_fd5565d28cce,"Dania Beach, FL, United States -> St. Croix, Virgin Islands, Virgin Islands (U.S.)",4.0,4,4,4,2,1,2,1,0.5,1,True,False,False,0.0,4.0
+VI,landing_region_75e3d0794dc5::landing_region_fd5565d28cce,"Great Bay, Virgin Islands (U.S.) -> St. Croix, Virgin Islands, Virgin Islands (U.S.)",4.0,4,4,4,2,1,2,1,0.5,2,False,True,False,4.0,0.0
+VN,landing_region_319252418c1f::landing_region_66a38a926c5f,"Deep Water Bay, China -> Vung Tau, Vietnam",15.0,15,15,15,8,3,11,5,0.7894736842105263,1,True,False,False,0.0,15.0
+VN,landing_region_319252418c1f::landing_region_54f9d6b44a8a,"Deep Water Bay, China -> Danang, Vietnam",2.0,2,2,2,2,2,11,5,0.10526315789473684,2,False,True,False,0.0,2.0
+VN,landing_region_66a38a926c5f::landing_region_d0ecf913edd7,"Vung Tau, Vietnam -> Katong, Singapore",2.0,2,2,2,1,1,11,5,0.10526315789473684,3,False,False,True,0.0,2.0
+ZA,landing_region_22e3b376dfe7::landing_region_44e270aeb18c,"Yzerfontein, South Africa -> Melkbosstrand, South Africa",26.0,26,26,16,8,6,8,6,1.0,1,True,False,False,26.0,0.0

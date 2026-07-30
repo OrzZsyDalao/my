@@ -1,0 +1,10 @@
+﻿stage_order,accounting_stage,counting_unit,count,parent_stage,parent_count,retention_rate_within_parent,consistency_assertion_passed
+1,raw_traceroutes,trace,10211,,,,True
+2,valid_traceroutes,trace,10211,raw_traceroutes,10211.0,1.0,True
+3,traces_with_mappable_segments,trace,9142,valid_traceroutes,10211.0,0.8953089805112134,True
+4,mappable_atomic_segments,atomic_segment,43439,,,,True
+5,segments_with_complete_asn_labels,atomic_segment,36092,mappable_atomic_segments,43439.0,0.8308662722438361,True
+6,segments_with_landing_candidates,atomic_segment,5491,mappable_atomic_segments,43439.0,0.12640714565252423,True
+7,segments_with_feasible_corridors,atomic_segment,2188,segments_with_landing_candidates,5491.0,0.3984702240029139,True
+8,inter_region_candidate_bearing_segments,atomic_segment,2012,segments_with_feasible_corridors,2188.0,0.9195612431444241,True
+9,paper_auditable_country_service_units,country_service_unit,16,all_country_service_scope_units,334.0,0.04790419161676647,True

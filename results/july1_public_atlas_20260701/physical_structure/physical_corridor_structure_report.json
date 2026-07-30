@@ -1,0 +1,50 @@
+{
+  "clustering_method": "diameter_limited_complete_link_greedy",
+  "configured_radius_km": 50.0,
+  "landing_station_count": 1916,
+  "landing_region_count": 1160,
+  "region_size_distribution": {
+    "count": 1160,
+    "min": 1.0,
+    "p25": 1.0,
+    "median": 1.0,
+    "p75": 2.0,
+    "p95": 4.0,
+    "max": 14.0,
+    "mean": 1.6517241379310346
+  },
+  "region_diameter_km_distribution": {
+    "count": 1160,
+    "min": 0.0,
+    "p25": 0.0,
+    "median": 0.0,
+    "p75": 17.54040657866196,
+    "p95": 45.37140833080182,
+    "max": 49.78766706300027,
+    "mean": 9.710784983837902
+  },
+  "exact_landing_pair_count": 16932,
+  "corridor_count": 7679,
+  "cables_per_corridor_distribution": {
+    "count": 7679,
+    "min": 1.0,
+    "p25": 1.0,
+    "median": 1.0,
+    "p75": 1.0,
+    "p95": 2.0,
+    "max": 18.0,
+    "mean": 1.2479489516864175
+  },
+  "strict_parallel_vs_corridor_cogroup": {
+    "strict_parallel_candidate_relationships": 517,
+    "corridor_cogroup_relationships": 1177,
+    "overlap_relationships": 517,
+    "strict_relationship_covered_by_corridor_share": 1.0,
+    "corridor_cogroup_relationship_strict_share": 0.4392523364485981,
+    "relationship_jaccard": 0.4392523364485981,
+    "strict_definition": "two distinct cable IDs share an exact unordered landing-station pair",
+    "corridor_cogroup_definition": "two distinct cable IDs occur in the same unordered landing-region pair",
+    "interpretation_boundary": "both are metadata-level candidate relationships, not route-geometry proof"
+  },
+  "interpretation": "Corridors are diameter-limited landing-region-pair candidate groups. They are not confirmed physical parallel-cable routes."
+}

@@ -10,6 +10,12 @@ import numpy as np
 import pandas as pd
 
 from measurement_catalog import lookup_measurement
+from physical_corridor_model import (
+    LandingRegionModel,
+    build_diameter_limited_landing_regions,
+    load_landing_station_geo,
+    write_corridor_structure_outputs,
+)
 
 
 SOURCE_DIR = os.path.dirname(os.path.abspath(__file__)) if "__file__" in locals() else "."
@@ -18,6 +24,9 @@ DEFAULT_INPUT = os.path.join(BASE_DIR, "output", "result", "cable_matching_outpu
 DEFAULT_OUTPUT = os.path.join(BASE_DIR, "output", "result")
 PEERINGDB_DESCRIPTOR_PATH = os.path.join(DEFAULT_OUTPUT, "country_peeringdb_descriptors.csv")
 DEFAULT_COUNTRY_GEOGRAPHY_CATALOG = os.path.join(BASE_DIR, "data", "country_geography_types.json")
+DEFAULT_CABLE_DIR = os.path.join(BASE_DIR, "data", "cable")
+DEFAULT_LANDING_GEO = os.path.join(DEFAULT_CABLE_DIR, "landing-point-geo.json")
+DEFAULT_LANDING_REGION_RADIUS_KM = 50.0
 DEFAULT_UNIT_FIELDS = ["probe_country", "service_id"]
 # Paper-primary relative target for the upper-bound mismatch view.
 TARGET_MISMATCH_CATEGORY = "network_high_physical_upper_low"
@@ -204,6 +213,14 @@ def parse_args() -> argparse.Namespace:
         "--country-geography-catalog",
         default=DEFAULT_COUNTRY_GEOGRAPHY_CATALOG,
         help="JSON catalog used to classify probe countries by broad geography type.",
+    )
+    parser.add_argument(
+        "--reuse-flattened-candidates",
+        action="store_true",
+        help=(
+            "Reuse trace_candidate_support.csv and trace_feasible_candidate_space.csv "
+            "from the output directory, then recompute corridor and aggregate outputs."
+        ),
     )
     return parser.parse_args()
 
@@ -447,6 +464,169 @@ def ensure_corridor_columns(frame: pd.DataFrame) -> pd.DataFrame:
         result["parallel_group_id_fallback"],
     )
     return result
+
+
+def parse_exact_landing_pair(value: Any) -> Tuple[str, str] | None:
+    """Parse an unordered exact landing-station pair from compatibility fields."""
+    text = str(value or "").strip()
+    if not text or text.lower() in {"nan", "none", "na"}:
+        return None
+    separator = "::" if "::" in text else "->" if "->" in text else None
+    if separator is None:
+        return None
+    parts = [part.strip() for part in text.split(separator) if part.strip()]
+    if len(parts) != 2:
+        return None
+    return tuple(sorted((parts[0], parts[1])))
+
+
+def load_corrected_landing_region_model(
+    radius_km: float = DEFAULT_LANDING_REGION_RADIUS_KM,
+) -> LandingRegionModel:
+    """Load the shared diameter-limited landing-region model."""
+    coordinates, names = load_landing_station_geo(DEFAULT_LANDING_GEO)
+    return build_diameter_limited_landing_regions(
+        coordinates=coordinates,
+        station_names=names,
+        radius_km=radius_km,
+    )
+
+
+def remap_candidate_corridors(
+    frame: pd.DataFrame,
+    model: LandingRegionModel,
+) -> pd.DataFrame:
+    """Reassign candidate rows to corrected landing-region-pair corridors.
+
+    Exact landing-pair and cable identity remain unchanged.  This permits old
+    Stage 1 candidate rows to be reaggregated without repeating matching.
+    """
+    if frame.empty:
+        return frame.copy()
+    result = frame.copy()
+    exact_source = result.get(
+        "exact_landing_pair_id",
+        result.get("exact_corridor_id", result.get("landing_pair", result.get("segment"))),
+    )
+    parsed_pairs = exact_source.apply(parse_exact_landing_pair)
+    valid_pair_mask = parsed_pairs.notna()
+    result["corridor_remap_applied"] = False
+    result["corridor_clustering_method"] = model.clustering_method
+    result["corridor_clustering_radius_km"] = model.radius_km
+
+    for row_index in result.index[valid_pair_mask]:
+        left, right = parsed_pairs.loc[row_index]
+        region_left = model.station_to_region.get(left)
+        region_right = model.station_to_region.get(right)
+        if not region_left or not region_right:
+            continue
+        region_pair = tuple(sorted((region_left, region_right)))
+        corridor_id = "::".join(region_pair)
+        if region_pair[0] == region_pair[1]:
+            corridor_label = f"{model.region_labels.get(region_pair[0], region_pair[0])} intra-region"
+            candidate_scope = "intra_landing_region"
+        else:
+            labels = [model.region_labels.get(item, item) for item in region_pair]
+            corridor_label = f"{labels[0]} -> {labels[1]}"
+            src_country = str(result.at[row_index, "src_country"]) if "src_country" in result else ""
+            dst_country = str(result.at[row_index, "dst_country"]) if "dst_country" in result else ""
+            candidate_scope = (
+                "domestic_inter_region"
+                if src_country and dst_country and src_country == dst_country
+                else "international_inter_region"
+            )
+        result.at[row_index, "exact_landing_pair_id"] = "::".join((left, right))
+        result.at[row_index, "exact_corridor_id"] = "::".join((left, right))
+        result.at[row_index, "corridor_id"] = corridor_id
+        result.at[row_index, "landing_region_pair_id"] = corridor_id
+        result.at[row_index, "parallel_group_id"] = corridor_id
+        result.at[row_index, "physical_candidate_group_id"] = corridor_id
+        result.at[row_index, "corridor_label"] = corridor_label
+        result.at[row_index, "corridor_type"] = "landing_region_pair"
+        result.at[row_index, "landing_region_entry_id"] = region_left
+        result.at[row_index, "landing_region_exit_id"] = region_right
+        result.at[row_index, "landing_region_entry_label"] = model.region_labels.get(
+            region_left,
+            region_left,
+        )
+        result.at[row_index, "landing_region_exit_label"] = model.region_labels.get(
+            region_right,
+            region_right,
+        )
+        result.at[row_index, "landing_region_method"] = model.clustering_method
+        result.at[row_index, "candidate_scope"] = candidate_scope
+        result.at[row_index, "is_inter_region_candidate"] = (
+            candidate_scope != "intra_landing_region"
+        )
+        result.at[row_index, "corridor_remap_applied"] = True
+
+    result = ensure_corridor_columns(result)
+    if "link_id" in result.columns:
+        corridor_counts = (
+            result.loc[
+                result.get("candidate_scope", pd.Series("", index=result.index))
+                .fillna("")
+                .astype(str)
+                .ne("intra_landing_region")
+            ]
+            .groupby("link_id", dropna=False)["corridor_id"]
+            .nunique()
+        )
+        result["num_feasible_corridors_total"] = (
+            result["link_id"].map(corridor_counts).fillna(0).astype(int)
+        )
+    return result
+
+
+def refresh_feasible_parallel_multiplicity(
+    candidate_frame: pd.DataFrame,
+    feasible_frame: pd.DataFrame,
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Recompute feasible exact-pair multiplicity after corridor remapping."""
+    if feasible_frame.empty or "link_id" not in feasible_frame:
+        return candidate_frame, feasible_frame
+    feasible = feasible_frame.copy()
+    keys = ["link_id", "exact_landing_pair_id"]
+    multiplicity = (
+        feasible.groupby(keys, dropna=False)["cable_id"]
+        .nunique()
+        .rename("_feasible_parallel_size")
+        .reset_index()
+    )
+    feasible = feasible.drop(
+        columns=[
+            column
+            for column in ["parallel_group_size_feasible", "parallel_group_size", "is_parallel_ambiguous"]
+            if column in feasible
+        ]
+    ).merge(multiplicity, on=keys, how="left")
+    feasible["parallel_group_size_feasible"] = (
+        pd.to_numeric(feasible["_feasible_parallel_size"], errors="coerce")
+        .fillna(0)
+        .astype(int)
+    )
+    feasible["parallel_group_size"] = feasible["parallel_group_size_feasible"]
+    feasible["is_parallel_ambiguous"] = feasible["parallel_group_size_feasible"].gt(1)
+    feasible.drop(columns=["_feasible_parallel_size"], inplace=True)
+
+    candidates = candidate_frame.copy()
+    if not candidates.empty:
+        candidates = candidates.drop(
+            columns=[
+                column
+                for column in ["parallel_group_size_feasible", "parallel_group_size", "is_parallel_ambiguous"]
+                if column in candidates
+            ]
+        ).merge(multiplicity, on=keys, how="left")
+        candidates["parallel_group_size_feasible"] = (
+            pd.to_numeric(candidates["_feasible_parallel_size"], errors="coerce")
+            .fillna(0)
+            .astype(int)
+        )
+        candidates["parallel_group_size"] = candidates["parallel_group_size_feasible"]
+        candidates["is_parallel_ambiguous"] = candidates["parallel_group_size_feasible"].gt(1)
+        candidates.drop(columns=["_feasible_parallel_size"], inplace=True)
+    return candidates, feasible
 
 
 def resolve_corridor_candidate_column(frame: pd.DataFrame) -> str:
@@ -1415,6 +1595,16 @@ def build_framework_alignment_report(
     for subset_name, subset_value in candidate_row_counts.items():
         if subset_value > candidate_rows_total:
             raise RuntimeError(f"Invalid framework accounting: {subset_name} exceeds candidate_rows_total")
+    hard_candidate_partition = (
+        candidate_row_counts["candidate_rows_lifecycle_filtered"]
+        + candidate_row_counts["candidate_rows_rtt_infeasible"]
+        + candidate_row_counts["candidate_rows_rtt_feasible"]
+    )
+    if candidate_rows_total and hard_candidate_partition != candidate_rows_total:
+        raise RuntimeError(
+            "Invalid framework accounting: lifecycle-filtered, RTT-infeasible, "
+            "and RTT-feasible candidate rows do not partition candidate_rows_total"
+        )
     return {
         "total_traces": trace_count,
         "traces_with_probe_country": _trace_count_with("probe_country"),
@@ -1463,6 +1653,784 @@ def build_framework_alignment_report(
             "unit_physical_candidate_diversity.csv",
         ],
     }
+
+
+def load_atomic_segment_inventory(output_dir: str) -> pd.DataFrame:
+    """Load the optional full atomic-segment inventory used for resolution states."""
+    compressed_path = os.path.join(output_dir, "atomic_segment_inventory.csv.gz")
+    plain_path = os.path.join(output_dir, "atomic_segment_inventory.csv")
+    manifest_path = os.path.join(output_dir, "atomic_segment_inventory_manifest.json")
+    if os.path.exists(compressed_path):
+        frame = pd.read_csv(compressed_path, low_memory=False)
+    elif os.path.exists(plain_path):
+        frame = pd.read_csv(plain_path, low_memory=False)
+    else:
+        return pd.DataFrame()
+    if os.path.exists(manifest_path):
+        try:
+            with open(manifest_path, "r", encoding="utf-8") as handle:
+                frame.attrs["inventory_manifest"] = json.load(handle)
+        except Exception as exc:
+            print(f"Warning: failed to read atomic inventory manifest: {exc}")
+    return frame
+
+
+def canonical_resolution_segment_id(value: Any) -> str:
+    """Normalize old and new link IDs to a transport-file-independent key."""
+    text = str(value or "")
+    parts = text.split("|")
+    if len(parts) >= 7:
+        return "|".join(parts[1:])
+    return text
+
+
+def timestamp_agnostic_resolution_segment_id(value: Any) -> str:
+    """Build a compatibility key for old Stage 1 outputs that stored endtime.
+
+    The timestamp-free key is only used when it uniquely identifies an
+    inventory segment; ambiguous keys are never joined.
+    """
+    canonical = canonical_resolution_segment_id(value)
+    parts = canonical.split("|")
+    if len(parts) >= 6:
+        return "|".join([parts[0], parts[1], *parts[3:]])
+    return canonical
+
+
+def build_resolution_row_compatibility_id(row: pd.Series) -> str:
+    """Build a timestamp-free hop-pair key from explicit flattened columns."""
+    link_id = str(row.get("link_id") or row.get("atomic_segment_id") or "")
+    hop_range = str(row.get("hop_range") or "").strip()
+    if not hop_range:
+        hop_range = next(
+            (
+                part.strip()
+                for part in link_id.split("|")
+                if part.strip().lower().startswith("hop ")
+            ),
+            "NA",
+        )
+    components = [
+        row.get("msm_id", "NA"),
+        row.get("probe_id", "NA"),
+        hop_range,
+        row.get("src_ip", "NA"),
+        row.get("dst_ip", "NA"),
+    ]
+    return "|".join(str(value).strip() for value in components)
+
+
+def build_resolution_compatibility_series(frame: pd.DataFrame) -> pd.Series:
+    """Vectorize the timestamp-free measurement/probe/hop/IP compatibility key."""
+    if frame.empty:
+        return pd.Series(index=frame.index, dtype=object)
+    link_ids = frame.get(
+        "link_id",
+        frame.get(
+            "atomic_segment_id",
+            pd.Series("", index=frame.index),
+        ),
+    ).fillna("").astype(str)
+    extracted_hops = link_ids.str.extract(
+        r"(Hop\s+\d+\s*->\s*\d+)",
+        expand=False,
+    ).fillna("NA")
+    explicit_hops = frame.get(
+        "hop_range",
+        pd.Series("", index=frame.index),
+    ).fillna("").astype(str).str.strip()
+    hops = explicit_hops.where(explicit_hops.ne(""), extracted_hops)
+
+    def component(column: str) -> pd.Series:
+        values = frame.get(
+            column,
+            pd.Series("NA", index=frame.index),
+        ).fillna("NA").astype(str).str.strip()
+        return values.str.replace(r"\.0$", "", regex=True)
+
+    return (
+        component("msm_id")
+        + "|"
+        + component("probe_id")
+        + "|"
+        + hops
+        + "|"
+        + component("src_ip")
+        + "|"
+        + component("dst_ip")
+    )
+
+
+def build_legacy_resolution_id_map(
+    inventory: pd.DataFrame,
+    feasible: pd.DataFrame,
+    tolerance_seconds: float = 300.0,
+) -> Dict[str, str]:
+    """Match old endtime-based segment IDs to inventory IDs one-to-one.
+
+    Matching is restricted to the same measurement, probe, hop range, and hop
+    IP pair. Within that group, the closest timestamps are paired greedily and
+    only when their difference is within ``tolerance_seconds``.
+    """
+    if inventory.empty or feasible.empty:
+        return {}
+    inventory_segments = inventory.drop_duplicates("atomic_segment_id").copy()
+    feasible_segments = feasible.copy()
+    if "atomic_segment_id" not in feasible_segments:
+        feasible_segments["atomic_segment_id"] = feasible_segments.get(
+            "link_id",
+            pd.Series("", index=feasible_segments.index),
+        ).astype(str)
+    feasible_segments = feasible_segments.drop_duplicates("atomic_segment_id").copy()
+    inventory_segments["_compatibility_id"] = build_resolution_compatibility_series(
+        inventory_segments
+    )
+    feasible_segments["_compatibility_id"] = build_resolution_compatibility_series(
+        feasible_segments
+    )
+    inventory_segments["_timestamp_numeric"] = pd.to_numeric(
+        inventory_segments.get("timestamp"),
+        errors="coerce",
+    )
+    feasible_segments["_timestamp_numeric"] = pd.to_numeric(
+        feasible_segments.get("timestamp"),
+        errors="coerce",
+    )
+    exact_inventory_ids = set(inventory_segments["atomic_segment_id"])
+    mapping: Dict[str, str] = {
+        segment_id: segment_id
+        for segment_id in feasible_segments["atomic_segment_id"]
+        if segment_id in exact_inventory_ids
+    }
+    already_used_inventory_ids = set(mapping.values())
+    inventory_groups = {
+        key: group
+        for key, group in inventory_segments.groupby("_compatibility_id", dropna=False)
+    }
+    for compatibility_id, candidates in feasible_segments.groupby(
+        "_compatibility_id",
+        dropna=False,
+    ):
+        available = inventory_groups.get(compatibility_id)
+        if available is None or available.empty:
+            continue
+        available = available.loc[
+            ~available["atomic_segment_id"].isin(already_used_inventory_ids)
+        ]
+        candidates = candidates.loc[
+            ~candidates["atomic_segment_id"].isin(mapping)
+        ]
+        pair_options: List[Tuple[float, str, str]] = []
+        for candidate_id_value, candidate_timestamp in candidates[
+            ["atomic_segment_id", "_timestamp_numeric"]
+        ].itertuples(index=False, name=None):
+            candidate_id = str(candidate_id_value)
+            for inventory_id_value, inventory_timestamp in available[
+                ["atomic_segment_id", "_timestamp_numeric"]
+            ].itertuples(index=False, name=None):
+                inventory_id = str(inventory_id_value)
+                if pd.isna(candidate_timestamp) or pd.isna(inventory_timestamp):
+                    delta = 0.0 if len(candidates) == len(available) == 1 else math.inf
+                else:
+                    delta = abs(float(candidate_timestamp) - float(inventory_timestamp))
+                if delta <= tolerance_seconds:
+                    pair_options.append((delta, candidate_id, inventory_id))
+        used_candidates: set[str] = set()
+        used_inventory: set[str] = set()
+        for _, candidate_id, inventory_id in sorted(pair_options):
+            if candidate_id in used_candidates or inventory_id in used_inventory:
+                continue
+            mapping[candidate_id] = inventory_id
+            used_candidates.add(candidate_id)
+            used_inventory.add(inventory_id)
+            already_used_inventory_ids.add(inventory_id)
+    return mapping
+
+
+def normalize_stage1_accounting_stats(
+    stage1_stats: Dict[str, Any],
+    atomic_inventory: pd.DataFrame,
+) -> Dict[str, Any]:
+    """Add explicit trace, atomic-segment, and candidate-row accounting aliases.
+
+    Older Stage 1 result packages used link/candidate names that predate the
+    paper accounting vocabulary. This adapter derives atomic populations from
+    the full inventory and maps only semantically equivalent legacy counters.
+    Missing counters remain absent instead of being silently converted to zero.
+    """
+    normalized = dict(stage1_stats or {})
+    if not atomic_inventory.empty:
+        inventory = atomic_inventory.drop_duplicates("atomic_segment_id")
+        observed_trace_count = (
+            int(inventory["trace_id"].astype(str).nunique())
+            if "trace_id" in inventory
+            else 0
+        )
+        inventory_manifest = atomic_inventory.attrs.get("inventory_manifest", {})
+        normalized["raw_results_total"] = int(
+            inventory_manifest.get("raw_results_total", observed_trace_count)
+        )
+        normalized["valid_traces_total"] = int(
+            inventory_manifest.get("valid_traces_total", observed_trace_count)
+        )
+        sufficient = inventory.get(
+            "segment_resolution_sufficient",
+            pd.Series(True, index=inventory.index),
+        ).fillna(False).astype(bool)
+        normalized["atomic_segments_total"] = int(
+            inventory_manifest.get("observable_atomic_segments_total", len(inventory))
+        )
+        normalized["mappable_atomic_segments_total"] = int(
+            inventory_manifest.get(
+                "mappable_atomic_segments_total",
+                sufficient.sum(),
+            )
+        )
+        rtt_state = inventory.get(
+            "rtt_evidence_state",
+            pd.Series("rtt_inconclusive", index=inventory.index),
+        ).fillna("rtt_inconclusive").astype(str)
+        normalized["atomic_segments_with_valid_rtt_evidence"] = int(
+            rtt_state.eq("rtt_conclusive").sum()
+        )
+        normalized["atomic_segments_with_inconclusive_rtt"] = int(
+            rtt_state.ne("rtt_conclusive").sum()
+        )
+        src_asn = inventory.get(
+            "src_asn", pd.Series(index=inventory.index, dtype=object)
+        ).apply(normalize_transition_asn)
+        dst_asn = inventory.get(
+            "dst_asn", pd.Series(index=inventory.index, dtype=object)
+        ).apply(normalize_transition_asn)
+        normalized["atomic_segments_with_network_transition"] = int(
+            sufficient.mul(src_asn.ne("NA")).mul(dst_asn.ne("NA")).sum()
+        )
+
+    legacy_aliases = {
+        "atomic_segments_with_landing_candidates": "links_with_ls_candidates",
+        "candidate_rows_total": "candidate_segments_considered",
+        "candidate_rows_lifecycle_filtered": "candidates_filtered_by_cable_lifecycle",
+        "candidate_rows_rtt_infeasible": "candidates_rtt_infeasible",
+        "candidate_rows_rtt_feasible": "candidates_rtt_feasible",
+        "candidate_rows_rtt_inconclusive": "candidates_retained_due_to_inconclusive_rtt",
+    }
+    for current_name, legacy_name in legacy_aliases.items():
+        if current_name not in normalized and legacy_name in normalized:
+            normalized[current_name] = normalized[legacy_name]
+    return normalized
+
+
+def build_physical_mapping_resolution_tables(
+    atomic_inventory: pd.DataFrame,
+    feasible_frame: pd.DataFrame,
+    trace_frame: pd.DataFrame,
+    resolution_id_map: Dict[str, str] | None = None,
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Assign one physical mapping-resolution state to every atomic segment.
+
+    The paper-primary resolution uses inter-region corridors.  Intra-region
+    candidates remain visible as a supplementary flag but do not turn a segment
+    into a resolved paper-primary corridor projection.
+    """
+    ledger_columns = [
+        "atomic_segment_id",
+        "trace_id",
+        "msm_id",
+        "probe_id",
+        "probe_country",
+        "probe_asn",
+        "service_id",
+        "timestamp",
+        "file_name",
+        "src_country",
+        "dst_country",
+        "src_asn",
+        "dst_asn",
+        "rtt_delta_ms",
+        "rtt_evidence_state",
+        "service_entry_resolved",
+        "path_scope",
+        "segment_resolution_sufficient",
+        "insufficient_resolution_reason",
+        "feasible_candidate_count",
+        "feasible_corridor_count",
+        "has_intra_region_candidate",
+        "mapping_resolution_state",
+    ]
+    summary_columns = [
+        "mapping_resolution_state",
+        "atomic_segment_count",
+        "atomic_segment_share",
+        "rtt_conclusive_segments",
+        "rtt_inconclusive_segments",
+        "rtt_conclusive_share",
+        "rtt_inconclusive_share",
+        "insufficiently_resolved_traces",
+        "total_valid_traces",
+        "interpretation",
+    ]
+    unit_columns = [
+        "probe_country",
+        "service_id",
+        "path_scope_stratum",
+        "total_atomic_segments",
+        "uniquely_resolved_segments",
+        "bounded_candidate_set_segments",
+        "no_matched_corridor_segments",
+        "insufficiently_resolved_segments",
+        "rtt_conclusive_segments",
+        "rtt_inconclusive_segments",
+        "uniquely_resolved_share",
+        "bounded_candidate_set_share",
+        "no_matched_corridor_share",
+        "insufficiently_resolved_share",
+    ]
+    bounded_columns = [
+        "feasible_corridor_count",
+        "bounded_candidate_set_segments",
+        "bounded_candidate_set_share",
+    ]
+    if atomic_inventory.empty:
+        return (
+            pd.DataFrame(columns=ledger_columns),
+            pd.DataFrame(columns=summary_columns),
+            pd.DataFrame(columns=unit_columns),
+            pd.DataFrame(columns=bounded_columns),
+        )
+
+    inventory = atomic_inventory.copy()
+    inventory["atomic_segment_id"] = inventory["atomic_segment_id"].apply(
+        canonical_resolution_segment_id
+    )
+    if inventory["atomic_segment_id"].duplicated().any():
+        raise RuntimeError(
+            "Canonical atomic segment IDs are not unique in the full inventory."
+        )
+    feasible = prepare_atomic_segment_projection_frame(feasible_frame, corridor_col="corridor_id")
+    if not feasible.empty:
+        feasible["atomic_segment_id"] = feasible["atomic_segment_id"].apply(
+            canonical_resolution_segment_id
+        )
+        legacy_id_map = (
+            resolution_id_map
+            if resolution_id_map is not None
+            else build_legacy_resolution_id_map(inventory, feasible)
+        )
+        legacy_id_map = {
+            str(source_id): canonical_resolution_segment_id(target_id)
+            for source_id, target_id in legacy_id_map.items()
+        }
+        original_ids = feasible["atomic_segment_id"].copy()
+        replacement = original_ids.map(legacy_id_map)
+        resolved_legacy_rows = int(
+            replacement.notna().mul(replacement.ne(original_ids)).sum()
+        )
+        feasible["atomic_segment_id"] = replacement.fillna(original_ids)
+        if resolved_legacy_rows:
+            print(
+                "Resolved "
+                f"{resolved_legacy_rows} legacy candidate rows using unique "
+                "hop-pair keys and nearest-time matching."
+            )
+        inter_region = feasible.loc[
+            feasible.get("candidate_scope", pd.Series("", index=feasible.index))
+            .fillna("")
+            .astype(str)
+            .ne("intra_landing_region")
+        ].copy()
+        corridor_counts = (
+            inter_region.groupby("atomic_segment_id", dropna=False)
+            .agg(
+                feasible_candidate_count=("cable_id", pd.Series.nunique),
+                feasible_corridor_count=("corridor_observation_id", pd.Series.nunique),
+            )
+            .reset_index()
+        )
+        intra_flags = (
+            feasible.assign(
+                _is_intra=feasible.get(
+                    "candidate_scope", pd.Series("", index=feasible.index)
+                )
+                .fillna("")
+                .astype(str)
+                .eq("intra_landing_region")
+            )
+            .groupby("atomic_segment_id", dropna=False)["_is_intra"]
+            .max()
+            .rename("has_intra_region_candidate")
+            .reset_index()
+        )
+    else:
+        corridor_counts = pd.DataFrame(
+            columns=[
+                "atomic_segment_id",
+                "feasible_candidate_count",
+                "feasible_corridor_count",
+            ]
+        )
+        intra_flags = pd.DataFrame(
+            columns=["atomic_segment_id", "has_intra_region_candidate"]
+        )
+    ledger = inventory.merge(
+        corridor_counts,
+        on="atomic_segment_id",
+        how="left",
+        validate="one_to_one",
+    ).merge(
+        intra_flags,
+        on="atomic_segment_id",
+        how="left",
+        validate="one_to_one",
+    )
+    ledger["feasible_candidate_count"] = (
+        pd.to_numeric(ledger["feasible_candidate_count"], errors="coerce")
+        .fillna(0)
+        .astype(int)
+    )
+    ledger["feasible_corridor_count"] = (
+        pd.to_numeric(ledger["feasible_corridor_count"], errors="coerce")
+        .fillna(0)
+        .astype(int)
+    )
+    ledger["has_intra_region_candidate"] = (
+        ledger["has_intra_region_candidate"].fillna(False).astype(bool)
+    )
+    sufficient = ledger.get(
+        "segment_resolution_sufficient",
+        pd.Series(True, index=ledger.index),
+    ).fillna(False).astype(bool)
+    ledger["mapping_resolution_state"] = np.select(
+        [
+            ~sufficient,
+            ledger["feasible_corridor_count"].eq(0),
+            ledger["feasible_corridor_count"].eq(1),
+            ledger["feasible_corridor_count"].gt(1),
+        ],
+        [
+            "insufficiently_resolved",
+            "no_matched_corridor",
+            "uniquely_resolved",
+            "bounded_candidate_set",
+        ],
+        default="insufficiently_resolved",
+    )
+    if len(ledger) != ledger["mapping_resolution_state"].notna().sum():
+        raise RuntimeError("Every atomic segment must receive one mapping-resolution state.")
+    state_counts = ledger["mapping_resolution_state"].value_counts()
+    if int(state_counts.sum()) != len(ledger):
+        raise RuntimeError("Physical mapping-resolution states must partition atomic segments.")
+    total_segments = len(ledger)
+    inventory_manifest = atomic_inventory.attrs.get("inventory_manifest", {})
+    total_valid_traces = int(
+        inventory_manifest.get(
+            "valid_traces_total",
+            ledger["trace_id"].astype(str).nunique(),
+        )
+    )
+    mappable_trace_count = int(
+        ledger.loc[
+            ledger.get(
+                "segment_resolution_sufficient",
+                pd.Series(False, index=ledger.index),
+            )
+            .fillna(False)
+            .astype(bool),
+            "trace_id",
+        ]
+        .astype(str)
+        .nunique()
+    )
+    insufficient_traces = max(total_valid_traces - mappable_trace_count, 0)
+    summary_rows: List[Dict[str, Any]] = []
+    interpretation = {
+        "uniquely_resolved": "exactly one feasible inter-region corridor candidate",
+        "bounded_candidate_set": "two or more feasible inter-region corridor candidates retained",
+        "no_matched_corridor": "sufficient atomic segment with no feasible inter-region corridor candidate",
+        "insufficiently_resolved": "atomic segment lacks required country-level resolution",
+    }
+    for state in [
+        "uniquely_resolved",
+        "bounded_candidate_set",
+        "no_matched_corridor",
+        "insufficiently_resolved",
+    ]:
+        subset = ledger.loc[ledger["mapping_resolution_state"].eq(state)]
+        conclusive = int(
+            subset.get("rtt_evidence_state", pd.Series("", index=subset.index))
+            .astype(str)
+            .eq("rtt_conclusive")
+            .sum()
+        )
+        inconclusive = len(subset) - conclusive
+        summary_rows.append(
+            {
+                "mapping_resolution_state": state,
+                "atomic_segment_count": len(subset),
+                "atomic_segment_share": len(subset) / total_segments if total_segments else np.nan,
+                "rtt_conclusive_segments": conclusive,
+                "rtt_inconclusive_segments": inconclusive,
+                "rtt_conclusive_share": conclusive / len(subset) if len(subset) else np.nan,
+                "rtt_inconclusive_share": inconclusive / len(subset) if len(subset) else np.nan,
+                "insufficiently_resolved_traces": insufficient_traces,
+                "total_valid_traces": total_valid_traces,
+                "interpretation": interpretation[state],
+            }
+        )
+
+    scoped_parts = [inventory.assign(path_scope_stratum="all_publicly_visible")]
+    resolved_inventory = inventory.loc[
+        inventory.get(
+            "service_entry_resolved", pd.Series(False, index=inventory.index)
+        )
+        .fillna(False)
+        .astype(bool)
+    ].copy()
+    if not resolved_inventory.empty:
+        scoped_parts.append(
+            resolved_inventory.assign(path_scope_stratum="resolved_entry_only")
+        )
+    scoped_inventory = pd.concat(scoped_parts, ignore_index=True, sort=False)
+    scoped_ledger = scoped_inventory.drop(
+        columns=[
+            column
+            for column in [
+                "feasible_candidate_count",
+                "feasible_corridor_count",
+                "has_intra_region_candidate",
+                "mapping_resolution_state",
+            ]
+            if column in scoped_inventory
+        ]
+    ).merge(
+        ledger[
+            [
+                "atomic_segment_id",
+                "feasible_candidate_count",
+                "feasible_corridor_count",
+                "has_intra_region_candidate",
+                "mapping_resolution_state",
+            ]
+        ],
+        on="atomic_segment_id",
+        how="left",
+        validate="many_to_one",
+    )
+    unit_rows: List[Dict[str, Any]] = []
+    for key, group in scoped_ledger.groupby(
+        ["probe_country", "service_id", "path_scope_stratum"],
+        dropna=False,
+    ):
+        counts = group["mapping_resolution_state"].value_counts()
+        total = len(group)
+        row = {
+            "probe_country": key[0],
+            "service_id": key[1],
+            "path_scope_stratum": key[2],
+            "total_atomic_segments": total,
+            "uniquely_resolved_segments": int(counts.get("uniquely_resolved", 0)),
+            "bounded_candidate_set_segments": int(counts.get("bounded_candidate_set", 0)),
+            "no_matched_corridor_segments": int(counts.get("no_matched_corridor", 0)),
+            "insufficiently_resolved_segments": int(counts.get("insufficiently_resolved", 0)),
+            "rtt_conclusive_segments": int(
+                group["rtt_evidence_state"].astype(str).eq("rtt_conclusive").sum()
+            ),
+            "rtt_inconclusive_segments": int(
+                group["rtt_evidence_state"].astype(str).ne("rtt_conclusive").sum()
+            ),
+        }
+        for count_column, share_column in [
+            ("uniquely_resolved_segments", "uniquely_resolved_share"),
+            ("bounded_candidate_set_segments", "bounded_candidate_set_share"),
+            ("no_matched_corridor_segments", "no_matched_corridor_share"),
+            ("insufficiently_resolved_segments", "insufficiently_resolved_share"),
+        ]:
+            row[share_column] = row[count_column] / total if total else np.nan
+        if sum(
+            row[column]
+            for column in [
+                "uniquely_resolved_segments",
+                "bounded_candidate_set_segments",
+                "no_matched_corridor_segments",
+                "insufficiently_resolved_segments",
+            ]
+        ) != total:
+            raise RuntimeError("Unit mapping-resolution counts do not sum to total atomic segments.")
+        unit_rows.append(row)
+
+    bounded = ledger.loc[ledger["mapping_resolution_state"].eq("bounded_candidate_set")]
+    bounded_counts = bounded["feasible_corridor_count"].value_counts().sort_index()
+    bounded_distribution = pd.DataFrame(
+        {
+            "feasible_corridor_count": bounded_counts.index.astype(int),
+            "bounded_candidate_set_segments": bounded_counts.values.astype(int),
+        }
+    )
+    bounded_total = int(bounded_counts.sum())
+    bounded_distribution["bounded_candidate_set_share"] = (
+        bounded_distribution["bounded_candidate_set_segments"] / bounded_total
+        if bounded_total
+        else np.nan
+    )
+    return (
+        ledger.reindex(columns=ledger_columns),
+        pd.DataFrame(summary_rows, columns=summary_columns),
+        pd.DataFrame(unit_rows, columns=unit_columns),
+        bounded_distribution.reindex(columns=bounded_columns),
+    )
+
+
+def build_pipeline_accounting_table(
+    trace_frame: pd.DataFrame,
+    prepared_segments: pd.DataFrame,
+    service_country_cross_layer: pd.DataFrame,
+    stage1_stats: Dict[str, Any],
+) -> pd.DataFrame:
+    """Build and validate the ordered traceroute-to-paper accounting chain."""
+    trace_dedup = (
+        trace_frame.drop_duplicates("trace_id")
+        if not trace_frame.empty and "trace_id" in trace_frame
+        else trace_frame
+    )
+    raw_traces = int(stage1_stats.get("raw_results_total", len(trace_dedup)) or 0)
+    valid_traces = int(stage1_stats.get("valid_traces_total", len(trace_dedup)) or 0)
+    traces_mappable = (
+        int(
+            trace_dedup.get(
+                "has_at_least_one_mappable_segment",
+                pd.Series(False, index=trace_dedup.index),
+            )
+            .fillna(False)
+            .astype(bool)
+            .sum()
+        )
+        if not trace_dedup.empty
+        else 0
+    )
+    mappable_segments = int(
+        stage1_stats.get(
+            "mappable_atomic_segments_total",
+            stage1_stats.get("atomic_segments_total", 0),
+        )
+        or 0
+    )
+    complete_asn = (
+        int(stage1_stats["atomic_segments_with_network_transition"])
+        if "atomic_segments_with_network_transition" in stage1_stats
+        else np.nan
+    )
+    landing_candidates = (
+        int(stage1_stats["atomic_segments_with_landing_candidates"])
+        if "atomic_segments_with_landing_candidates" in stage1_stats
+        else np.nan
+    )
+    projection = (
+        prepared_segments.drop_duplicates("atomic_segment_id")
+        if not prepared_segments.empty and "atomic_segment_id" in prepared_segments
+        else pd.DataFrame()
+    )
+    feasible_segments = int(len(projection))
+    inter_region_segments = (
+        int(
+            prepared_segments.loc[
+                prepared_segments.get(
+                    "candidate_scope", pd.Series("", index=prepared_segments.index)
+                )
+                .fillna("")
+                .astype(str)
+                .ne("intra_landing_region")
+            ]["atomic_segment_id"].nunique()
+        )
+        if not prepared_segments.empty
+        else 0
+    )
+    paper_units = (
+        int(
+            service_country_cross_layer.get(
+                "auditable_paper_case",
+                pd.Series(False, index=service_country_cross_layer.index),
+            )
+            .fillna(False)
+            .astype(bool)
+            .sum()
+        )
+        if service_country_cross_layer is not None and not service_country_cross_layer.empty
+        else 0
+    )
+    full_units = (
+        int(len(service_country_cross_layer))
+        if service_country_cross_layer is not None
+        else 0
+    )
+    rows = [
+        ("raw_traceroutes", raw_traces, "trace", "", np.nan),
+        ("valid_traceroutes", valid_traces, "trace", "raw_traceroutes", raw_traces),
+        (
+            "traces_with_mappable_segments",
+            traces_mappable,
+            "trace",
+            "valid_traceroutes",
+            valid_traces,
+        ),
+        ("mappable_atomic_segments", mappable_segments, "atomic_segment", "", np.nan),
+        (
+            "segments_with_complete_asn_labels",
+            complete_asn,
+            "atomic_segment",
+            "mappable_atomic_segments",
+            mappable_segments,
+        ),
+        (
+            "segments_with_landing_candidates",
+            landing_candidates,
+            "atomic_segment",
+            "mappable_atomic_segments",
+            mappable_segments,
+        ),
+        (
+            "segments_with_feasible_corridors",
+            feasible_segments,
+            "atomic_segment",
+            "segments_with_landing_candidates",
+            landing_candidates if pd.notna(landing_candidates) else mappable_segments,
+        ),
+        (
+            "inter_region_candidate_bearing_segments",
+            inter_region_segments,
+            "atomic_segment",
+            "segments_with_feasible_corridors",
+            feasible_segments,
+        ),
+        (
+            "paper_auditable_country_service_units",
+            paper_units,
+            "country_service_unit",
+            "all_country_service_scope_units",
+            full_units,
+        ),
+    ]
+    output_rows = []
+    for order, (stage, count, unit, parent, parent_count) in enumerate(rows, start=1):
+        if pd.notna(parent_count) and count > int(parent_count):
+            raise RuntimeError(
+                f"Accounting inconsistency: {stage}={count} exceeds {parent}={int(parent_count)}"
+            )
+        output_rows.append(
+            {
+                "stage_order": order,
+                "accounting_stage": stage,
+                "counting_unit": unit,
+                "count": count,
+                "parent_stage": parent,
+                "parent_count": parent_count,
+                "retention_rate_within_parent": (
+                    count / parent_count
+                    if pd.notna(parent_count) and parent_count > 0
+                    else np.nan
+                ),
+                "consistency_assertion_passed": True,
+            }
+        )
+    return pd.DataFrame(output_rows)
 
 
 def merge_peeringdb_descriptors(
@@ -2138,6 +3106,18 @@ def compute_effective_count_from_shares(shares: Sequence[float]) -> float:
     return float(math.exp(shannon_entropy(valid)))
 
 
+def compute_normalized_entropy(shares: Sequence[float]) -> float:
+    """Return Shannon entropy normalized by log of the observed label count."""
+    valid = [float(value) for value in shares if pd.notna(value) and float(value) > 0]
+    label_count = len(valid)
+    if label_count == 0:
+        return float("nan")
+    if label_count == 1:
+        return 0.0
+    entropy_value = shannon_entropy(valid)
+    return float(entropy_value / math.log(label_count))
+
+
 def evaluate_paper_observation_sufficiency(
     *,
     total_observations: Any,
@@ -2305,6 +3285,8 @@ def build_corridor_concentration_summary(
         "top1_corridor_share",
         "top2_corridor_share",
         "top3_corridor_share",
+        "corridor_entropy",
+        "corridor_normalized_entropy",
         "effective_corridor_count",
         "corridor_concentration_tier",
         "is_corridor_concentrated",
@@ -2331,6 +3313,8 @@ def build_corridor_concentration_summary(
         top2_share = compute_topk_share(shares, 2)
         top3_share = compute_topk_share(shares, 3)
         effective_corridor_count = compute_effective_count_from_shares(shares)
+        corridor_entropy = shannon_entropy(shares)
+        corridor_normalized_entropy = compute_normalized_entropy(shares)
         concentration_tier = classify_corridor_observation_concentration_tier(
             top1_share,
             top2_share,
@@ -2371,6 +3355,8 @@ def build_corridor_concentration_summary(
                 "top1_corridor_share": top1_share,
                 "top2_corridor_share": top2_share,
                 "top3_corridor_share": top3_share,
+                "corridor_entropy": corridor_entropy,
+                "corridor_normalized_entropy": corridor_normalized_entropy,
                 "effective_corridor_count": effective_corridor_count,
                 "corridor_concentration_tier": concentration_tier,
                 "is_corridor_concentrated": is_concentrated,
@@ -2720,6 +3706,8 @@ def summarize_network_transition_distribution(
         "top1_network_transition_share",
         "top2_network_transition_share",
         "top3_network_transition_share",
+        "network_transition_entropy",
+        "network_transition_normalized_entropy",
         "effective_network_transition_count",
         "network_transition_concentration_tier",
         "cross_as_boundary_segments",
@@ -2750,6 +3738,8 @@ def summarize_network_transition_distribution(
         top2_share = compute_topk_share(shares, 2)
         top3_share = compute_topk_share(shares, 3)
         effective_count = compute_effective_count_from_shares(shares)
+        network_entropy = shannon_entropy(shares)
+        network_normalized_entropy = compute_normalized_entropy(shares)
         total_values = pd.to_numeric(group["group_total_mappable_segments"], errors="coerce").dropna().unique()
         probe_values = pd.to_numeric(group["group_unique_probes"], errors="coerce").dropna().unique()
         probe_asn_values = pd.to_numeric(group["group_unique_probe_asns"], errors="coerce").dropna().unique()
@@ -2783,6 +3773,8 @@ def summarize_network_transition_distribution(
                 "top1_network_transition_share": top1_share,
                 "top2_network_transition_share": top2_share,
                 "top3_network_transition_share": top3_share,
+                "network_transition_entropy": network_entropy,
+                "network_transition_normalized_entropy": network_normalized_entropy,
                 "effective_network_transition_count": effective_count,
                 "network_transition_concentration_tier": classify_network_transition_concentration_tier(
                     top1_share,
@@ -2922,12 +3914,18 @@ def build_cross_layer_distribution_audit(
         "top1_network_transition_share",
         "top2_network_transition_share",
         "top3_network_transition_share",
+        "network_transition_entropy",
+        "network_transition_normalized_entropy",
         "effective_network_transition_count",
         "network_transition_concentration_tier",
         "top1_corridor_share",
         "top2_corridor_share",
         "top3_corridor_share",
+        "corridor_entropy",
+        "corridor_normalized_entropy",
         "effective_corridor_count",
+        "corridor_minus_network_normalized_entropy",
+        "normalized_entropy_reduction",
         "corridor_concentration_tier",
         "cross_layer_distribution_class",
         "country_fallback_share",
@@ -2989,6 +3987,20 @@ def build_cross_layer_distribution_audit(
         ),
         axis=1,
     )
+    network_normalized_entropy = pd.to_numeric(
+        merged.get("network_transition_normalized_entropy", np.nan),
+        errors="coerce",
+    )
+    corridor_normalized_entropy = pd.to_numeric(
+        merged.get("corridor_normalized_entropy", np.nan),
+        errors="coerce",
+    )
+    merged["corridor_minus_network_normalized_entropy"] = (
+        corridor_normalized_entropy - network_normalized_entropy
+    )
+    merged["normalized_entropy_reduction"] = (
+        network_normalized_entropy - corridor_normalized_entropy
+    )
     fallback_share = pd.to_numeric(merged.get("country_fallback_share", np.nan), errors="coerce")
     total_segments = pd.to_numeric(merged["total_mappable_segments"], errors="coerce")
     unique_probes = pd.to_numeric(merged["unique_probes"], errors="coerce")
@@ -3026,12 +4038,20 @@ def build_cross_layer_distribution_audit(
             "top1_network_transition_share": merged["top1_network_transition_share"],
             "top2_network_transition_share": merged["top2_network_transition_share"],
             "top3_network_transition_share": merged["top3_network_transition_share"],
+            "network_transition_entropy": merged["network_transition_entropy"],
+            "network_transition_normalized_entropy": network_normalized_entropy,
             "effective_network_transition_count": merged["effective_network_transition_count"],
             "network_transition_concentration_tier": merged["network_transition_concentration_tier"],
             "top1_corridor_share": merged["top1_corridor_share"],
             "top2_corridor_share": merged["top2_corridor_share"],
             "top3_corridor_share": merged["top3_corridor_share"],
+            "corridor_entropy": merged["corridor_entropy"],
+            "corridor_normalized_entropy": corridor_normalized_entropy,
             "effective_corridor_count": merged["effective_corridor_count"],
+            "corridor_minus_network_normalized_entropy": merged[
+                "corridor_minus_network_normalized_entropy"
+            ],
+            "normalized_entropy_reduction": merged["normalized_entropy_reduction"],
             "corridor_concentration_tier": merged["corridor_concentration_tier"],
             "cross_layer_distribution_class": merged["cross_layer_distribution_class"],
             "country_fallback_share": fallback_share,
@@ -5138,6 +6158,15 @@ def build_method_manifest() -> Dict[str, Any]:
         "peeringdb_descriptor_note": "PeeringDB descriptors are external interconnection-footprint descriptors only and are not used for physical-candidate construction or candidate-support scoring",
         "segment_projection_note": "Traceroutes are decomposed into independently mappable path-transition segments; paper-facing service-country outputs are grouped by probe_country and service_id, while transition-country outputs are supplementary geography views",
         "corridor_observation_note": "Corridor observation concentration measures whether measurement-observed path-transition segments concentrate on a small number of feasible corridor candidates",
+        "landing_region_clustering": "diameter_limited_complete_link_greedy; every automatic region has diameter at most the configured radius",
+        "parallel_relationship_boundary": "strict means shared exact landing-station pair; corridor co-group means shared landing-region pair; neither proves route-level parallelism",
+        "mapping_resolution_states": [
+            "uniquely_resolved",
+            "bounded_candidate_set",
+            "no_matched_corridor",
+            "insufficiently_resolved",
+        ],
+        "normalized_entropy_definition": "Shannon entropy divided by log of the observed label count; zero for a one-label distribution",
         "observation_mass_note": "Observation mass reflects traceroute-observed path-transition segments and must not be interpreted as byte or packet traffic volume",
         "candidate_support_note": "candidate_support and normalized_candidate_support are supplementary evidence scores inside the feasible set, not true cable-use probabilities",
         "paper_case_thresholds": {
@@ -5170,6 +6199,12 @@ def build_method_manifest() -> Dict[str, Any]:
             "service_country_corridor_concentration_summary.csv",
             "service_country_network_transition_concentration_summary.csv",
             "service_country_cross_layer_distribution_audit.csv",
+            "cross_layer_normalized_entropy_audit.csv",
+            "physical_mapping_resolution_summary.csv",
+            "service_country_physical_mapping_resolution.csv",
+            "bounded_candidate_set_size_distribution.csv",
+            "uniquely_resolved_service_country_cross_layer_distribution.csv",
+            "pipeline_accounting.csv",
         ],
         "supplementary_views": [
             "cable_level_support",
@@ -5219,6 +6254,10 @@ def build_method_manifest() -> Dict[str, Any]:
             "ambiguity_summary.csv",
             "unit_ambiguity_profile.csv",
             "supplementary_owner_concentration.csv",
+            "landing_region_summary.csv",
+            "exact_landing_pair_catalog.csv",
+            "corridor_parallel_relationship_summary.csv",
+            "physical_corridor_structure_report.json",
         ],
         "legacy_supplementary_outputs": [
             "paper_unit_physical_candidate_diversity.csv",
@@ -5252,6 +6291,9 @@ def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
         "peeringdb_descriptor_note": "PeeringDB descriptors are external interconnection-footprint descriptors only and are not used for physical-candidate construction or candidate-support scoring",
         "segment_projection_note": "Traceroutes are decomposed into independently mappable path-transition segments anchored to the near-side country of each transition",
         "corridor_observation_note": "Corridor observation concentration measures whether measurement-observed path-transition segments concentrate on a small number of feasible corridor candidates",
+        "landing_region_clustering": "diameter-limited clustering prevents single-linkage geographic chaining",
+        "mapping_resolution_note": "Every inventoried atomic segment receives exactly one of four mapping-resolution states",
+        "normalized_entropy_note": "Normalized entropy is a continuous same-scale comparison supplement to Top-k concentration tiers",
         "observation_mass_note": "Observation mass reflects traceroute-observed path-transition segments and must not be interpreted as byte or packet traffic volume",
         "candidate_breadth_note": "Unique feasible corridor count remains a candidate-breadth descriptor rather than the paper-primary observation concentration metric",
         "primary_analysis_unit": "probe_country_x_service_id",
@@ -5270,6 +6312,10 @@ def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
             "paper_service_country_cross_layer_distribution.csv",
             "paper_network_broad_physical_concentrated_cases.csv",
             "paper_broad_corridor_distribution_cases.csv",
+            "physical_mapping_resolution_summary.csv",
+            "paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+            "cross_layer_normalized_entropy_audit.csv",
+            "pipeline_accounting.csv",
         ],
         "supplementary_views": [
             "cable_level_support",
@@ -5328,6 +6374,10 @@ def build_conservative_candidate_audit_manifest() -> Dict[str, Any]:
             "candidate_space_profile.csv",
             "weighted_vs_conservative_diversity.csv",
             "supplementary_owner_concentration.csv",
+            "landing_region_summary.csv",
+            "exact_landing_pair_catalog.csv",
+            "corridor_parallel_relationship_summary.csv",
+            "physical_corridor_structure_report.json",
         ],
         "legacy_supplementary_outputs": [
             "paper_unit_physical_candidate_diversity.csv",
@@ -5769,6 +6819,136 @@ def write_cable_corridor_comparison_svg(comparison_frame: pd.DataFrame, output_p
     write_svg(output_path, "".join(body_parts))
 
 
+def write_normalized_entropy_paired_svg(frame: pd.DataFrame, output_path: str) -> None:
+    """Render paired network and corridor normalized entropy values."""
+    required = {
+        "network_transition_normalized_entropy",
+        "corridor_normalized_entropy",
+    }
+    if frame.empty or not required.issubset(frame.columns):
+        write_svg(output_path, "<text x='24' y='36' font-size='18'>No normalized entropy data.</text>")
+        return
+    working = frame.copy()
+    if "auditable_paper_case" in working:
+        working = working.loc[working["auditable_paper_case"].fillna(False).astype(bool)]
+    if "path_scope_stratum" in working:
+        primary = working.loc[
+            working["path_scope_stratum"].astype(str).eq("all_publicly_visible")
+        ]
+        if not primary.empty:
+            working = primary
+    network = pd.to_numeric(
+        working["network_transition_normalized_entropy"], errors="coerce"
+    )
+    corridor = pd.to_numeric(
+        working["corridor_normalized_entropy"], errors="coerce"
+    )
+    valid = network.notna() & corridor.notna()
+    pairs = list(zip(network.loc[valid], corridor.loc[valid]))
+    left_x, right_x, top, bottom = 260, 640, 90, 530
+
+    def y_position(value: float) -> float:
+        return bottom - float(value) * (bottom - top)
+
+    body = [
+        "<rect width='100%' height='100%' fill='#fbfaf6'/>",
+        "<text x='450' y='42' text-anchor='middle' font-size='22' font-family='Georgia'>Normalized entropy across layers</text>",
+        f"<line x1='{left_x}' y1='{top}' x2='{left_x}' y2='{bottom}' stroke='#555'/>",
+        f"<line x1='{right_x}' y1='{top}' x2='{right_x}' y2='{bottom}' stroke='#555'/>",
+        f"<text x='{left_x}' y='565' text-anchor='middle' font-family='Georgia'>Network transitions</text>",
+        f"<text x='{right_x}' y='565' text-anchor='middle' font-family='Georgia'>Physical corridors</text>",
+    ]
+    for tick in [0.0, 0.25, 0.5, 0.75, 1.0]:
+        tick_y = y_position(tick)
+        body.append(
+            f"<text x='{left_x - 18}' y='{tick_y + 4:.1f}' text-anchor='end' font-size='11'>{tick:.2f}</text>"
+        )
+    for network_value, corridor_value in pairs:
+        color = "#b23a2f" if corridor_value < network_value else "#3d6f8e"
+        body.append(
+            f"<line x1='{left_x}' y1='{y_position(network_value):.2f}' "
+            f"x2='{right_x}' y2='{y_position(corridor_value):.2f}' "
+            f"stroke='{color}' stroke-opacity='0.22'/>"
+        )
+    if pairs:
+        median_network = float(pd.Series([item[0] for item in pairs]).median())
+        median_corridor = float(pd.Series([item[1] for item in pairs]).median())
+        body.extend(
+            [
+                f"<circle cx='{left_x}' cy='{y_position(median_network):.2f}' r='7' fill='#111'/>",
+                f"<circle cx='{right_x}' cy='{y_position(median_corridor):.2f}' r='7' fill='#111'/>",
+                f"<text x='450' y='596' text-anchor='middle' font-size='12'>n={len(pairs)}; medians {median_network:.3f} to {median_corridor:.3f}</text>",
+            ]
+        )
+    write_svg(output_path, "".join(body))
+
+
+def write_normalized_entropy_cdf_svg(frame: pd.DataFrame, output_path: str) -> None:
+    """Render empirical CDFs for network and corridor normalized entropy."""
+    required = {
+        "network_transition_normalized_entropy",
+        "corridor_normalized_entropy",
+    }
+    if frame.empty or not required.issubset(frame.columns):
+        write_svg(output_path, "<text x='24' y='36' font-size='18'>No normalized entropy data.</text>")
+        return
+    working = frame.copy()
+    if "auditable_paper_case" in working:
+        working = working.loc[working["auditable_paper_case"].fillna(False).astype(bool)]
+    if "path_scope_stratum" in working:
+        primary = working.loc[
+            working["path_scope_stratum"].astype(str).eq("all_publicly_visible")
+        ]
+        if not primary.empty:
+            working = primary
+    series = {
+        "Network transitions": pd.to_numeric(
+            working["network_transition_normalized_entropy"], errors="coerce"
+        ).dropna().sort_values(),
+        "Physical corridors": pd.to_numeric(
+            working["corridor_normalized_entropy"], errors="coerce"
+        ).dropna().sort_values(),
+    }
+    left, right, top, bottom = 90, 850, 70, 530
+
+    def x_position(value: float) -> float:
+        return left + float(value) * (right - left)
+
+    def y_position(value: float) -> float:
+        return bottom - float(value) * (bottom - top)
+
+    body = [
+        "<rect width='100%' height='100%' fill='#fbfaf6'/>",
+        "<text x='450' y='38' text-anchor='middle' font-size='22' font-family='Georgia'>CDF of normalized entropy</text>",
+        f"<line x1='{left}' y1='{bottom}' x2='{right}' y2='{bottom}' stroke='#333'/>",
+        f"<line x1='{left}' y1='{top}' x2='{left}' y2='{bottom}' stroke='#333'/>",
+        "<text x='470' y='585' text-anchor='middle' font-family='Georgia'>Normalized entropy</text>",
+        "<text x='24' y='300' transform='rotate(-90 24 300)' text-anchor='middle' font-family='Georgia'>Empirical CDF</text>",
+    ]
+    colors = {"Network transitions": "#2f6078", "Physical corridors": "#b23a2f"}
+    for label, values in series.items():
+        if values.empty:
+            continue
+        count = len(values)
+        points = [
+            f"{x_position(value):.2f},{y_position(index / count):.2f}"
+            for index, value in enumerate(values, start=1)
+        ]
+        body.append(
+            f"<polyline points='{' '.join(points)}' fill='none' "
+            f"stroke='{colors[label]}' stroke-width='3'/>"
+        )
+    body.extend(
+        [
+            "<line x1='610' y1='92' x2='650' y2='92' stroke='#2f6078' stroke-width='3'/>",
+            "<text x='660' y='97' font-size='12'>Network transitions</text>",
+            "<line x1='610' y1='116' x2='650' y2='116' stroke='#b23a2f' stroke-width='3'/>",
+            "<text x='660' y='121' font-size='12'>Physical corridors</text>",
+        ]
+    )
+    write_svg(output_path, "".join(body))
+
+
 def build_dataset_summary(
     candidate_frame: pd.DataFrame,
     cable_physical: pd.DataFrame,
@@ -5871,9 +7051,38 @@ def main() -> None:
         unit_fields = list(DEFAULT_UNIT_FIELDS)
 
     os.makedirs(args.output, exist_ok=True)
-    records = read_candidate_output(args.input)
-    candidate_frame = explode_candidate_rows(records, unit_fields)
-    feasible_frame = explode_feasible_candidate_rows(records, unit_fields)
+    flattened_candidate_path = os.path.join(args.output, "trace_candidate_support.csv")
+    flattened_feasible_path = os.path.join(
+        args.output,
+        "trace_feasible_candidate_space.csv",
+    )
+    if (
+        args.reuse_flattened_candidates
+        and os.path.exists(flattened_candidate_path)
+        and os.path.exists(flattened_feasible_path)
+    ):
+        candidate_frame = pd.read_csv(flattened_candidate_path, low_memory=False)
+        feasible_frame = pd.read_csv(flattened_feasible_path, low_memory=False)
+        print(
+            "Reusing flattened candidate tables for corridor/statistical "
+            "reaggregation; candidate matching is unchanged."
+        )
+    else:
+        records = read_candidate_output(args.input)
+        candidate_frame = explode_candidate_rows(records, unit_fields)
+        feasible_frame = explode_feasible_candidate_rows(records, unit_fields)
+    landing_region_model = load_corrected_landing_region_model()
+    corridor_structure_report = write_corridor_structure_outputs(
+        output_dir=args.output,
+        model=landing_region_model,
+        cable_dir=DEFAULT_CABLE_DIR,
+    )
+    candidate_frame = remap_candidate_corridors(candidate_frame, landing_region_model)
+    feasible_frame = remap_candidate_corridors(feasible_frame, landing_region_model)
+    candidate_frame, feasible_frame = refresh_feasible_parallel_multiplicity(
+        candidate_frame,
+        feasible_frame,
+    )
 
     if candidate_frame.empty and feasible_frame.empty:
         # A strict infeasibility-first topology policy may legitimately retain no
@@ -5916,6 +7125,25 @@ def main() -> None:
                 "corridor_atomic_segments",
                 "shared_atomic_segments",
                 "segment_population_aligned",
+            ],
+            "cross_layer_normalized_entropy_audit.csv": [
+                "probe_country",
+                "service_id",
+                "path_scope_stratum",
+                "network_transition_normalized_entropy",
+                "corridor_normalized_entropy",
+                "normalized_entropy_reduction",
+            ],
+            "uniquely_resolved_service_country_cross_layer_distribution.csv": [
+                "probe_country",
+                "service_id",
+                "path_scope_stratum",
+            ],
+            "paper_uniquely_resolved_service_country_cross_layer_distribution.csv": [
+                "probe_country",
+                "service_id",
+                "path_scope_stratum",
+                "auditable_paper_case",
             ],
             "country_as_boundary_transition_distribution.csv": [
                 "country",
@@ -6016,6 +7244,35 @@ def main() -> None:
             index=False,
             encoding="utf-8-sig",
         )
+        atomic_inventory = load_atomic_segment_inventory(args.output)
+        resolution_ledger, resolution_summary, resolution_by_unit, bounded_distribution = (
+            build_physical_mapping_resolution_tables(
+                atomic_inventory,
+                pd.DataFrame(),
+                trace_observation_frame,
+            )
+        )
+        resolution_ledger.to_csv(
+            os.path.join(args.output, "atomic_segment_mapping_resolution.csv.gz"),
+            index=False,
+            encoding="utf-8-sig",
+            compression="gzip",
+        )
+        resolution_summary.to_csv(
+            os.path.join(args.output, "physical_mapping_resolution_summary.csv"),
+            index=False,
+            encoding="utf-8-sig",
+        )
+        resolution_by_unit.to_csv(
+            os.path.join(args.output, "service_country_physical_mapping_resolution.csv"),
+            index=False,
+            encoding="utf-8-sig",
+        )
+        bounded_distribution.to_csv(
+            os.path.join(args.output, "bounded_candidate_set_size_distribution.csv"),
+            index=False,
+            encoding="utf-8-sig",
+        )
         filter_auditable_paper_rows(service_exposure).to_csv(
             os.path.join(args.output, "paper_service_country_physical_exposure.csv"),
             index=False,
@@ -6044,7 +7301,19 @@ def main() -> None:
                 "status": "no_feasible_candidate_rows",
                 "interpretation": "The configured infeasibility-first projection retained no feasible physical candidates.",
                 "paper_outputs_are_empty": True,
+                "physical_corridor_structure": corridor_structure_report,
             }
+        )
+        pipeline_accounting = build_pipeline_accounting_table(
+            trace_observation_frame,
+            pd.DataFrame(),
+            service_cross,
+            load_stage1_stats(args.output),
+        )
+        pipeline_accounting.to_csv(
+            os.path.join(args.output, "pipeline_accounting.csv"),
+            index=False,
+            encoding="utf-8-sig",
         )
         with open(os.path.join(args.output, "method_manifest.json"), "w", encoding="utf-8") as handle:
             json.dump(
@@ -6058,10 +7327,26 @@ def main() -> None:
 
     if not candidate_frame.empty:
         candidate_frame = ensure_corridor_columns(candidate_frame)
+        candidate_frame.drop(
+            columns=[
+                column
+                for column in ["link_physical_projection_class", "projection_class"]
+                if column in candidate_frame
+            ],
+            inplace=True,
+        )
         candidate_frame = annotate_link_projection_classes(candidate_frame)
         candidate_frame = annotate_projection_quality(candidate_frame)
     if not feasible_frame.empty:
         feasible_frame = ensure_corridor_columns(feasible_frame)
+        feasible_frame.drop(
+            columns=[
+                column
+                for column in ["link_physical_projection_class", "projection_class"]
+                if column in feasible_frame
+            ],
+            inplace=True,
+        )
         feasible_frame = annotate_link_projection_classes(feasible_frame)
         feasible_frame = annotate_projection_quality(feasible_frame)
     if candidate_frame.empty and not feasible_frame.empty:
@@ -6319,6 +7604,91 @@ def main() -> None:
         service_country_cross_layer_distribution_audit,
         service_audit_group_fields,
     )
+    atomic_segment_inventory = load_atomic_segment_inventory(args.output)
+    stage1_stats = normalize_stage1_accounting_stats(
+        stage1_stats,
+        atomic_segment_inventory,
+    )
+    resolution_id_map = build_legacy_resolution_id_map(
+        atomic_segment_inventory,
+        feasible_frame,
+    )
+    (
+        atomic_segment_mapping_resolution,
+        physical_mapping_resolution_summary,
+        service_country_mapping_resolution,
+        bounded_candidate_set_size_distribution,
+    ) = build_physical_mapping_resolution_tables(
+        atomic_segment_inventory,
+        feasible_frame,
+        trace_observation_frame,
+        resolution_id_map,
+    )
+    uniquely_resolved_ids = set(
+        atomic_segment_mapping_resolution.loc[
+            atomic_segment_mapping_resolution.get(
+                "mapping_resolution_state",
+                pd.Series("", index=atomic_segment_mapping_resolution.index),
+            )
+            .astype(str)
+            .eq("uniquely_resolved"),
+            "atomic_segment_id",
+        ].astype(str)
+    )
+    projection_resolution_ids = paper_inter_region_projection.get(
+        "atomic_segment_id",
+        pd.Series("", index=paper_inter_region_projection.index),
+    ).astype(str).map(resolution_id_map).apply(canonical_resolution_segment_id)
+    unique_projection = paper_inter_region_projection.loc[
+        projection_resolution_ids
+        .isin(uniquely_resolved_ids)
+    ].copy()
+    unique_scope_projection = build_service_path_scope_projections(unique_projection)
+    unique_mass_parts: List[pd.DataFrame] = []
+    for path_scope_stratum, scoped_projection in unique_scope_projection.groupby(
+        "path_scope_stratum",
+        dropna=False,
+    ):
+        scoped_mass = build_segment_corridor_mass_frame(
+            scoped_projection,
+            corridor_col=corridor_candidate_col,
+            mass_mode="uniform",
+        )
+        if not scoped_mass.empty:
+            scoped_mass["path_scope_stratum"] = str(path_scope_stratum)
+            unique_mass_parts.append(scoped_mass)
+    unique_mass = (
+        pd.concat(unique_mass_parts, ignore_index=True, sort=False)
+        if unique_mass_parts
+        else pd.DataFrame(columns=[*segment_corridor_mass.columns, "path_scope_stratum"])
+    )
+    unique_corridor_distribution = summarize_corridor_observation_distribution(
+        unique_mass,
+        service_audit_group_fields,
+    )
+    unique_corridor_summary = build_corridor_concentration_summary(
+        unique_corridor_distribution,
+        service_audit_group_fields,
+    )
+    unique_network_distribution = build_network_transition_distribution(
+        unique_scope_projection,
+        service_audit_group_fields,
+    )
+    unique_network_summary = summarize_network_transition_distribution(
+        unique_network_distribution,
+        service_audit_group_fields,
+    )
+    uniquely_resolved_cross_layer_distribution = build_cross_layer_distribution_audit(
+        unique_corridor_summary,
+        unique_network_summary,
+        service_audit_group_fields,
+    )
+    pipeline_accounting = build_pipeline_accounting_table(
+        trace_observation_frame,
+        prepared_segment_projection,
+        service_country_cross_layer_distribution_audit,
+        stage1_stats,
+    )
     geography_dependency_paths = write_country_geography_dependency_outputs(
         args.output,
         trace_observation_frame,
@@ -6438,6 +7808,8 @@ def main() -> None:
                 "top1_network_transition_share",
                 "top2_network_transition_share",
                 "top3_network_transition_share",
+                "network_transition_entropy",
+                "network_transition_normalized_entropy",
                 "effective_network_transition_count",
                 "network_transition_concentration_tier",
                 "country_fallback_share",
@@ -6466,6 +7838,8 @@ def main() -> None:
                     "top1_network_transition_share",
                     "top2_network_transition_share",
                     "top3_network_transition_share",
+                    "network_transition_entropy",
+                    "network_transition_normalized_entropy",
                     "effective_network_transition_count",
                     "network_transition_concentration_tier",
                     "country_fallback_share",
@@ -6488,12 +7862,18 @@ def main() -> None:
                 "top1_network_transition_share",
                 "top2_network_transition_share",
                 "top3_network_transition_share",
+                "network_transition_entropy",
+                "network_transition_normalized_entropy",
                 "effective_network_transition_count",
                 "network_transition_concentration_tier",
                 "top1_corridor_share",
                 "top2_corridor_share",
                 "top3_corridor_share",
+                "corridor_entropy",
+                "corridor_normalized_entropy",
                 "effective_corridor_count",
+                "corridor_minus_network_normalized_entropy",
+                "normalized_entropy_reduction",
                 "corridor_concentration_tier",
                 "cross_layer_distribution_class",
                 "country_fallback_share",
@@ -6522,12 +7902,18 @@ def main() -> None:
                 "top1_network_transition_share",
                 "top2_network_transition_share",
                 "top3_network_transition_share",
+                "network_transition_entropy",
+                "network_transition_normalized_entropy",
                 "effective_network_transition_count",
                 "network_transition_concentration_tier",
                 "top1_corridor_share",
                 "top2_corridor_share",
                 "top3_corridor_share",
+                "corridor_entropy",
+                "corridor_normalized_entropy",
                 "effective_corridor_count",
+                "corridor_minus_network_normalized_entropy",
+                "normalized_entropy_reduction",
                 "corridor_concentration_tier",
                 "cross_layer_distribution_class",
                 "country_fallback_share",
@@ -6597,6 +7983,11 @@ def main() -> None:
         method_manifest,
         stage1_stats,
     )
+    framework_alignment_report["physical_corridor_structure"] = corridor_structure_report
+    framework_alignment_report["mapping_resolution_state_counts"] = {
+        str(row["mapping_resolution_state"]): int(row["atomic_segment_count"])
+        for _, row in physical_mapping_resolution_summary.iterrows()
+    }
     filtering_breakdown = build_filtering_breakdown(args.output)
     summary_source_frame = candidate_frame if not candidate_frame.empty else feasible_frame
     summary_frame = build_dataset_summary(
@@ -6748,6 +8139,35 @@ def main() -> None:
     conservative_manifest_path = os.path.join(args.output, "conservative_candidate_audit_manifest.json")
     framework_alignment_report_path = os.path.join(args.output, "framework_alignment_report.json")
     summary_path = os.path.join(args.output, "dataset_summary.csv")
+    atomic_segment_mapping_resolution_path = os.path.join(
+        args.output,
+        "atomic_segment_mapping_resolution.csv.gz",
+    )
+    physical_mapping_resolution_summary_path = os.path.join(
+        args.output,
+        "physical_mapping_resolution_summary.csv",
+    )
+    service_country_mapping_resolution_path = os.path.join(
+        args.output,
+        "service_country_physical_mapping_resolution.csv",
+    )
+    bounded_candidate_set_size_distribution_path = os.path.join(
+        args.output,
+        "bounded_candidate_set_size_distribution.csv",
+    )
+    uniquely_resolved_cross_layer_distribution_path = os.path.join(
+        args.output,
+        "uniquely_resolved_service_country_cross_layer_distribution.csv",
+    )
+    paper_uniquely_resolved_cross_layer_distribution_path = os.path.join(
+        args.output,
+        "paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+    )
+    pipeline_accounting_path = os.path.join(args.output, "pipeline_accounting.csv")
+    normalized_entropy_audit_path = os.path.join(
+        args.output,
+        "cross_layer_normalized_entropy_audit.csv",
+    )
 
     cable_physical.to_csv(cable_physical_path, index=False, encoding="utf-8-sig")
     corridor_physical.to_csv(corridor_physical_path, index=False, encoding="utf-8-sig")
@@ -6880,6 +8300,47 @@ def main() -> None:
         index=False,
         encoding="utf-8-sig",
     )
+    atomic_segment_mapping_resolution.to_csv(
+        atomic_segment_mapping_resolution_path,
+        index=False,
+        encoding="utf-8-sig",
+        compression="gzip",
+    )
+    physical_mapping_resolution_summary.to_csv(
+        physical_mapping_resolution_summary_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    service_country_mapping_resolution.to_csv(
+        service_country_mapping_resolution_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    bounded_candidate_set_size_distribution.to_csv(
+        bounded_candidate_set_size_distribution_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    uniquely_resolved_cross_layer_distribution.to_csv(
+        uniquely_resolved_cross_layer_distribution_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    filter_auditable_paper_rows(uniquely_resolved_cross_layer_distribution).to_csv(
+        paper_uniquely_resolved_cross_layer_distribution_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    pipeline_accounting.to_csv(
+        pipeline_accounting_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
+    service_country_cross_layer_distribution_audit.to_csv(
+        normalized_entropy_audit_path,
+        index=False,
+        encoding="utf-8-sig",
+    )
     filter_auditable_paper_rows(service_country_cross_layer_distribution_audit).to_csv(
         paper_service_country_cross_layer_distribution_path,
         index=False,
@@ -6995,6 +8456,14 @@ def main() -> None:
         cable_corridor_comparison,
         os.path.join(args.output, "cable_vs_corridor_physical_diversity.svg"),
     )
+    write_normalized_entropy_paired_svg(
+        service_country_cross_layer_distribution_audit,
+        os.path.join(args.output, "network_corridor_normalized_entropy_paired.svg"),
+    )
+    write_normalized_entropy_cdf_svg(
+        service_country_cross_layer_distribution_audit,
+        os.path.join(args.output, "network_corridor_normalized_entropy_cdf.svg"),
+    )
 
     print(f"Saved trace candidate table to {trace_output}")
     print(f"Saved feasible candidate-space table to {trace_feasible_output}")
@@ -7058,6 +8527,11 @@ def main() -> None:
     print(f"Saved conservative candidate-audit manifest to {conservative_manifest_path}")
     print(f"Saved quadrant summary table to {quadrant_summary_path}")
     print(f"Saved dataset summary table to {summary_path}")
+    print(f"Saved physical mapping-resolution summary to {physical_mapping_resolution_summary_path}")
+    print(f"Saved bounded candidate-set size distribution to {bounded_candidate_set_size_distribution_path}")
+    print(f"Saved uniquely resolved cross-layer audit to {uniquely_resolved_cross_layer_distribution_path}")
+    print(f"Saved unified pipeline accounting table to {pipeline_accounting_path}")
+    print(f"Saved normalized entropy audit to {normalized_entropy_audit_path}")
 
     paper_primary_distribution_frame = (
         service_country_corridor_concentration_summary

@@ -53,6 +53,11 @@ output/public_traceroute_by_msmid/**/trace_candidate_support.csv
 output/public_traceroute_by_msmid/**/trace_feasible_candidate_space.csv
 output/public_traceroute_by_msmid/**/trace_observation_summary.csv
 output/public_traceroute_by_msmid/**/*.tmp
+# Per-measurement runtime trees can be several gigabytes. Compact, reviewed
+# paper-facing bundles are published under results/ instead.
+output/public_traceroute_by_msmid/**
+output/reaggregate_group_*.log
+output/reaggregate_group_*.err.log
 
 output/smoke_framework_alignment_*/
 output/result_smoke_*/

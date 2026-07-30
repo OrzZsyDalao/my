@@ -62,6 +62,14 @@ def parse_args() -> argparse.Namespace:
         help="Skip a measurement when the full postprocess output already exists in its output folder.",
     )
     parser.add_argument(
+        "--reaggregate-existing",
+        action="store_true",
+        help=(
+            "Reuse existing cable_matching_output.json, rebuild the atomic-segment "
+            "inventory, and rerun post-processing without repeating candidate matching."
+        ),
+    )
+    parser.add_argument(
         "--skip-robustness",
         action="store_true",
         help="Skip robustness_compare.py for faster smoke tests.",
@@ -259,7 +267,7 @@ def main() -> None:
     for index, record in enumerate(records, start=1):
         output_dir = output_root / record["output_dir_name"]
         print(f"[{index}/{len(records)}] msm_id={record['msm_id']} label={record['label']}")
-        if args.skip_existing and has_completed_pipeline_output(output_dir):
+        if args.skip_existing and not args.reaggregate_existing and has_completed_pipeline_output(output_dir):
             print(f"  skipping existing output: {output_dir}")
             rows.append(build_summary_row(record, output_dir, "skipped_existing"))
             write_run_index(output_root, rows)
@@ -284,6 +292,14 @@ def main() -> None:
             "--output",
             str(output_dir),
         ]
+        inventory_command = [
+            sys.executable,
+            "source/build_atomic_segment_inventory.py",
+            "--traceroute-input",
+            str(record["input_file"]),
+            "--output-dir",
+            str(output_dir),
+        ]
         robustness_command = [
             sys.executable,
             "source/robustness_compare.py",
@@ -294,7 +310,16 @@ def main() -> None:
         ]
 
         status = "completed"
-        for command in [main_command, postprocess_command]:
+        if args.reaggregate_existing:
+            if not (output_dir / "cable_matching_output.json").exists():
+                raise FileNotFoundError(
+                    f"Cannot reaggregate without existing candidate output: {output_dir}"
+                )
+            postprocess_command.append("--reuse-flattened-candidates")
+            commands = [inventory_command, postprocess_command]
+        else:
+            commands = [main_command, inventory_command, postprocess_command]
+        for command in commands:
             return_code = run_command(command, REPO_DIR, args.dry_run)
             if return_code != 0:
                 status = f"failed_{Path(command[1]).stem}"
