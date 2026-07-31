@@ -124,7 +124,7 @@ Application observation
 
 1. 下载或准备 RIPE Atlas traceroute。
 2. 准备 probe metadata、pfx2as、IP geolocation、AS relationship、owner-to-AS、cable metadata。
-3. 运行 Stage 1 feasible corridor construction：`python source/main_analysis.py --landing-region-radius-km 50 --rtt-tolerance-ms 5`
+3. 运行 Stage 1 feasible corridor construction：`python source/main_analysis.py --landing-region-maximum-diameter-km 50 --rtt-tolerance-ms 5`
 4. 运行 Stage 2 application/network/corridor distribution audit：`python source/postprocess_candidate_output.py --input output/result/cable_matching_output.json --output output/result`
 5. 运行 robustness analyses：`python source/robustness_compare.py --input output/result/trace_candidate_support.csv --output output/result`
 6. 可选运行 legacy cable / owner analysis。
@@ -1353,15 +1353,34 @@ python pipeline/run_a_root_sensitivity.py --skip-existing
 ```
 
 网格组合 landing catchment radius `30/50/75 km`、landing-region maximum
-diameter `30/50/75 km` 和 RTT tolerance `0/5/10 ms`。输出
-`output/sensitivity_a_root/a_root_sensitivity_summary.csv`，包含 inter-region
-candidate-bearing segments、unique/bounded 比例、可审计单元数、corridor
-Top-2 中位数、归一化 corridor entropy、归一化 entropy reduction，以及相对
-`50/50/5` 基线的分类一致率。
-汇总同时报告全局/观测 landing-region 与 corridor 数、segment-corridor
-incidence Jaccard、候选 corridor 集合发生变化的 segment 数，以及相对基线的
-可审计 unit 新增/排除情况。不能仅依据论文汇总指标相同就宣称对
-landing-region diameter 完全鲁棒。
+diameter `30/50/75 km` 和 RTT tolerance `0/5/10 ms`。分析明确区分四个问题：
+coverage sensitivity（candidate-bearing segment 与可审计 unit 变化）、
+resolution sensitivity（landing partition 与 single/bounded 比例）、
+stable candidate sensitivity（exact landing-pair 与 cable 候选集合），以及
+baseline-shared cohort 上的结论稳定性（Top-2、normalized entropy 与分类一致率）。
+unique/bounded 比例分别报告以全部 atomic segments 和以 candidate-bearing
+segments 为分母的版本。跨 diameter 的 corridor-ID Jaccard 仅作为
+resolution-dependent label diagnostic，不能解释成稳定物理候选变化。
+
+`a_root_sensitivity_shared_unit_comparison.csv` 可定位每个 shared unit；
+`a_root_sensitivity_manifest.json` 记录 27 组参数、固定论文筛选、输入与源码
+SHA256、schema 版本和生成时 Git 状态。Top-2 表示少数标签吸收的绝对质量，
+effective count 表示分布宽度，normalized entropy 表示相对当前 support size
+的均匀程度，80% 分类只是描述性阈值。不能把这些指标混为一个“参数鲁棒”结论。
+
+无需重跑候选匹配即可从现有 aggregate 生成固定口径论文主表：
+
+```bash
+python source/build_paper_primary_summary.py
+```
+
+该脚本固定使用 `all_publicly_visible`、`probe_country_service` 和
+`auditable_paper_case == True`，在
+`results/july1_public_atlas_20260701/paper_primary/` 下输出
+`paper_primary_units.csv`、`paper_primary_group_summary.csv`、
+`paper_primary_classification_summary.csv`、`paper_primary_case_table.csv`、
+`paper_primary_summary.json` 和 `paper_primary_summary_manifest.json`。
+数据集类别通过显式 measurement ID 目录确定，不使用名称模糊匹配。
 当该 27 行汇总存在时，紧凑论文结果打包器还会将其复制到
 `results/july1_public_atlas_20260701/sensitivity/a_root_sensitivity_summary.csv`，
 并在 `bundle_manifest.json` 中记录参数组合数量和基线组合。
@@ -1439,7 +1458,7 @@ Stage 1 现在补充记录与论文方法定义对齐的元数据，但不改变
 - 如需指定其他 IPinfo ASN 数据库，可以使用 `--asn-mmdb-path`。
 ## 有界直径走廊、映射解析状态与统一计数
 
-Landing region 现在采用确定性的有界直径聚类。自动生成的 region 只有在任意两个成员 landing station 的距离均不超过 `landing_region_radius_km` 时才允许合并。默认 50 km 因此表示自动 region 的最大直径，而不是 single-linkage 的连边阈值；人工 override 仍单独标记。
+Landing region 现在采用确定性的有界直径聚类。自动生成的 region 只有在任意两个成员 landing station 的距离均不超过 `landing_region_maximum_diameter_km` 时才允许合并。默认 50 km 因此表示自动 region 的最大直径，而不是 single-linkage 的连边阈值。默认 CLI 参数为 `--landing-region-maximum-diameter-km`；`--landing-region-radius-km` 仅作为会输出警告的兼容别名；人工 override 仍单独标记。
 
 `strict parallel` 与 `corridor co-group` 的语义不同：
 

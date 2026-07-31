@@ -9,14 +9,25 @@ import json
 import re
 import shutil
 import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
 
 import pandas as pd
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from source.result_provenance import (
+    file_manifest,
+    git_generation_state,
+    inherited_commit,
+    read_json,
+    source_hashes,
+)
+
 DEFAULT_SOURCE = REPO_ROOT / "output" / "public_traceroute_by_msmid"
 DEFAULT_DESTINATION = REPO_ROOT / "results" / "july1_public_atlas_20260701"
 
@@ -546,9 +557,8 @@ def main() -> None:
             "sha256": sha256_file(run_index_path),
         }
     )
-    sensitivity_source = (
-        REPO_ROOT / "output" / "sensitivity_a_root" / "a_root_sensitivity_summary.csv"
-    )
+    sensitivity_root = REPO_ROOT / "output" / "sensitivity_a_root"
+    sensitivity_source = sensitivity_root / "a_root_sensitivity_summary.csv"
     sensitivity_accounting: Dict[str, Any] = {
         "included": False,
         "setting_count": 0,
@@ -570,15 +580,65 @@ def main() -> None:
             copied,
             skipped,
         )
+        for sensitivity_filename in [
+            "a_root_sensitivity_shared_unit_comparison.csv",
+            "a_root_sensitivity_manifest.json",
+        ]:
+            copy_if_compact(
+                sensitivity_root / sensitivity_filename,
+                destination_root / "sensitivity" / sensitivity_filename,
+                max_bytes,
+                copied,
+                skipped,
+            )
         sensitivity_accounting = {
             "included": True,
             "setting_count": int(len(sensitivity_frame)),
             "baseline_setting": "catchment50_diameter50_rtt5",
         }
 
+    paper_primary_command = [
+        sys.executable,
+        str(REPO_ROOT / "source" / "build_paper_primary_summary.py"),
+        "--entropy-input",
+        str(
+            aggregate_dir
+            / "all_measurements_cross_layer_normalized_entropy_audit_full.csv"
+        ),
+        "--resolution-input",
+        str(
+            aggregate_dir
+            / "all_measurements_service_country_physical_mapping_resolution.csv"
+        ),
+        "--output",
+        str(destination_root / "paper_primary"),
+    ]
+    subprocess.run(paper_primary_command, cwd=REPO_ROOT, check=True)
+
+    generation = git_generation_state(REPO_ROOT)
+    sensitivity_manifest = read_json(
+        destination_root / "sensitivity" / "a_root_sensitivity_manifest.json"
+    )
+    aggregate_inputs = [
+        file_manifest(measurement / filename, REPO_ROOT)
+        for measurement in measurements
+        for filename in AGGREGATE_FILES
+        if (measurement / filename).exists()
+    ]
     manifest = {
-        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
-        "git_commit": current_git_commit(),
+        **generation,
+        # Deprecated alias: this is the generation checkout, not historical core provenance.
+        "git_commit": generation["generation_git_head"],
+        "git_commit_deprecated_alias": True,
+        "packaging_commit": (
+            "unknown"
+            if generation["generation_worktree_dirty"]
+            else generation["generation_git_head"]
+        ),
+        "sensitivity_analysis_commit": sensitivity_manifest.get(
+            "sensitivity_analysis_commit",
+            "unknown",
+        ),
         "measurement_count": len(measurements),
         "source": str(source_root.relative_to(REPO_ROOT)),
         "interpretation": (
@@ -588,6 +648,20 @@ def main() -> None:
         "copied": copied,
         "skipped": skipped,
         "aggregate_source_accounting": aggregate_source_accounting,
+        "input_files": aggregate_inputs,
+        "input_file_sha256": {
+            item["path"]: item["sha256"] for item in aggregate_inputs
+        },
+        "source_file_sha256": source_hashes(
+            [
+                REPO_ROOT
+                / "ripe_atlas_public_download"
+                / "package_reaggregated_paper_results.py",
+                REPO_ROOT / "source" / "build_paper_primary_summary.py",
+                REPO_ROOT / "source" / "result_provenance.py",
+            ],
+            REPO_ROOT,
+        ),
         "a_root_sensitivity": sensitivity_accounting,
         "large_runtime_outputs_not_packaged": [
             "cable_matching_output.json",
@@ -619,6 +693,10 @@ def main() -> None:
         )
     manifest["postprocess_schema_version"] = next(iter(postprocess_versions))
     manifest["identity_schema_version"] = next(iter(identity_versions))
+    manifest["core_analysis_commit"] = inherited_commit(
+        method_manifests,
+        ["core_analysis_commit", "git_commit", "git_commit_sha"],
+    )
     (destination_root / "bundle_manifest.json").write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False),
         encoding="utf-8",

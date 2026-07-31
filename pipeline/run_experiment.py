@@ -58,6 +58,20 @@ def load_config(path: Path) -> Dict[str, Any]:
             payload = json.load(handle)
         if not isinstance(payload, dict):
             raise ValueError("Experiment config must be a JSON object.")
+        legacy = payload.get("landing_region_radius_km")
+        current = payload.get("landing_region_maximum_diameter_km")
+        if legacy is not None and current is not None and float(legacy) != float(current):
+            raise ValueError(
+                "landing_region_radius_km is deprecated and conflicts with "
+                "landing_region_maximum_diameter_km"
+            )
+        if legacy is not None and current is None:
+            print(
+                "Warning: config key landing_region_radius_km is deprecated; use "
+                "landing_region_maximum_diameter_km."
+            )
+            payload["landing_region_maximum_diameter_km"] = legacy
+        payload.pop("landing_region_radius_km", None)
         config.update(payload)
     return config
 
@@ -283,7 +297,8 @@ def main() -> None:
             "--output-dir", str(measurement_dir), "--as-precompute-file", str(Path(args.as_precompute_file).resolve()),
             "--run-id", run_id, "--run-config-file", str(resolved_config_path),
             "--landing-catchment-radius-km", str(config["landing_catchment_radius_km"]),
-            "--landing-region-radius-km", str(config["landing_region_radius_km"]),
+            "--landing-region-maximum-diameter-km",
+            str(config["landing_region_maximum_diameter_km"]),
             "--same-city-policy", str(config["same_city_policy"]),
             "--same-city-distance-threshold-km", str(config.get("same_city_distance_threshold_km", 25.0)),
             "--timeout-gap-policy", str(config["timeout_gap_policy"]),

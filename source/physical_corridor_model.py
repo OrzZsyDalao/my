@@ -2,7 +2,7 @@
 
 The model groups nearby landing stations without single-linkage chaining:
 every automatically generated region has a diameter no greater than the
-configured radius.  Corridors remain candidate groupings between landing
+configured maximum diameter. Corridors remain candidate groupings between landing
 regions; they do not assert route-level cable parallelism or shared risk.
 """
 
@@ -44,8 +44,13 @@ class LandingRegionModel:
     assignment_methods: Dict[str, str]
     coordinates: Dict[str, Tuple[float, float]]
     station_names: Dict[str, str]
-    radius_km: float
+    maximum_diameter_km: float
     clustering_method: str = "diameter_limited_complete_link_greedy"
+
+    @property
+    def radius_km(self) -> float:
+        """Return the deprecated maximum-diameter compatibility alias."""
+        return self.maximum_diameter_km
 
 
 def load_landing_station_geo(path: str | Path) -> Tuple[Dict[str, Tuple[float, float]], Dict[str, str]]:
@@ -90,16 +95,34 @@ def _representative_station(
 def build_diameter_limited_landing_regions(
     coordinates: Mapping[str, Tuple[float, float]],
     station_names: Mapping[str, str],
-    radius_km: float,
+    maximum_diameter_km: float | None = None,
     overrides: Mapping[str, Mapping[str, str]] | None = None,
+    *,
+    radius_km: float | None = None,
 ) -> LandingRegionModel:
     """Build deterministic landing regions with a hard maximum diameter.
 
     Stations are processed in geographic order and assigned to the closest
-    existing cluster only when they remain within ``radius_km`` of every member.
+    existing cluster only when they remain within ``maximum_diameter_km`` of
+    every member.
     This prevents the unbounded chain effect of single-linkage connected
     components while keeping the implementation dependency-light.
     """
+    if (
+        maximum_diameter_km is not None
+        and radius_km is not None
+        and not math.isclose(maximum_diameter_km, radius_km)
+    ):
+        raise ValueError(
+            "maximum_diameter_km conflicts with deprecated radius_km"
+        )
+    maximum_diameter_km = (
+        maximum_diameter_km
+        if maximum_diameter_km is not None
+        else radius_km
+    )
+    if maximum_diameter_km is None:
+        raise ValueError("maximum_diameter_km is required")
     overrides = overrides or {}
     automatic_stations = [
         station_id for station_id in coordinates if station_id not in overrides
@@ -120,7 +143,7 @@ def build_diameter_limited_landing_regions(
                 for member in members
             ]
             maximum_distance = max(distances)
-            if maximum_distance <= float(radius_km) + 1e-9:
+            if maximum_distance <= float(maximum_diameter_km) + 1e-9:
                 eligible.append((maximum_distance, min(members), cluster_index))
         if eligible:
             _, _, selected_index = min(eligible)
@@ -161,7 +184,7 @@ def build_diameter_limited_landing_regions(
         assignment_methods=assignment_methods,
         coordinates=dict(coordinates),
         station_names=dict(station_names),
-        radius_km=float(radius_km),
+        maximum_diameter_km=float(maximum_diameter_km),
     )
 
 
@@ -194,9 +217,15 @@ def build_landing_region_summary(model: LandingRegionModel) -> pd.DataFrame:
                 "landing_region_label": model.region_labels.get(region_id, region_id),
                 "landing_station_count": len(members),
                 "region_diameter_km": diameter,
-                "configured_radius_km": model.radius_km,
+                "configured_maximum_diameter_km": model.maximum_diameter_km,
+                "diameter_within_configured_maximum": bool(
+                    diameter <= model.maximum_diameter_km + 1e-9
+                    or "manual_override" in methods
+                ),
+                # Deprecated compatibility aliases.
+                "configured_radius_km": model.maximum_diameter_km,
                 "diameter_within_configured_radius": bool(
-                    diameter <= model.radius_km + 1e-9
+                    diameter <= model.maximum_diameter_km + 1e-9
                     or "manual_override" in methods
                 ),
                 "region_assignment_methods": json.dumps(methods),
@@ -356,7 +385,8 @@ def build_corridor_structure_tables(
     region_summary = build_landing_region_summary(model)
     report = {
         "clustering_method": model.clustering_method,
-        "configured_radius_km": model.radius_km,
+        "configured_maximum_diameter_km": model.maximum_diameter_km,
+        "configured_radius_km": model.maximum_diameter_km,
         "landing_station_count": len(model.station_to_region),
         "landing_region_count": int(region_summary["landing_region_id"].nunique()),
         "region_size_distribution": describe_numeric(

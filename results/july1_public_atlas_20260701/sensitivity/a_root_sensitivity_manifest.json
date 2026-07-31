@@ -1,0 +1,1789 @@
+{
+  "sensitivity_schema_version": "a_root_sensitivity_v2",
+  "core_analysis_commit": "unknown",
+  "packaging_commit": "unknown",
+  "sensitivity_analysis_commit": "unknown",
+  "identity_schema_version": "observation_identity_v1",
+  "postprocess_schema_version": "postprocess_candidate_output_v3",
+  "generation_git_head": "094fab80d86a04c8bc3cfdd567ca4d9b7f179009",
+  "generation_worktree_dirty": true,
+  "generated_at_utc": "2026-07-31T06:55:05.356689+00:00",
+  "source_file_sha256": {
+    "pipeline\\run_a_root_sensitivity.py": "eadb44f1513553a65d4501538a707567851739bd172556add61452d86a3f7053",
+    "source\\main_analysis.py": "4f4ad183c1bdd6e97cf9426ced7ae2f12f2fd53e4c44bfdea162548d887c7055",
+    "source\\postprocess_candidate_output.py": "0241e049224fe6038e696e2fd2409af45be13430754290a7f7cd491c26d0ea58",
+    "source\\physical_corridor_model.py": "4bb180dfe123420b07bd9f547ccc8c309379a4d420e85e36c5dfc9b8a0c74dab",
+    "source\\result_provenance.py": "6af6995be00772ccd2fbce3b523211fdf1e1c2387c42d1b2ebabe776e64c175f"
+  },
+  "input_file_sha256": "0a04d6d95e62bcc3efa2b2ba3c307e4d1683e1d4e67874f0680c832a7ec8df8e",
+  "raw_traceroute_input": {
+    "path": "data\\traceroute_rundnsroot\\ripe_atlas_public_20260701_0000_0100\\dns-root_a-root_msm5009_20260701T000000Z_010000Z.json",
+    "bytes": 23714087,
+    "sha256": "0a04d6d95e62bcc3efa2b2ba3c307e4d1683e1d4e67874f0680c832a7ec8df8e",
+    "row_count": null
+  },
+  "input_files": [
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt0\\physical_mapping_resolution_summary.csv",
+      "bytes": 896,
+      "sha256": "0caf90a03c51d6328db1319f325ddae07f5d8a7a50e8dbcef5f1ec7558cbc80b",
+      "row_count": 4,
+      "setting": "catchment30_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt0\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 124248,
+      "sha256": "5b040f699ebcf0585724439a13d93047b573689c2aa89df3007c8801ce6a455c",
+      "row_count": 344,
+      "setting": "catchment30_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt0\\service_country_corridor_concentration_summary.csv",
+      "bytes": 119328,
+      "sha256": "53a5efd90619edea0922044f29c6ea22e12cfcebdb30e3f8bee27f55087470c4",
+      "row_count": 344,
+      "setting": "catchment30_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt0\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 124248,
+      "sha256": "5b040f699ebcf0585724439a13d93047b573689c2aa89df3007c8801ce6a455c",
+      "row_count": 344,
+      "setting": "catchment30_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt0\\trace_feasible_candidate_space.csv",
+      "bytes": 16446888,
+      "sha256": "1199b4d8c4345a1204428a0f11957ac1972ce0a8e23204dc00cdd01fc8f64a38",
+      "row_count": 5922,
+      "setting": "catchment30_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt0\\landing_region_catalog.csv",
+      "bytes": 327557,
+      "sha256": "4d1fc103dd64b66e4e086c0f743ef04b566dd6471e76019123efcbf30ad5c2cb",
+      "row_count": 1916,
+      "setting": "catchment30_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt0\\corridor_catalog.csv",
+      "bytes": 2266507,
+      "sha256": "7cdca535ded869beb4f57200cfab7bc628df383565861c26960cee896ce9ef22",
+      "row_count": 9043,
+      "setting": "catchment30_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt0\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment30_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt5\\physical_mapping_resolution_summary.csv",
+      "bytes": 898,
+      "sha256": "7e32aa559806077648d935235d3e8cfc0e760e71e85b799cf210b2d65055e1b1",
+      "row_count": 4,
+      "setting": "catchment30_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt5\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 124448,
+      "sha256": "316ed424fb2987d8d687b56c411b8c05245da9d93245fd50b5eb2733b5d97f64",
+      "row_count": 344,
+      "setting": "catchment30_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt5\\service_country_corridor_concentration_summary.csv",
+      "bytes": 119512,
+      "sha256": "27a715d8786caf025984b227af01bd7a29cae58f37b1338fb56d9f4ad249e2d1",
+      "row_count": 344,
+      "setting": "catchment30_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt5\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 124448,
+      "sha256": "316ed424fb2987d8d687b56c411b8c05245da9d93245fd50b5eb2733b5d97f64",
+      "row_count": 344,
+      "setting": "catchment30_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt5\\trace_feasible_candidate_space.csv",
+      "bytes": 18181507,
+      "sha256": "71333d2994ff3ba7368fe6d9403480d578c8c35f30a65115b17a56a59b5164b6",
+      "row_count": 6545,
+      "setting": "catchment30_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt5\\landing_region_catalog.csv",
+      "bytes": 327557,
+      "sha256": "4d1fc103dd64b66e4e086c0f743ef04b566dd6471e76019123efcbf30ad5c2cb",
+      "row_count": 1916,
+      "setting": "catchment30_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt5\\corridor_catalog.csv",
+      "bytes": 2266507,
+      "sha256": "7cdca535ded869beb4f57200cfab7bc628df383565861c26960cee896ce9ef22",
+      "row_count": 9043,
+      "setting": "catchment30_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt5\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment30_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt10\\physical_mapping_resolution_summary.csv",
+      "bytes": 897,
+      "sha256": "f7fc810baf18cc0bbbc2d574e1552e232fca4bbd40ea088a6b512ab7ad4f1886",
+      "row_count": 4,
+      "setting": "catchment30_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt10\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 124499,
+      "sha256": "af166eaed3a4de14af05a893a0c5f7a36ff932c8ff07e172e59a5dec5248bc35",
+      "row_count": 344,
+      "setting": "catchment30_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt10\\service_country_corridor_concentration_summary.csv",
+      "bytes": 119441,
+      "sha256": "707debe6e1f0d87c8efe85160d0ebbfef4197073320d5f86a9e7328ab7cbef5e",
+      "row_count": 344,
+      "setting": "catchment30_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt10\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 124499,
+      "sha256": "af166eaed3a4de14af05a893a0c5f7a36ff932c8ff07e172e59a5dec5248bc35",
+      "row_count": 344,
+      "setting": "catchment30_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt10\\trace_feasible_candidate_space.csv",
+      "bytes": 18544552,
+      "sha256": "1eeedbde8fd826ebc63c31f8f1c1e93cc7f253bf21f9dd46f6d72cc6b70ee164",
+      "row_count": 6671,
+      "setting": "catchment30_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt10\\landing_region_catalog.csv",
+      "bytes": 327557,
+      "sha256": "4d1fc103dd64b66e4e086c0f743ef04b566dd6471e76019123efcbf30ad5c2cb",
+      "row_count": 1916,
+      "setting": "catchment30_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt10\\corridor_catalog.csv",
+      "bytes": 2266507,
+      "sha256": "7cdca535ded869beb4f57200cfab7bc628df383565861c26960cee896ce9ef22",
+      "row_count": 9043,
+      "setting": "catchment30_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter30_rtt10\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment30_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt0\\physical_mapping_resolution_summary.csv",
+      "bytes": 896,
+      "sha256": "2330f3c118433cfaa9096700fe92a3dab60850a7ed72bd26751151ee3693b317",
+      "row_count": 4,
+      "setting": "catchment30_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt0\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 122716,
+      "sha256": "32dadde56a927a2a8657f8d685af094ac3adf1436b6828900758595ad6a92dfe",
+      "row_count": 344,
+      "setting": "catchment30_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt0\\service_country_corridor_concentration_summary.csv",
+      "bytes": 118477,
+      "sha256": "83a5b0268e2c61fe819c630e0ee47c4aeb6c9915d02e16e6f88b5a9c58d7bbd6",
+      "row_count": 344,
+      "setting": "catchment30_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt0\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 122716,
+      "sha256": "32dadde56a927a2a8657f8d685af094ac3adf1436b6828900758595ad6a92dfe",
+      "row_count": 344,
+      "setting": "catchment30_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt0\\trace_feasible_candidate_space.csv",
+      "bytes": 16436265,
+      "sha256": "39b3f0228c4a4ee5811b55e2f618ea79216fac33d65a962ed9a316cc8a7922e9",
+      "row_count": 5922,
+      "setting": "catchment30_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt0\\landing_region_catalog.csv",
+      "bytes": 327456,
+      "sha256": "7e63b1a55d7fd28a63a107a8edfc35eb0ccbec58c0f6683cfb310797c243015d",
+      "row_count": 1916,
+      "setting": "catchment30_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt0\\corridor_catalog.csv",
+      "bytes": 1929558,
+      "sha256": "4a640bd1b792a89683e34cfb78728456ba38410eebdfb5084594153be43106c6",
+      "row_count": 7679,
+      "setting": "catchment30_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt0\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment30_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt5\\physical_mapping_resolution_summary.csv",
+      "bytes": 894,
+      "sha256": "33f17bca097238bdf4bf2eb5a58783ddadd493119062b1d07aea94e0ee56af8f",
+      "row_count": 4,
+      "setting": "catchment30_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt5\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 123238,
+      "sha256": "7ed712a126f709cb413df50234dd904d9c0f6f6fb7db74584152db2214e5485e",
+      "row_count": 344,
+      "setting": "catchment30_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt5\\service_country_corridor_concentration_summary.csv",
+      "bytes": 118853,
+      "sha256": "557c04632b286b307d20d0b802343d408c6d1152b17fdb5d3673e435390096de",
+      "row_count": 344,
+      "setting": "catchment30_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt5\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 123238,
+      "sha256": "7ed712a126f709cb413df50234dd904d9c0f6f6fb7db74584152db2214e5485e",
+      "row_count": 344,
+      "setting": "catchment30_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt5\\trace_feasible_candidate_space.csv",
+      "bytes": 18170373,
+      "sha256": "712e27290af035b6de81d5d45ea6becf68a663ed61f3b6f873a018ff8fc66152",
+      "row_count": 6545,
+      "setting": "catchment30_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt5\\landing_region_catalog.csv",
+      "bytes": 327456,
+      "sha256": "7e63b1a55d7fd28a63a107a8edfc35eb0ccbec58c0f6683cfb310797c243015d",
+      "row_count": 1916,
+      "setting": "catchment30_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt5\\corridor_catalog.csv",
+      "bytes": 1929558,
+      "sha256": "4a640bd1b792a89683e34cfb78728456ba38410eebdfb5084594153be43106c6",
+      "row_count": 7679,
+      "setting": "catchment30_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt5\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment30_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt10\\physical_mapping_resolution_summary.csv",
+      "bytes": 892,
+      "sha256": "b096708ac9fbe5e70003e83a7e23d964bebd148aada4a5ba9ff87c3d6958be1a",
+      "row_count": 4,
+      "setting": "catchment30_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt10\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 123230,
+      "sha256": "bc3d3e59325d74316d3dc3036e26b75a8973e23248d597ab8aa2089a7cdf3d55",
+      "row_count": 344,
+      "setting": "catchment30_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt10\\service_country_corridor_concentration_summary.csv",
+      "bytes": 118752,
+      "sha256": "dc061927082d0f4c99e4eb16bd342a48ea8c752f24d0ac7c2b1e0a833604321d",
+      "row_count": 344,
+      "setting": "catchment30_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt10\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 123230,
+      "sha256": "bc3d3e59325d74316d3dc3036e26b75a8973e23248d597ab8aa2089a7cdf3d55",
+      "row_count": 344,
+      "setting": "catchment30_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt10\\trace_feasible_candidate_space.csv",
+      "bytes": 18533874,
+      "sha256": "e1ec6209984537735d78fa64832dafe24c498e9eab08f642b956b3dd3c7d33d3",
+      "row_count": 6671,
+      "setting": "catchment30_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt10\\landing_region_catalog.csv",
+      "bytes": 327456,
+      "sha256": "7e63b1a55d7fd28a63a107a8edfc35eb0ccbec58c0f6683cfb310797c243015d",
+      "row_count": 1916,
+      "setting": "catchment30_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt10\\corridor_catalog.csv",
+      "bytes": 1929558,
+      "sha256": "4a640bd1b792a89683e34cfb78728456ba38410eebdfb5084594153be43106c6",
+      "row_count": 7679,
+      "setting": "catchment30_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter50_rtt10\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment30_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt0\\physical_mapping_resolution_summary.csv",
+      "bytes": 895,
+      "sha256": "b20fbf352ccfeb43a14639a90c233984d4f05700ff42a4f4f10485afadd9adef",
+      "row_count": 4,
+      "setting": "catchment30_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt0\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 123261,
+      "sha256": "88f1b4c73fc1aabc536bbcde9a59c370247eeb94699b56b5a322dde60e57f628",
+      "row_count": 344,
+      "setting": "catchment30_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt0\\service_country_corridor_concentration_summary.csv",
+      "bytes": 118846,
+      "sha256": "7c31dad5aba5f0043e73f00ac266b94af66133bffb05ad1eb011c0180504cb53",
+      "row_count": 344,
+      "setting": "catchment30_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt0\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 123261,
+      "sha256": "88f1b4c73fc1aabc536bbcde9a59c370247eeb94699b56b5a322dde60e57f628",
+      "row_count": 344,
+      "setting": "catchment30_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt0\\trace_feasible_candidate_space.csv",
+      "bytes": 16437466,
+      "sha256": "061f23f5d3892a5e154f91b567587ee7affda3be7da63a35199e780c29e87c9e",
+      "row_count": 5922,
+      "setting": "catchment30_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt0\\landing_region_catalog.csv",
+      "bytes": 327404,
+      "sha256": "290a74fa7d561bcf3e3c4f27e631905413642e8f1c89cc300f34c58161f95821",
+      "row_count": 1916,
+      "setting": "catchment30_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt0\\corridor_catalog.csv",
+      "bytes": 1684012,
+      "sha256": "7bdc48b45ca394e818e0d6f9410432871c59ab225eb3958638eabd13f9bf742d",
+      "row_count": 6682,
+      "setting": "catchment30_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt0\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment30_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt5\\physical_mapping_resolution_summary.csv",
+      "bytes": 894,
+      "sha256": "f68138ea84fc423f6287fe3b83a5ff42c030d86682abdefa6e34efd132fad792",
+      "row_count": 4,
+      "setting": "catchment30_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt5\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 123681,
+      "sha256": "022cc05c011165bcf6f14bd300bab40a8f8844e6ddb3e5b4f6be65addccd7e1f",
+      "row_count": 344,
+      "setting": "catchment30_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt5\\service_country_corridor_concentration_summary.csv",
+      "bytes": 119176,
+      "sha256": "22d5ee61564a93c3bdf344b0908670a07dbdf7fa32e6f8cbcea1ef8765e0c8d6",
+      "row_count": 344,
+      "setting": "catchment30_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt5\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 123681,
+      "sha256": "022cc05c011165bcf6f14bd300bab40a8f8844e6ddb3e5b4f6be65addccd7e1f",
+      "row_count": 344,
+      "setting": "catchment30_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt5\\trace_feasible_candidate_space.csv",
+      "bytes": 18170503,
+      "sha256": "5d042b8067fdfa9e7bfaf3bbd5eb25910cd05113fb07427d4525ed934bbd0478",
+      "row_count": 6545,
+      "setting": "catchment30_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt5\\landing_region_catalog.csv",
+      "bytes": 327404,
+      "sha256": "290a74fa7d561bcf3e3c4f27e631905413642e8f1c89cc300f34c58161f95821",
+      "row_count": 1916,
+      "setting": "catchment30_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt5\\corridor_catalog.csv",
+      "bytes": 1684012,
+      "sha256": "7bdc48b45ca394e818e0d6f9410432871c59ab225eb3958638eabd13f9bf742d",
+      "row_count": 6682,
+      "setting": "catchment30_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt5\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment30_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt10\\physical_mapping_resolution_summary.csv",
+      "bytes": 895,
+      "sha256": "224890e47c26f0cbf1adc2e5f0f5d1e6ef5a96037d84d217b3889b83ae547bba",
+      "row_count": 4,
+      "setting": "catchment30_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt10\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 123684,
+      "sha256": "dd3532232354906990717937e0e36e2e6cb6721f7d9272bec32acad693588b98",
+      "row_count": 344,
+      "setting": "catchment30_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt10\\service_country_corridor_concentration_summary.csv",
+      "bytes": 119056,
+      "sha256": "df201dd6f3ec0485c8c7a0805fa783144cace0d443652121a13cbab2c8fb1917",
+      "row_count": 344,
+      "setting": "catchment30_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt10\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 123684,
+      "sha256": "dd3532232354906990717937e0e36e2e6cb6721f7d9272bec32acad693588b98",
+      "row_count": 344,
+      "setting": "catchment30_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt10\\trace_feasible_candidate_space.csv",
+      "bytes": 18533950,
+      "sha256": "7342841324faff35cab3d609fa109afbe02298b82353f297b8fb6e45263591c3",
+      "row_count": 6671,
+      "setting": "catchment30_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt10\\landing_region_catalog.csv",
+      "bytes": 327404,
+      "sha256": "290a74fa7d561bcf3e3c4f27e631905413642e8f1c89cc300f34c58161f95821",
+      "row_count": 1916,
+      "setting": "catchment30_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt10\\corridor_catalog.csv",
+      "bytes": 1684012,
+      "sha256": "7bdc48b45ca394e818e0d6f9410432871c59ab225eb3958638eabd13f9bf742d",
+      "row_count": 6682,
+      "setting": "catchment30_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment30_diameter75_rtt10\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment30_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt0\\physical_mapping_resolution_summary.csv",
+      "bytes": 898,
+      "sha256": "de6ad6c0dd953eeb6827342ab67862a73078767daad800dd9cebd488b73a556a",
+      "row_count": 4,
+      "setting": "catchment50_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt0\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 130070,
+      "sha256": "7522d66a934296e46c35263c401d1bf787304e6db262ec06dabd0066e386a4cb",
+      "row_count": 344,
+      "setting": "catchment50_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt0\\service_country_corridor_concentration_summary.csv",
+      "bytes": 123240,
+      "sha256": "3144df1c03b74ac4330a42c0ab11b04e2c315cefe9d7a7322f2df4e75bbfc04b",
+      "row_count": 344,
+      "setting": "catchment50_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt0\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 130070,
+      "sha256": "7522d66a934296e46c35263c401d1bf787304e6db262ec06dabd0066e386a4cb",
+      "row_count": 344,
+      "setting": "catchment50_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt0\\trace_feasible_candidate_space.csv",
+      "bytes": 51353078,
+      "sha256": "0331fd3da60ac64ad6367c884f5c9104e5e41ec39485d4ca1a648baa08f70a67",
+      "row_count": 18271,
+      "setting": "catchment50_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt0\\landing_region_catalog.csv",
+      "bytes": 327557,
+      "sha256": "4d1fc103dd64b66e4e086c0f743ef04b566dd6471e76019123efcbf30ad5c2cb",
+      "row_count": 1916,
+      "setting": "catchment50_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt0\\corridor_catalog.csv",
+      "bytes": 2266507,
+      "sha256": "7cdca535ded869beb4f57200cfab7bc628df383565861c26960cee896ce9ef22",
+      "row_count": 9043,
+      "setting": "catchment50_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt0\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment50_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt5\\physical_mapping_resolution_summary.csv",
+      "bytes": 899,
+      "sha256": "fe79d4c447700593a8e509af5dfad259f88685c946b42c7a33f477b56416a2f9",
+      "row_count": 4,
+      "setting": "catchment50_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt5\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 130003,
+      "sha256": "5589bf0c6f7a944b5d5535ac83437af5c7f7e9e7359ebc85048e1cbdfd951038",
+      "row_count": 344,
+      "setting": "catchment50_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt5\\service_country_corridor_concentration_summary.csv",
+      "bytes": 123081,
+      "sha256": "b1b33f305aa2fa3cb6e8856c660d56974b0fab420690004873eecff05b3f31be",
+      "row_count": 344,
+      "setting": "catchment50_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt5\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 130003,
+      "sha256": "5589bf0c6f7a944b5d5535ac83437af5c7f7e9e7359ebc85048e1cbdfd951038",
+      "row_count": 344,
+      "setting": "catchment50_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt5\\trace_feasible_candidate_space.csv",
+      "bytes": 58300445,
+      "sha256": "8c1447622fe02fd9e28e742bb35210406d63a76317383e8d2ba45983a03419c7",
+      "row_count": 20741,
+      "setting": "catchment50_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt5\\landing_region_catalog.csv",
+      "bytes": 327557,
+      "sha256": "4d1fc103dd64b66e4e086c0f743ef04b566dd6471e76019123efcbf30ad5c2cb",
+      "row_count": 1916,
+      "setting": "catchment50_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt5\\corridor_catalog.csv",
+      "bytes": 2266507,
+      "sha256": "7cdca535ded869beb4f57200cfab7bc628df383565861c26960cee896ce9ef22",
+      "row_count": 9043,
+      "setting": "catchment50_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt5\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment50_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt10\\physical_mapping_resolution_summary.csv",
+      "bytes": 898,
+      "sha256": "c9033284fcb26ae3c2bfdd047f3ffa8a480856f6624cb04cc279929b76171f55",
+      "row_count": 4,
+      "setting": "catchment50_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt10\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 129908,
+      "sha256": "73f1d06aca9303e397077af0731f1efb2f53b6a83a256332595a9748a07488ec",
+      "row_count": 344,
+      "setting": "catchment50_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt10\\service_country_corridor_concentration_summary.csv",
+      "bytes": 122942,
+      "sha256": "4de40c1070e45d187c152698940b8d67e932cbddf08f5efbbc1f38f40cdfea89",
+      "row_count": 344,
+      "setting": "catchment50_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt10\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 129908,
+      "sha256": "73f1d06aca9303e397077af0731f1efb2f53b6a83a256332595a9748a07488ec",
+      "row_count": 344,
+      "setting": "catchment50_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt10\\trace_feasible_candidate_space.csv",
+      "bytes": 59136336,
+      "sha256": "f927e972c52821b1c14188982f475e3b3af0632f9cc3ee2c87913dec02ee3bc0",
+      "row_count": 21029,
+      "setting": "catchment50_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt10\\landing_region_catalog.csv",
+      "bytes": 327557,
+      "sha256": "4d1fc103dd64b66e4e086c0f743ef04b566dd6471e76019123efcbf30ad5c2cb",
+      "row_count": 1916,
+      "setting": "catchment50_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt10\\corridor_catalog.csv",
+      "bytes": 2266507,
+      "sha256": "7cdca535ded869beb4f57200cfab7bc628df383565861c26960cee896ce9ef22",
+      "row_count": 9043,
+      "setting": "catchment50_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter30_rtt10\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment50_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt0\\physical_mapping_resolution_summary.csv",
+      "bytes": 898,
+      "sha256": "2488135739e2fb4e8c490b0880459ac8f4cc84b03d95e27da82b889ce41957d0",
+      "row_count": 4,
+      "setting": "catchment50_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt0\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 126775,
+      "sha256": "61de0545b02e9f997a03c91668d09b69545e114b7d5dd9e3f28e35978bf3b598",
+      "row_count": 344,
+      "setting": "catchment50_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt0\\service_country_corridor_concentration_summary.csv",
+      "bytes": 120773,
+      "sha256": "5fe19ed99558c4d99930d09bacf5b3fd7ac34b21880ba61d9c9d727eec3e9eb8",
+      "row_count": 344,
+      "setting": "catchment50_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt0\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 126775,
+      "sha256": "61de0545b02e9f997a03c91668d09b69545e114b7d5dd9e3f28e35978bf3b598",
+      "row_count": 344,
+      "setting": "catchment50_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt0\\trace_feasible_candidate_space.csv",
+      "bytes": 51450599,
+      "sha256": "f80b159789db3187405586372bc74b56732cb08eecb7ba6a2ae029ec269721d1",
+      "row_count": 18271,
+      "setting": "catchment50_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt0\\landing_region_catalog.csv",
+      "bytes": 327456,
+      "sha256": "7e63b1a55d7fd28a63a107a8edfc35eb0ccbec58c0f6683cfb310797c243015d",
+      "row_count": 1916,
+      "setting": "catchment50_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt0\\corridor_catalog.csv",
+      "bytes": 1929558,
+      "sha256": "4a640bd1b792a89683e34cfb78728456ba38410eebdfb5084594153be43106c6",
+      "row_count": 7679,
+      "setting": "catchment50_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt0\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment50_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt5\\physical_mapping_resolution_summary.csv",
+      "bytes": 895,
+      "sha256": "e75578c05bcdfe636a5d2ef9944b0e46d98ec25d93359883c7a3efbbc9d523c0",
+      "row_count": 4,
+      "setting": "catchment50_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt5\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 126974,
+      "sha256": "f298cbd9aad0c067b8be9d7c7c5c4ff6721c88ea52ab64f188e565d227d66594",
+      "row_count": 344,
+      "setting": "catchment50_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt5\\service_country_corridor_concentration_summary.csv",
+      "bytes": 120759,
+      "sha256": "70f3ce752f4ee87f139d8e9b6050a28f726d6ab7623b5ab29db6d3080790f5b4",
+      "row_count": 344,
+      "setting": "catchment50_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt5\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 126974,
+      "sha256": "f298cbd9aad0c067b8be9d7c7c5c4ff6721c88ea52ab64f188e565d227d66594",
+      "row_count": 344,
+      "setting": "catchment50_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt5\\trace_feasible_candidate_space.csv",
+      "bytes": 58414304,
+      "sha256": "21b62b60859ebe12bf3ba252ac5f0b250984d1d7fec41cab47ccfb323affb05c",
+      "row_count": 20741,
+      "setting": "catchment50_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt5\\landing_region_catalog.csv",
+      "bytes": 327456,
+      "sha256": "7e63b1a55d7fd28a63a107a8edfc35eb0ccbec58c0f6683cfb310797c243015d",
+      "row_count": 1916,
+      "setting": "catchment50_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt5\\corridor_catalog.csv",
+      "bytes": 1929558,
+      "sha256": "4a640bd1b792a89683e34cfb78728456ba38410eebdfb5084594153be43106c6",
+      "row_count": 7679,
+      "setting": "catchment50_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt5\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment50_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt10\\physical_mapping_resolution_summary.csv",
+      "bytes": 899,
+      "sha256": "17727c89c1899978b9afe5c2ab461796a1b836c4f2cebc0f6ccd9a9790ba51ad",
+      "row_count": 4,
+      "setting": "catchment50_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt10\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 127151,
+      "sha256": "eb67d6417ec5629975c7790d94f2a56ee8c3584bd16b47b985d3c44aed209d54",
+      "row_count": 344,
+      "setting": "catchment50_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt10\\service_country_corridor_concentration_summary.csv",
+      "bytes": 120808,
+      "sha256": "52ee065fa8e59bcf17d8a75bc1f77fcd55f0e4338da17b5cd5e729dcfd5d3877",
+      "row_count": 344,
+      "setting": "catchment50_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt10\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 127151,
+      "sha256": "eb67d6417ec5629975c7790d94f2a56ee8c3584bd16b47b985d3c44aed209d54",
+      "row_count": 344,
+      "setting": "catchment50_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt10\\trace_feasible_candidate_space.csv",
+      "bytes": 59250417,
+      "sha256": "4b86bad36c503ad7f3a9ac11d1dbddaf4d237202730359d1bd9480fe409bcd12",
+      "row_count": 21029,
+      "setting": "catchment50_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt10\\landing_region_catalog.csv",
+      "bytes": 327456,
+      "sha256": "7e63b1a55d7fd28a63a107a8edfc35eb0ccbec58c0f6683cfb310797c243015d",
+      "row_count": 1916,
+      "setting": "catchment50_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt10\\corridor_catalog.csv",
+      "bytes": 1929558,
+      "sha256": "4a640bd1b792a89683e34cfb78728456ba38410eebdfb5084594153be43106c6",
+      "row_count": 7679,
+      "setting": "catchment50_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt10\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment50_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt0\\physical_mapping_resolution_summary.csv",
+      "bytes": 897,
+      "sha256": "1931de7dfd50f72c9c1bd84f538e958404538e2654b6808f1d66f026d567dd93",
+      "row_count": 4,
+      "setting": "catchment50_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt0\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 128096,
+      "sha256": "2a0d0e2797cda02cf477c42b6caa1b615e010e19d6e65f316124ba5c93be12cc",
+      "row_count": 344,
+      "setting": "catchment50_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt0\\service_country_corridor_concentration_summary.csv",
+      "bytes": 121487,
+      "sha256": "7cd04ea1fd7bf6d1214fb0198891202a7a1d3b95007b2bab0e4eca949d56b092",
+      "row_count": 344,
+      "setting": "catchment50_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt0\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 128096,
+      "sha256": "2a0d0e2797cda02cf477c42b6caa1b615e010e19d6e65f316124ba5c93be12cc",
+      "row_count": 344,
+      "setting": "catchment50_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt0\\trace_feasible_candidate_space.csv",
+      "bytes": 51267845,
+      "sha256": "7e041a526ed0cc4b59ab5e49fbd18270f4f578ff77b1cee2669ebc18b3c992ed",
+      "row_count": 18271,
+      "setting": "catchment50_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt0\\landing_region_catalog.csv",
+      "bytes": 327404,
+      "sha256": "290a74fa7d561bcf3e3c4f27e631905413642e8f1c89cc300f34c58161f95821",
+      "row_count": 1916,
+      "setting": "catchment50_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt0\\corridor_catalog.csv",
+      "bytes": 1684012,
+      "sha256": "7bdc48b45ca394e818e0d6f9410432871c59ab225eb3958638eabd13f9bf742d",
+      "row_count": 6682,
+      "setting": "catchment50_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt0\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment50_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt5\\physical_mapping_resolution_summary.csv",
+      "bytes": 899,
+      "sha256": "cc0e8fa02b494311a25c1b0fc02e039d46f86ab1900a2d5cb61a236628441f9a",
+      "row_count": 4,
+      "setting": "catchment50_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt5\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 127918,
+      "sha256": "ffc1bf2b47eeb390974e8ed3c4963b35b44317f423440e1782065b360e2f757e",
+      "row_count": 344,
+      "setting": "catchment50_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt5\\service_country_corridor_concentration_summary.csv",
+      "bytes": 121350,
+      "sha256": "640c0c7ba56235bc6c77913950abe17fd2688d1653a7a37e985397d0a935f4da",
+      "row_count": 344,
+      "setting": "catchment50_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt5\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 127918,
+      "sha256": "ffc1bf2b47eeb390974e8ed3c4963b35b44317f423440e1782065b360e2f757e",
+      "row_count": 344,
+      "setting": "catchment50_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt5\\trace_feasible_candidate_space.csv",
+      "bytes": 58205924,
+      "sha256": "a658880c151ba478c327664b1a18bd6bfed548b32616e5153c945a6e175da8d0",
+      "row_count": 20741,
+      "setting": "catchment50_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt5\\landing_region_catalog.csv",
+      "bytes": 327404,
+      "sha256": "290a74fa7d561bcf3e3c4f27e631905413642e8f1c89cc300f34c58161f95821",
+      "row_count": 1916,
+      "setting": "catchment50_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt5\\corridor_catalog.csv",
+      "bytes": 1684012,
+      "sha256": "7bdc48b45ca394e818e0d6f9410432871c59ab225eb3958638eabd13f9bf742d",
+      "row_count": 6682,
+      "setting": "catchment50_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt5\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment50_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt10\\physical_mapping_resolution_summary.csv",
+      "bytes": 895,
+      "sha256": "019fcdee3bcc28df05026f9572b3440cb473b12b43d0fef32af0efa965fee573",
+      "row_count": 4,
+      "setting": "catchment50_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt10\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 127889,
+      "sha256": "81cb312a92c6f686911f743394b5b1c6efeb91af5127890960118abbd06fef22",
+      "row_count": 344,
+      "setting": "catchment50_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt10\\service_country_corridor_concentration_summary.csv",
+      "bytes": 121225,
+      "sha256": "184ffe26bc1dff553a002349c363c680cb26e9acb688244c83107d6d2e244511",
+      "row_count": 344,
+      "setting": "catchment50_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt10\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 127889,
+      "sha256": "81cb312a92c6f686911f743394b5b1c6efeb91af5127890960118abbd06fef22",
+      "row_count": 344,
+      "setting": "catchment50_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt10\\trace_feasible_candidate_space.csv",
+      "bytes": 59040661,
+      "sha256": "e7b60fe655347725942d82a69dcaf48a735da608a0d5886c6b291add6eadd235",
+      "row_count": 21029,
+      "setting": "catchment50_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt10\\landing_region_catalog.csv",
+      "bytes": 327404,
+      "sha256": "290a74fa7d561bcf3e3c4f27e631905413642e8f1c89cc300f34c58161f95821",
+      "row_count": 1916,
+      "setting": "catchment50_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt10\\corridor_catalog.csv",
+      "bytes": 1684012,
+      "sha256": "7bdc48b45ca394e818e0d6f9410432871c59ab225eb3958638eabd13f9bf742d",
+      "row_count": 6682,
+      "setting": "catchment50_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter75_rtt10\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment50_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt0\\physical_mapping_resolution_summary.csv",
+      "bytes": 899,
+      "sha256": "6b530b4509a43b464b740bcd2ced9770a15c5ac3ce11307b2aebbfb0a6b641ae",
+      "row_count": 4,
+      "setting": "catchment75_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt0\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 134897,
+      "sha256": "9bec0eae4d14b02baf2fb8a96a3dea0a2a309aaced33a4921f5b63f4d73404b4",
+      "row_count": 344,
+      "setting": "catchment75_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt0\\service_country_corridor_concentration_summary.csv",
+      "bytes": 125581,
+      "sha256": "57c46306cec2e9fa74928268f18cc0c1896da3c09b375b52057fb3151427277e",
+      "row_count": 344,
+      "setting": "catchment75_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt0\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 134897,
+      "sha256": "9bec0eae4d14b02baf2fb8a96a3dea0a2a309aaced33a4921f5b63f4d73404b4",
+      "row_count": 344,
+      "setting": "catchment75_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt0\\trace_feasible_candidate_space.csv",
+      "bytes": 67101034,
+      "sha256": "f0d5250e354084198a712d8ed33f47a0a540f311459f72a7ed6deaf882bc3ca0",
+      "row_count": 23915,
+      "setting": "catchment75_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt0\\landing_region_catalog.csv",
+      "bytes": 327557,
+      "sha256": "4d1fc103dd64b66e4e086c0f743ef04b566dd6471e76019123efcbf30ad5c2cb",
+      "row_count": 1916,
+      "setting": "catchment75_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt0\\corridor_catalog.csv",
+      "bytes": 2266507,
+      "sha256": "7cdca535ded869beb4f57200cfab7bc628df383565861c26960cee896ce9ef22",
+      "row_count": 9043,
+      "setting": "catchment75_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt0\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment75_diameter30_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt5\\physical_mapping_resolution_summary.csv",
+      "bytes": 897,
+      "sha256": "b5ec2bef09211c9da3f3dfa3a10bfeb09769cbd31881afedec7d26b98c7335c0",
+      "row_count": 4,
+      "setting": "catchment75_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt5\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 135314,
+      "sha256": "6c6fa89f1b01115608681c633e97d7dedef9a8adb70cd18af9dec173f37c8404",
+      "row_count": 344,
+      "setting": "catchment75_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt5\\service_country_corridor_concentration_summary.csv",
+      "bytes": 125864,
+      "sha256": "5d6bfa61fbd681f46337688e0bca8ad2a1b6da5f51d2e66906f3f6f46b55655b",
+      "row_count": 344,
+      "setting": "catchment75_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt5\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 135314,
+      "sha256": "6c6fa89f1b01115608681c633e97d7dedef9a8adb70cd18af9dec173f37c8404",
+      "row_count": 344,
+      "setting": "catchment75_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt5\\trace_feasible_candidate_space.csv",
+      "bytes": 77134037,
+      "sha256": "9bb7212648199829508d7e88588de27aca19e70f439d7b28b1fe0c952d3d510b",
+      "row_count": 27484,
+      "setting": "catchment75_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt5\\landing_region_catalog.csv",
+      "bytes": 327557,
+      "sha256": "4d1fc103dd64b66e4e086c0f743ef04b566dd6471e76019123efcbf30ad5c2cb",
+      "row_count": 1916,
+      "setting": "catchment75_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt5\\corridor_catalog.csv",
+      "bytes": 2266507,
+      "sha256": "7cdca535ded869beb4f57200cfab7bc628df383565861c26960cee896ce9ef22",
+      "row_count": 9043,
+      "setting": "catchment75_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt5\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment75_diameter30_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt10\\physical_mapping_resolution_summary.csv",
+      "bytes": 899,
+      "sha256": "6dd4aea7f1ba0d5ca6a93d16c62b0bf6135e3c897fbeeabc3beb019ad7b4e549",
+      "row_count": 4,
+      "setting": "catchment75_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt10\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 135447,
+      "sha256": "f0355a06a3fb58fd29fc8de757393b99ca46628eca07c0fad33f37a9b5b438ba",
+      "row_count": 344,
+      "setting": "catchment75_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt10\\service_country_corridor_concentration_summary.csv",
+      "bytes": 125949,
+      "sha256": "a04d1e127761f052d2e2059e2e88a89fa08b87be663360c2b17f3e52562038f8",
+      "row_count": 344,
+      "setting": "catchment75_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt10\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 135447,
+      "sha256": "f0355a06a3fb58fd29fc8de757393b99ca46628eca07c0fad33f37a9b5b438ba",
+      "row_count": 344,
+      "setting": "catchment75_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt10\\trace_feasible_candidate_space.csv",
+      "bytes": 78069333,
+      "sha256": "769208d208748096dd9c2e3b3f81fde6bd8866eb01ed70749e93efd6f7956036",
+      "row_count": 27804,
+      "setting": "catchment75_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt10\\landing_region_catalog.csv",
+      "bytes": 327557,
+      "sha256": "4d1fc103dd64b66e4e086c0f743ef04b566dd6471e76019123efcbf30ad5c2cb",
+      "row_count": 1916,
+      "setting": "catchment75_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt10\\corridor_catalog.csv",
+      "bytes": 2266507,
+      "sha256": "7cdca535ded869beb4f57200cfab7bc628df383565861c26960cee896ce9ef22",
+      "row_count": 9043,
+      "setting": "catchment75_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter30_rtt10\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment75_diameter30_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt0\\physical_mapping_resolution_summary.csv",
+      "bytes": 899,
+      "sha256": "e28a45954373f6fd841fea73d1e9458deb4f6910e35e2f32f4ede420b6ed3e84",
+      "row_count": 4,
+      "setting": "catchment75_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt0\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 132075,
+      "sha256": "133befb94b35266d42b207940084e11fc6c1927c97b000b287c78f3ee034ea9d",
+      "row_count": 344,
+      "setting": "catchment75_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt0\\service_country_corridor_concentration_summary.csv",
+      "bytes": 123587,
+      "sha256": "545d3d4c364913f2c53570d3e1a3f767bdf49108a49a15ee6e20cad71c261351",
+      "row_count": 344,
+      "setting": "catchment75_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt0\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 132075,
+      "sha256": "133befb94b35266d42b207940084e11fc6c1927c97b000b287c78f3ee034ea9d",
+      "row_count": 344,
+      "setting": "catchment75_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt0\\trace_feasible_candidate_space.csv",
+      "bytes": 67229428,
+      "sha256": "4b49eae9e59d29725f314a6b0465190f65c50761edc9274973b8930c2ce6f584",
+      "row_count": 23915,
+      "setting": "catchment75_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt0\\landing_region_catalog.csv",
+      "bytes": 327456,
+      "sha256": "7e63b1a55d7fd28a63a107a8edfc35eb0ccbec58c0f6683cfb310797c243015d",
+      "row_count": 1916,
+      "setting": "catchment75_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt0\\corridor_catalog.csv",
+      "bytes": 1929558,
+      "sha256": "4a640bd1b792a89683e34cfb78728456ba38410eebdfb5084594153be43106c6",
+      "row_count": 7679,
+      "setting": "catchment75_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt0\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment75_diameter50_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt5\\physical_mapping_resolution_summary.csv",
+      "bytes": 897,
+      "sha256": "68cfb2529edb69dc21272f6978a7fabf5f20788904aed0a3afc6da2f291ef1f2",
+      "row_count": 4,
+      "setting": "catchment75_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt5\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 133180,
+      "sha256": "42d5bdaf92b9d3c127022ec1af350e4a8603813459a3b72d9a118dcdec30fc46",
+      "row_count": 344,
+      "setting": "catchment75_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt5\\service_country_corridor_concentration_summary.csv",
+      "bytes": 124199,
+      "sha256": "bbee07dca001208abc11d3fa590bbe7abb45563b58a540728ca50203537d6849",
+      "row_count": 344,
+      "setting": "catchment75_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt5\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 133180,
+      "sha256": "42d5bdaf92b9d3c127022ec1af350e4a8603813459a3b72d9a118dcdec30fc46",
+      "row_count": 344,
+      "setting": "catchment75_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt5\\trace_feasible_candidate_space.csv",
+      "bytes": 77284065,
+      "sha256": "76114c1c5d71be43b7e9f51d7cf73207dd57543672a6ae46cd370c03724448ce",
+      "row_count": 27484,
+      "setting": "catchment75_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt5\\landing_region_catalog.csv",
+      "bytes": 327456,
+      "sha256": "7e63b1a55d7fd28a63a107a8edfc35eb0ccbec58c0f6683cfb310797c243015d",
+      "row_count": 1916,
+      "setting": "catchment75_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt5\\corridor_catalog.csv",
+      "bytes": 1929558,
+      "sha256": "4a640bd1b792a89683e34cfb78728456ba38410eebdfb5084594153be43106c6",
+      "row_count": 7679,
+      "setting": "catchment75_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt5\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment75_diameter50_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt10\\physical_mapping_resolution_summary.csv",
+      "bytes": 899,
+      "sha256": "f9926f3b8dc1c11d6ae7932dfb4f70591d43ff1ffb22a44a20ef7afb0563dc5a",
+      "row_count": 4,
+      "setting": "catchment75_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt10\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 133631,
+      "sha256": "41b86bb196d01678a30d661c3fe020ed405234aa2b6a74a97782dddd5810265f",
+      "row_count": 344,
+      "setting": "catchment75_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt10\\service_country_corridor_concentration_summary.csv",
+      "bytes": 124491,
+      "sha256": "246a9b59ee1e716a615f77da231e95b4f10b78efd19babeec4b61adbb0fd6038",
+      "row_count": 344,
+      "setting": "catchment75_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt10\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 133631,
+      "sha256": "41b86bb196d01678a30d661c3fe020ed405234aa2b6a74a97782dddd5810265f",
+      "row_count": 344,
+      "setting": "catchment75_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt10\\trace_feasible_candidate_space.csv",
+      "bytes": 78219556,
+      "sha256": "0e499b08d710402fb12e2716f8e4b59b8dec5c8aa5770b71b6cbbdaa16988d63",
+      "row_count": 27804,
+      "setting": "catchment75_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt10\\landing_region_catalog.csv",
+      "bytes": 327456,
+      "sha256": "7e63b1a55d7fd28a63a107a8edfc35eb0ccbec58c0f6683cfb310797c243015d",
+      "row_count": 1916,
+      "setting": "catchment75_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt10\\corridor_catalog.csv",
+      "bytes": 1929558,
+      "sha256": "4a640bd1b792a89683e34cfb78728456ba38410eebdfb5084594153be43106c6",
+      "row_count": 7679,
+      "setting": "catchment75_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter50_rtt10\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment75_diameter50_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt0\\physical_mapping_resolution_summary.csv",
+      "bytes": 898,
+      "sha256": "8254c87ad1e4daad2de57bc8c55260292b6a832cdad6a4316af85ca58391bbfc",
+      "row_count": 4,
+      "setting": "catchment75_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt0\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 130636,
+      "sha256": "89962bb930dcabef634156b064e3c1bb87b6dfeca6e45f8f34eb0350944d96a7",
+      "row_count": 344,
+      "setting": "catchment75_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt0\\service_country_corridor_concentration_summary.csv",
+      "bytes": 122808,
+      "sha256": "268832d38ef945e085c4a1b19947b4b7f332d55f1d2f0e062e64bd5d387a7aa7",
+      "row_count": 344,
+      "setting": "catchment75_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt0\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 130636,
+      "sha256": "89962bb930dcabef634156b064e3c1bb87b6dfeca6e45f8f34eb0350944d96a7",
+      "row_count": 344,
+      "setting": "catchment75_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt0\\trace_feasible_candidate_space.csv",
+      "bytes": 66995588,
+      "sha256": "cf5475a33cab78ae4788d8627dd0428d9f899b0df952a3bf0348e3a7314430fa",
+      "row_count": 23915,
+      "setting": "catchment75_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt0\\landing_region_catalog.csv",
+      "bytes": 327404,
+      "sha256": "290a74fa7d561bcf3e3c4f27e631905413642e8f1c89cc300f34c58161f95821",
+      "row_count": 1916,
+      "setting": "catchment75_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt0\\corridor_catalog.csv",
+      "bytes": 1684012,
+      "sha256": "7bdc48b45ca394e818e0d6f9410432871c59ab225eb3958638eabd13f9bf742d",
+      "row_count": 6682,
+      "setting": "catchment75_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt0\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment75_diameter75_rtt0"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt5\\physical_mapping_resolution_summary.csv",
+      "bytes": 895,
+      "sha256": "13957d08147d4a901acd50049e7829ed17f3d97cb22c048d848c09aef17a4d32",
+      "row_count": 4,
+      "setting": "catchment75_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt5\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 131500,
+      "sha256": "d2db384ea913c59df1cedcdae9971af8c0532201e085659bf86cf3f7eca7788d",
+      "row_count": 344,
+      "setting": "catchment75_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt5\\service_country_corridor_concentration_summary.csv",
+      "bytes": 123438,
+      "sha256": "ddaf90e9877526a654050d37fe33e4950ca1dadf311340647b635db44b88fe44",
+      "row_count": 344,
+      "setting": "catchment75_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt5\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 131500,
+      "sha256": "d2db384ea913c59df1cedcdae9971af8c0532201e085659bf86cf3f7eca7788d",
+      "row_count": 344,
+      "setting": "catchment75_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt5\\trace_feasible_candidate_space.csv",
+      "bytes": 77013226,
+      "sha256": "006cd33dc1cd41f95b5b2d60f6629a74edea8764c8c43166b0ded89decfed9fe",
+      "row_count": 27484,
+      "setting": "catchment75_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt5\\landing_region_catalog.csv",
+      "bytes": 327404,
+      "sha256": "290a74fa7d561bcf3e3c4f27e631905413642e8f1c89cc300f34c58161f95821",
+      "row_count": 1916,
+      "setting": "catchment75_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt5\\corridor_catalog.csv",
+      "bytes": 1684012,
+      "sha256": "7bdc48b45ca394e818e0d6f9410432871c59ab225eb3958638eabd13f9bf742d",
+      "row_count": 6682,
+      "setting": "catchment75_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt5\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment75_diameter75_rtt5"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt10\\physical_mapping_resolution_summary.csv",
+      "bytes": 898,
+      "sha256": "05f0d761330785f4b6727268083ff68426c01171a623f094141c4c6e0d60aea7",
+      "row_count": 4,
+      "setting": "catchment75_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt10\\service_country_cross_layer_distribution_audit.csv",
+      "bytes": 131668,
+      "sha256": "855cd8f9e797ccc5bc71a7fd9eabcf087539304917dda7a92bf3f6e66ecbf8f3",
+      "row_count": 344,
+      "setting": "catchment75_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt10\\service_country_corridor_concentration_summary.csv",
+      "bytes": 123500,
+      "sha256": "0c0fa430c4110615015f95d1e7e431170a8f3bfbd748470ea4538b07e391a56d",
+      "row_count": 344,
+      "setting": "catchment75_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt10\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 131668,
+      "sha256": "855cd8f9e797ccc5bc71a7fd9eabcf087539304917dda7a92bf3f6e66ecbf8f3",
+      "row_count": 344,
+      "setting": "catchment75_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt10\\trace_feasible_candidate_space.csv",
+      "bytes": 77947069,
+      "sha256": "99b33947852cc7944b8cdd896832adfcc9417a564d4849ce87e09ce724b2afcc",
+      "row_count": 27804,
+      "setting": "catchment75_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt10\\landing_region_catalog.csv",
+      "bytes": 327404,
+      "sha256": "290a74fa7d561bcf3e3c4f27e631905413642e8f1c89cc300f34c58161f95821",
+      "row_count": 1916,
+      "setting": "catchment75_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt10\\corridor_catalog.csv",
+      "bytes": 1684012,
+      "sha256": "7bdc48b45ca394e818e0d6f9410432871c59ab225eb3958638eabd13f9bf742d",
+      "row_count": 6682,
+      "setting": "catchment75_diameter75_rtt10"
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment75_diameter75_rtt10\\method_manifest.json",
+      "bytes": 8354,
+      "sha256": "f6a924a37c1a3b90e0deb27bf5a4b93ed6d5904fb120b225c49727a3c1a2ecbb",
+      "row_count": null,
+      "setting": "catchment75_diameter75_rtt10"
+    }
+  ],
+  "generated_outputs": [
+    {
+      "path": "output\\sensitivity_a_root\\a_root_sensitivity_summary.csv",
+      "bytes": 23908,
+      "sha256": "3e81756ebadc7d87b63ed05d89faa2f05775f200a98200356f73a1765f3f27d0",
+      "row_count": 27
+    },
+    {
+      "path": "output\\sensitivity_a_root\\a_root_sensitivity_shared_unit_comparison.csv",
+      "bytes": 405515,
+      "sha256": "5bdb7ad92c59de3f2aa843b423be83bd06af52ed9278144e59393b9af9f22141",
+      "row_count": 298
+    }
+  ],
+  "settings": [
+    {
+      "setting": "catchment30_diameter30_rtt0",
+      "landing_catchment_radius_km": 30,
+      "landing_region_maximum_diameter_km": 30,
+      "rtt_tolerance_ms": 0,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment30_diameter30_rtt5",
+      "landing_catchment_radius_km": 30,
+      "landing_region_maximum_diameter_km": 30,
+      "rtt_tolerance_ms": 5,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment30_diameter30_rtt10",
+      "landing_catchment_radius_km": 30,
+      "landing_region_maximum_diameter_km": 30,
+      "rtt_tolerance_ms": 10,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment30_diameter50_rtt0",
+      "landing_catchment_radius_km": 30,
+      "landing_region_maximum_diameter_km": 50,
+      "rtt_tolerance_ms": 0,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment30_diameter50_rtt5",
+      "landing_catchment_radius_km": 30,
+      "landing_region_maximum_diameter_km": 50,
+      "rtt_tolerance_ms": 5,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment30_diameter50_rtt10",
+      "landing_catchment_radius_km": 30,
+      "landing_region_maximum_diameter_km": 50,
+      "rtt_tolerance_ms": 10,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment30_diameter75_rtt0",
+      "landing_catchment_radius_km": 30,
+      "landing_region_maximum_diameter_km": 75,
+      "rtt_tolerance_ms": 0,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment30_diameter75_rtt5",
+      "landing_catchment_radius_km": 30,
+      "landing_region_maximum_diameter_km": 75,
+      "rtt_tolerance_ms": 5,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment30_diameter75_rtt10",
+      "landing_catchment_radius_km": 30,
+      "landing_region_maximum_diameter_km": 75,
+      "rtt_tolerance_ms": 10,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment50_diameter30_rtt0",
+      "landing_catchment_radius_km": 50,
+      "landing_region_maximum_diameter_km": 30,
+      "rtt_tolerance_ms": 0,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment50_diameter30_rtt5",
+      "landing_catchment_radius_km": 50,
+      "landing_region_maximum_diameter_km": 30,
+      "rtt_tolerance_ms": 5,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment50_diameter30_rtt10",
+      "landing_catchment_radius_km": 50,
+      "landing_region_maximum_diameter_km": 30,
+      "rtt_tolerance_ms": 10,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment50_diameter50_rtt0",
+      "landing_catchment_radius_km": 50,
+      "landing_region_maximum_diameter_km": 50,
+      "rtt_tolerance_ms": 0,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment50_diameter50_rtt5",
+      "landing_catchment_radius_km": 50,
+      "landing_region_maximum_diameter_km": 50,
+      "rtt_tolerance_ms": 5,
+      "is_baseline": true
+    },
+    {
+      "setting": "catchment50_diameter50_rtt10",
+      "landing_catchment_radius_km": 50,
+      "landing_region_maximum_diameter_km": 50,
+      "rtt_tolerance_ms": 10,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment50_diameter75_rtt0",
+      "landing_catchment_radius_km": 50,
+      "landing_region_maximum_diameter_km": 75,
+      "rtt_tolerance_ms": 0,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment50_diameter75_rtt5",
+      "landing_catchment_radius_km": 50,
+      "landing_region_maximum_diameter_km": 75,
+      "rtt_tolerance_ms": 5,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment50_diameter75_rtt10",
+      "landing_catchment_radius_km": 50,
+      "landing_region_maximum_diameter_km": 75,
+      "rtt_tolerance_ms": 10,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment75_diameter30_rtt0",
+      "landing_catchment_radius_km": 75,
+      "landing_region_maximum_diameter_km": 30,
+      "rtt_tolerance_ms": 0,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment75_diameter30_rtt5",
+      "landing_catchment_radius_km": 75,
+      "landing_region_maximum_diameter_km": 30,
+      "rtt_tolerance_ms": 5,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment75_diameter30_rtt10",
+      "landing_catchment_radius_km": 75,
+      "landing_region_maximum_diameter_km": 30,
+      "rtt_tolerance_ms": 10,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment75_diameter50_rtt0",
+      "landing_catchment_radius_km": 75,
+      "landing_region_maximum_diameter_km": 50,
+      "rtt_tolerance_ms": 0,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment75_diameter50_rtt5",
+      "landing_catchment_radius_km": 75,
+      "landing_region_maximum_diameter_km": 50,
+      "rtt_tolerance_ms": 5,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment75_diameter50_rtt10",
+      "landing_catchment_radius_km": 75,
+      "landing_region_maximum_diameter_km": 50,
+      "rtt_tolerance_ms": 10,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment75_diameter75_rtt0",
+      "landing_catchment_radius_km": 75,
+      "landing_region_maximum_diameter_km": 75,
+      "rtt_tolerance_ms": 0,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment75_diameter75_rtt5",
+      "landing_catchment_radius_km": 75,
+      "landing_region_maximum_diameter_km": 75,
+      "rtt_tolerance_ms": 5,
+      "is_baseline": false
+    },
+    {
+      "setting": "catchment75_diameter75_rtt10",
+      "landing_catchment_radius_km": 75,
+      "landing_region_maximum_diameter_km": 75,
+      "rtt_tolerance_ms": 10,
+      "is_baseline": false
+    }
+  ],
+  "baseline_setting": {
+    "landing_catchment_radius_km": 50,
+    "landing_region_maximum_diameter_km": 50,
+    "rtt_tolerance_ms": 5
+  },
+  "paper_primary_filter": {
+    "path_scope_stratum": "all_publicly_visible",
+    "analysis_scope": "probe_country_service",
+    "auditable_paper_case": true
+  },
+  "deprecated_columns": {
+    "uniquely_resolved_share": "single-corridor count divided by all atomic segments",
+    "bounded_candidate_set_share": "bounded multi-corridor count divided by all atomic segments",
+    "newly_included_units": "alias of newly_included_unit_count",
+    "excluded_units": "alias of excluded_baseline_unit_count",
+    "classification_agreement_with_baseline": "alias of classification_agreement_rate"
+  },
+  "sensitivity_semantics": {
+    "coverage_sensitivity": [
+      "candidate_bearing_segment_count",
+      "current_auditable_unit_count",
+      "newly_included_unit_count",
+      "excluded_baseline_unit_count"
+    ],
+    "resolution_sensitivity": [
+      "landing_partition_comembership_jaccard",
+      "observed_corridor_count",
+      "single_corridor_share_among_candidate_bearing_segments",
+      "bounded_multi_corridor_share_among_candidate_bearing_segments"
+    ],
+    "stable_candidate_sensitivity": [
+      "exact_candidate_set_jaccard_mean",
+      "cable_set_jaccard_mean"
+    ],
+    "shared_cohort_conclusion_stability": [
+      "current_shared_median_corridor_top2",
+      "current_shared_median_entropy_reduction",
+      "classification_agreement_rate"
+    ]
+  },
+  "warnings": [
+    "core_analysis_commit is unknown unless inherited from a historical stage manifest",
+    "corridor-ID comparisons across different diameters are resolution-dependent diagnostics",
+    "Top-2, effective count, normalized entropy, and descriptive concentration classes are distinct summaries"
+  ]
+}

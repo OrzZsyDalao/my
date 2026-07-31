@@ -1,6 +1,11 @@
 {
-  "generated_at_utc": "2026-07-31T02:09:16.506764+00:00",
-  "git_commit": "e58d5f30a85937ca354c59fdb591136d713ffa60",
+  "generation_git_head": "094fab80d86a04c8bc3cfdd567ca4d9b7f179009",
+  "generation_worktree_dirty": true,
+  "generated_at_utc": "2026-07-31T06:56:58.680046+00:00",
+  "git_commit": "094fab80d86a04c8bc3cfdd567ca4d9b7f179009",
+  "git_commit_deprecated_alias": true,
+  "packaging_commit": "unknown",
+  "sensitivity_analysis_commit": "unknown",
   "measurement_count": 18,
   "source": "output\\public_traceroute_by_msmid",
   "interpretation": "Corrected diameter-limited corridor reaggregation and physical mapping resolution audit; candidate relations are not ground-truth cable use.",
@@ -3167,8 +3172,18 @@
     },
     {
       "path": "results\\july1_public_atlas_20260701\\sensitivity\\a_root_sensitivity_summary.csv",
-      "bytes": 6442,
-      "sha256": "a755d661758ab3e9ab65068c292c2970b905865cd9e3341435b0360cd1ed2e6d"
+      "bytes": 23908,
+      "sha256": "3e81756ebadc7d87b63ed05d89faa2f05775f200a98200356f73a1765f3f27d0"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\sensitivity\\a_root_sensitivity_shared_unit_comparison.csv",
+      "bytes": 405515,
+      "sha256": "5bdb7ad92c59de3f2aa843b423be83bd06af52ed9278144e59393b9af9f22141"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\sensitivity\\a_root_sensitivity_manifest.json",
+      "bytes": 76285,
+      "sha256": "f188e2b166e78c1f6cc9b9a5ae65e530306ba628b0f493eb766fc469b935a01b"
     }
   ],
   "skipped": [],
@@ -3229,6 +3244,1275 @@
       "aggregate_row_count": 144
     }
   },
+  "input_files": [
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\physical_mapping_resolution_summary.csv",
+      "bytes": 907,
+      "sha256": "4dcb8b8d560258d653a3c8b24790d8f990cecc5dff56ce3c87dbbff297a5c7bf",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\service_country_physical_mapping_resolution.csv",
+      "bytes": 40940,
+      "sha256": "9aec805a0d45a230920802019ec3211a5a1d867262f4d1e0afa984ae9189a289",
+      "row_count": 370
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 164,
+      "sha256": "0c99d8b9698495f77ea8312d00e8830df63bf0c27dc1e18429b019cf3f23d0e1",
+      "row_count": 3
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\pipeline_accounting.csv",
+      "bytes": 1004,
+      "sha256": "7fc0cd33d34bb46c6c6554f7d975b1af036872d4ead2f969e0aa8f2e7b3a75a8",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 172116,
+      "sha256": "89c1f895c4a5b5dcb6321fa2d78f4810dfcec12858e6c88ac16ec1b203978258",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 103758,
+      "sha256": "387d30eafce684e26a35b57ce61e8c6765dfa2ee0e9d48581dc3bf70b6283052",
+      "row_count": 175
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 15837,
+      "sha256": "7971b9f2d64ebe235368ac02cf409b7da1cf6e5bc0bbd899d48e67f4c3fb6154",
+      "row_count": 26
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\country_geography_candidate_dependency.csv",
+      "bytes": 148056,
+      "sha256": "a0c145f3683f5ace7516849274e3e33bf729d9fd82f2d2623d3522d3f4516ef3",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\service_country_geography_candidate_dependency.csv",
+      "bytes": 252706,
+      "sha256": "4d2a1aed4f87c7437dac5d443e0ba1ed0d5f80a4c3f90a5c7cc5dd4e209bb0d7",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2540,
+      "sha256": "056aea888d7bd98cc45e23d854f40af4f949fffa08e65173f3e282253d212eed",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\physical_mapping_resolution_summary.csv",
+      "bytes": 907,
+      "sha256": "5397a65e2c5160103f7a3362ccd97dfa340a667095dbabf063598798d3db3694",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\service_country_physical_mapping_resolution.csv",
+      "bytes": 38857,
+      "sha256": "6281209b0bbdb8693bb7954136e6e0a32feb60f2a7b8c97a2505c82afb89b1a4",
+      "row_count": 371
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 190,
+      "sha256": "3ac2edb9238900a5c1d98c22800a4812f103536cf9a3b00a6c71af38aebe95bb",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\pipeline_accounting.csv",
+      "bytes": 1006,
+      "sha256": "e577c2dbeacd5e9ad57bcbcc22c97ff047ffa50cd76fdb7ca0a199cfa4980fe8",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 165506,
+      "sha256": "ba77234f14e6e2c01a9d0738ef56e82e4587db297d8a10ea21068428f0d06222",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 96619,
+      "sha256": "c1f0109e22935255cf8cea93f79d290b2e812d4a2dfafd0f2530cfef1d7de1af",
+      "row_count": 172
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 16507,
+      "sha256": "461dd493edcafcdd7531413e5d34961183f73a9e27c3d4e767d8b3091b12ea63",
+      "row_count": 28
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\country_geography_candidate_dependency.csv",
+      "bytes": 147846,
+      "sha256": "55dc10ac18cf8a13457a800783ddc212bc648cad6bd4d878bb45ba5a77d8d0a3",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\service_country_geography_candidate_dependency.csv",
+      "bytes": 244767,
+      "sha256": "1ac7bbf66920d0a4be0a58b6991a46e4053461a68bc9ec28aac14b078f983ef6",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2668,
+      "sha256": "29b341368463afeaf8a57721881d14b88729080ff6d10aeb991adee6e1ba1421",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 905,
+      "sha256": "af18a23fc68e75e2bb92a56ff60235887f826033875735bd93631b80f4c1e13f",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 38262,
+      "sha256": "9f6d7b49cebf5567ff2b46df14951daa1ab8ce2eeb51890b5e321dce9ea42473",
+      "row_count": 366
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 191,
+      "sha256": "15ea2841100373983ab8a45282045d2b318acdb57cb0797dd63111db16131406",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\pipeline_accounting.csv",
+      "bytes": 1004,
+      "sha256": "048b96236d976d43bf208dd24883ed0d2c9881ea1fae93ac8e3e00fde7112e45",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 164713,
+      "sha256": "432248d024d700a53507355d3753e14c744102d71a106308872f92061cf1c9fe",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 96198,
+      "sha256": "22082144b651f2096aac2fc9f59f8d0e7a94e7327b0d56b6afb4475af4993a49",
+      "row_count": 175
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 14957,
+      "sha256": "4d5c14235aca2d21bb685243b1a685d73832b4676a19235cc76d2fd4e3f9bac4",
+      "row_count": 25
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\country_geography_candidate_dependency.csv",
+      "bytes": 148801,
+      "sha256": "58ea256df40380d7aa894ec51847b7b904999ac90e3efe8468add2c07579ec07",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\service_country_geography_candidate_dependency.csv",
+      "bytes": 242387,
+      "sha256": "c85c6118523606572bcea136e350d75e6bb4786b736bd2eb8e89a8718bd40dfd",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2624,
+      "sha256": "37e23008380dc8848a58a58b84aa43af3d20fc5295748b6cc85fce5b1f5ad724",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 902,
+      "sha256": "41a4d878443b8f79c9a94df5ade2f10ec04096bd4e3e35df911172a8d36243c8",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 24172,
+      "sha256": "86f879c1630ee4ea206a833af78b3780499830ee80cf778e8fc7db2813429f11",
+      "row_count": 250
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 188,
+      "sha256": "c22f9593d359bafba3d2b781764f4cbf9b96237616a68f9cd744e529d9417a0d",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\pipeline_accounting.csv",
+      "bytes": 1001,
+      "sha256": "832c0cea7993e35e7ca86b0f4a5d96ae74cedcb689c99398413ca52d46f83fa5",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 135958,
+      "sha256": "3c971adf3b2f229daa9cc53080cc5987e03478f6ee82e373828b97f26df49816",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 40773,
+      "sha256": "14ee687a1214e401de12d089c40d803dea4b3caac00135b0e04ab23423d9035a",
+      "row_count": 73
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 4723,
+      "sha256": "ebdd36b9ff6225783723b819cb99354a9c5569c09a38100007fb394492610ccd",
+      "row_count": 7
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\country_geography_candidate_dependency.csv",
+      "bytes": 144725,
+      "sha256": "33b348179a36b7123c23bf9832167a6e485327b3c50d9b3ac77dbeab81c86dd3",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\service_country_geography_candidate_dependency.csv",
+      "bytes": 221499,
+      "sha256": "96c3c83dfb6799a4960aaa7a545c0deb4ccc312a5d8a0f69ebd6903986c95bae",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2406,
+      "sha256": "6b3f3693ed9fc631f5369b13d2cbd41b83e10a76e51cbe13212328a58d91ae87",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 904,
+      "sha256": "c16de08feecbcbf10cceba2860b0472d1721b9b3160ac6b2ed9260d7d4c01a0e",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 20907,
+      "sha256": "7dd86a732bf035cea51b8f04601047c4e8518821c523263878c44b48370aeb3d",
+      "row_count": 207
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 190,
+      "sha256": "33f3df8d2e2d8dda66f4920a65f966ea6e70d31ea78747b9e8dbb05de45ef1d1",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\pipeline_accounting.csv",
+      "bytes": 1002,
+      "sha256": "5523a884ff1ef4164af206b1f9c74cc5fc89a8ca66beb80b6c2d174586b68abb",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 141551,
+      "sha256": "310e0169e59925d121ea924aca25495f3e61d7211094bee338d4f2a314c1087e",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 49381,
+      "sha256": "485c01cf6752c0e7b3c2f42460e5822dd5ff17750addbcc009c8f6c4ff64671c",
+      "row_count": 88
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 4301,
+      "sha256": "1becd022d6bcab32e77dbd45f988a6d5e4dfbd4fdd68f20eb4a303d3d07342ba",
+      "row_count": 6
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\country_geography_candidate_dependency.csv",
+      "bytes": 145463,
+      "sha256": "03cda5c79437e495ec866b3464c7c2dd34a5b582688129aef8cfa7e615e233c9",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\service_country_geography_candidate_dependency.csv",
+      "bytes": 221232,
+      "sha256": "5266bb810735f03a53739c8f938509872fbf53339238833dcb3d50c3cea89aaa",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2330,
+      "sha256": "30f20255b040ccb8e4870059cb3327f0bd58556af893a7579b5dc79f37752f9d",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 907,
+      "sha256": "a5537902a0532d82c27b41caece187d792080eea22093c73c518a40b04b4c075",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 39890,
+      "sha256": "a6bbf9c79553fe13115a3914d8f46106d0922c32ab997b29a296810f386a9c85",
+      "row_count": 365
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 191,
+      "sha256": "682f2c5826d1fe0542b0996f9af1801a257f73c880a3182bbd357b6579e40db3",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\pipeline_accounting.csv",
+      "bytes": 1019,
+      "sha256": "e8c8239ad923cf3d4a642bd330085d51c93fed5562414052a11c5773637dc82f",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 179466,
+      "sha256": "acd863bf018da6aaef5f7a62881c71a64f20127d95c9b038a3a2f568a4550c02",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 114285,
+      "sha256": "d2ff027f0283b5f142eb375d433c351915b1896dce3adc7b153d45aec0097d44",
+      "row_count": 201
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 14607,
+      "sha256": "843126c30ce43407e6ef48bf5da7a90aff45bd93fd636b6c0e8b69682595bbc6",
+      "row_count": 25
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\country_geography_candidate_dependency.csv",
+      "bytes": 150878,
+      "sha256": "4899f9aaf15adfbebfca84e63952f49bf10f6b6230cd4f8dd8470a0022254be4",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\service_country_geography_candidate_dependency.csv",
+      "bytes": 248489,
+      "sha256": "82e4ddc7066660cde934ee5074e45b46947d924ea2fdd961d394ad12841f0bcf",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2770,
+      "sha256": "59e607612315311da648ace7bf6cb9563a2817c427d717b3b952f0c33b18daf2",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 906,
+      "sha256": "d47503114f54be2a8087a0f24661226fc023baf741fecb138a44862d4fca4584",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 38260,
+      "sha256": "538df14eb8d12886f1712e324fa95649369ba93c9e06ca7c18184a1c6e8c19af",
+      "row_count": 365
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 190,
+      "sha256": "c042bbd7d04a7372370322922c251f317005f2206090e1a305277f7c288cd8a8",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\pipeline_accounting.csv",
+      "bytes": 1007,
+      "sha256": "a9be0f689e63a0c9f977f09c19aeac70dfeea76acc37d88531a44d8e36399857",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 175399,
+      "sha256": "1fc70ebdce0d79a0e0b45b4550f51fcd74601161bfafa83e736213c00f122050",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 116473,
+      "sha256": "2b1dbf103f7febd4ffa4a4ec71bfa1f703e872ecfd343180e95965c33943ec60",
+      "row_count": 205
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 14769,
+      "sha256": "8800c8092884fc396eb3cd65b0133bfa743ce934d23a6703f5f3a81088057ab7",
+      "row_count": 26
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\country_geography_candidate_dependency.csv",
+      "bytes": 150260,
+      "sha256": "8a0ac3e9cc7ce12083bf9e7018a2ff651f3ff1f5618b5467da919a30ae21644d",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\service_country_geography_candidate_dependency.csv",
+      "bytes": 246988,
+      "sha256": "d1be6693b5b2e66639628b254e2b1260cfa63464fc3e09d70e08854264b635e4",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2708,
+      "sha256": "0897c4384f5947046429bceeece3114d93f73c340f3ad4b28a8b169117c3c6d4",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 895,
+      "sha256": "e75578c05bcdfe636a5d2ef9944b0e46d98ec25d93359883c7a3efbbc9d523c0",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 17539,
+      "sha256": "e6ccafc986514b80da0a0acb3fb5d530177d19c293f72321de6d5846642969f1",
+      "row_count": 174
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 189,
+      "sha256": "235f07bbf2f8e8680ddb18c96a74cd61ba837de16f3e76475744d1150857c577",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\pipeline_accounting.csv",
+      "bytes": 998,
+      "sha256": "f22ff1e742a2b49920b02fb2661d7602e0c68f531b8c94a92f476e122a88926b",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 126974,
+      "sha256": "f298cbd9aad0c067b8be9d7c7c5c4ff6721c88ea52ab64f188e565d227d66594",
+      "row_count": 344
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 40231,
+      "sha256": "ab10ed0706da6e838c88cbfc58f2cc51c30f6312d5eb3e4584eaeaecc31545b9",
+      "row_count": 73
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 7497,
+      "sha256": "156a9bd0ae34eccea8057495c86d3ab0af96c81535144fe8e74230475ff81615",
+      "row_count": 12
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\country_geography_candidate_dependency.csv",
+      "bytes": 133627,
+      "sha256": "f14ffe5b140110137b2d9317f0a919f90d90aff7eb3d872025c957e161223830",
+      "row_count": 344
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\service_country_geography_candidate_dependency.csv",
+      "bytes": 199585,
+      "sha256": "18f217057e7e908d91db6a5cbc1581a44970637d9fc5be78381356ca3ad70339",
+      "row_count": 344
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2284,
+      "sha256": "1bbbe9238d27a658abb9bd24c11053b0825483e26f222c086cd0e49940196959",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 898,
+      "sha256": "c0f0936321694f5ecea2359203b11147b2ba9890d03c7d04d12c5260aed17c36",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 19537,
+      "sha256": "fcad5666589773d50b12c85e35977707a16d07afd4b36312871fab8e04213515",
+      "row_count": 188
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 164,
+      "sha256": "4a11b61498366b715f293056291e65b438d901c8a4ba8423dc4bd0b668d9c582",
+      "row_count": 3
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\pipeline_accounting.csv",
+      "bytes": 996,
+      "sha256": "f2d9513f4c1d7f563b2f4cd43a4520e7c01a24b92d217420cfa8d5d6a440d443",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 142564,
+      "sha256": "f7cbf4d93e55eece4b7b034320367b4bad1bd61e92a1730dfadc9600069c7207",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 54159,
+      "sha256": "8b1f4b8a84f6eeeceed877f4b1a04aa23e8220a0ed8797ccef4e0a9d88c19dc7",
+      "row_count": 97
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 10917,
+      "sha256": "42fa642136dd4165106c5cebad89a992ffe98e231c1b307c10ed24543f1b4385",
+      "row_count": 18
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\country_geography_candidate_dependency.csv",
+      "bytes": 145243,
+      "sha256": "9f5752f8a4507184d2a897e0c9e8331255b8fe62c49f4310c788043f0311b17f",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\service_country_geography_candidate_dependency.csv",
+      "bytes": 218375,
+      "sha256": "df35e40ccc8d0af1a4d645bcc1908ab4776c8690a6077f5da3bc547d9948f658",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2278,
+      "sha256": "66d7a01538e502c42d2f7c7a399bbcf34faf40eb14d068c7394ea6db6830a888",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 903,
+      "sha256": "fdc0fc3ef8610ba2c7400fb0176fdf25fcbbfd30245fe3092dece9d7dd69ca8e",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 39033,
+      "sha256": "e91f1684977dc5f3dfc6e8fc6b62c99c653ce76ebc07628002529e621c9a5f5a",
+      "row_count": 365
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 164,
+      "sha256": "f526a602432438c5cd22055e8382968bd2de73fcd906f18866bca5c17e43ba8c",
+      "row_count": 3
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\pipeline_accounting.csv",
+      "bytes": 1006,
+      "sha256": "17bc4f056c66f1e1c01cd247ab0b5b082535b450513113c278913e89cea9dd2e",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 167738,
+      "sha256": "f1ad4fd3fd281de9758bae60a836d21d1a583b25f08dc83d4546837ddc161a6a",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 109621,
+      "sha256": "18f8fb22e3b7d617c0f697de81b5965dbc6deb702b3a1ce3839ee7259f338e0a",
+      "row_count": 206
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 25698,
+      "sha256": "a376c96569dad69493d660b0d204a575507642d86dd5c40a0cda01e719bcc1b6",
+      "row_count": 46
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\country_geography_candidate_dependency.csv",
+      "bytes": 149399,
+      "sha256": "1b85d73721418be8cc4ac0c7b71890c9348af70ee9c576a4d7842769ac3ace94",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\service_country_geography_candidate_dependency.csv",
+      "bytes": 239787,
+      "sha256": "35cdb3658714bdfd86b1b073bdd30949782fc4f671343e215177f9fb93491ccc",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2745,
+      "sha256": "4d5030eb4c7723bfb5e8c6e46f5cb9ef0e4a074f03e7b5b9c5d7ca976ea2124a",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 904,
+      "sha256": "dff21bda280c39e1408021f7d4cd35f74f6d377ec1d7232b83fd40cbd4a8d234",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 36679,
+      "sha256": "cab43f17fd0edcf750641cc41073093c3cc95c50092a1e5396b8cad379558ea5",
+      "row_count": 363
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 190,
+      "sha256": "d8e1f541716932ff814ba4c75379e180d2660f8ace75068f7da54fa2351ef4dc",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\pipeline_accounting.csv",
+      "bytes": 1016,
+      "sha256": "aec1c2d10744f636cefe02f45fe1764ca5d5a4241aac806253ba6b82ce2057fb",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 157340,
+      "sha256": "a28a938414b2aa86fc65e66434f5d659b43f5b7e7df05c90bcfedca9ffd85007",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 82642,
+      "sha256": "98a9f0b8ad0c67de41de9605a090a9eeb84f40b6079dc17551175c0b01e29ac0",
+      "row_count": 148
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 8515,
+      "sha256": "a93a02acf9b5675ad720ad75f151a2ec1d5bb1b6e947089646941e93daf168df",
+      "row_count": 14
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\country_geography_candidate_dependency.csv",
+      "bytes": 147204,
+      "sha256": "4000b8de9051a1293a645eeacb1ff230a5a7e7a23fa279587cb8f879f51212ea",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\service_country_geography_candidate_dependency.csv",
+      "bytes": 240154,
+      "sha256": "e7f757226df26bfbeaf258f53bad82cdee0551c3b59626bcb8ccdd47321787ba",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2613,
+      "sha256": "5f5a6fec95ea022c4c8dec99f387b886f353ca7ed04a4d055399b0ffcc5fe75a",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 897,
+      "sha256": "557ee9bf3ed4b822c1857a7db2a091fb006a1214770ae214989e812cd6d595ff",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 31731,
+      "sha256": "d1796126b1e0ec8b8e2b55db2beb9699792aec2fb640a213b147c9732d2d0df6",
+      "row_count": 322
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 191,
+      "sha256": "0fb99bc0ad11163b25f3b9821163ca75f9f53b360e72f8869de5843d730297b6",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\pipeline_accounting.csv",
+      "bytes": 999,
+      "sha256": "8cea7d03bf9d3fe4093aafac2b07de2cc09b404b3b9639d8fea8072677abb166",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 143854,
+      "sha256": "cedcde8118db6b6750b1f9444e5d93443dcb7cc24f411cc2e6344a018163005b",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 56073,
+      "sha256": "e212eefcb6f23af96b506ecc7b56b462a80bfa356ff316511a98c7b5b70adfd4",
+      "row_count": 103
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 4040,
+      "sha256": "74c01c37a697df9b2f17240d2f23f31def63443450de1e74d13bd42630a559dd",
+      "row_count": 6
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\country_geography_candidate_dependency.csv",
+      "bytes": 146585,
+      "sha256": "1ad21ba77dc78f07f51bb7982a2ff494b6748b6ade40da680c788d3e53013924",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\service_country_geography_candidate_dependency.csv",
+      "bytes": 231589,
+      "sha256": "3fef5fcb30d76fe67075606f29c738452f401bba5ea937fce1c448473d889dbc",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2520,
+      "sha256": "d7b534761c9aedd002dce43da06ef82d4b308bfe4cdf19c97b48a1b399a615bf",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 906,
+      "sha256": "7998b9cc3df10913ff96491d443b5d6731bb979de77ae48084725589e778af91",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 19780,
+      "sha256": "e13dbb199e8b4adb0b6d89d914d0ce1af5b0cce38bb139496edc99910522dc90",
+      "row_count": 189
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 164,
+      "sha256": "c50c2929e0f22fcb3a8e0aafadd835c25a719b9a6439a6ac225853890a27450c",
+      "row_count": 3
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\pipeline_accounting.csv",
+      "bytes": 1005,
+      "sha256": "df69e9e398121ff4fe68049a045ed594f7d9b283ccedc78ca47a58002c68e380",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 139728,
+      "sha256": "95c56593fedf1de4a0915f51dea8b1a1986e6472060f0696b09b84b9fb9a30fb",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 49887,
+      "sha256": "b515c94d2ed8df701ea0be71cb01763b1451dbd9b98e960b39b4ad1af2706cf4",
+      "row_count": 92
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 12206,
+      "sha256": "588ebf822fc16a24901cb1971e8d64db0b04d5d02bb0b8e19de6694b348df0ca",
+      "row_count": 21
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\country_geography_candidate_dependency.csv",
+      "bytes": 144872,
+      "sha256": "31a59bb2f1a17dc398cecca92ca66b7af35f9dc605556beed1508a0ccd105d1c",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\service_country_geography_candidate_dependency.csv",
+      "bytes": 217619,
+      "sha256": "b48ec763f803d2825f2d6947f0430b19f8e36b73552bd8ad02334a4df7d5d565",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2321,
+      "sha256": "01a430bdf8df45ecfe201c1008b9813d30e01838326dbc0a49aa606fff3a153a",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 904,
+      "sha256": "9d8fe829091403eeb8bab231cdb913481cb784b4304c2207aa15db9f2d6e7fd7",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 36942,
+      "sha256": "b5e947599747c40deb044366c44334e54c5db725293b6361cacfb98cf43fb176",
+      "row_count": 361
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 164,
+      "sha256": "e4541ec7da65abc79afc3044c50ee020b77bd3f34500c6ca8271e83e8fb2d049",
+      "row_count": 3
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\pipeline_accounting.csv",
+      "bytes": 1005,
+      "sha256": "f16755f2a0c5804f623faa17842fafdb42a570e282b9fec4d732ee76a5106cbd",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 154667,
+      "sha256": "cb96a6e72115eebd3560e9019bc402bf956c8b3eb2594d65802c9e0f0670cc27",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 80696,
+      "sha256": "406ac7131451f3a23bbd01e8f1471e596a7d78557a6a225bbd2aec6448725a82",
+      "row_count": 149
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 16191,
+      "sha256": "71d61e3c502383f29c73e143e68d74104434bba2f239e0008f87fb7873a7009e",
+      "row_count": 28
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\country_geography_candidate_dependency.csv",
+      "bytes": 147194,
+      "sha256": "b7ffa2a662c7ece134d14b7f9509492bd552bececc8d85ba879bf937cc2d117a",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\service_country_geography_candidate_dependency.csv",
+      "bytes": 235770,
+      "sha256": "67a0ee8e14bb166245dc1b69c5aecd2855e5668a5306404e715863eb1e10aeda",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2560,
+      "sha256": "e3e6aa27c4c2ab03673779ca2d51b8476ed86e615bd8022cd8c80ac8c7fe3e6f",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\physical_mapping_resolution_summary.csv",
+      "bytes": 905,
+      "sha256": "fc62559a718b8b8090de7dc6fd521ecd005c454e12f28a5c60abaf629900de91",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\service_country_physical_mapping_resolution.csv",
+      "bytes": 19025,
+      "sha256": "88f06a9e23a7776f53b2bda1312c48488692d38eec65bd319eef5ba058ce9594",
+      "row_count": 189
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 175,
+      "sha256": "f5adb614d0dc689a9e782d5946ceba4a1df4126aa9725bdd5caf5f70e467bd56",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\pipeline_accounting.csv",
+      "bytes": 1019,
+      "sha256": "8df4ac9fb8f030f6567f694d512b78fa7d2cf9fe755eae89f4e9b1911b90c21c",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 137403,
+      "sha256": "87f9d2450343e80c067c1eefc2a5c4e2b6131cc3579b1ceee097c16f50e188f4",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 43167,
+      "sha256": "7754d7edb2f8a58a8e5f9095bdd947a9745b5a8ea8a87cd18ec8faa278eb92d9",
+      "row_count": 79
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 6833,
+      "sha256": "01a6cfb5bfa2efcc6839576d96b690c42828879f60e7d981c5273fe2a2d557bc",
+      "row_count": 11
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\country_geography_candidate_dependency.csv",
+      "bytes": 144377,
+      "sha256": "55dddab8d60815174b480d1098e682bdfb4e8bfc50cce3e3dde714214eddeaea",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\service_country_geography_candidate_dependency.csv",
+      "bytes": 217561,
+      "sha256": "09d5240170bf5111771b708898457326bf910133436bd0cfd4c8a1f721bb2ed1",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2290,
+      "sha256": "631982410d25018bdf8bb536ecfd828f9026358bea8df8023e3cd2cc1a13bdb6",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\physical_mapping_resolution_summary.csv",
+      "bytes": 905,
+      "sha256": "a6c18fb9c4b5e8d01a5caadaaacced054cff8b904943f2c0a929722341d3e647",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\service_country_physical_mapping_resolution.csv",
+      "bytes": 48249,
+      "sha256": "c6ce45a457dec04ef26a8b80e8fff9361dfaa8cb30b24d8febfc192e7807e62a",
+      "row_count": 365
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 193,
+      "sha256": "6605f91429d250ca51ea2731982ef93ba4cf65ce1421940400c601f545db7192",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\pipeline_accounting.csv",
+      "bytes": 1007,
+      "sha256": "24264f7000791afbafeda40fd7accae85398d231381658e6ac3ecc2f19a2c1d7",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 223894,
+      "sha256": "e35327cecbbb6aa378cac394443d4628b3df206d75a03b34f0358aca35373aae",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 195069,
+      "sha256": "a0fa6ffcddbb7654921430a2f13304ca1a61ce3a9806c40c4a044e007dc613cf",
+      "row_count": 317
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 50211,
+      "sha256": "56bf52f34da8e3309cdd5aac1d9f141e53417061c224c15116ee40b55c295b9b",
+      "row_count": 83
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\country_geography_candidate_dependency.csv",
+      "bytes": 160270,
+      "sha256": "9a221ad7d16d1381cdad988f593885b44e2db63cdb51ef2fc785a1e77628f8a0",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\service_country_geography_candidate_dependency.csv",
+      "bytes": 275166,
+      "sha256": "4c44ebafd6342b3feaf6a506934691d7f324cc304edc47f5bc3f9da3c2a24e37",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2784,
+      "sha256": "82164deca0d912983520b5bcce65491dde1bded83c0487435ceda8a5845f5323",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\physical_mapping_resolution_summary.csv",
+      "bytes": 901,
+      "sha256": "0f5793fd436cf4c147ce7588c22633c2902f014273ab119df08b5cabdf0c7d66",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\service_country_physical_mapping_resolution.csv",
+      "bytes": 43987,
+      "sha256": "fda9126029e36941cef8dc40095820f490631aff06e8c7ce34befcbe51cee2fb",
+      "row_count": 352
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 150,
+      "sha256": "b4b38bd13b37fe38f76d0ece8ef0971bd4744b76e62c763421b85732fbceec60",
+      "row_count": 3
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\pipeline_accounting.csv",
+      "bytes": 1001,
+      "sha256": "8cf0bbcd8d79a8af10911d9366394c7c51852c55527eb9a6635ce004afd554c3",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 206257,
+      "sha256": "cca4689400be573cf3ac6d19a870083fe8ef0876c1d8aa12abc858f0d2d16edc",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 162900,
+      "sha256": "5cb02f3b3c594e75eef64b4088355469de12bc5c89cb421737bbd197aa805ff1",
+      "row_count": 272
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 30090,
+      "sha256": "371be780021c1012e23cb4a04da82518a0e735cb418778924af66233bf4929de",
+      "row_count": 49
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\country_geography_candidate_dependency.csv",
+      "bytes": 155661,
+      "sha256": "88e91f9118825e135e5be72b86a7dc128f49a88a701e0c56814e227804a3cb64",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\service_country_geography_candidate_dependency.csv",
+      "bytes": 264173,
+      "sha256": "b4a80f5f5f3f427cf68b104a1556f90f99b9299078da8edf0a71f41865a3cda3",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2793,
+      "sha256": "8f38bf867af91fe1ab92605b6d3869415678c38c65131566f46c5b61ff5ab62e",
+      "row_count": 8
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\physical_mapping_resolution_summary.csv",
+      "bytes": 882,
+      "sha256": "bc1dfda84df895f83bcd0e2b3e5e6e6ccf9c710441fe871f6d100b6fd04cb8c9",
+      "row_count": 4
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\service_country_physical_mapping_resolution.csv",
+      "bytes": 40501,
+      "sha256": "a17a1d500855d458a5b34b6a2032b608a25a3626f739655d719e55fc932ef3c1",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\bounded_candidate_set_size_distribution.csv",
+      "bytes": 164,
+      "sha256": "8f3256f39b448397b13778de1b8d73d37f9c8fa13060d9a48c4b92be09dd077d",
+      "row_count": 3
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\pipeline_accounting.csv",
+      "bytes": 1004,
+      "sha256": "236c3e2633ada95b7a98c8ca72477ca6a4ad8782d8b180797384ec0e74dd577e",
+      "row_count": 9
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\cross_layer_normalized_entropy_audit.csv",
+      "bytes": 179418,
+      "sha256": "1d4b102e3b247a6ea8708078ef3a74b9edabbd4623032231cb7d98ce92e0f25e",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 117157,
+      "sha256": "d88eea09debb632f79401c9312970b4be2ce49a138185971504a472a79dce037",
+      "row_count": 199
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv",
+      "bytes": 19741,
+      "sha256": "4c150df6fa11dee7be1544d1ad0b6d1c604313b4413eb357aa983e08eafdd7de",
+      "row_count": 32
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\country_geography_candidate_dependency.csv",
+      "bytes": 149991,
+      "sha256": "36ddcddad8aed5412bfa9f3dd2f8353081e9d0529020db20dedddcb56c3ea275",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\service_country_geography_candidate_dependency.csv",
+      "bytes": 248756,
+      "sha256": "58c7f6e30b5ac0039b13ad1d7ec2f13c62e03f1c390c7f8ad5331ca7d66e2cf4",
+      "row_count": 372
+    },
+    {
+      "path": "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\geography_type_candidate_dependency_summary.csv",
+      "bytes": 2716,
+      "sha256": "86faf3550fb3ca93aa75d9b8f4f1e0e1f803e2990f4136b78abd81832136fece",
+      "row_count": 8
+    }
+  ],
+  "input_file_sha256": {
+    "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\physical_mapping_resolution_summary.csv": "4dcb8b8d560258d653a3c8b24790d8f990cecc5dff56ce3c87dbbff297a5c7bf",
+    "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\service_country_physical_mapping_resolution.csv": "9aec805a0d45a230920802019ec3211a5a1d867262f4d1e0afa984ae9189a289",
+    "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\bounded_candidate_set_size_distribution.csv": "0c99d8b9698495f77ea8312d00e8830df63bf0c27dc1e18429b019cf3f23d0e1",
+    "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\pipeline_accounting.csv": "7fc0cd33d34bb46c6c6554f7d975b1af036872d4ead2f969e0aa8f2e7b3a75a8",
+    "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\cross_layer_normalized_entropy_audit.csv": "89c1f895c4a5b5dcb6321fa2d78f4810dfcec12858e6c88ac16ec1b203978258",
+    "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\uniquely_resolved_service_country_cross_layer_distribution.csv": "387d30eafce684e26a35b57ce61e8c6765dfa2ee0e9d48581dc3bf70b6283052",
+    "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "7971b9f2d64ebe235368ac02cf409b7da1cf6e5bc0bbd899d48e67f4c3fb6154",
+    "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\country_geography_candidate_dependency.csv": "a0c145f3683f5ace7516849274e3e33bf729d9fd82f2d2623d3522d3f4516ef3",
+    "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\service_country_geography_candidate_dependency.csv": "4d2a1aed4f87c7437dac5d443e0ba1ed0d5f80a4c3f90a5c7cc5dd4e209bb0d7",
+    "output\\public_traceroute_by_msmid\\msm176517335_edge-localization-extension-netflix-assets\\geography_type_candidate_dependency_summary.csv": "056aea888d7bd98cc45e23d854f40af4f949fffa08e65173f3e282253d212eed",
+    "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\physical_mapping_resolution_summary.csv": "5397a65e2c5160103f7a3362ccd97dfa340a667095dbabf063598798d3db3694",
+    "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\service_country_physical_mapping_resolution.csv": "6281209b0bbdb8693bb7954136e6e0a32feb60f2a7b8c97a2505c82afb89b1a4",
+    "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\bounded_candidate_set_size_distribution.csv": "3ac2edb9238900a5c1d98c22800a4812f103536cf9a3b00a6c71af38aebe95bb",
+    "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\pipeline_accounting.csv": "e577c2dbeacd5e9ad57bcbcc22c97ff047ffa50cd76fdb7ca0a199cfa4980fe8",
+    "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\cross_layer_normalized_entropy_audit.csv": "ba77234f14e6e2c01a9d0738ef56e82e4587db297d8a10ea21068428f0d06222",
+    "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\uniquely_resolved_service_country_cross_layer_distribution.csv": "c1f0109e22935255cf8cea93f79d290b2e812d4a2dfafd0f2530cfef1d7de1af",
+    "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "461dd493edcafcdd7531413e5d34961183f73a9e27c3d4e767d8b3091b12ea63",
+    "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\country_geography_candidate_dependency.csv": "55dc10ac18cf8a13457a800783ddc212bc648cad6bd4d878bb45ba5a77d8d0a3",
+    "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\service_country_geography_candidate_dependency.csv": "1ac7bbf66920d0a4be0a58b6991a46e4053461a68bc9ec28aac14b078f983ef6",
+    "output\\public_traceroute_by_msmid\\msm176906957_popular-application-reddit\\geography_type_candidate_dependency_summary.csv": "29b341368463afeaf8a57721881d14b88729080ff6d10aeb991adee6e1ba1421",
+    "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\physical_mapping_resolution_summary.csv": "af18a23fc68e75e2bb92a56ff60235887f826033875735bd93631b80f4c1e13f",
+    "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\service_country_physical_mapping_resolution.csv": "9f6d7b49cebf5567ff2b46df14951daa1ab8ce2eeb51890b5e321dce9ea42473",
+    "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\bounded_candidate_set_size_distribution.csv": "15ea2841100373983ab8a45282045d2b318acdb57cb0797dd63111db16131406",
+    "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\pipeline_accounting.csv": "048b96236d976d43bf208dd24883ed0d2c9881ea1fae93ac8e3e00fde7112e45",
+    "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\cross_layer_normalized_entropy_audit.csv": "432248d024d700a53507355d3753e14c744102d71a106308872f92061cf1c9fe",
+    "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\uniquely_resolved_service_country_cross_layer_distribution.csv": "22082144b651f2096aac2fc9f59f8d0e7a94e7327b0d56b6afb4475af4993a49",
+    "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "4d5c14235aca2d21bb685243b1a685d73832b4676a19235cc76d2fd4e3f9bac4",
+    "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\country_geography_candidate_dependency.csv": "58ea256df40380d7aa894ec51847b7b904999ac90e3efe8468add2c07579ec07",
+    "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\service_country_geography_candidate_dependency.csv": "c85c6118523606572bcea136e350d75e6bb4786b736bd2eb8e89a8718bd40dfd",
+    "output\\public_traceroute_by_msmid\\msm5001_dns-root-k-root\\geography_type_candidate_dependency_summary.csv": "37e23008380dc8848a58a58b84aa43af3d20fc5295748b6cc85fce5b1f5ad724",
+    "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\physical_mapping_resolution_summary.csv": "41a4d878443b8f79c9a94df5ade2f10ec04096bd4e3e35df911172a8d36243c8",
+    "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\service_country_physical_mapping_resolution.csv": "86f879c1630ee4ea206a833af78b3780499830ee80cf778e8fc7db2813429f11",
+    "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\bounded_candidate_set_size_distribution.csv": "c22f9593d359bafba3d2b781764f4cbf9b96237616a68f9cd744e529d9417a0d",
+    "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\pipeline_accounting.csv": "832c0cea7993e35e7ca86b0f4a5d96ae74cedcb689c99398413ca52d46f83fa5",
+    "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\cross_layer_normalized_entropy_audit.csv": "3c971adf3b2f229daa9cc53080cc5987e03478f6ee82e373828b97f26df49816",
+    "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\uniquely_resolved_service_country_cross_layer_distribution.csv": "14ee687a1214e401de12d089c40d803dea4b3caac00135b0e04ab23423d9035a",
+    "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "ebdd36b9ff6225783723b819cb99354a9c5569c09a38100007fb394492610ccd",
+    "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\country_geography_candidate_dependency.csv": "33b348179a36b7123c23bf9832167a6e485327b3c50d9b3ac77dbeab81c86dd3",
+    "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\service_country_geography_candidate_dependency.csv": "96c3c83dfb6799a4960aaa7a545c0deb4ccc312a5d8a0f69ebd6903986c95bae",
+    "output\\public_traceroute_by_msmid\\msm5004_dns-root-f-root\\geography_type_candidate_dependency_summary.csv": "6b3f3693ed9fc631f5369b13d2cbd41b83e10a76e51cbe13212328a58d91ae87",
+    "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\physical_mapping_resolution_summary.csv": "c16de08feecbcbf10cceba2860b0472d1721b9b3160ac6b2ed9260d7d4c01a0e",
+    "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\service_country_physical_mapping_resolution.csv": "7dd86a732bf035cea51b8f04601047c4e8518821c523263878c44b48370aeb3d",
+    "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\bounded_candidate_set_size_distribution.csv": "33f3df8d2e2d8dda66f4920a65f966ea6e70d31ea78747b9e8dbb05de45ef1d1",
+    "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\pipeline_accounting.csv": "5523a884ff1ef4164af206b1f9c74cc5fc89a8ca66beb80b6c2d174586b68abb",
+    "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\cross_layer_normalized_entropy_audit.csv": "310e0169e59925d121ea924aca25495f3e61d7211094bee338d4f2a314c1087e",
+    "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\uniquely_resolved_service_country_cross_layer_distribution.csv": "485c01cf6752c0e7b3c2f42460e5822dd5ff17750addbcc009c8f6c4ff64671c",
+    "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "1becd022d6bcab32e77dbd45f988a6d5e4dfbd4fdd68f20eb4a303d3d07342ba",
+    "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\country_geography_candidate_dependency.csv": "03cda5c79437e495ec866b3464c7c2dd34a5b582688129aef8cfa7e615e233c9",
+    "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\service_country_geography_candidate_dependency.csv": "5266bb810735f03a53739c8f938509872fbf53339238833dcb3d50c3cea89aaa",
+    "output\\public_traceroute_by_msmid\\msm5005_dns-root-i-root\\geography_type_candidate_dependency_summary.csv": "30f20255b040ccb8e4870059cb3327f0bd58556af893a7579b5dc79f37752f9d",
+    "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\physical_mapping_resolution_summary.csv": "a5537902a0532d82c27b41caece187d792080eea22093c73c518a40b04b4c075",
+    "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\service_country_physical_mapping_resolution.csv": "a6bbf9c79553fe13115a3914d8f46106d0922c32ab997b29a296810f386a9c85",
+    "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\bounded_candidate_set_size_distribution.csv": "682f2c5826d1fe0542b0996f9af1801a257f73c880a3182bbd357b6579e40db3",
+    "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\pipeline_accounting.csv": "e8c8239ad923cf3d4a642bd330085d51c93fed5562414052a11c5773637dc82f",
+    "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\cross_layer_normalized_entropy_audit.csv": "acd863bf018da6aaef5f7a62881c71a64f20127d95c9b038a3a2f568a4550c02",
+    "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\uniquely_resolved_service_country_cross_layer_distribution.csv": "d2ff027f0283b5f142eb375d433c351915b1896dce3adc7b153d45aec0097d44",
+    "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "843126c30ce43407e6ef48bf5da7a90aff45bd93fd636b6c0e8b69682595bbc6",
+    "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\country_geography_candidate_dependency.csv": "4899f9aaf15adfbebfca84e63952f49bf10f6b6230cd4f8dd8470a0022254be4",
+    "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\service_country_geography_candidate_dependency.csv": "82e4ddc7066660cde934ee5074e45b46947d924ea2fdd961d394ad12841f0bcf",
+    "output\\public_traceroute_by_msmid\\msm5006_dns-root-m-root\\geography_type_candidate_dependency_summary.csv": "59e607612315311da648ace7bf6cb9563a2817c427d717b3b952f0c33b18daf2",
+    "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\physical_mapping_resolution_summary.csv": "d47503114f54be2a8087a0f24661226fc023baf741fecb138a44862d4fca4584",
+    "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\service_country_physical_mapping_resolution.csv": "538df14eb8d12886f1712e324fa95649369ba93c9e06ca7c18184a1c6e8c19af",
+    "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\bounded_candidate_set_size_distribution.csv": "c042bbd7d04a7372370322922c251f317005f2206090e1a305277f7c288cd8a8",
+    "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\pipeline_accounting.csv": "a9be0f689e63a0c9f977f09c19aeac70dfeea76acc37d88531a44d8e36399857",
+    "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\cross_layer_normalized_entropy_audit.csv": "1fc70ebdce0d79a0e0b45b4550f51fcd74601161bfafa83e736213c00f122050",
+    "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\uniquely_resolved_service_country_cross_layer_distribution.csv": "2b1dbf103f7febd4ffa4a4ec71bfa1f703e872ecfd343180e95965c33943ec60",
+    "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "8800c8092884fc396eb3cd65b0133bfa743ce934d23a6703f5f3a81088057ab7",
+    "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\country_geography_candidate_dependency.csv": "8a0ac3e9cc7ce12083bf9e7018a2ff651f3ff1f5618b5467da919a30ae21644d",
+    "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\service_country_geography_candidate_dependency.csv": "d1be6693b5b2e66639628b254e2b1260cfa63464fc3e09d70e08854264b635e4",
+    "output\\public_traceroute_by_msmid\\msm5008_dns-root-l-root\\geography_type_candidate_dependency_summary.csv": "0897c4384f5947046429bceeece3114d93f73c340f3ad4b28a8b169117c3c6d4",
+    "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\physical_mapping_resolution_summary.csv": "e75578c05bcdfe636a5d2ef9944b0e46d98ec25d93359883c7a3efbbc9d523c0",
+    "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\service_country_physical_mapping_resolution.csv": "e6ccafc986514b80da0a0acb3fb5d530177d19c293f72321de6d5846642969f1",
+    "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\bounded_candidate_set_size_distribution.csv": "235f07bbf2f8e8680ddb18c96a74cd61ba837de16f3e76475744d1150857c577",
+    "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\pipeline_accounting.csv": "f22ff1e742a2b49920b02fb2661d7602e0c68f531b8c94a92f476e122a88926b",
+    "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\cross_layer_normalized_entropy_audit.csv": "f298cbd9aad0c067b8be9d7c7c5c4ff6721c88ea52ab64f188e565d227d66594",
+    "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\uniquely_resolved_service_country_cross_layer_distribution.csv": "ab10ed0706da6e838c88cbfc58f2cc51c30f6312d5eb3e4584eaeaecc31545b9",
+    "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "156a9bd0ae34eccea8057495c86d3ab0af96c81535144fe8e74230475ff81615",
+    "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\country_geography_candidate_dependency.csv": "f14ffe5b140110137b2d9317f0a919f90d90aff7eb3d872025c957e161223830",
+    "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\service_country_geography_candidate_dependency.csv": "18f217057e7e908d91db6a5cbc1581a44970637d9fc5be78381356ca3ad70339",
+    "output\\public_traceroute_by_msmid\\msm5009_dns-root-a-root\\geography_type_candidate_dependency_summary.csv": "1bbbe9238d27a658abb9bd24c11053b0825483e26f222c086cd0e49940196959",
+    "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\physical_mapping_resolution_summary.csv": "c0f0936321694f5ecea2359203b11147b2ba9890d03c7d04d12c5260aed17c36",
+    "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\service_country_physical_mapping_resolution.csv": "fcad5666589773d50b12c85e35977707a16d07afd4b36312871fab8e04213515",
+    "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\bounded_candidate_set_size_distribution.csv": "4a11b61498366b715f293056291e65b438d901c8a4ba8423dc4bd0b668d9c582",
+    "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\pipeline_accounting.csv": "f2d9513f4c1d7f563b2f4cd43a4520e7c01a24b92d217420cfa8d5d6a440d443",
+    "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\cross_layer_normalized_entropy_audit.csv": "f7cbf4d93e55eece4b7b034320367b4bad1bd61e92a1730dfadc9600069c7207",
+    "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\uniquely_resolved_service_country_cross_layer_distribution.csv": "8b1f4b8a84f6eeeceed877f4b1a04aa23e8220a0ed8797ccef4e0a9d88c19dc7",
+    "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "42fa642136dd4165106c5cebad89a992ffe98e231c1b307c10ed24543f1b4385",
+    "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\country_geography_candidate_dependency.csv": "9f5752f8a4507184d2a897e0c9e8331255b8fe62c49f4310c788043f0311b17f",
+    "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\service_country_geography_candidate_dependency.csv": "df35e40ccc8d0af1a4d645bcc1908ab4776c8690a6077f5da3bc547d9948f658",
+    "output\\public_traceroute_by_msmid\\msm5010_dns-root-b-root\\geography_type_candidate_dependency_summary.csv": "66d7a01538e502c42d2f7c7a399bbcf34faf40eb14d068c7394ea6db6830a888",
+    "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\physical_mapping_resolution_summary.csv": "fdc0fc3ef8610ba2c7400fb0176fdf25fcbbfd30245fe3092dece9d7dd69ca8e",
+    "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\service_country_physical_mapping_resolution.csv": "e91f1684977dc5f3dfc6e8fc6b62c99c653ce76ebc07628002529e621c9a5f5a",
+    "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\bounded_candidate_set_size_distribution.csv": "f526a602432438c5cd22055e8382968bd2de73fcd906f18866bca5c17e43ba8c",
+    "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\pipeline_accounting.csv": "17bc4f056c66f1e1c01cd247ab0b5b082535b450513113c278913e89cea9dd2e",
+    "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\cross_layer_normalized_entropy_audit.csv": "f1ad4fd3fd281de9758bae60a836d21d1a583b25f08dc83d4546837ddc161a6a",
+    "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\uniquely_resolved_service_country_cross_layer_distribution.csv": "18f8fb22e3b7d617c0f697de81b5965dbc6deb702b3a1ce3839ee7259f338e0a",
+    "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "a376c96569dad69493d660b0d204a575507642d86dd5c40a0cda01e719bcc1b6",
+    "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\country_geography_candidate_dependency.csv": "1b85d73721418be8cc4ac0c7b71890c9348af70ee9c576a4d7842769ac3ace94",
+    "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\service_country_geography_candidate_dependency.csv": "35cdb3658714bdfd86b1b073bdd30949782fc4f671343e215177f9fb93491ccc",
+    "output\\public_traceroute_by_msmid\\msm5011_dns-root-c-root\\geography_type_candidate_dependency_summary.csv": "4d5030eb4c7723bfb5e8c6e46f5cb9ef0e4a074f03e7b5b9c5d7ca976ea2124a",
+    "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\physical_mapping_resolution_summary.csv": "dff21bda280c39e1408021f7d4cd35f74f6d377ec1d7232b83fd40cbd4a8d234",
+    "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\service_country_physical_mapping_resolution.csv": "cab43f17fd0edcf750641cc41073093c3cc95c50092a1e5396b8cad379558ea5",
+    "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\bounded_candidate_set_size_distribution.csv": "d8e1f541716932ff814ba4c75379e180d2660f8ace75068f7da54fa2351ef4dc",
+    "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\pipeline_accounting.csv": "aec1c2d10744f636cefe02f45fe1764ca5d5a4241aac806253ba6b82ce2057fb",
+    "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\cross_layer_normalized_entropy_audit.csv": "a28a938414b2aa86fc65e66434f5d659b43f5b7e7df05c90bcfedca9ffd85007",
+    "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\uniquely_resolved_service_country_cross_layer_distribution.csv": "98a9f0b8ad0c67de41de9605a090a9eeb84f40b6079dc17551175c0b01e29ac0",
+    "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "a93a02acf9b5675ad720ad75f151a2ec1d5bb1b6e947089646941e93daf168df",
+    "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\country_geography_candidate_dependency.csv": "4000b8de9051a1293a645eeacb1ff230a5a7e7a23fa279587cb8f879f51212ea",
+    "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\service_country_geography_candidate_dependency.csv": "e7f757226df26bfbeaf258f53bad82cdee0551c3b59626bcb8ccdd47321787ba",
+    "output\\public_traceroute_by_msmid\\msm5012_dns-root-d-root\\geography_type_candidate_dependency_summary.csv": "5f5a6fec95ea022c4c8dec99f387b886f353ca7ed04a4d055399b0ffcc5fe75a",
+    "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\physical_mapping_resolution_summary.csv": "557ee9bf3ed4b822c1857a7db2a091fb006a1214770ae214989e812cd6d595ff",
+    "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\service_country_physical_mapping_resolution.csv": "d1796126b1e0ec8b8e2b55db2beb9699792aec2fb640a213b147c9732d2d0df6",
+    "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\bounded_candidate_set_size_distribution.csv": "0fb99bc0ad11163b25f3b9821163ca75f9f53b360e72f8869de5843d730297b6",
+    "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\pipeline_accounting.csv": "8cea7d03bf9d3fe4093aafac2b07de2cc09b404b3b9639d8fea8072677abb166",
+    "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\cross_layer_normalized_entropy_audit.csv": "cedcde8118db6b6750b1f9444e5d93443dcb7cc24f411cc2e6344a018163005b",
+    "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\uniquely_resolved_service_country_cross_layer_distribution.csv": "e212eefcb6f23af96b506ecc7b56b462a80bfa356ff316511a98c7b5b70adfd4",
+    "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "74c01c37a697df9b2f17240d2f23f31def63443450de1e74d13bd42630a559dd",
+    "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\country_geography_candidate_dependency.csv": "1ad21ba77dc78f07f51bb7982a2ff494b6748b6ade40da680c788d3e53013924",
+    "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\service_country_geography_candidate_dependency.csv": "3fef5fcb30d76fe67075606f29c738452f401bba5ea937fce1c448473d889dbc",
+    "output\\public_traceroute_by_msmid\\msm5013_dns-root-e-root\\geography_type_candidate_dependency_summary.csv": "d7b534761c9aedd002dce43da06ef82d4b308bfe4cdf19c97b48a1b399a615bf",
+    "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\physical_mapping_resolution_summary.csv": "7998b9cc3df10913ff96491d443b5d6731bb979de77ae48084725589e778af91",
+    "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\service_country_physical_mapping_resolution.csv": "e13dbb199e8b4adb0b6d89d914d0ce1af5b0cce38bb139496edc99910522dc90",
+    "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\bounded_candidate_set_size_distribution.csv": "c50c2929e0f22fcb3a8e0aafadd835c25a719b9a6439a6ac225853890a27450c",
+    "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\pipeline_accounting.csv": "df69e9e398121ff4fe68049a045ed594f7d9b283ccedc78ca47a58002c68e380",
+    "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\cross_layer_normalized_entropy_audit.csv": "95c56593fedf1de4a0915f51dea8b1a1986e6472060f0696b09b84b9fb9a30fb",
+    "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\uniquely_resolved_service_country_cross_layer_distribution.csv": "b515c94d2ed8df701ea0be71cb01763b1451dbd9b98e960b39b4ad1af2706cf4",
+    "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "588ebf822fc16a24901cb1971e8d64db0b04d5d02bb0b8e19de6694b348df0ca",
+    "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\country_geography_candidate_dependency.csv": "31a59bb2f1a17dc398cecca92ca66b7af35f9dc605556beed1508a0ccd105d1c",
+    "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\service_country_geography_candidate_dependency.csv": "b48ec763f803d2825f2d6947f0430b19f8e36b73552bd8ad02334a4df7d5d565",
+    "output\\public_traceroute_by_msmid\\msm5014_dns-root-g-root\\geography_type_candidate_dependency_summary.csv": "01a430bdf8df45ecfe201c1008b9813d30e01838326dbc0a49aa606fff3a153a",
+    "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\physical_mapping_resolution_summary.csv": "9d8fe829091403eeb8bab231cdb913481cb784b4304c2207aa15db9f2d6e7fd7",
+    "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\service_country_physical_mapping_resolution.csv": "b5e947599747c40deb044366c44334e54c5db725293b6361cacfb98cf43fb176",
+    "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\bounded_candidate_set_size_distribution.csv": "e4541ec7da65abc79afc3044c50ee020b77bd3f34500c6ca8271e83e8fb2d049",
+    "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\pipeline_accounting.csv": "f16755f2a0c5804f623faa17842fafdb42a570e282b9fec4d732ee76a5106cbd",
+    "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\cross_layer_normalized_entropy_audit.csv": "cb96a6e72115eebd3560e9019bc402bf956c8b3eb2594d65802c9e0f0670cc27",
+    "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\uniquely_resolved_service_country_cross_layer_distribution.csv": "406ac7131451f3a23bbd01e8f1471e596a7d78557a6a225bbd2aec6448725a82",
+    "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "71d61e3c502383f29c73e143e68d74104434bba2f239e0008f87fb7873a7009e",
+    "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\country_geography_candidate_dependency.csv": "b7ffa2a662c7ece134d14b7f9509492bd552bececc8d85ba879bf937cc2d117a",
+    "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\service_country_geography_candidate_dependency.csv": "67a0ee8e14bb166245dc1b69c5aecd2855e5668a5306404e715863eb1e10aeda",
+    "output\\public_traceroute_by_msmid\\msm5015_dns-root-h-root\\geography_type_candidate_dependency_summary.csv": "e3e6aa27c4c2ab03673779ca2d51b8476ed86e615bd8022cd8c80ac8c7fe3e6f",
+    "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\physical_mapping_resolution_summary.csv": "fc62559a718b8b8090de7dc6fd521ecd005c454e12f28a5c60abaf629900de91",
+    "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\service_country_physical_mapping_resolution.csv": "88f06a9e23a7776f53b2bda1312c48488692d38eec65bd319eef5ba058ce9594",
+    "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\bounded_candidate_set_size_distribution.csv": "f5adb614d0dc689a9e782d5946ceba4a1df4126aa9725bdd5caf5f70e467bd56",
+    "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\pipeline_accounting.csv": "8df4ac9fb8f030f6567f694d512b78fa7d2cf9fe755eae89f4e9b1911b90c21c",
+    "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\cross_layer_normalized_entropy_audit.csv": "87f9d2450343e80c067c1eefc2a5c4e2b6131cc3579b1ceee097c16f50e188f4",
+    "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\uniquely_resolved_service_country_cross_layer_distribution.csv": "7754d7edb2f8a58a8e5f9095bdd947a9745b5a8ea8a87cd18ec8faa278eb92d9",
+    "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "01a6cfb5bfa2efcc6839576d96b690c42828879f60e7d981c5273fe2a2d557bc",
+    "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\country_geography_candidate_dependency.csv": "55dddab8d60815174b480d1098e682bdfb4e8bfc50cce3e3dde714214eddeaea",
+    "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\service_country_geography_candidate_dependency.csv": "09d5240170bf5111771b708898457326bf910133436bd0cfd4c8a1f721bb2ed1",
+    "output\\public_traceroute_by_msmid\\msm5016_dns-root-j-root\\geography_type_candidate_dependency_summary.csv": "631982410d25018bdf8bb536ecfd828f9026358bea8df8023e3cd2cc1a13bdb6",
+    "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\physical_mapping_resolution_summary.csv": "a6c18fb9c4b5e8d01a5caadaaacced054cff8b904943f2c0a929722341d3e647",
+    "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\service_country_physical_mapping_resolution.csv": "c6ce45a457dec04ef26a8b80e8fff9361dfaa8cb30b24d8febfc192e7807e62a",
+    "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\bounded_candidate_set_size_distribution.csv": "6605f91429d250ca51ea2731982ef93ba4cf65ce1421940400c601f545db7192",
+    "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\pipeline_accounting.csv": "24264f7000791afbafeda40fd7accae85398d231381658e6ac3ecc2f19a2c1d7",
+    "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\cross_layer_normalized_entropy_audit.csv": "e35327cecbbb6aa378cac394443d4628b3df206d75a03b34f0358aca35373aae",
+    "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\uniquely_resolved_service_country_cross_layer_distribution.csv": "a0fa6ffcddbb7654921430a2f13304ca1a61ce3a9806c40c4a044e007dc613cf",
+    "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "56bf52f34da8e3309cdd5aac1d9f141e53417061c224c15116ee40b55c295b9b",
+    "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\country_geography_candidate_dependency.csv": "9a221ad7d16d1381cdad988f593885b44e2db63cdb51ef2fc785a1e77628f8a0",
+    "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\service_country_geography_candidate_dependency.csv": "4c44ebafd6342b3feaf6a506934691d7f324cc304edc47f5bc3f9da3c2a24e37",
+    "output\\public_traceroute_by_msmid\\msm5051_topology-baseline-topology-ipv4-udp\\geography_type_candidate_dependency_summary.csv": "82164deca0d912983520b5bcce65491dde1bded83c0487435ceda8a5845f5323",
+    "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\physical_mapping_resolution_summary.csv": "0f5793fd436cf4c147ce7588c22633c2902f014273ab119df08b5cabdf0c7d66",
+    "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\service_country_physical_mapping_resolution.csv": "fda9126029e36941cef8dc40095820f490631aff06e8c7ce34befcbe51cee2fb",
+    "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\bounded_candidate_set_size_distribution.csv": "b4b38bd13b37fe38f76d0ece8ef0971bd4744b76e62c763421b85732fbceec60",
+    "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\pipeline_accounting.csv": "8cf0bbcd8d79a8af10911d9366394c7c51852c55527eb9a6635ce004afd554c3",
+    "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\cross_layer_normalized_entropy_audit.csv": "cca4689400be573cf3ac6d19a870083fe8ef0876c1d8aa12abc858f0d2d16edc",
+    "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\uniquely_resolved_service_country_cross_layer_distribution.csv": "5cb02f3b3c594e75eef64b4088355469de12bc5c89cb421737bbd197aa805ff1",
+    "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "371be780021c1012e23cb4a04da82518a0e735cb418778924af66233bf4929de",
+    "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\country_geography_candidate_dependency.csv": "88e91f9118825e135e5be72b86a7dc128f49a88a701e0c56814e227804a3cb64",
+    "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\service_country_geography_candidate_dependency.csv": "b4a80f5f5f3f427cf68b104a1556f90f99b9299078da8edf0a71f41865a3cda3",
+    "output\\public_traceroute_by_msmid\\msm5151_topology-baseline-topology-ipv4-icmp\\geography_type_candidate_dependency_summary.csv": "8f38bf867af91fe1ab92605b6d3869415678c38c65131566f46c5b61ff5ab62e",
+    "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\physical_mapping_resolution_summary.csv": "bc1dfda84df895f83bcd0e2b3e5e6e6ccf9c710441fe871f6d100b6fd04cb8c9",
+    "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\service_country_physical_mapping_resolution.csv": "a17a1d500855d458a5b34b6a2032b608a25a3626f739655d719e55fc932ef3c1",
+    "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\bounded_candidate_set_size_distribution.csv": "8f3256f39b448397b13778de1b8d73d37f9c8fa13060d9a48c4b92be09dd077d",
+    "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\pipeline_accounting.csv": "236c3e2633ada95b7a98c8ca72477ca6a4ad8782d8b180797384ec0e74dd577e",
+    "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\cross_layer_normalized_entropy_audit.csv": "1d4b102e3b247a6ea8708078ef3a74b9edabbd4623032231cb7d98ce92e0f25e",
+    "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\uniquely_resolved_service_country_cross_layer_distribution.csv": "d88eea09debb632f79401c9312970b4be2ce49a138185971504a472a79dce037",
+    "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\paper_uniquely_resolved_service_country_cross_layer_distribution.csv": "4c150df6fa11dee7be1544d1ad0b6d1c604313b4413eb357aa983e08eafdd7de",
+    "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\country_geography_candidate_dependency.csv": "36ddcddad8aed5412bfa9f3dd2f8353081e9d0529020db20dedddcb56c3ea275",
+    "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\service_country_geography_candidate_dependency.csv": "58c7f6e30b5ac0039b13ad1d7ec2f13c62e03f1c390c7f8ad5331ca7d66e2cf4",
+    "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\geography_type_candidate_dependency_summary.csv": "86faf3550fb3ca93aa75d9b8f4f1e0e1f803e2990f4136b78abd81832136fece"
+  },
+  "source_file_sha256": {
+    "ripe_atlas_public_download\\package_reaggregated_paper_results.py": "e906c7ac77326a6e380891047f72bbb71a4ae25a2bccf8bbcf083a4892cf4bfd",
+    "source\\build_paper_primary_summary.py": "854d78011df7b57e2a545b038680d30aff7688c7f95154d7d800a6f34ce7a8a9",
+    "source\\result_provenance.py": "6af6995be00772ccd2fbce3b523211fdf1e1c2387c42d1b2ebabe776e64c175f"
+  },
   "a_root_sensitivity": {
     "included": true,
     "setting_count": 27,
@@ -3242,5 +4526,6 @@
     "atomic_segment_mapping_resolution.csv.gz"
   ],
   "postprocess_schema_version": "postprocess_candidate_output_v3",
-  "identity_schema_version": "observation_identity_v1"
+  "identity_schema_version": "observation_identity_v1",
+  "core_analysis_commit": "unknown"
 }

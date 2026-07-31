@@ -176,7 +176,7 @@ Recommended paper-facing run order:
 1. Download or prepare RIPE Atlas traceroute inputs.
 2. Prepare probe metadata, IPinfo geolocation, IPinfo ASN MMDB, AS relationship, owner-to-AS, and cable metadata.
 3. Run Stage 1 feasible corridor construction with landing-region grouping:
-   `python source/main_analysis.py --landing-region-radius-km 50 --rtt-tolerance-ms 5`
+   `python source/main_analysis.py --landing-region-maximum-diameter-km 50 --rtt-tolerance-ms 5`
 4. Run Stage 2 application/network/corridor distribution audit:
    `python source/postprocess_candidate_output.py --input output/result/cable_matching_output.json --output output/result`
 5. Run robustness analyses:
@@ -1339,16 +1339,39 @@ python pipeline/run_a_root_sensitivity.py --skip-existing
 ```
 
 The grid evaluates landing catchment radius `30/50/75 km`, landing-region
-maximum diameter `30/50/75 km`, and RTT tolerance `0/5/10 ms`. It writes
-`output/sensitivity_a_root/a_root_sensitivity_summary.csv` with inter-region
-candidate-bearing segments, unique/bounded shares, auditable units, median
-Top-2 corridor share, normalized corridor entropy, normalized entropy
-reduction, and classification agreement against the `50/50/5` baseline.
-It also reports global/observed landing-region and corridor counts,
-segment-corridor incidence Jaccard, changed segment candidate sets, and
-auditable-unit inclusion/exclusion relative to the baseline. Identical
-paper-facing medians alone must not be interpreted as complete robustness to
-landing-region diameter.
+maximum diameter `30/50/75 km`, and RTT tolerance `0/5/10 ms`. It separates
+four questions rather than making one undifferentiated robustness claim:
+coverage sensitivity (candidate-bearing segments and auditable-unit churn),
+resolution sensitivity (partition and single/bounded shares), stable-candidate
+sensitivity (exact landing-pair and cable sets), and shared-cohort conclusion
+stability (Top-2, normalized entropy, and classification agreement on units
+shared with the `50/50/5` baseline). Unique/bounded shares explicitly report
+both all-atomic-segment and candidate-bearing denominators. Corridor-ID
+Jaccard across different diameters is retained only as a
+resolution-dependent label diagnostic.
+
+`a_root_sensitivity_shared_unit_comparison.csv` identifies every shared unit,
+and `a_root_sensitivity_manifest.json` records the 27 configurations, fixed
+paper filter, input hashes, source hashes, schema versions, and generation
+state. Top-2 measures absolute mass captured by a few labels; effective count
+measures distribution breadth; normalized entropy measures evenness relative
+to observed support size; the 80% class is descriptive rather than a natural
+threshold.
+
+Build the fixed-scope paper tables from the existing aggregate without rerunning
+candidate matching:
+
+```bash
+python source/build_paper_primary_summary.py
+```
+
+The generator always applies `all_publicly_visible`,
+`probe_country_service`, and `auditable_paper_case == True`. It writes
+`paper_primary_units.csv`, `paper_primary_group_summary.csv`,
+`paper_primary_classification_summary.csv`, `paper_primary_case_table.csv`,
+`paper_primary_summary.json`, and `paper_primary_summary_manifest.json` under
+`results/july1_public_atlas_20260701/paper_primary/`. Dataset families use an
+explicit measurement-ID catalog rather than fuzzy label matching.
 When the 27-row summary is available, the compact publication packager also
 copies it to
 `results/july1_public_atlas_20260701/sensitivity/a_root_sensitivity_summary.csv`
@@ -1427,7 +1450,7 @@ All current IP-to-ASN lookups use `data/ipinfo/ipinfo_asn.mmdb`.
 - Use `--asn-mmdb-path` to point either stage at another IPinfo ASN MMDB file.
 ## Diameter-Limited Corridors, Mapping Resolution, and Accounting
 
-Landing regions now use deterministic diameter-limited clustering. An automatically generated region may contain multiple landing stations only when every member remains within `landing_region_radius_km` of every other member. The default 50 km value is therefore a maximum automatic region diameter, not a single-linkage edge threshold. Manual overrides remain explicit.
+Landing regions now use deterministic diameter-limited clustering. An automatically generated region may contain multiple landing stations only when every member remains within `landing_region_maximum_diameter_km` of every other member. The default 50 km value is therefore a maximum automatic region diameter, not a single-linkage edge threshold. The CLI option is `--landing-region-maximum-diameter-km`; `--landing-region-radius-km` remains only as a warning-emitting deprecated alias. Manual overrides remain explicit.
 
 `strict parallel` and `corridor co-group` have different meanings:
 

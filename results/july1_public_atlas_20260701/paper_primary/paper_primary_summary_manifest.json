@@ -1,0 +1,101 @@
+{
+  "paper_primary_schema_version": "paper_primary_summary_v1",
+  "core_analysis_commit": "unknown",
+  "packaging_commit": "unknown",
+  "sensitivity_analysis_commit": "unknown",
+  "identity_schema_version": "observation_identity_v1",
+  "postprocess_schema_version": "postprocess_candidate_output_v3",
+  "generation_git_head": "094fab80d86a04c8bc3cfdd567ca4d9b7f179009",
+  "generation_worktree_dirty": true,
+  "generated_at_utc": "2026-07-31T06:56:58.222713+00:00",
+  "source_file_sha256": {
+    "source\\build_paper_primary_summary.py": "854d78011df7b57e2a545b038680d30aff7688c7f95154d7d800a6f34ce7a8a9",
+    "source\\result_provenance.py": "6af6995be00772ccd2fbce3b523211fdf1e1c2387c42d1b2ebabe776e64c175f"
+  },
+  "input_file_sha256": {
+    "D:\\Workspace\\infocom26\\results\\july1_public_atlas_20260701\\aggregate\\all_measurements_cross_layer_normalized_entropy_audit_full.csv": "1037824bf38bce44fdef106b7ddfc51c21b7c5f5ea00e8b17722f99c4bd2d3b1",
+    "D:\\Workspace\\infocom26\\results\\july1_public_atlas_20260701\\aggregate\\all_measurements_service_country_physical_mapping_resolution.csv": "14ad6162a4317950634eec983f66fbc5acc4262d7cefc92ac1ee217f182a9dff"
+  },
+  "input_files": [
+    {
+      "path": "results\\july1_public_atlas_20260701\\aggregate\\all_measurements_cross_layer_normalized_entropy_audit_full.csv",
+      "bytes": 3115346,
+      "sha256": "1037824bf38bce44fdef106b7ddfc51c21b7c5f5ea00e8b17722f99c4bd2d3b1",
+      "row_count": 6668
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\aggregate\\all_measurements_service_country_physical_mapping_resolution.csv",
+      "bytes": 785052,
+      "sha256": "14ad6162a4317950634eec983f66fbc5acc4262d7cefc92ac1ee217f182a9dff",
+      "row_count": 5534
+    }
+  ],
+  "generated_outputs": [
+    {
+      "path": "results\\july1_public_atlas_20260701\\paper_primary\\paper_primary_units.csv",
+      "bytes": 122273,
+      "sha256": "f5ca3dbf0ad6d886c926c2b22b9e72a8953a90ea020b3be9b796fa19e33113f5",
+      "row_count": 295
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\paper_primary\\paper_primary_group_summary.csv",
+      "bytes": 834,
+      "sha256": "d77db1cfeb64f60aa471d97b0bb8f9febac64e3d092bffd429e8da92d471ed60",
+      "row_count": 3
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\paper_primary\\paper_primary_classification_summary.csv",
+      "bytes": 953,
+      "sha256": "b2b318a1a2ec5558476c8a415df75f935853034998396713779391553556e2c5",
+      "row_count": 11
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\paper_primary\\paper_primary_case_table.csv",
+      "bytes": 2051,
+      "sha256": "d06aaa105d5f9e750f4803ccbe4234fa5ed3ca46214616da2906e91ba28d131b",
+      "row_count": 3
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\paper_primary\\paper_primary_summary.json",
+      "bytes": 776,
+      "sha256": "96a4fa631b58bea5869a5b05962b440b25ca2a485705411aad8840c95b977bbb",
+      "row_count": null
+    }
+  ],
+  "fixed_filter": {
+    "path_scope_stratum": "all_publicly_visible",
+    "analysis_scope": "probe_country_service",
+    "auditable_paper_case": true
+  },
+  "dataset_family_measurement_ids": {
+    "DNS Roots": [
+      5001,
+      5004,
+      5005,
+      5006,
+      5008,
+      5009,
+      5010,
+      5011,
+      5012,
+      5013,
+      5014,
+      5015,
+      5016
+    ],
+    "Applications": [
+      86710103,
+      176517335,
+      176906957
+    ],
+    "Topology references": [
+      5051,
+      5151
+    ]
+  },
+  "interpretation": "Paper-primary country-measurement units use the fixed all_publicly_visible, probe_country_service, auditable filter. Top-2 and normalized-entropy summaries describe measurement-observed network-transition and feasible-corridor distributions, not traffic volume or ground-truth cable use.",
+  "warnings": [
+    "Historical core-analysis commit remains unknown when stage manifests do not record it.",
+    "A dirty generation worktree is recorded explicitly rather than attributed to generation_git_head."
+  ]
+}

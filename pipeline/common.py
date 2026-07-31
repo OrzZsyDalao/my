@@ -52,7 +52,7 @@ def write_json(path: Path, value: Dict[str, Any]) -> None:
 DEFAULT_EXPERIMENT_CONFIG: Dict[str, Any] = {
     "measurement_window": None,
     "landing_catchment_radius_km": 50.0,
-    "landing_region_radius_km": 50.0,
+    "landing_region_maximum_diameter_km": 50.0,
     "same_city_policy": "retain",
     "same_city_distance_threshold_km": 25.0,
     "timeout_gap_policy": "allow_timeout_bridged",

@@ -897,7 +897,7 @@ class CableMatcher:
         model = build_diameter_limited_landing_regions(
             coordinates=self.ls_geo,
             station_names=self.landing_station_names,
-            radius_km=self.landing_region_radius_km,
+            maximum_diameter_km=self.landing_region_maximum_diameter_km,
             overrides=self.landing_region_override,
         )
         self.landing_region_label_map.update(model.region_labels)
@@ -915,7 +915,7 @@ class CableMatcher:
         as_graph_precompute: Optional[Dict[str, Any]] = None,
         rtt_tolerance_ms: float = 5.0,
         landing_catchment_radius_km: float = 50.0,
-        landing_region_radius_km: float = 50.0,
+        landing_region_maximum_diameter_km: float = 50.0,
         landing_region_override: Optional[Dict[str, Dict[str, str]]] = None,
         landing_region_override_file: Optional[str] = None,
         cable_availability_mode: str = "confirmed_active_only",
@@ -932,7 +932,9 @@ class CableMatcher:
         self.as_graph_precompute = as_graph_precompute or {}
         self.rtt_tolerance_ms = float(rtt_tolerance_ms)
         self.landing_catchment_radius_km = float(landing_catchment_radius_km)
-        self.landing_region_radius_km = float(landing_region_radius_km)
+        self.landing_region_maximum_diameter_km = float(
+            landing_region_maximum_diameter_km
+        )
         self.landing_region_override = landing_region_override or {}
         self.landing_region_override_file = landing_region_override_file
         self.landing_region_label_map: Dict[str, str] = {}
@@ -1013,7 +1015,13 @@ class CableMatcher:
             "links_with_domestic_candidates": 0,
             "rtt_tolerance_ms": float(self.rtt_tolerance_ms),
             "landing_catchment_radius_km": float(self.landing_catchment_radius_km),
-            "landing_region_radius_km": float(self.landing_region_radius_km),
+            "landing_region_maximum_diameter_km": float(
+                self.landing_region_maximum_diameter_km
+            ),
+            # Deprecated compatibility alias.
+            "landing_region_radius_km": float(
+                self.landing_region_maximum_diameter_km
+            ),
             "same_city_policy": self.same_city_policy,
             "same_city_distance_threshold_km": self.same_city_distance_threshold_km,
             "cable_topology_policy": self.cable_topology_policy,
@@ -1876,7 +1884,13 @@ class CableMatcher:
                         "landing_region_entry_label": self.landing_region_label_map.get(region_a, region_a),
                         "landing_region_exit_label": self.landing_region_label_map.get(region_b, region_b),
                         "landing_region_method": landing_region_method,
-                        "landing_region_radius_km": float(self.landing_region_radius_km),
+                        "landing_region_maximum_diameter_km": float(
+                            self.landing_region_maximum_diameter_km
+                        ),
+                        # Deprecated compatibility alias.
+                        "landing_region_radius_km": float(
+                            self.landing_region_maximum_diameter_km
+                        ),
                         "parallel_group_id": parallel_group_id,
                         "parallel_group_size_metadata": len(segment_cables),
                         "parallel_group_size_after_lifecycle": lifecycle_surviving_by_exact_pair,
@@ -2302,10 +2316,16 @@ def parse_args() -> argparse.Namespace:
         help="Maximum hop-to-landing-station distance for feasibility candidate generation.",
     )
     parser.add_argument(
+        "--landing-region-maximum-diameter-km",
+        type=float,
+        default=None,
+        help="Maximum automatic landing-region diameter for corridor grouping.",
+    )
+    parser.add_argument(
         "--landing-region-radius-km",
         type=float,
-        default=50.0,
-        help="Maximum automatic landing-region diameter for corridor grouping.",
+        default=None,
+        help=argparse.SUPPRESS,
     )
     parser.add_argument(
         "--landing-region-override-file",
@@ -2355,7 +2375,29 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--run-id", default=None, help="Optional isolated experiment run identifier recorded in manifests.")
     parser.add_argument("--run-config-file", default=None, help="Optional JSON configuration fingerprint recorded in manifests.")
     parser.add_argument("--measurement-window", default=None, help="Optional ISO-8601 measurement window recorded in manifests.")
-    return parser.parse_args()
+    args = parser.parse_args()
+    new_value = args.landing_region_maximum_diameter_km
+    legacy_value = args.landing_region_radius_km
+    if (
+        new_value is not None
+        and legacy_value is not None
+        and not math.isclose(new_value, legacy_value)
+    ):
+        parser.error(
+            "--landing-region-maximum-diameter-km and deprecated "
+            "--landing-region-radius-km cannot specify different values"
+        )
+    if legacy_value is not None:
+        print(
+            "Warning: --landing-region-radius-km is deprecated; use "
+            "--landing-region-maximum-diameter-km."
+        )
+    args.landing_region_maximum_diameter_km = (
+        new_value if new_value is not None else legacy_value
+    )
+    if args.landing_region_maximum_diameter_km is None:
+        args.landing_region_maximum_diameter_km = 50.0
+    return args
 
 
 def main() -> None:
@@ -2390,7 +2432,9 @@ def main() -> None:
         as_graph_precompute=as_graph_precompute,
         rtt_tolerance_ms=args.rtt_tolerance_ms,
         landing_catchment_radius_km=args.landing_catchment_radius_km,
-        landing_region_radius_km=args.landing_region_radius_km,
+        landing_region_maximum_diameter_km=(
+            args.landing_region_maximum_diameter_km
+        ),
         landing_region_override=landing_region_override,
         landing_region_override_file=args.landing_region_override_file,
         cable_availability_mode=args.cable_availability_mode,
@@ -2716,7 +2760,13 @@ def main() -> None:
             trace_level_stats=trace_level_stats,
             matcher_config={
                 "landing_catchment_radius_km": args.landing_catchment_radius_km,
-                "landing_region_radius_km": args.landing_region_radius_km,
+                "landing_region_maximum_diameter_km": (
+                    args.landing_region_maximum_diameter_km
+                ),
+                # Deprecated compatibility alias.
+                "landing_region_radius_km": (
+                    args.landing_region_maximum_diameter_km
+                ),
                 "same_city_policy": args.same_city_policy,
                 "same_city_distance_threshold_km": args.same_city_distance_threshold_km,
                 "timeout_gap_policy": args.timeout_gap_policy,

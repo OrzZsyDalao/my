@@ -32,8 +32,8 @@ PEERINGDB_DESCRIPTOR_PATH = os.path.join(DEFAULT_OUTPUT, "country_peeringdb_desc
 DEFAULT_COUNTRY_GEOGRAPHY_CATALOG = os.path.join(BASE_DIR, "data", "country_geography_types.json")
 DEFAULT_CABLE_DIR = os.path.join(BASE_DIR, "data", "cable")
 DEFAULT_LANDING_GEO = os.path.join(DEFAULT_CABLE_DIR, "landing-point-geo.json")
-DEFAULT_LANDING_REGION_RADIUS_KM = 50.0
-POSTPROCESS_SCHEMA_VERSION = "postprocess_candidate_output_v3"
+DEFAULT_LANDING_REGION_MAXIMUM_DIAMETER_KM = 50.0
+POSTPROCESS_SCHEMA_VERSION = "postprocess_candidate_output_v4"
 DEFAULT_UNIT_FIELDS = ["probe_country", "service_id"]
 # Paper-primary relative target for the upper-bound mismatch view.
 TARGET_MISMATCH_CATEGORY = "network_high_physical_upper_low"
@@ -230,15 +230,45 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
-        "--landing-region-radius-km",
+        "--landing-region-maximum-diameter-km",
         type=float,
-        default=DEFAULT_LANDING_REGION_RADIUS_KM,
+        default=None,
         help=(
             "Maximum diameter used by the landing-region model during corridor "
             "remapping. The default preserves the 50 km paper-primary setting."
         ),
     )
-    return parser.parse_args()
+    parser.add_argument(
+        "--landing-region-radius-km",
+        type=float,
+        default=None,
+        help=argparse.SUPPRESS,
+    )
+    args = parser.parse_args()
+    new_value = args.landing_region_maximum_diameter_km
+    legacy_value = args.landing_region_radius_km
+    if (
+        new_value is not None
+        and legacy_value is not None
+        and not math.isclose(new_value, legacy_value)
+    ):
+        parser.error(
+            "--landing-region-maximum-diameter-km and deprecated "
+            "--landing-region-radius-km cannot specify different values"
+        )
+    if legacy_value is not None:
+        print(
+            "Warning: --landing-region-radius-km is deprecated; use "
+            "--landing-region-maximum-diameter-km."
+        )
+    args.landing_region_maximum_diameter_km = (
+        new_value if new_value is not None else legacy_value
+    )
+    if args.landing_region_maximum_diameter_km is None:
+        args.landing_region_maximum_diameter_km = (
+            DEFAULT_LANDING_REGION_MAXIMUM_DIAMETER_KM
+        )
+    return args
 
 
 def shannon_entropy(values: Iterable[float]) -> float:
@@ -497,14 +527,14 @@ def parse_exact_landing_pair(value: Any) -> Tuple[str, str] | None:
 
 
 def load_corrected_landing_region_model(
-    radius_km: float = DEFAULT_LANDING_REGION_RADIUS_KM,
+    maximum_diameter_km: float = DEFAULT_LANDING_REGION_MAXIMUM_DIAMETER_KM,
 ) -> LandingRegionModel:
     """Load the shared diameter-limited landing-region model."""
     coordinates, names = load_landing_station_geo(DEFAULT_LANDING_GEO)
     return build_diameter_limited_landing_regions(
         coordinates=coordinates,
         station_names=names,
-        radius_km=radius_km,
+        maximum_diameter_km=maximum_diameter_km,
     )
 
 
@@ -528,7 +558,11 @@ def remap_candidate_corridors(
     valid_pair_mask = parsed_pairs.notna()
     result["corridor_remap_applied"] = False
     result["corridor_clustering_method"] = model.clustering_method
-    result["corridor_clustering_radius_km"] = model.radius_km
+    result["corridor_clustering_maximum_diameter_km"] = (
+        model.maximum_diameter_km
+    )
+    # Deprecated compatibility alias.
+    result["corridor_clustering_radius_km"] = model.maximum_diameter_km
 
     for row_index in result.index[valid_pair_mask]:
         left, right = parsed_pairs.loc[row_index]
@@ -6474,7 +6508,7 @@ def build_method_manifest() -> Dict[str, Any]:
         "peeringdb_descriptor_note": "PeeringDB descriptors are external interconnection-footprint descriptors only and are not used for physical-candidate construction or candidate-support scoring",
         "segment_projection_note": "Traceroutes are decomposed into independently mappable path-transition segments; paper-facing service-country outputs are grouped by probe_country and service_id, while transition-country outputs are supplementary geography views",
         "corridor_observation_note": "Corridor observation concentration measures whether measurement-observed path-transition segments concentrate on a small number of feasible corridor candidates",
-        "landing_region_clustering": "diameter_limited_complete_link_greedy; every automatic region has diameter at most the configured radius",
+        "landing_region_clustering": "diameter_limited_complete_link_greedy; every automatic region has diameter at most the configured maximum diameter",
         "parallel_relationship_boundary": "strict means shared exact landing-station pair; corridor co-group means shared landing-region pair; neither proves route-level parallelism",
         "mapping_resolution_states": [
             "uniquely_resolved",
@@ -7408,7 +7442,7 @@ def main() -> None:
         feasible_frame,
     )
     landing_region_model = load_corrected_landing_region_model(
-        radius_km=args.landing_region_radius_km
+        maximum_diameter_km=args.landing_region_maximum_diameter_km
     )
     corridor_structure_report = write_corridor_structure_outputs(
         output_dir=args.output,
@@ -7671,6 +7705,13 @@ def main() -> None:
             encoding="utf-8-sig",
         )
         method_manifest = build_method_manifest()
+        method_manifest["landing_region_maximum_diameter_km"] = float(
+            args.landing_region_maximum_diameter_km
+        )
+        method_manifest["landing_region_radius_km"] = float(
+            args.landing_region_maximum_diameter_km
+        )
+        method_manifest["landing_region_radius_km_deprecated_alias"] = True
         framework_alignment_report = build_framework_alignment_report(
             trace_observation_frame,
             pd.DataFrame(),
@@ -8416,6 +8457,13 @@ def main() -> None:
     )
     network_metric_catalog = build_network_diversity_metric_catalog()
     method_manifest = build_method_manifest()
+    method_manifest["landing_region_maximum_diameter_km"] = float(
+        args.landing_region_maximum_diameter_km
+    )
+    method_manifest["landing_region_radius_km"] = float(
+        args.landing_region_maximum_diameter_km
+    )
+    method_manifest["landing_region_radius_km_deprecated_alias"] = True
     conservative_manifest = build_conservative_candidate_audit_manifest()
     framework_alignment_report = build_framework_alignment_report(
         trace_observation_frame,
