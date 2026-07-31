@@ -1368,6 +1368,8 @@ Top-2 中位数、归一化 corridor entropy、归一化 entropy reduction，以
 
 7 月 1 日时间窗口内的 18 个公开 RIPE Atlas measurement 已完成显式网络转换分布统计，便于检查的结果位于 `output/public_traceroute_by_msmid/`。
 
+- `results/july1_public_atlas_20260701/aggregate/all_measurements_cross_layer_normalized_entropy_audit.csv` 是 15 列论文核心聚合表，文件大小保持在 GitHub Contents API 的 1 MiB 内联限制以内。
+- `results/july1_public_atlas_20260701/aggregate/all_measurements_cross_layer_normalized_entropy_audit_full.csv` 保留完整 37 个审计字段；两张表包含完全相同的 measurement-unit 行。
 - 每个 measurement 目录包含 `country_network_transition_distribution.csv`、`service_country_network_transition_distribution.csv`、`network_corridor_segment_population_alignment.csv`，以及对应的 country/service 集中度汇总表。
 - 每个 measurement 目录同时包含 AS-boundary-only 分布和汇总，避免将同 AS hop pair 错误解释为跨 AS 收敛。
 - `all_measurements_network_transition_distribution_run_summary.csv` 汇总每个 measurement 的 segment 数、unit 数、归一化误差、fallback 数量和对齐失败数。

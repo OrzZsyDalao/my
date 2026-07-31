@@ -79,6 +79,24 @@ AGGREGATE_FILES = (
     "geography_type_candidate_dependency_summary.csv",
 )
 
+ENTROPY_COMPACT_COLUMNS = (
+    "msm_id",
+    "probe_country",
+    "service_id",
+    "path_scope_stratum",
+    "total_mappable_segments",
+    "network_transition_normalized_entropy",
+    "corridor_normalized_entropy",
+    "normalized_entropy_reduction",
+    "network_transition_concentration_tier",
+    "corridor_concentration_tier",
+    "cross_layer_distribution_class",
+    "country_fallback_share",
+    "auditable_paper_case",
+    "unique_probes",
+    "unique_probe_asns",
+)
+
 
 def parse_args() -> argparse.Namespace:
     """Parse source, destination, and file-size guard options."""
@@ -182,6 +200,46 @@ def combine_csvs(
         "source_file_count": source_file_count,
         "source_row_count": source_row_count,
         "aggregate_row_count": int(len(combined)),
+    }
+
+
+def write_compact_entropy_aggregate(
+    full_source: Path,
+    compact_destination: Path,
+) -> Dict[str, int]:
+    """Write an API-readable entropy table while preserving the full aggregate."""
+    full_frame = pd.read_csv(full_source, low_memory=False)
+    missing = [
+        column for column in ENTROPY_COMPACT_COLUMNS if column not in full_frame
+    ]
+    if missing:
+        raise RuntimeError(
+            "Cannot build compact normalized-entropy aggregate; missing columns: "
+            + ", ".join(missing)
+        )
+    compact = full_frame.loc[:, ENTROPY_COMPACT_COLUMNS].copy()
+    compact.to_csv(
+        compact_destination,
+        index=False,
+        encoding="utf-8-sig",
+        float_format="%.8g",
+        lineterminator="\n",
+    )
+    if len(compact) != len(full_frame):
+        raise RuntimeError("Compact entropy aggregate changed the aggregate row count.")
+    api_inline_limit = 1024 * 1024
+    compact_bytes = compact_destination.stat().st_size
+    if compact_bytes >= api_inline_limit:
+        raise RuntimeError(
+            "Compact entropy aggregate still exceeds the GitHub Contents API "
+            f"inline limit: {compact_bytes} bytes."
+        )
+    return {
+        "full_aggregate_row_count": int(len(full_frame)),
+        "compact_aggregate_row_count": int(len(compact)),
+        "compact_column_count": int(len(compact.columns)),
+        "compact_bytes": int(compact_bytes),
+        "github_contents_api_inline_limit_bytes": api_inline_limit,
     }
 
 
@@ -401,14 +459,20 @@ def main() -> None:
     aggregate_dir.mkdir(parents=True, exist_ok=True)
     aggregate_source_accounting: Dict[str, Dict[str, int]] = {}
     for filename in AGGREGATE_FILES:
-        output = aggregate_dir / f"all_measurements_{filename}"
+        is_entropy_aggregate = (
+            filename == "cross_layer_normalized_entropy_audit.csv"
+        )
+        output_name = (
+            "all_measurements_cross_layer_normalized_entropy_audit_full.csv"
+            if is_entropy_aggregate
+            else f"all_measurements_{filename}"
+        )
+        output = aggregate_dir / output_name
         aggregate_source_accounting[filename] = combine_csvs(
             measurements,
             filename,
             output,
-            require_all_nonempty=(
-                filename == "cross_layer_normalized_entropy_audit.csv"
-            ),
+            require_all_nonempty=is_entropy_aggregate,
         )
         copied.append(
             {
@@ -417,6 +481,21 @@ def main() -> None:
                 "sha256": sha256_file(output),
             }
         )
+        if is_entropy_aggregate:
+            compact_output = (
+                aggregate_dir
+                / "all_measurements_cross_layer_normalized_entropy_audit.csv"
+            )
+            aggregate_source_accounting[filename].update(
+                write_compact_entropy_aggregate(output, compact_output)
+            )
+            copied.append(
+                {
+                    "path": str(compact_output.relative_to(REPO_ROOT)),
+                    "bytes": compact_output.stat().st_size,
+                    "sha256": sha256_file(compact_output),
+                }
+            )
     deduplication_aggregate = (
         aggregate_dir
         / "all_measurements_candidate_row_deduplication_summary.csv"
@@ -434,7 +513,7 @@ def main() -> None:
     )
     entropy_aggregate = (
         aggregate_dir
-        / "all_measurements_cross_layer_normalized_entropy_audit.csv"
+        / "all_measurements_cross_layer_normalized_entropy_audit_full.csv"
     )
     entropy_cdf = (
         aggregate_dir

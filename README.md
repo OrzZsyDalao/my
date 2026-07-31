@@ -1355,6 +1355,8 @@ and records the setting count and baseline in `bundle_manifest.json`.
 
 The 18 public RIPE Atlas measurements from the July 1 window have been evaluated using the explicit network-transition distribution. The reviewable outputs are stored under `output/public_traceroute_by_msmid/`.
 
+- `results/july1_public_atlas_20260701/aggregate/all_measurements_cross_layer_normalized_entropy_audit.csv` is the paper-facing 15-column aggregate kept below the GitHub Contents API 1 MiB inline-content limit.
+- `results/july1_public_atlas_20260701/aggregate/all_measurements_cross_layer_normalized_entropy_audit_full.csv` preserves all 37 audit columns. Both files contain the same measurement-unit rows.
 - Each measurement directory contains `country_network_transition_distribution.csv`, `service_country_network_transition_distribution.csv`, `network_corridor_segment_population_alignment.csv`, and the corresponding country/service concentration summaries.
 - Each measurement directory also contains AS-boundary-only distributions and summaries so cross-AS convergence is not inferred from same-AS hop pairs.
 - `all_measurements_network_transition_distribution_run_summary.csv` records segment counts, unit counts, normalization errors, fallback counts, and alignment failures for every measurement.
