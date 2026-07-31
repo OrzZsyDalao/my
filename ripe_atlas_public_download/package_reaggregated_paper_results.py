@@ -218,6 +218,9 @@ def write_compact_entropy_aggregate(
             + ", ".join(missing)
         )
     compact = full_frame.loc[:, ENTROPY_COMPACT_COLUMNS].copy()
+    msm_ids = pd.to_numeric(compact["msm_id"], errors="coerce")
+    if msm_ids.notna().sum() == compact["msm_id"].notna().sum():
+        compact["msm_id"] = msm_ids.astype("Int64")
     compact.to_csv(
         compact_destination,
         index=False,

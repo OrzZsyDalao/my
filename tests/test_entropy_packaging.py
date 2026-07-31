@@ -20,7 +20,9 @@ def test_compact_entropy_aggregate_preserves_rows_and_stays_api_readable(
         rows.append(
             {
                 column: (
-                    float(index % 10) / 10
+                    176517335
+                    if column == "msm_id"
+                    else float(index % 10) / 10
                     if "entropy" in column or "share" in column
                     else f"value_{index % 7}"
                 )
@@ -34,6 +36,8 @@ def test_compact_entropy_aggregate_preserves_rows_and_stays_api_readable(
 
     assert len(compact) == len(rows)
     assert list(compact.columns) == list(ENTROPY_COMPACT_COLUMNS)
+    assert compact["msm_id"].astype(str).eq("176517335").all()
+    assert "1.765" not in compact_path.read_text(encoding="utf-8")
     assert compact_path.stat().st_size < 1024 * 1024
     assert accounting["compact_aggregate_row_count"] == len(rows)
 
