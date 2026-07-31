@@ -10,6 +10,7 @@ import os
 import re
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
@@ -67,6 +68,24 @@ def parse_args() -> argparse.Namespace:
         help=(
             "Reuse existing cable_matching_output.json, rebuild the atomic-segment "
             "inventory, and rerun post-processing without repeating candidate matching."
+        ),
+    )
+    parser.add_argument(
+        "--landing-region-maximum-diameter-km",
+        type=float,
+        default=30.0,
+        help=(
+            "Explicit landing-region maximum diameter passed to Stage 1 and "
+            "post-processing. The paper-primary default is 30 km."
+        ),
+    )
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=1,
+        help=(
+            "Number of measurements processed concurrently. Each worker launches "
+            "independent subprocesses; use a memory-safe value for large CSV inputs."
         ),
     )
     parser.add_argument(
@@ -247,9 +266,94 @@ def package_and_publish_results(dry_run: bool) -> None:
             raise RuntimeError(f"Result publishing command failed: {' '.join(command)}")
 
 
+def run_measurement(
+    record: Dict[str, Any],
+    args: argparse.Namespace,
+    output_root: Path,
+) -> Dict[str, Any]:
+    """Run one measurement and return its run-index row."""
+    output_dir = output_root / record["output_dir_name"]
+    print(f"Starting msm_id={record['msm_id']} label={record['label']}", flush=True)
+    if (
+        args.skip_existing
+        and not args.reaggregate_existing
+        and has_completed_pipeline_output(output_dir)
+    ):
+        print(f"  skipping existing output: {output_dir}", flush=True)
+        return build_summary_row(record, output_dir, "skipped_existing")
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    main_command = [
+        sys.executable,
+        "source/main_analysis.py",
+        "--traceroute-input",
+        str(record["input_file"]),
+        "--output-dir",
+        str(output_dir),
+        "--as-precompute-file",
+        str(Path(args.as_precompute_file).resolve()),
+        "--landing-region-maximum-diameter-km",
+        str(args.landing_region_maximum_diameter_km),
+    ]
+    postprocess_command = [
+        sys.executable,
+        "source/postprocess_candidate_output.py",
+        "--input",
+        str(output_dir / "cable_matching_output.json"),
+        "--output",
+        str(output_dir),
+        "--landing-region-maximum-diameter-km",
+        str(args.landing_region_maximum_diameter_km),
+    ]
+    inventory_command = [
+        sys.executable,
+        "source/build_atomic_segment_inventory.py",
+        "--traceroute-input",
+        str(record["input_file"]),
+        "--output-dir",
+        str(output_dir),
+    ]
+    robustness_command = [
+        sys.executable,
+        "source/robustness_compare.py",
+        "--input",
+        str(output_dir / "trace_candidate_support.csv"),
+        "--output",
+        str(output_dir),
+    ]
+
+    status = "completed"
+    if args.reaggregate_existing:
+        if not (output_dir / "cable_matching_output.json").exists():
+            raise FileNotFoundError(
+                f"Cannot reaggregate without existing candidate output: {output_dir}"
+            )
+        postprocess_command.append("--reuse-flattened-candidates")
+        commands = [inventory_command, postprocess_command]
+    else:
+        commands = [main_command, inventory_command, postprocess_command]
+    for command in commands:
+        return_code = run_command(command, REPO_DIR, args.dry_run)
+        if return_code != 0:
+            status = f"failed_{Path(command[1]).stem}"
+            break
+    if status == "completed" and not args.skip_robustness:
+        return_code = run_command(robustness_command, REPO_DIR, args.dry_run)
+        if return_code != 0:
+            status = "failed_robustness_compare"
+    if status != "completed":
+        raise RuntimeError(
+            f"Pipeline failed for msm_id={record['msm_id']} with status={status}"
+        )
+    print(f"Completed msm_id={record['msm_id']}", flush=True)
+    return build_summary_row(record, output_dir, status)
+
+
 def main() -> None:
     """Run per-measurement analysis jobs."""
     args = parse_args()
+    if args.workers < 1:
+        raise ValueError("--workers must be at least 1")
     input_dir = Path(args.input_dir).resolve()
     output_root = Path(args.output_root).resolve()
     records = discover_measurement_files(
@@ -262,77 +366,20 @@ def main() -> None:
 
     output_root.mkdir(parents=True, exist_ok=True)
     rows: List[Dict[str, Any]] = []
-    print(f"Discovered {len(records)} downloaded measurement files.")
+    print(
+        f"Discovered {len(records)} downloaded measurement files; "
+        f"workers={args.workers}."
+    )
 
-    for index, record in enumerate(records, start=1):
-        output_dir = output_root / record["output_dir_name"]
-        print(f"[{index}/{len(records)}] msm_id={record['msm_id']} label={record['label']}")
-        if args.skip_existing and not args.reaggregate_existing and has_completed_pipeline_output(output_dir):
-            print(f"  skipping existing output: {output_dir}")
-            rows.append(build_summary_row(record, output_dir, "skipped_existing"))
+    with ThreadPoolExecutor(max_workers=args.workers) as executor:
+        future_to_record = {
+            executor.submit(run_measurement, record, args, output_root): record
+            for record in records
+        }
+        for future in as_completed(future_to_record):
+            rows.append(future.result())
+            rows.sort(key=lambda row: int(row["msm_id"]))
             write_run_index(output_root, rows)
-            continue
-
-        output_dir.mkdir(parents=True, exist_ok=True)
-        main_command = [
-            sys.executable,
-            "source/main_analysis.py",
-            "--traceroute-input",
-            str(record["input_file"]),
-            "--output-dir",
-            str(output_dir),
-            "--as-precompute-file",
-            str(Path(args.as_precompute_file).resolve()),
-        ]
-        postprocess_command = [
-            sys.executable,
-            "source/postprocess_candidate_output.py",
-            "--input",
-            str(output_dir / "cable_matching_output.json"),
-            "--output",
-            str(output_dir),
-        ]
-        inventory_command = [
-            sys.executable,
-            "source/build_atomic_segment_inventory.py",
-            "--traceroute-input",
-            str(record["input_file"]),
-            "--output-dir",
-            str(output_dir),
-        ]
-        robustness_command = [
-            sys.executable,
-            "source/robustness_compare.py",
-            "--input",
-            str(output_dir / "trace_candidate_support.csv"),
-            "--output",
-            str(output_dir),
-        ]
-
-        status = "completed"
-        if args.reaggregate_existing:
-            if not (output_dir / "cable_matching_output.json").exists():
-                raise FileNotFoundError(
-                    f"Cannot reaggregate without existing candidate output: {output_dir}"
-                )
-            postprocess_command.append("--reuse-flattened-candidates")
-            commands = [inventory_command, postprocess_command]
-        else:
-            commands = [main_command, inventory_command, postprocess_command]
-        for command in commands:
-            return_code = run_command(command, REPO_DIR, args.dry_run)
-            if return_code != 0:
-                status = f"failed_{Path(command[1]).stem}"
-                break
-        if status == "completed" and not args.skip_robustness:
-            return_code = run_command(robustness_command, REPO_DIR, args.dry_run)
-            if return_code != 0:
-                status = "failed_robustness_compare"
-
-        rows.append(build_summary_row(record, output_dir, status))
-        write_run_index(output_root, rows)
-        if status != "completed":
-            raise RuntimeError(f"Pipeline failed for msm_id={record['msm_id']} with status={status}")
 
     print(f"Per-measurement run index written under {output_root}")
     if args.publish_paper_results:

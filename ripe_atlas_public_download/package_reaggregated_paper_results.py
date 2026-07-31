@@ -738,6 +738,10 @@ def main() -> None:
     identity_versions = {
         item.get("identity_schema_version") for item in method_manifests
     }
+    landing_region_diameters = {
+        item.get("landing_region_maximum_diameter_km")
+        for item in method_manifests
+    }
     if len(postprocess_versions) != 1 or None in postprocess_versions:
         raise RuntimeError(
             f"Inconsistent postprocess schema versions: {postprocess_versions}"
@@ -746,8 +750,28 @@ def main() -> None:
         raise RuntimeError(
             f"Inconsistent identity schema versions: {identity_versions}"
         )
+    if (
+        len(landing_region_diameters) != 1
+        or None in landing_region_diameters
+    ):
+        raise RuntimeError(
+            "All 18 measurements must use one explicit landing-region maximum "
+            f"diameter before packaging: {landing_region_diameters}"
+        )
+    landing_region_diameter_km = float(next(iter(landing_region_diameters)))
+    if abs(landing_region_diameter_km - 30.0) > 1e-9:
+        raise RuntimeError(
+            "Paper-primary packaging requires the locked 30 km landing-region "
+            f"diameter, observed {landing_region_diameter_km:g} km."
+        )
     manifest["postprocess_schema_version"] = next(iter(postprocess_versions))
     manifest["identity_schema_version"] = next(iter(identity_versions))
+    manifest["landing_region_maximum_diameter_km"] = (
+        landing_region_diameter_km
+    )
+    manifest["paper_primary_landing_region_maximum_diameter_km"] = (
+        landing_region_diameter_km
+    )
     manifest["core_analysis_commit"] = inherited_commit(
         method_manifests,
         ["core_analysis_commit", "git_commit", "git_commit_sha"],
