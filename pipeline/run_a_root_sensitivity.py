@@ -177,6 +177,141 @@ def classification_agreement(
     )
 
 
+def load_projection_diagnostics(output_dir: Path) -> Dict[str, Any]:
+    """Load global and observed physical structures for one sensitivity setting."""
+    landing_regions = pd.read_csv(
+        output_dir / "landing_region_catalog.csv",
+        usecols=["landing_region_id"],
+    )
+    corridors = pd.read_csv(
+        output_dir / "corridor_catalog.csv",
+        usecols=["corridor_id"],
+    )
+    required_columns = {
+        "atomic_segment_id",
+        "link_id",
+        "corridor_id",
+        "landing_region_entry_id",
+        "landing_region_exit_id",
+        "candidate_scope",
+        "is_inter_region_candidate",
+    }
+    feasible = pd.read_csv(
+        output_dir / "trace_feasible_candidate_space.csv",
+        usecols=lambda column: column in required_columns,
+        low_memory=False,
+    )
+    if "is_inter_region_candidate" in feasible:
+        inter_region = feasible["is_inter_region_candidate"]
+        if inter_region.dtype != bool:
+            inter_region = (
+                inter_region.astype(str).str.strip().str.lower().eq("true")
+            )
+    else:
+        inter_region = feasible.get(
+            "candidate_scope",
+            pd.Series(index=feasible.index, dtype=object),
+        ).isin(["international_inter_region", "domestic_inter_region"])
+    observed = feasible.loc[inter_region].copy()
+    segment_column = (
+        "atomic_segment_id" if "atomic_segment_id" in observed else "link_id"
+    )
+    observed = observed.dropna(subset=[segment_column, "corridor_id"])
+    observed[segment_column] = observed[segment_column].astype(str)
+    observed["corridor_id"] = observed["corridor_id"].astype(str)
+    segment_corridor_sets = {
+        str(segment_id): frozenset(group["corridor_id"].unique())
+        for segment_id, group in observed.groupby(segment_column, sort=False)
+    }
+    incidence = {
+        (segment_id, corridor_id)
+        for segment_id, corridor_set in segment_corridor_sets.items()
+        for corridor_id in corridor_set
+    }
+    observed_region_ids = set()
+    for column in ["landing_region_entry_id", "landing_region_exit_id"]:
+        if column in observed:
+            observed_region_ids.update(
+                observed[column]
+                .dropna()
+                .astype(str)
+                .loc[lambda values: ~values.isin(["", "nan", "NA"])]
+            )
+    return {
+        "global_landing_region_count": int(
+            landing_regions["landing_region_id"].dropna().astype(str).nunique()
+        ),
+        "observed_landing_region_count": int(len(observed_region_ids)),
+        "global_corridor_count": int(
+            corridors["corridor_id"].dropna().astype(str).nunique()
+        ),
+        "observed_corridor_count": int(
+            observed["corridor_id"].dropna().astype(str).nunique()
+        ),
+        "segment_corridor_sets": segment_corridor_sets,
+        "segment_corridor_incidence": incidence,
+    }
+
+
+def compare_projection_diagnostics(
+    current: Dict[str, Any],
+    baseline: Dict[str, Any],
+) -> Dict[str, Any]:
+    """Compare one setting's segment-corridor candidate sets with the baseline."""
+    current_incidence = current["segment_corridor_incidence"]
+    baseline_incidence = baseline["segment_corridor_incidence"]
+    union = current_incidence | baseline_incidence
+    jaccard = (
+        len(current_incidence & baseline_incidence) / len(union)
+        if union
+        else np.nan
+    )
+    current_sets = current["segment_corridor_sets"]
+    baseline_sets = baseline["segment_corridor_sets"]
+    all_segments = set(current_sets) | set(baseline_sets)
+    changed = sum(
+        current_sets.get(segment_id, frozenset())
+        != baseline_sets.get(segment_id, frozenset())
+        for segment_id in all_segments
+    )
+    return {
+        "segment_corridor_set_jaccard_with_baseline": float(jaccard),
+        "segments_with_changed_corridor_set": int(changed),
+    }
+
+
+def auditable_unit_keys(frame: pd.DataFrame) -> set[tuple[str, ...]]:
+    """Return stable paper-auditable country-service/path-scope unit keys."""
+    if frame.empty:
+        return set()
+    key_columns = [
+        column
+        for column in ["probe_country", "service_id", "path_scope_stratum"]
+        if column in frame
+    ]
+    return {
+        tuple(str(value) for value in row)
+        for row in frame[key_columns].drop_duplicates().itertuples(
+            index=False,
+            name=None,
+        )
+    }
+
+
+def compare_auditable_units(
+    current: pd.DataFrame,
+    baseline: pd.DataFrame,
+) -> Dict[str, int]:
+    """Count shared, newly included, and excluded auditable units."""
+    current_units = auditable_unit_keys(current)
+    baseline_units = auditable_unit_keys(baseline)
+    return {
+        "shared_auditable_unit_count": int(len(current_units & baseline_units)),
+        "newly_included_units": int(len(current_units - baseline_units)),
+        "excluded_units": int(len(baseline_units - current_units)),
+    }
+
+
 def main() -> None:
     """Run missing settings and write the paper-facing sensitivity summary."""
     args = parse_args()
@@ -229,6 +364,8 @@ def main() -> None:
                 str(output_dir / "cable_matching_output.json"),
                 "--output",
                 str(output_dir),
+                "--landing-region-radius-km",
+                str(diameter),
             ],
             args.dry_run,
         )
@@ -237,6 +374,7 @@ def main() -> None:
         return
     rows: list[Dict[str, Any]] = []
     classifications: Dict[tuple[int, int, int], pd.DataFrame] = {}
+    projection_diagnostics: Dict[tuple[int, int, int], Dict[str, Any]] = {}
     for catchment, diameter, rtt in settings:
         output_dir = output_root / setting_name(catchment, diameter, rtt)
         row, classification = load_setting_summary(
@@ -245,9 +383,24 @@ def main() -> None:
             diameter,
             rtt,
         )
+        diagnostics = load_projection_diagnostics(output_dir)
+        row.update(
+            {
+                key: diagnostics[key]
+                for key in [
+                    "global_landing_region_count",
+                    "observed_landing_region_count",
+                    "global_corridor_count",
+                    "observed_corridor_count",
+                ]
+            }
+        )
+        setting_key = (catchment, diameter, rtt)
         rows.append(row)
-        classifications[(catchment, diameter, rtt)] = classification
+        classifications[setting_key] = classification
+        projection_diagnostics[setting_key] = diagnostics
     baseline = classifications[BASELINE]
+    baseline_projection = projection_diagnostics[BASELINE]
     for row in rows:
         key = (
             int(row["landing_catchment_radius_km"]),
@@ -258,6 +411,13 @@ def main() -> None:
             classifications[key],
             baseline,
         )
+        row.update(
+            compare_projection_diagnostics(
+                projection_diagnostics[key],
+                baseline_projection,
+            )
+        )
+        row.update(compare_auditable_units(classifications[key], baseline))
     pd.DataFrame(rows).to_csv(
         output_root / "a_root_sensitivity_summary.csv",
         index=False,

@@ -1344,6 +1344,11 @@ maximum diameter `30/50/75 km`, and RTT tolerance `0/5/10 ms`. It writes
 candidate-bearing segments, unique/bounded shares, auditable units, median
 Top-2 corridor share, normalized corridor entropy, normalized entropy
 reduction, and classification agreement against the `50/50/5` baseline.
+It also reports global/observed landing-region and corridor counts,
+segment-corridor incidence Jaccard, changed segment candidate sets, and
+auditable-unit inclusion/exclusion relative to the baseline. Identical
+paper-facing medians alone must not be interpreted as complete robustness to
+landing-region diameter.
 When the 27-row summary is available, the compact publication packager also
 copies it to
 `results/july1_public_atlas_20260701/sensitivity/a_root_sensitivity_summary.csv`

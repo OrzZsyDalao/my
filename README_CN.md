@@ -1358,6 +1358,10 @@ diameter `30/50/75 km` 和 RTT tolerance `0/5/10 ms`。输出
 candidate-bearing segments、unique/bounded 比例、可审计单元数、corridor
 Top-2 中位数、归一化 corridor entropy、归一化 entropy reduction，以及相对
 `50/50/5` 基线的分类一致率。
+汇总同时报告全局/观测 landing-region 与 corridor 数、segment-corridor
+incidence Jaccard、候选 corridor 集合发生变化的 segment 数，以及相对基线的
+可审计 unit 新增/排除情况。不能仅依据论文汇总指标相同就宣称对
+landing-region diameter 完全鲁棒。
 当该 27 行汇总存在时，紧凑论文结果打包器还会将其复制到
 `results/july1_public_atlas_20260701/sensitivity/a_root_sensitivity_summary.csv`，
 并在 `bundle_manifest.json` 中记录参数组合数量和基线组合。

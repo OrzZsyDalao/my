@@ -229,6 +229,15 @@ def parse_args() -> argparse.Namespace:
             "from the output directory, then recompute corridor and aggregate outputs."
         ),
     )
+    parser.add_argument(
+        "--landing-region-radius-km",
+        type=float,
+        default=DEFAULT_LANDING_REGION_RADIUS_KM,
+        help=(
+            "Maximum diameter used by the landing-region model during corridor "
+            "remapping. The default preserves the 50 km paper-primary setting."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -7398,7 +7407,9 @@ def main() -> None:
         atomic_segment_inventory,
         feasible_frame,
     )
-    landing_region_model = load_corrected_landing_region_model()
+    landing_region_model = load_corrected_landing_region_model(
+        radius_km=args.landing_region_radius_km
+    )
     corridor_structure_report = write_corridor_structure_outputs(
         output_dir=args.output,
         model=landing_region_model,
