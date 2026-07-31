@@ -1,6 +1,6 @@
 {
   "method_name": "application_network_corridor_distribution_audit",
-  "postprocess_schema_version": "postprocess_candidate_output_v3",
+  "postprocess_schema_version": "postprocess_candidate_output_v4",
   "identity_schema_version": "observation_identity_v1",
   "main_question": "whether application-visible network-transition diversity remains broad after projection onto feasible submarine-cable corridors",
   "claim_boundary": "feasible corridor support and observation concentration, not ground-truth cable attribution",
@@ -16,7 +16,7 @@
   "peeringdb_descriptor_note": "PeeringDB descriptors are external interconnection-footprint descriptors only and are not used for physical-candidate construction or candidate-support scoring",
   "segment_projection_note": "Traceroutes are decomposed into independently mappable path-transition segments; paper-facing service-country outputs are grouped by probe_country and service_id, while transition-country outputs are supplementary geography views",
   "corridor_observation_note": "Corridor observation concentration measures whether measurement-observed path-transition segments concentrate on a small number of feasible corridor candidates",
-  "landing_region_clustering": "diameter_limited_complete_link_greedy; every automatic region has diameter at most the configured radius",
+  "landing_region_clustering": "diameter_limited_complete_link_greedy; every automatic region has diameter at most the configured maximum diameter",
   "parallel_relationship_boundary": "strict means shared exact landing-station pair; corridor co-group means shared landing-region pair; neither proves route-level parallelism",
   "mapping_resolution_states": [
     "uniquely_resolved",
@@ -141,5 +141,8 @@
     "application_observation_supplementary",
     "combined_supplementary"
   ],
-  "interpretation": "application-visible path-transition observations projected onto feasible corridor groups with ambiguity preserved"
+  "interpretation": "application-visible path-transition observations projected onto feasible corridor groups with ambiguity preserved",
+  "landing_region_maximum_diameter_km": 30.0,
+  "landing_region_radius_km": 30.0,
+  "landing_region_radius_km_deprecated_alias": true
 }

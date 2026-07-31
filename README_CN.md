@@ -1407,6 +1407,21 @@ GitHub 的紧凑汇总写入
 - `hop_pair_as_class` 将 hop pair 分为 `cross_as_transition`、`intra_as_hop_pair` 和 `country_fallback`。同 AS hop pair 继续保留在完整同分母视图中，但不会进入 AS-boundary-only 视图。
 - `-1`、`0`、`NA`、`unknown` 等 ASN sentinel 会作为缺失值进入显式 country fallback；该规则只属于后处理语义，不修改 IP-to-AS 解析逻辑。
 
+### 当前 30 km 全量论文主结果包
+
+7 月 1 日的 18 个 measurement 已按锁定的 30 km landing-region 最大直径完成
+全量重聚合。每个 measurement 的 `method_manifest.json` 均记录
+`landing_region_maximum_diameter_km = 30.0`、
+`postprocess_candidate_output_v4` 和 `observation_identity_v1`。结果包 manifest
+记录生成代码提交 `08fd387`，并会拒绝混合直径或非 30 km 的 measurement 输入。
+
+固定论文口径（`all_publicly_visible`、`probe_country_service`、
+`auditable_paper_case == True`）目前包含 370 个单位：DNS Root 222 个、应用服务
+53 个、拓扑基线 95 个。`network_broad_physical_concentrated` 类在服务侧为
+81/275（29.45%），在拓扑基线中为 4/95（4.21%）。这些数字正式替代旧 50 km
+版本的 295 个总单位、服务侧 112/212 和拓扑基线 3/83；旧数字不得作为
+30 km 结果写入论文。
+
 ### 7 月 1 日网络转换结果包
 
 7 月 1 日时间窗口内的 18 个公开 RIPE Atlas measurement 已完成显式网络转换分布统计，便于检查的结果位于 `output/public_traceroute_by_msmid/`。

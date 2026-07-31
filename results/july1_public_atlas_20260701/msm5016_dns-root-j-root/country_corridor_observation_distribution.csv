@@ -6,151 +6,227 @@ AU,landing_region_3996aeca3c5e::landing_region_58084817cbe7,"Perth, WA, Australi
 AU,landing_region_3996aeca3c5e::landing_region_b204db5c9fda,"Perth, WA, Australia -> Adelaide, SA, Australia",26.0,26,26,26,13,3,109,41,0.10483870967741936,3,False,False,True,26.0,0.0
 AU,landing_region_58084817cbe7::landing_region_b204db5c9fda,"Paddington, NSW, Australia -> Adelaide, SA, Australia",4.0,4,4,4,3,3,109,41,0.016129032258064516,4,False,False,False,4.0,0.0
 AU,landing_region_58084817cbe7::landing_region_bc6c664daa8f,"Paddington, NSW, Australia -> Alupang, Guam",2.0,2,2,2,1,1,109,41,0.008064516129032258,5,False,False,False,0.0,2.0
-AU,landing_region_3996aeca3c5e::landing_region_d0ecf913edd7,"Perth, WA, Australia -> Katong, Singapore",1.0,1,1,1,1,1,109,41,0.004032258064516129,6,False,False,False,0.0,1.0
-AX,landing_region_3eb4f4d89687::landing_region_71db3ba08a92,"Hamnäs, Finland -> Stockholm, Sweden",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
-BH,landing_region_445416594174::landing_region_fab792fddadd,"Amwaj Island, Bahrain -> Kuwait City, Kuwait",1.0,1,1,1,1,1,1,1,1.0,1,True,False,False,0.0,1.0
-BJ,landing_region_8afa8229a8fd::landing_region_c88b92706e9c,"Cotonou, Benin -> Seixal, Portugal",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
+AU,landing_region_3996aeca3c5e::landing_region_5d023e72c246,"Perth, WA, Australia -> Singapore, Singapore",0.5,1,1,1,1,1,109,41,0.0020161290322580645,6,False,False,False,0.0,0.5
+AU,landing_region_3996aeca3c5e::landing_region_af2b1cb46785,"Perth, WA, Australia -> Tuas, Singapore",0.5,1,1,1,1,1,109,41,0.0020161290322580645,7,False,False,False,0.0,0.5
+AX,landing_region_3c99e4792a25::landing_region_3eb4f4d89687,"Stavsnas, Sweden -> Hamnäs, Finland",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
+BH,landing_region_05a5445633a9::landing_region_ca49ab31c10b,"Al Khobar, Saudi Arabia -> Amwaj Island, Bahrain",6.0,6,6,4,2,2,3,3,0.8571428571428571,1,True,False,False,6.0,0.0
+BH,landing_region_05a5445633a9::landing_region_fab792fddadd,"Al Khobar, Saudi Arabia -> Kuwait City, Kuwait",0.5,1,1,1,1,1,3,3,0.07142857142857142,2,False,True,False,0.0,0.5
+BH,landing_region_ca49ab31c10b::landing_region_fab792fddadd,"Amwaj Island, Bahrain -> Kuwait City, Kuwait",0.5,1,1,1,1,1,3,3,0.07142857142857142,3,False,False,True,0.0,0.5
+BJ,landing_region_343850da3642::landing_region_8afa8229a8fd,"Carcavelos, Portugal -> Cotonou, Benin",1.0,2,2,2,1,1,1,1,0.5,1,True,False,False,0.0,1.0
+BJ,landing_region_8afa8229a8fd::landing_region_f7627feb3284,"Cotonou, Benin -> Seixal, Portugal",1.0,2,2,2,1,1,1,1,0.5,2,False,True,False,0.0,1.0
 BR,landing_region_38c81e7bfa6f::landing_region_7f124bf07cd8,"Porto Alegre, Brazil -> Rio de Janeiro, Brazil",1.0,1,1,1,1,1,1,1,1.0,1,True,False,False,1.0,0.0
-CA,landing_region_19da5dac2df8::landing_region_94c53aa4a6d7,"Eastbourne, BC, Canada -> Vancouver, BC, Canada",160.2,165,165,88,46,12,58,16,0.6307086614173227,1,True,False,False,152.2,8.0
-CA,landing_region_5f578929a68a::landing_region_94c53aa4a6d7,"Harbour Pointe, WA, United States -> Vancouver, BC, Canada",81.0,81,81,81,42,6,58,16,0.3188976377952756,2,False,True,False,0.0,81.0
+CA,landing_region_82a1b23200f3::landing_region_c94f4fef1bdd,"Snug Cove, BC, Canada -> Gambier Harbour, BC, Canada",160.2,165,165,88,46,12,58,16,0.6307086614173227,1,True,False,False,152.2,8.0
+CA,landing_region_b451e83206f9::landing_region_d026f3e5a07d,"Lynnwood, WA, United States -> Point Roberts, WA, United States",81.0,81,81,81,42,6,58,16,0.3188976377952756,2,False,True,False,0.0,81.0
 CA,landing_region_ad2e1f237edf::landing_region_df3d1db01d0e,"Buffalo, NY, United States -> Toronto, ON, Canada",8.0,8,8,8,4,3,58,16,0.031496062992125984,3,False,False,True,0.0,8.0
-CA,landing_region_19da5dac2df8::landing_region_4da2bf713882,"Eastbourne, BC, Canada -> Bowser, BC, Canada",1.2000000000000002,6,6,6,3,1,58,16,0.0047244094488188984,4,False,False,False,1.2000000000000002,0.0
-CA,landing_region_19da5dac2df8::landing_region_70abce74b352,"Eastbourne, BC, Canada -> Snaw-naw-as, BC, Canada",1.2000000000000002,6,6,6,3,1,58,16,0.0047244094488188984,5,False,False,False,1.2000000000000002,0.0
-CA,landing_region_4da2bf713882::landing_region_94c53aa4a6d7,"Bowser, BC, Canada -> Vancouver, BC, Canada",1.2000000000000002,6,6,6,3,1,58,16,0.0047244094488188984,6,False,False,False,1.2000000000000002,0.0
-CA,landing_region_70abce74b352::landing_region_94c53aa4a6d7,"Snaw-naw-as, BC, Canada -> Vancouver, BC, Canada",1.2000000000000002,6,6,6,3,1,58,16,0.0047244094488188984,7,False,False,False,1.2000000000000002,0.0
-CN,landing_region_271ad44782a4::landing_region_319252418c1f,"Chongming, China -> Deep Water Bay, China",4.0,4,4,4,2,1,2,1,1.0,1,True,False,False,4.0,0.0
+CA,landing_region_70abce74b352::landing_region_82a1b23200f3,"Snaw-naw-as, BC, Canada -> Snug Cove, BC, Canada",1.2000000000000002,6,6,6,3,1,58,16,0.0047244094488188984,4,False,False,False,1.2000000000000002,0.0
+CA,landing_region_70abce74b352::landing_region_c94f4fef1bdd,"Snaw-naw-as, BC, Canada -> Gambier Harbour, BC, Canada",1.2000000000000002,6,6,6,3,1,58,16,0.0047244094488188984,5,False,False,False,1.2000000000000002,0.0
+CA,landing_region_82a1b23200f3::landing_region_9c356a93ed34,"Snug Cove, BC, Canada -> Qualicum Beach, BC, Canada",1.2000000000000002,6,6,6,3,1,58,16,0.0047244094488188984,6,False,False,False,1.2000000000000002,0.0
+CA,landing_region_9c356a93ed34::landing_region_c94f4fef1bdd,"Qualicum Beach, BC, Canada -> Gambier Harbour, BC, Canada",1.2000000000000002,6,6,6,3,1,58,16,0.0047244094488188984,7,False,False,False,1.2000000000000002,0.0
+CN,landing_region_271ad44782a4::landing_region_7a7da5f2aeb1,"Chongming, China -> Lantau Island, China",2.0,4,4,4,2,1,2,1,0.5,1,True,False,False,2.0,0.0
+CN,landing_region_271ad44782a4::landing_region_85e39fb7d29e,"Chongming, China -> Chai Wan, China",2.0,4,4,4,2,1,2,1,0.5,2,False,True,False,2.0,0.0
 CO,landing_region_61312bef9df1::landing_region_83c1ffe3b901,"Cartagena, Colombia -> Mahuma, Curaçao",5.0,5,5,5,3,2,6,4,0.45454545454545453,1,True,False,False,0.0,5.0
-CO,landing_region_0c894d5ef6d3::landing_region_61312bef9df1,"Dania Beach, FL, United States -> Cartagena, Colombia",4.0,4,4,4,3,2,6,4,0.36363636363636365,2,False,True,False,0.0,4.0
-CO,landing_region_0c894d5ef6d3::landing_region_af49038972b6,"Dania Beach, FL, United States -> Barranquilla, Colombia",2.0,2,2,2,1,1,6,4,0.18181818181818182,3,False,False,True,0.0,2.0
-CV,landing_region_0e3c71b8e5bb::landing_region_dffdb65405f5,"Vila do Maio, Cape Verde -> Tarrafal de Santiago, Cape Verde",6.0,6,6,2,1,1,1,1,1.0,1,True,False,False,6.0,0.0
-CW,landing_region_0c894d5ef6d3::landing_region_83c1ffe3b901,"Dania Beach, FL, United States -> Mahuma, Curaçao",12.0,12,12,12,7,7,7,7,1.0,1,True,False,False,0.0,12.0
+CO,landing_region_61312bef9df1::landing_region_bd03623e84bf,"Cartagena, Colombia -> Hollywood, FL, United States",4.0,4,4,4,3,2,6,4,0.36363636363636365,2,False,True,False,0.0,4.0
+CO,landing_region_a7a807763bb3::landing_region_bd03623e84bf,"Puerto Colombia, Colombia -> Hollywood, FL, United States",2.0,2,2,2,1,1,6,4,0.18181818181818182,3,False,False,True,0.0,2.0
+CV,landing_region_1ad4dd854de2::landing_region_d02d22941d60,"Praia, Cape Verde -> Vila do Maio, Cape Verde",2.0,6,6,2,1,1,1,1,0.3333333333333333,1,True,False,False,2.0,0.0
+CV,landing_region_1ad4dd854de2::landing_region_dffdb65405f5,"Praia, Cape Verde -> Tarrafal de Santiago, Cape Verde",2.0,6,6,2,1,1,1,1,0.3333333333333333,2,False,True,False,2.0,0.0
+CV,landing_region_d02d22941d60::landing_region_dffdb65405f5,"Vila do Maio, Cape Verde -> Tarrafal de Santiago, Cape Verde",2.0,6,6,2,1,1,1,1,0.3333333333333333,3,False,False,True,2.0,0.0
+CW,landing_region_83c1ffe3b901::landing_region_bd03623e84bf,"Mahuma, Curaçao -> Hollywood, FL, United States",12.0,12,12,12,7,7,7,7,1.0,1,True,False,False,0.0,12.0
 CY,landing_region_08ea81d123b5::landing_region_3e7b4a85e943,"Marseille, France -> Pentaskhinos, Cyprus",6.0,6,6,6,4,2,4,2,1.0,1,True,False,False,0.0,6.0
-DK,landing_region_1ce0b85cd8b9::landing_region_e1a72a298b9d,"Uto, Sweden -> Dragor, Denmark",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
-DO,landing_region_0c894d5ef6d3::landing_region_bf457e1b83fe,"Dania Beach, FL, United States -> Haina, Dominican Republic",3.0,3,3,3,2,2,2,2,1.0,1,True,False,False,0.0,3.0
-EE,landing_region_5631d1801aee::landing_region_71db3ba08a92,"Tallinn, Estonia -> Stockholm, Sweden",17.0,17,17,17,9,6,13,8,0.68,1,True,False,False,0.0,17.0
-EE,landing_region_5631d1801aee::landing_region_65aa8d7cf62e,"Tallinn, Estonia -> Espoo, Finland",8.0,8,8,8,4,2,13,8,0.32,2,False,True,False,0.0,8.0
-ES,landing_region_08ea81d123b5::landing_region_8eb611963dd1,"Marseille, France -> Barcelona, Spain",15.0,15,15,15,9,3,15,6,0.6521739130434783,1,True,False,False,0.0,15.0
-ES,landing_region_1159954a018c::landing_region_1a00bf1d418e,"Brean, United Kingdom -> Bilbao, Spain",4.0,4,4,4,3,2,15,6,0.17391304347826086,2,False,True,False,0.0,4.0
-ES,landing_region_e7d55bab279f::landing_region_ea21c9a3a42e,"Güimar, Canary Islands, Spain -> San Sebastian de la Gomera, Canary Islands, Spain",3.0,3,3,3,2,1,15,6,0.13043478260869565,3,False,False,True,3.0,0.0
-ES,landing_region_35d73cfecdc8::landing_region_8eb611963dd1,"Palma, Spain -> Barcelona, Spain",1.0,1,1,1,1,1,15,6,0.043478260869565216,4,False,False,False,1.0,0.0
+DK,landing_region_d073d559153a::landing_region_e2b0cd002b0c,"Bunkeflostand, Sweden -> Tuborg, Denmark",542.0,542,542,157,78,29,79,30,0.9963235294117647,1,True,False,False,536.0,6.0
+DK,landing_region_1ce0b85cd8b9::landing_region_d073d559153a,"Uto, Sweden -> Bunkeflostand, Sweden",1.0,2,2,2,1,1,79,30,0.001838235294117647,2,False,True,False,0.0,1.0
+DK,landing_region_1ce0b85cd8b9::landing_region_e2b0cd002b0c,"Uto, Sweden -> Tuborg, Denmark",1.0,2,2,2,1,1,79,30,0.001838235294117647,3,False,False,True,0.0,1.0
+DO,landing_region_bc2d670b199a::landing_region_bd03623e84bf,"Santo Domingo, Dominican Republic -> Hollywood, FL, United States",3.0,3,3,3,2,2,2,2,1.0,1,True,False,False,0.0,3.0
+EE,landing_region_3c99e4792a25::landing_region_5631d1801aee,"Stavsnas, Sweden -> Tallinn, Estonia",8.5,17,17,17,9,6,13,8,0.34,1,True,False,False,0.0,8.5
+EE,landing_region_5631d1801aee::landing_region_c607af4095db,"Tallinn, Estonia -> Kista, Sweden",8.5,17,17,17,9,6,13,8,0.34,2,False,True,False,0.0,8.5
+EE,landing_region_5631d1801aee::landing_region_65aa8d7cf62e,"Tallinn, Estonia -> Espoo, Finland",8.0,8,8,8,4,2,13,8,0.32,3,False,False,True,0.0,8.0
+ES,landing_region_08ea81d123b5::landing_region_8eb611963dd1,"Marseille, France -> Barcelona, Spain",15.0,15,15,15,9,3,18,7,0.5357142857142857,1,True,False,False,0.0,15.0
+ES,landing_region_16498428a563::landing_region_f2fd1754176a,"Telde, Spain -> Sardina, Canary Islands, Spain",5.0,5,5,5,3,2,18,7,0.17857142857142858,2,False,True,False,5.0,0.0
+ES,landing_region_1159954a018c::landing_region_1a00bf1d418e,"Brean, United Kingdom -> Bilbao, Spain",4.0,4,4,4,3,2,18,7,0.14285714285714285,3,False,False,True,0.0,4.0
+ES,landing_region_7cb9fce4312d::landing_region_bc8926b4de3a,"Granadilla de Abona, Spain -> Güimar, Canary Islands, Spain",1.5,3,3,3,2,1,18,7,0.05357142857142857,4,False,False,False,1.5,0.0
+ES,landing_region_7cb9fce4312d::landing_region_ea21c9a3a42e,"Granadilla de Abona, Spain -> San Sebastian de la Gomera, Canary Islands, Spain",1.5,3,3,3,2,1,18,7,0.05357142857142857,5,False,False,False,1.5,0.0
+ES,landing_region_2cbaaf36d8d2::landing_region_8eb611963dd1,"Mallorca, Spain -> Barcelona, Spain",1.0,1,1,1,1,1,18,7,0.03571428571428571,6,False,False,False,1.0,0.0
 FI,landing_region_1497f5544d8d::landing_region_5ff6ee2e39f7,"Hanko, Finland -> Haradsholm, Finland",11.0,11,11,7,4,2,13,9,0.4230769230769231,1,True,False,False,11.0,0.0
-FI,landing_region_65aa8d7cf62e::landing_region_71db3ba08a92,"Espoo, Finland -> Stockholm, Sweden",7.0,7,7,7,5,4,13,9,0.2692307692307692,2,False,True,False,0.0,7.0
-FI,landing_region_5ff6ee2e39f7::landing_region_65aa8d7cf62e,"Haradsholm, Finland -> Espoo, Finland",6.0,6,6,6,3,2,13,9,0.23076923076923078,3,False,False,True,6.0,0.0
-FI,landing_region_65aa8d7cf62e::landing_region_6a085d7da78f,"Espoo, Finland -> Kotka, Finland",2.0,2,2,2,1,1,13,9,0.07692307692307693,4,False,False,False,2.0,0.0
+FI,landing_region_5ff6ee2e39f7::landing_region_65aa8d7cf62e,"Haradsholm, Finland -> Espoo, Finland",6.0,6,6,6,3,2,13,9,0.23076923076923078,2,False,True,False,6.0,0.0
+FI,landing_region_3c99e4792a25::landing_region_65aa8d7cf62e,"Stavsnas, Sweden -> Espoo, Finland",3.5,7,7,7,5,4,13,9,0.1346153846153846,3,False,False,True,0.0,3.5
+FI,landing_region_65aa8d7cf62e::landing_region_c607af4095db,"Espoo, Finland -> Kista, Sweden",3.5,7,7,7,5,4,13,9,0.1346153846153846,4,False,False,False,0.0,3.5
+FI,landing_region_65aa8d7cf62e::landing_region_6a085d7da78f,"Espoo, Finland -> Kotka, Finland",2.0,2,2,2,1,1,13,9,0.07692307692307693,5,False,False,False,2.0,0.0
 FJ,landing_region_1cece50a3587::landing_region_58084817cbe7,"Suva, Fiji -> Paddington, NSW, Australia",6.0,6,6,6,3,3,3,3,1.0,1,True,False,False,0.0,6.0
-GA,landing_region_a47655b7f5ec::landing_region_c88b92706e9c,"Libreville, Gabon -> Seixal, Portugal",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
-GG,landing_region_0389fb1be871::landing_region_6f4e74811068,"Havelet Bay, Guernsey -> Archirondel, Jersey",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,2.0,0.0
+GA,landing_region_343850da3642::landing_region_a47655b7f5ec,"Carcavelos, Portugal -> Libreville, Gabon",1.0,2,2,2,1,1,1,1,0.5,1,True,False,False,0.0,1.0
+GA,landing_region_a47655b7f5ec::landing_region_f7627feb3284,"Libreville, Gabon -> Seixal, Portugal",1.0,2,2,2,1,1,1,1,0.5,2,False,True,False,0.0,1.0
+GG,landing_region_0389fb1be871::landing_region_da27bcef4ab9,"Havelet Bay, Guernsey -> Greve de Lecq, Jersey",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,2.0,0.0
 GH,landing_region_2e263771884f::landing_region_30beda532e6f,"Accra, Ghana -> Lagos, Nigeria",6.0,6,6,6,4,3,4,3,1.0,1,True,False,False,0.0,6.0
-GP,landing_region_24728f09c1b8::landing_region_89faef27b517,"Beausejour, Guadeloupe -> Capesterre-Belle-Eau, Guadeloupe",2.0,2,2,2,1,1,1,1,0.5,1,True,False,False,2.0,0.0
-GP,landing_region_89faef27b517::landing_region_b221e27b3993,"Capesterre-Belle-Eau, Guadeloupe -> Philipsburg, Sint Maarten",2.0,2,2,2,1,1,1,1,0.5,2,False,True,False,0.0,2.0
+GP,landing_region_15bd93313ef3::landing_region_7587c579129b,"Baie-Mahault, Guadeloupe -> Capesterre-Belle-Eau, Guadeloupe",0.5,2,2,2,1,1,1,1,0.125,1,True,False,False,0.5,0.0
+GP,landing_region_15bd93313ef3::landing_region_aca2fc3e8719,"Baie-Mahault, Guadeloupe -> Philipsburg, Sint Maarten",0.5,2,2,2,1,1,1,1,0.125,2,False,True,False,0.0,0.5
+GP,landing_region_15bd93313ef3::landing_region_b50ebe876063,"Baie-Mahault, Guadeloupe -> St. Louis, Saint Martin",0.5,2,2,2,1,1,1,1,0.125,3,False,False,True,0.0,0.5
+GP,landing_region_24728f09c1b8::landing_region_443f465b9a9a,"Beausejour, Guadeloupe -> Saint-Louis, Guadeloupe",0.5,2,2,2,1,1,1,1,0.125,4,False,False,False,0.5,0.0
+GP,landing_region_24728f09c1b8::landing_region_7587c579129b,"Beausejour, Guadeloupe -> Capesterre-Belle-Eau, Guadeloupe",0.5,2,2,2,1,1,1,1,0.125,5,False,False,False,0.5,0.0
+GP,landing_region_443f465b9a9a::landing_region_7587c579129b,"Saint-Louis, Guadeloupe -> Capesterre-Belle-Eau, Guadeloupe",0.5,2,2,2,1,1,1,1,0.125,6,False,False,False,0.5,0.0
+GP,landing_region_7587c579129b::landing_region_aca2fc3e8719,"Capesterre-Belle-Eau, Guadeloupe -> Philipsburg, Sint Maarten",0.5,2,2,2,1,1,1,1,0.125,7,False,False,False,0.0,0.5
+GP,landing_region_7587c579129b::landing_region_b50ebe876063,"Capesterre-Belle-Eau, Guadeloupe -> St. Louis, Saint Martin",0.5,2,2,2,1,1,1,1,0.125,8,False,False,False,0.0,0.5
 GQ,landing_region_26cbd7e9a6d0::landing_region_e871d8d12bd1,"Bata, Equatorial Guinea -> Malabo, Equatorial Guinea",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,2.0,0.0
-GU,landing_region_58084817cbe7::landing_region_bc6c664daa8f,"Paddington, NSW, Australia -> Alupang, Guam",2.0,2,2,2,1,1,4,3,0.2857142857142857,1,True,False,False,0.0,2.0
-GU,landing_region_91000f65ec77::landing_region_bc6c664daa8f,"Kapolei, HI, United States -> Alupang, Guam",2.0,4,4,4,2,1,4,3,0.2857142857142857,2,False,True,False,0.0,2.0
-GU,landing_region_bc6c664daa8f::landing_region_c227a3796213,"Alupang, Guam -> Keawaula, HI, United States",2.0,4,4,4,2,1,4,3,0.2857142857142857,3,False,False,True,0.0,2.0
+GU,landing_region_3a991c05745c::landing_region_bc6c664daa8f,"Waialua, HI, United States -> Alupang, Guam",2.0,4,4,4,2,1,4,3,0.2857142857142857,1,True,False,False,0.0,2.0
+GU,landing_region_58084817cbe7::landing_region_bc6c664daa8f,"Paddington, NSW, Australia -> Alupang, Guam",2.0,2,2,2,1,1,4,3,0.2857142857142857,2,False,True,False,0.0,2.0
+GU,landing_region_8d528e077d6e::landing_region_bc6c664daa8f,"Kahe Point, HI, United States -> Alupang, Guam",2.0,4,4,4,2,1,4,3,0.2857142857142857,3,False,False,True,0.0,2.0
 GU,landing_region_bc6c664daa8f::landing_region_df61fea74887,"Alupang, Guam -> El Segundo, CA, United States",1.0,1,1,1,1,1,4,3,0.14285714285714285,4,False,False,False,0.0,1.0
-HK,landing_region_319252418c1f::landing_region_d0ecf913edd7,"Deep Water Bay, China -> Katong, Singapore",85.0,85,85,84,45,25,47,27,0.8018867924528302,1,True,False,False,0.0,85.0
-HK,landing_region_319252418c1f::landing_region_6d0b3b188139,"Deep Water Bay, China -> Zhuhai, China",21.0,21,21,14,8,6,47,27,0.19811320754716982,2,False,True,False,21.0,0.0
-HN,landing_region_0c894d5ef6d3::landing_region_620bdff3a2d2,"Dania Beach, FL, United States -> Puerto Cortes, Honduras",14.0,14,14,14,8,6,8,6,1.0,1,True,False,False,0.0,14.0
-ID,landing_region_149ad599e1a3::landing_region_d0ecf913edd7,"Tanjung Bemban, Indonesia -> Katong, Singapore",50.0,50,50,31,16,10,52,39,0.37037037037037035,1,True,False,False,50.0,0.0
-ID,landing_region_149ad599e1a3::landing_region_ce5716d12955,"Tanjung Bemban, Indonesia -> Ancol, Indonesia",32.5,65,65,65,34,27,52,39,0.24074074074074073,2,False,True,False,21.0,11.5
-ID,landing_region_ce5716d12955::landing_region_d0ecf913edd7,"Ancol, Indonesia -> Katong, Singapore",32.5,65,65,65,34,27,52,39,0.24074074074074073,3,False,False,True,21.0,11.5
-ID,landing_region_26e606e1a782::landing_region_ce5716d12955,"Gresik, Indonesia -> Ancol, Indonesia",6.0,6,6,6,3,2,52,39,0.044444444444444446,4,False,False,False,6.0,0.0
-ID,landing_region_149ad599e1a3::landing_region_26e606e1a782,"Tanjung Bemban, Indonesia -> Gresik, Indonesia",4.0,4,4,4,2,2,52,39,0.02962962962962963,5,False,False,False,4.0,0.0
-ID,landing_region_150b225bb130::landing_region_ce5716d12955,"Cirebon, Indonesia -> Ancol, Indonesia",4.0,4,4,4,2,2,52,39,0.02962962962962963,6,False,False,False,4.0,0.0
-ID,landing_region_58934ccdf4e7::landing_region_ce5716d12955,"Kendal, Indonesia -> Ancol, Indonesia",4.0,4,4,4,2,2,52,39,0.02962962962962963,7,False,False,False,4.0,0.0
-ID,landing_region_12a650616015::landing_region_95097cb3ef8d,"Beculuk, Indonesia -> Candikusuma, Indonesia",1.0,1,1,1,1,1,52,39,0.007407407407407408,8,False,False,False,1.0,0.0
-ID,landing_region_149ad599e1a3::landing_region_8b50d5cb7b72,"Tanjung Bemban, Indonesia -> Senggigi, Indonesia",0.5,1,1,1,1,1,52,39,0.003703703703703704,9,False,False,False,0.0,0.5
-ID,landing_region_8b50d5cb7b72::landing_region_d0ecf913edd7,"Senggigi, Indonesia -> Katong, Singapore",0.5,1,1,1,1,1,52,39,0.003703703703703704,10,False,False,False,0.0,0.5
-IL,landing_region_7559ef31b258::landing_region_c6ca70161fbc,"Netanya, Israel -> Rishon Le’Zion, Israel",124.83333333333333,148,148,60,30,11,30,11,0.8322222222222222,1,True,False,False,124.83333333333333,0.0
-IL,landing_region_c6ca70161fbc::landing_region_d42b6ba4dd12,"Rishon Le’Zion, Israel -> Haifa, Israel",14.833333333333332,39,39,15,8,4,30,11,0.09888888888888889,2,False,True,False,14.833333333333332,0.0
-IL,landing_region_7559ef31b258::landing_region_d42b6ba4dd12,"Netanya, Israel -> Haifa, Israel",10.333333333333332,30,30,13,8,4,30,11,0.06888888888888887,3,False,False,True,10.333333333333332,0.0
+HK,landing_region_5d023e72c246::landing_region_7a7da5f2aeb1,"Singapore, Singapore -> Lantau Island, China",21.25,85,85,84,45,25,47,27,0.20047169811320756,1,True,False,False,0.0,21.25
+HK,landing_region_7a7da5f2aeb1::landing_region_9430e1a9028b,"Lantau Island, China -> Changi North, Singapore",21.25,85,85,84,45,25,47,27,0.20047169811320756,2,False,True,False,0.0,21.25
+HK,landing_region_85e39fb7d29e::landing_region_9430e1a9028b,"Chai Wan, China -> Changi North, Singapore",21.25,85,85,84,45,25,47,27,0.20047169811320756,3,False,False,True,0.0,21.25
+HK,landing_region_85e39fb7d29e::landing_region_af2b1cb46785,"Chai Wan, China -> Tuas, Singapore",21.25,85,85,84,45,25,47,27,0.20047169811320756,4,False,False,False,0.0,21.25
+HK,landing_region_6d0b3b188139::landing_region_85e39fb7d29e,"Zhuhai, China -> Chai Wan, China",21.0,21,21,14,8,6,47,27,0.19811320754716982,5,False,False,False,21.0,0.0
+HN,landing_region_620bdff3a2d2::landing_region_bd03623e84bf,"Puerto Cortes, Honduras -> Hollywood, FL, United States",14.0,14,14,14,8,6,8,6,1.0,1,True,False,False,0.0,14.0
+ID,landing_region_5a1e27deaea1::landing_region_ae1b031adf3a,"Tanjung Pakis, Indonesia -> Ancol, Indonesia",202.0,202,202,93,48,36,71,52,0.5906432748538012,1,True,False,False,202.0,0.0
+ID,landing_region_5d023e72c246::landing_region_82ed2c557762,"Singapore, Singapore -> Bintan, Indonesia",10.0,50,50,31,16,10,71,52,0.029239766081871343,2,False,True,False,10.0,0.0
+ID,landing_region_5d023e72c246::landing_region_b37879c52c2b,"Singapore, Singapore -> Batam, Indonesia",10.0,50,50,31,16,10,71,52,0.029239766081871343,3,False,False,True,10.0,0.0
+ID,landing_region_82ed2c557762::landing_region_b37879c52c2b,"Bintan, Indonesia -> Batam, Indonesia",10.0,50,50,31,16,10,71,52,0.029239766081871343,4,False,False,False,10.0,0.0
+ID,landing_region_9430e1a9028b::landing_region_b37879c52c2b,"Changi North, Singapore -> Batam, Indonesia",10.0,50,50,31,16,10,71,52,0.029239766081871343,5,False,False,False,10.0,0.0
+ID,landing_region_af2b1cb46785::landing_region_b37879c52c2b,"Tuas, Singapore -> Batam, Indonesia",10.0,50,50,31,16,10,71,52,0.029239766081871343,6,False,False,False,10.0,0.0
+ID,landing_region_5d023e72c246::landing_region_ae1b031adf3a,"Singapore, Singapore -> Ancol, Indonesia",9.2,65,65,65,34,27,71,52,0.026900584795321637,7,False,False,False,5.7,3.5
+ID,landing_region_9430e1a9028b::landing_region_ae1b031adf3a,"Changi North, Singapore -> Ancol, Indonesia",9.2,65,65,65,34,27,71,52,0.026900584795321637,8,False,False,False,5.7,3.5
+ID,landing_region_ae1b031adf3a::landing_region_af2b1cb46785,"Ancol, Indonesia -> Tuas, Singapore",9.2,65,65,65,34,27,71,52,0.026900584795321637,9,False,False,False,5.7,3.5
+ID,landing_region_ae1b031adf3a::landing_region_b37879c52c2b,"Ancol, Indonesia -> Batam, Indonesia",9.2,65,65,65,34,27,71,52,0.026900584795321637,10,False,False,False,5.7,3.5
+ID,landing_region_5a1e27deaea1::landing_region_9430e1a9028b,"Tanjung Pakis, Indonesia -> Changi North, Singapore",7.5,57,57,57,30,24,71,52,0.021929824561403508,11,False,False,False,4.5,3.0
+ID,landing_region_5a1e27deaea1::landing_region_af2b1cb46785,"Tanjung Pakis, Indonesia -> Tuas, Singapore",7.5,57,57,57,30,24,71,52,0.021929824561403508,12,False,False,False,4.5,3.0
+ID,landing_region_5a1e27deaea1::landing_region_b37879c52c2b,"Tanjung Pakis, Indonesia -> Batam, Indonesia",7.5,57,57,57,30,24,71,52,0.021929824561403508,13,False,False,False,4.5,3.0
+ID,landing_region_010aeea39f91::landing_region_5a1e27deaea1,"Banyu Urip, Indonesia -> Tanjung Pakis, Indonesia",6.0,6,6,6,3,2,71,52,0.017543859649122806,14,False,False,False,6.0,0.0
+ID,landing_region_82ed2c557762::landing_region_ae1b031adf3a,"Bintan, Indonesia -> Ancol, Indonesia",5.7,42,42,42,21,17,71,52,0.016666666666666666,15,False,False,False,5.7,0.0
+ID,landing_region_21551e42403e::landing_region_e78a64df321a,"Sanur, Indonesia -> Gianyar, Indonesia",5.0,5,5,5,3,3,71,52,0.014619883040935672,16,False,False,False,5.0,0.0
+ID,landing_region_010aeea39f91::landing_region_b37879c52c2b,"Banyu Urip, Indonesia -> Batam, Indonesia",4.0,4,4,4,2,2,71,52,0.011695906432748537,17,False,False,False,4.0,0.0
+ID,landing_region_150b225bb130::landing_region_5a1e27deaea1,"Cirebon, Indonesia -> Tanjung Pakis, Indonesia",4.0,4,4,4,2,2,71,52,0.011695906432748537,18,False,False,False,4.0,0.0
+ID,landing_region_58934ccdf4e7::landing_region_5a1e27deaea1,"Kendal, Indonesia -> Tanjung Pakis, Indonesia",4.0,4,4,4,2,2,71,52,0.011695906432748537,19,False,False,False,4.0,0.0
+ID,landing_region_12a650616015::landing_region_95097cb3ef8d,"Beculuk, Indonesia -> Candikusuma, Indonesia",1.0,1,1,1,1,1,71,52,0.0029239766081871343,20,False,False,False,1.0,0.0
+ID,landing_region_1eb8753b1d9b::landing_region_af2b1cb46785,"Bali, Indonesia -> Tuas, Singapore",0.5,1,1,1,1,1,71,52,0.0014619883040935672,21,False,False,False,0.0,0.5
+ID,landing_region_1eb8753b1d9b::landing_region_b37879c52c2b,"Bali, Indonesia -> Batam, Indonesia",0.5,1,1,1,1,1,71,52,0.0014619883040935672,22,False,False,False,0.0,0.5
+IL,landing_region_192d23342e5f::landing_region_cc314324bd60,"Tel Aviv, Israel -> Netanya, Israel",109.16666666666667,144,144,58,29,11,30,11,0.7182017543859649,1,True,False,False,109.16666666666667,0.0
+IL,landing_region_192d23342e5f::landing_region_ae2cb6b6c71d,"Tel Aviv, Israel -> Haifa, Israel",14.233333333333333,39,39,15,8,4,30,11,0.09364035087719298,2,False,True,False,14.233333333333333,0.0
+IL,landing_region_192d23342e5f::landing_region_1a7bd9b543d8,"Tel Aviv, Israel -> Ashkelon, Israel",10.333333333333332,22,22,10,5,2,30,11,0.06798245614035087,3,False,False,True,10.333333333333332,0.0
+IL,landing_region_ae2cb6b6c71d::landing_region_cc314324bd60,"Haifa, Israel -> Netanya, Israel",9.733333333333333,30,30,13,8,4,30,11,0.06403508771929824,4,False,False,False,9.733333333333333,0.0
+IL,landing_region_1a7bd9b543d8::landing_region_cc314324bd60,"Ashkelon, Israel -> Netanya, Israel",5.333333333333333,16,16,8,4,2,30,11,0.03508771929824561,5,False,False,False,5.333333333333333,0.0
+IL,landing_region_4352ed1ae85d::landing_region_ae2cb6b6c71d,"Nahariyya, Israel -> Haifa, Israel",2.4,4,4,2,1,1,30,11,0.015789473684210527,6,False,False,False,2.4,0.0
+IL,landing_region_192d23342e5f::landing_region_4352ed1ae85d,"Tel Aviv, Israel -> Nahariyya, Israel",0.4,2,2,2,1,1,30,11,0.002631578947368421,7,False,False,False,0.4,0.0
+IL,landing_region_4352ed1ae85d::landing_region_cc314324bd60,"Nahariyya, Israel -> Netanya, Israel",0.4,2,2,2,1,1,30,11,0.002631578947368421,8,False,False,False,0.4,0.0
 IN,landing_region_0074f164da96::landing_region_32509493c7f4,"Mumbai, India -> Chennai, India",10.0,10,10,8,6,5,10,6,0.6666666666666666,1,True,False,False,10.0,0.0
-IN,landing_region_0074f164da96::landing_region_d0ecf913edd7,"Mumbai, India -> Katong, Singapore",3.0,3,3,3,2,1,10,6,0.2,2,False,True,False,0.0,3.0
+IN,landing_region_0074f164da96::landing_region_af2b1cb46785,"Mumbai, India -> Tuas, Singapore",3.0,3,3,3,2,1,10,6,0.2,2,False,True,False,0.0,3.0
 IN,landing_region_0074f164da96::landing_region_08ea81d123b5,"Mumbai, India -> Marseille, France",2.0,2,2,2,2,1,10,6,0.13333333333333333,3,False,False,True,0.0,2.0
+JM,landing_region_68c87c6fa47f::landing_region_bb71ecf60691,"Copa Club, Jamaica -> Port Antonio, Jamaica",8.0,8,8,8,4,2,4,2,1.0,1,True,False,False,8.0,0.0
+JP,landing_region_6ee5239e409c::landing_region_87b575b90c68,"Ama, Japan -> Itoman, Japan",3.333333333333333,10,10,2,1,1,1,1,0.3333333333333333,1,True,False,False,3.333333333333333,0.0
+JP,landing_region_6ee5239e409c::landing_region_b6092af8113d,"Ama, Japan -> Yomitan, Japan",3.333333333333333,10,10,2,1,1,1,1,0.3333333333333333,2,False,True,False,3.333333333333333,0.0
+JP,landing_region_87b575b90c68::landing_region_b6092af8113d,"Itoman, Japan -> Yomitan, Japan",3.333333333333333,10,10,2,1,1,1,1,0.3333333333333333,3,False,False,True,3.333333333333333,0.0
 KE,landing_region_5524694c9ae5::landing_region_57424b247075,"Dar Es Salaam, Tanzania -> Nyali, Kenya",8.0,8,8,8,4,3,4,3,1.0,1,True,False,False,0.0,8.0
-KY,landing_region_0c894d5ef6d3::landing_region_6a990cca53f4,"Dania Beach, FL, United States -> Half Moon Bay, Cayman Islands",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
-LC,landing_region_b69228a09b14::landing_region_c92fc361db9a,"Basseterre, Saint Kitts and Nevis -> Rodney Bay, Saint Lucia",1.0,1,1,1,1,1,1,1,1.0,1,True,False,False,0.0,1.0
+KN,landing_region_04a5b4bc2547::landing_region_32bca37bf53d,"Gallows Bay, Bonaire, Sint Eustatius and Saba -> Basseterre, Saint Kitts and Nevis",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,2.0,0.0
+KY,landing_region_6a990cca53f4::landing_region_bd03623e84bf,"Half Moon Bay, Cayman Islands -> Hollywood, FL, United States",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
+LC,landing_region_32bca37bf53d::landing_region_c92fc361db9a,"Basseterre, Saint Kitts and Nevis -> Rodney Bay, Saint Lucia",1.0,1,1,1,1,1,1,1,1.0,1,True,False,False,0.0,1.0
 LK,landing_region_0074f164da96::landing_region_465d1b4e7da4,"Mumbai, India -> Mt. Lavinia, Sri Lanka",6.0,6,6,6,3,1,5,3,0.6666666666666666,1,True,False,False,0.0,6.0
-LK,landing_region_465d1b4e7da4::landing_region_d0ecf913edd7,"Mt. Lavinia, Sri Lanka -> Katong, Singapore",2.0,2,2,2,1,1,5,3,0.2222222222222222,2,False,True,False,0.0,2.0
+LK,landing_region_465d1b4e7da4::landing_region_af2b1cb46785,"Mt. Lavinia, Sri Lanka -> Tuas, Singapore",2.0,2,2,2,1,1,5,3,0.2222222222222222,2,False,True,False,0.0,2.0
 LK,landing_region_465d1b4e7da4::landing_region_8dc97f28b4d0,"Mt. Lavinia, Sri Lanka -> Sharjah, United Arab Emirates",1.0,1,1,1,1,1,5,3,0.1111111111111111,3,False,False,True,0.0,1.0
-MM,landing_region_a314ea9d2330::landing_region_d0ecf913edd7,"Thanlyin, Myanmar -> Katong, Singapore",5.0,5,5,5,3,3,3,3,1.0,1,True,False,False,0.0,5.0
+MM,landing_region_a314ea9d2330::landing_region_af2b1cb46785,"Thanlyin, Myanmar -> Tuas, Singapore",5.0,5,5,5,3,3,3,3,1.0,1,True,False,False,0.0,5.0
 MP,landing_region_3602b9b9f277::landing_region_bc6c664daa8f,"Tinian, Northern Mariana Islands -> Alupang, Guam",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
 MT,landing_region_08ea81d123b5::landing_region_9e3a5ff856b9,"Marseille, France -> Balluta Bay, Malta",4.0,4,4,4,2,2,2,2,1.0,1,True,False,False,0.0,4.0
-MV,landing_region_3e5f0fe5028c::landing_region_465d1b4e7da4,"Male, Maldives -> Mt. Lavinia, Sri Lanka",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
-MX,landing_region_0c894d5ef6d3::landing_region_2899c8b816f4,"Dania Beach, FL, United States -> Cancún, Mexico",4.0,4,4,4,2,2,2,2,1.0,1,True,False,False,0.0,4.0
-MY,landing_region_d0ecf913edd7::landing_region_d5376611ccce,"Katong, Singapore -> Morib, Malaysia",12.0,12,12,12,7,7,8,8,0.8571428571428571,1,True,False,False,7.0,5.0
-MY,landing_region_149ad599e1a3::landing_region_d0ecf913edd7,"Tanjung Bemban, Indonesia -> Katong, Singapore",2.0,2,2,2,1,1,8,8,0.14285714285714285,2,False,True,False,0.0,2.0
+MV,landing_region_05d4f4227b7d::landing_region_946d8574d05e,"Ithaafushi, Maldives -> Hulhumale, Maldives",34.0,34,34,20,10,3,10,3,0.9444444444444444,1,True,False,False,34.0,0.0
+MV,landing_region_05d4f4227b7d::landing_region_465d1b4e7da4,"Ithaafushi, Maldives -> Mt. Lavinia, Sri Lanka",1.0,2,2,2,1,1,10,3,0.027777777777777776,2,False,True,False,0.0,1.0
+MV,landing_region_465d1b4e7da4::landing_region_946d8574d05e,"Mt. Lavinia, Sri Lanka -> Hulhumale, Maldives",1.0,2,2,2,1,1,10,3,0.027777777777777776,3,False,False,True,0.0,1.0
+MX,landing_region_2899c8b816f4::landing_region_bd03623e84bf,"Cancún, Mexico -> Hollywood, FL, United States",4.0,4,4,4,2,2,2,2,1.0,1,True,False,False,0.0,4.0
+MY,landing_region_af2b1cb46785::landing_region_d5376611ccce,"Tuas, Singapore -> Morib, Malaysia",12.0,12,12,12,7,7,8,8,0.8571428571428571,1,True,False,False,7.0,5.0
+MY,landing_region_5d023e72c246::landing_region_b37879c52c2b,"Singapore, Singapore -> Batam, Indonesia",0.6666666666666666,2,2,2,1,1,8,8,0.047619047619047616,2,False,True,False,0.0,0.6666666666666666
+MY,landing_region_9430e1a9028b::landing_region_b37879c52c2b,"Changi North, Singapore -> Batam, Indonesia",0.6666666666666666,2,2,2,1,1,8,8,0.047619047619047616,3,False,False,True,0.0,0.6666666666666666
+MY,landing_region_af2b1cb46785::landing_region_b37879c52c2b,"Tuas, Singapore -> Batam, Indonesia",0.6666666666666666,2,2,2,1,1,8,8,0.047619047619047616,4,False,False,False,0.0,0.6666666666666666
 NC,landing_region_3563aa191965::landing_region_58084817cbe7,"Noumea, New Caledonia -> Paddington, NSW, Australia",10.0,10,10,10,5,2,5,2,1.0,1,True,False,False,0.0,10.0
 NG,landing_region_30beda532e6f::landing_region_44e270aeb18c,"Lagos, Nigeria -> Melkbosstrand, South Africa",4.0,4,4,4,2,1,3,2,0.6666666666666666,1,True,False,False,0.0,4.0
-NG,landing_region_30beda532e6f::landing_region_c88b92706e9c,"Lagos, Nigeria -> Seixal, Portugal",2.0,2,2,2,1,1,3,2,0.3333333333333333,2,False,True,False,0.0,2.0
-NO,landing_region_2f1f6d8f7ce5::landing_region_d514e04d4eb8,"Oslo, Norway -> Drøbak, Norway",207.66666666666666,223,223,109,55,25,71,27,0.7524154589371981,1,True,False,False,207.66666666666666,0.0
-NO,landing_region_d514e04d4eb8::landing_region_d8238f687690,"Drøbak, Norway -> Larvik, Norway",18.666666666666668,35,35,31,16,8,71,27,0.0676328502415459,2,False,True,False,18.666666666666668,0.0
-NO,landing_region_2f1f6d8f7ce5::landing_region_734e5f248738,"Oslo, Norway -> Kristiansand, Norway",10.5,21,21,17,9,3,71,27,0.03804347826086957,3,False,False,True,10.5,0.0
-NO,landing_region_734e5f248738::landing_region_d514e04d4eb8,"Kristiansand, Norway -> Drøbak, Norway",10.5,21,21,17,9,3,71,27,0.03804347826086957,4,False,False,False,10.5,0.0
-NO,landing_region_2f1f6d8f7ce5::landing_region_d8238f687690,"Oslo, Norway -> Larvik, Norway",8.666666666666666,25,25,23,12,7,71,27,0.03140096618357488,5,False,False,False,8.666666666666666,0.0
-NO,landing_region_68c2a6f2eb92::landing_region_fe6b66210668,"Brekstad, Norway -> Narvik, Norway",4.0,4,4,4,2,1,71,27,0.014492753623188406,6,False,False,False,4.0,0.0
-NO,landing_region_2f1f6d8f7ce5::landing_region_59507011995d,"Oslo, Norway -> Kårstø, Norway",3.5,10,10,10,5,2,71,27,0.012681159420289856,7,False,False,False,3.5,0.0
-NO,landing_region_59507011995d::landing_region_d514e04d4eb8,"Kårstø, Norway -> Drøbak, Norway",3.5,10,10,10,5,2,71,27,0.012681159420289856,8,False,False,False,3.5,0.0
-NO,landing_region_2f1f6d8f7ce5::landing_region_9f0445306e12,"Oslo, Norway -> Egersund, Norway",2.5,8,8,8,4,2,71,27,0.009057971014492754,9,False,False,False,2.5,0.0
-NO,landing_region_9f0445306e12::landing_region_d514e04d4eb8,"Egersund, Norway -> Drøbak, Norway",2.5,8,8,8,4,2,71,27,0.009057971014492754,10,False,False,False,2.5,0.0
-NO,landing_region_51738c738daf::landing_region_68c2a6f2eb92,"Herlandsvika, Norway -> Brekstad, Norway",2.0,2,2,2,1,1,71,27,0.007246376811594203,11,False,False,False,2.0,0.0
-NO,landing_region_56f5968b4284::landing_region_68c2a6f2eb92,"Edøya, Norway -> Brekstad, Norway",1.0,2,2,2,1,1,71,27,0.0036231884057971015,12,False,False,False,1.0,0.0
-NO,landing_region_68c2a6f2eb92::landing_region_85af16a4a5ec,"Brekstad, Norway -> Hitra, Norway",1.0,2,2,2,1,1,71,27,0.0036231884057971015,13,False,False,False,1.0,0.0
-NU,landing_region_0601a73acabb::landing_region_3b96281acedd,"Apia, Samoa -> Alofi, Niue",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
+NG,landing_region_30beda532e6f::landing_region_343850da3642,"Lagos, Nigeria -> Carcavelos, Portugal",1.0,2,2,2,1,1,3,2,0.16666666666666666,2,False,True,False,0.0,1.0
+NG,landing_region_30beda532e6f::landing_region_f7627feb3284,"Lagos, Nigeria -> Seixal, Portugal",1.0,2,2,2,1,1,3,2,0.16666666666666666,3,False,False,True,0.0,1.0
+NO,landing_region_2f1f6d8f7ce5::landing_region_d514e04d4eb8,"Oslo, Norway -> Drøbak, Norway",207.66666666666666,223,223,109,55,25,72,27,0.7185697808535179,1,True,False,False,207.66666666666666,0.0
+NO,landing_region_d514e04d4eb8::landing_region_d8238f687690,"Drøbak, Norway -> Larvik, Norway",18.666666666666668,35,35,31,16,8,72,27,0.06459054209919263,2,False,True,False,18.666666666666668,0.0
+NO,landing_region_d5fd2f8e766f::landing_region_fcc019f11ebc,"Sture, Norway -> Bergen, Norway",12.0,12,12,8,4,3,72,27,0.04152249134948097,3,False,False,True,12.0,0.0
+NO,landing_region_2f1f6d8f7ce5::landing_region_734e5f248738,"Oslo, Norway -> Kristiansand, Norway",10.5,21,21,17,9,3,72,27,0.03633217993079585,4,False,False,False,10.5,0.0
+NO,landing_region_734e5f248738::landing_region_d514e04d4eb8,"Kristiansand, Norway -> Drøbak, Norway",10.5,21,21,17,9,3,72,27,0.03633217993079585,5,False,False,False,10.5,0.0
+NO,landing_region_2f1f6d8f7ce5::landing_region_d8238f687690,"Oslo, Norway -> Larvik, Norway",8.666666666666666,25,25,23,12,7,72,27,0.029988465974625143,6,False,False,False,8.666666666666666,0.0
+NO,landing_region_8a15c1b652c0::landing_region_fe6b66210668,"Trondheim, Norway -> Narvik, Norway",4.0,4,4,4,2,1,72,27,0.01384083044982699,7,False,False,False,4.0,0.0
+NO,landing_region_2f1f6d8f7ce5::landing_region_b41341776da1,"Oslo, Norway -> Stavanger, Norway",3.5,10,10,10,5,2,72,27,0.012110726643598616,8,False,False,False,3.5,0.0
+NO,landing_region_b41341776da1::landing_region_d514e04d4eb8,"Stavanger, Norway -> Drøbak, Norway",3.5,10,10,10,5,2,72,27,0.012110726643598616,9,False,False,False,3.5,0.0
+NO,landing_region_2f1f6d8f7ce5::landing_region_9f0445306e12,"Oslo, Norway -> Egersund, Norway",2.5,8,8,8,4,2,72,27,0.00865051903114187,10,False,False,False,2.5,0.0
+NO,landing_region_9f0445306e12::landing_region_d514e04d4eb8,"Egersund, Norway -> Drøbak, Norway",2.5,8,8,8,4,2,72,27,0.00865051903114187,11,False,False,False,2.5,0.0
+NO,landing_region_51738c738daf::landing_region_8a15c1b652c0,"Herlandsvika, Norway -> Trondheim, Norway",1.0,2,2,2,1,1,72,27,0.0034602076124567475,12,False,False,False,1.0,0.0
+NO,landing_region_51738c738daf::landing_region_e3ef1bd7d4de,"Herlandsvika, Norway -> Brekstad, Norway",1.0,2,2,2,1,1,72,27,0.0034602076124567475,13,False,False,False,1.0,0.0
+NO,landing_region_8a15c1b652c0::landing_region_e3ef1bd7d4de,"Trondheim, Norway -> Brekstad, Norway",1.0,1,1,1,1,1,72,27,0.0034602076124567475,14,False,False,False,1.0,0.0
+NO,landing_region_56f5968b4284::landing_region_8a15c1b652c0,"Edøya, Norway -> Trondheim, Norway",0.5,2,2,2,1,1,72,27,0.0017301038062283738,15,False,False,False,0.5,0.0
+NO,landing_region_56f5968b4284::landing_region_e3ef1bd7d4de,"Edøya, Norway -> Brekstad, Norway",0.5,2,2,2,1,1,72,27,0.0017301038062283738,16,False,False,False,0.5,0.0
+NO,landing_region_85af16a4a5ec::landing_region_8a15c1b652c0,"Hitra, Norway -> Trondheim, Norway",0.5,2,2,2,1,1,72,27,0.0017301038062283738,17,False,False,False,0.5,0.0
+NO,landing_region_85af16a4a5ec::landing_region_e3ef1bd7d4de,"Hitra, Norway -> Brekstad, Norway",0.5,2,2,2,1,1,72,27,0.0017301038062283738,18,False,False,False,0.5,0.0
+NU,landing_region_3b96281acedd::landing_region_be83c6d38254,"Alofi, Niue -> Apia, Samoa",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
 NZ,landing_region_58084817cbe7::landing_region_64abd2b76b5b,"Paddington, NSW, Australia -> Takapuna, New Zealand",188.0,188,188,188,97,31,99,31,0.5310734463276836,1,True,False,False,0.0,188.0
-NZ,landing_region_0850a0fd663e::landing_region_202dc066a01e,"Oteranga Bay, New Zealand -> Paraparaumu, New Zealand",64.0,64,64,44,22,7,99,31,0.1807909604519774,2,False,True,False,64.0,0.0
-NZ,landing_region_0850a0fd663e::landing_region_64abd2b76b5b,"Oteranga Bay, New Zealand -> Takapuna, New Zealand",30.0,60,60,48,24,8,99,31,0.0847457627118644,3,False,False,True,30.0,0.0
-NZ,landing_region_202dc066a01e::landing_region_64abd2b76b5b,"Paraparaumu, New Zealand -> Takapuna, New Zealand",30.0,60,60,48,24,8,99,31,0.0847457627118644,4,False,False,False,30.0,0.0
-NZ,landing_region_64abd2b76b5b::landing_region_c0018732c600,"Takapuna, New Zealand -> Christchurch, New Zealand",15.0,15,15,14,7,4,99,31,0.0423728813559322,5,False,False,False,15.0,0.0
-NZ,landing_region_64abd2b76b5b::landing_region_fee4652f607a,"Takapuna, New Zealand -> Raglan, New Zealand",11.0,11,11,11,6,2,99,31,0.031073446327683617,6,False,False,False,11.0,0.0
-NZ,landing_region_c0018732c600::landing_region_fee4652f607a,"Christchurch, New Zealand -> Raglan, New Zealand",10.0,10,10,10,5,1,99,31,0.02824858757062147,7,False,False,False,10.0,0.0
-NZ,landing_region_0850a0fd663e::landing_region_c0018732c600,"Oteranga Bay, New Zealand -> Christchurch, New Zealand",3.0,6,6,6,3,2,99,31,0.00847457627118644,8,False,False,False,3.0,0.0
-NZ,landing_region_202dc066a01e::landing_region_c0018732c600,"Paraparaumu, New Zealand -> Christchurch, New Zealand",3.0,6,6,6,3,2,99,31,0.00847457627118644,9,False,False,False,3.0,0.0
+NZ,landing_region_1a4049df1b14::landing_region_883a5ebd5136,"Paraparaumu, New Zealand -> Wellington, New Zealand",32.0,64,64,44,22,7,99,31,0.0903954802259887,2,False,True,False,32.0,0.0
+NZ,landing_region_883a5ebd5136::landing_region_98e7e129c25d,"Wellington, New Zealand -> Fighting Bay, New Zealand",32.0,64,64,44,22,7,99,31,0.0903954802259887,3,False,False,True,32.0,0.0
+NZ,landing_region_1a4049df1b14::landing_region_64abd2b76b5b,"Paraparaumu, New Zealand -> Takapuna, New Zealand",30.0,60,60,48,24,8,99,31,0.0847457627118644,4,False,False,False,30.0,0.0
+NZ,landing_region_64abd2b76b5b::landing_region_883a5ebd5136,"Takapuna, New Zealand -> Wellington, New Zealand",30.0,60,60,48,24,8,99,31,0.0847457627118644,5,False,False,False,30.0,0.0
+NZ,landing_region_64abd2b76b5b::landing_region_c0018732c600,"Takapuna, New Zealand -> Christchurch, New Zealand",15.0,15,15,14,7,4,99,31,0.0423728813559322,6,False,False,False,15.0,0.0
+NZ,landing_region_64abd2b76b5b::landing_region_fee4652f607a,"Takapuna, New Zealand -> Raglan, New Zealand",11.0,11,11,11,6,2,99,31,0.031073446327683617,7,False,False,False,11.0,0.0
+NZ,landing_region_c0018732c600::landing_region_fee4652f607a,"Christchurch, New Zealand -> Raglan, New Zealand",10.0,10,10,10,5,1,99,31,0.02824858757062147,8,False,False,False,10.0,0.0
+NZ,landing_region_1a4049df1b14::landing_region_c0018732c600,"Paraparaumu, New Zealand -> Christchurch, New Zealand",3.0,6,6,6,3,2,99,31,0.00847457627118644,9,False,False,False,3.0,0.0
+NZ,landing_region_883a5ebd5136::landing_region_c0018732c600,"Wellington, New Zealand -> Christchurch, New Zealand",3.0,6,6,6,3,2,99,31,0.00847457627118644,10,False,False,False,3.0,0.0
 PA,landing_region_466f092d0a6e::landing_region_af7df63397a0,"Fort Amador, Panama -> Jacksonville, FL, United States",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
 PG,landing_region_58084817cbe7::landing_region_a4275bfd77b7,"Paddington, NSW, Australia -> Port Moresby, Papua New Guinea",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
-PH,landing_region_319252418c1f::landing_region_71e1260196d0,"Deep Water Bay, China -> Cavite, Philippines",21.5,22,22,22,13,3,23,9,0.524390243902439,1,True,False,False,0.0,21.5
-PH,landing_region_71e1260196d0::landing_region_d0ecf913edd7,"Cavite, Philippines -> Katong, Singapore",9.0,9,9,9,8,4,23,9,0.21951219512195122,2,False,True,False,0.0,9.0
-PH,landing_region_71e1260196d0::landing_region_85b85b02a38f,"Cavite, Philippines -> Batangas, Philippines",6.0,6,6,6,3,3,23,9,0.14634146341463414,3,False,False,True,6.0,0.0
-PH,landing_region_00c458c2b5c8::landing_region_568e54040a5c,"Palompon, Philippines -> Talisay, Philippines",2.0,2,2,2,1,1,23,9,0.04878048780487805,4,False,False,False,2.0,0.0
-PH,landing_region_11a5fc08eb7a::landing_region_73f9243dcd5b,"Caticlan, Philippines -> Roxas City, Philippines",2.0,2,2,2,1,1,23,9,0.04878048780487805,5,False,False,False,2.0,0.0
-PH,landing_region_319252418c1f::landing_region_85b85b02a38f,"Deep Water Bay, China -> Batangas, Philippines",0.5,1,1,1,1,1,23,9,0.012195121951219513,6,False,False,False,0.0,0.5
+PH,landing_region_76da986d22a9::landing_region_85e39fb7d29e,"Cavite, Philippines -> Chai Wan, China",21.333333333333332,22,22,22,13,3,23,9,0.5203252032520325,1,True,False,False,0.0,21.333333333333332
+PH,landing_region_76da986d22a9::landing_region_9430e1a9028b,"Cavite, Philippines -> Changi North, Singapore",9.0,9,9,9,8,4,23,9,0.21951219512195122,2,False,True,False,0.0,9.0
+PH,landing_region_0e9a6c8bd7c7::landing_region_76da986d22a9,"Batangas, Philippines -> Cavite, Philippines",6.0,6,6,6,3,3,23,9,0.14634146341463414,3,False,False,True,6.0,0.0
+PH,landing_region_11a5fc08eb7a::landing_region_73f9243dcd5b,"Caticlan, Philippines -> Roxas City, Philippines",2.0,2,2,2,1,1,23,9,0.04878048780487805,4,False,False,False,2.0,0.0
+PH,landing_region_00c458c2b5c8::landing_region_2d3c79b37946,"Palompon, Philippines -> Talisay, Philippines",1.0,2,2,2,1,1,23,9,0.024390243902439025,5,False,False,False,1.0,0.0
+PH,landing_region_00c458c2b5c8::landing_region_d931c6f5e934,"Palompon, Philippines -> Liloan, Philippines",1.0,2,2,2,1,1,23,9,0.024390243902439025,6,False,False,False,1.0,0.0
+PH,landing_region_0e9a6c8bd7c7::landing_region_7a7da5f2aeb1,"Batangas, Philippines -> Lantau Island, China",0.3333333333333333,1,1,1,1,1,23,9,0.008130081300813007,7,False,False,False,0.0,0.3333333333333333
+PH,landing_region_0e9a6c8bd7c7::landing_region_85e39fb7d29e,"Batangas, Philippines -> Chai Wan, China",0.3333333333333333,1,1,1,1,1,23,9,0.008130081300813007,8,False,False,False,0.0,0.3333333333333333
 PK,landing_region_1392e3aea9b8::landing_region_1b3a8d836a7d,"Fujairah, United Arab Emirates -> Karachi, Pakistan",1.0,1,1,1,1,1,1,1,1.0,1,True,False,False,0.0,1.0
-PR,landing_region_0c894d5ef6d3::landing_region_822747b0ce7e,"Dania Beach, FL, United States -> Miramar, PR, United States",5.0,5,5,5,3,3,3,3,1.0,1,True,False,False,0.0,5.0
-SE,landing_region_65aa8d7cf62e::landing_region_71db3ba08a92,"Espoo, Finland -> Stockholm, Sweden",82.0,82,82,82,43,3,74,20,0.4939759036144578,1,True,False,False,0.0,82.0
-SE,landing_region_1ce0b85cd8b9::landing_region_e1a72a298b9d,"Uto, Sweden -> Dragor, Denmark",68.0,68,68,62,31,13,74,20,0.40963855421686746,2,False,True,False,54.0,14.0
-SE,landing_region_5631d1801aee::landing_region_71db3ba08a92,"Tallinn, Estonia -> Stockholm, Sweden",12.0,12,12,12,6,4,74,20,0.07228915662650602,3,False,False,True,0.0,12.0
-SE,landing_region_1ce0b85cd8b9::landing_region_3d94d1c98c16,"Uto, Sweden -> Näsby, Sweden",2.0,2,2,2,1,1,74,20,0.012048192771084338,4,False,False,False,2.0,0.0
-SE,landing_region_3eb4f4d89687::landing_region_71db3ba08a92,"Hamnäs, Finland -> Stockholm, Sweden",2.0,2,2,2,1,1,74,20,0.012048192771084338,5,False,False,False,0.0,2.0
-SG,landing_region_149ad599e1a3::landing_region_d0ecf913edd7,"Tanjung Bemban, Indonesia -> Katong, Singapore",979.0,979,979,382,195,82,198,83,0.944069431051109,1,True,False,False,979.0,0.0
-SG,landing_region_08ea81d123b5::landing_region_d0ecf913edd7,"Marseille, France -> Katong, Singapore",20.0,40,40,40,26,10,198,83,0.019286403085824494,2,False,True,False,0.0,20.0
-SG,landing_region_b368d05deae2::landing_region_d0ecf913edd7,"La Tour Fondue, France -> Katong, Singapore",20.0,40,40,40,26,10,198,83,0.019286403085824494,3,False,False,True,0.0,20.0
-SG,landing_region_319252418c1f::landing_region_d0ecf913edd7,"Deep Water Bay, China -> Katong, Singapore",16.0,16,16,16,8,3,198,83,0.015429122468659595,4,False,False,False,0.0,16.0
-SG,landing_region_d0ecf913edd7::landing_region_d5376611ccce,"Katong, Singapore -> Morib, Malaysia",2.0,2,2,2,2,2,198,83,0.0019286403085824494,5,False,False,False,0.0,2.0
-SN,landing_region_9d5009d65552::landing_region_c88b92706e9c,"Dakar, Senegal -> Seixal, Portugal",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
-TG,landing_region_c40dbe766ade::landing_region_c88b92706e9c,"Lome, Togo -> Seixal, Portugal",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
-TH,landing_region_04269067e649::landing_region_149ad599e1a3,"Songkhla, Thailand -> Tanjung Bemban, Indonesia",1.0,2,2,2,1,1,1,1,0.5,1,True,False,False,0.0,1.0
-TH,landing_region_04269067e649::landing_region_d0ecf913edd7,"Songkhla, Thailand -> Katong, Singapore",1.0,2,2,2,1,1,1,1,0.5,2,False,True,False,0.0,1.0
+PR,landing_region_822747b0ce7e::landing_region_bd03623e84bf,"Miramar, PR, United States -> Hollywood, FL, United States",5.0,5,5,5,3,3,3,3,1.0,1,True,False,False,0.0,5.0
+PT,landing_region_343850da3642::landing_region_f7627feb3284,"Carcavelos, Portugal -> Seixal, Portugal",87.0,87,87,55,31,12,31,12,1.0,1,True,False,False,87.0,0.0
+SE,landing_region_d073d559153a::landing_region_e2b0cd002b0c,"Bunkeflostand, Sweden -> Tuborg, Denmark",179.0,179,179,72,36,16,95,29,0.518840579710145,1,True,False,False,179.0,0.0
+SE,landing_region_3c99e4792a25::landing_region_65aa8d7cf62e,"Stavsnas, Sweden -> Espoo, Finland",41.0,82,82,82,43,3,95,29,0.11884057971014493,2,False,True,False,0.0,41.0
+SE,landing_region_65aa8d7cf62e::landing_region_c607af4095db,"Espoo, Finland -> Kista, Sweden",41.0,82,82,82,43,3,95,29,0.11884057971014493,3,False,False,True,0.0,41.0
+SE,landing_region_1ce0b85cd8b9::landing_region_e2b0cd002b0c,"Uto, Sweden -> Tuborg, Denmark",34.5,67,67,61,31,13,95,29,0.1,4,False,False,False,27.5,7.0
+SE,landing_region_1ce0b85cd8b9::landing_region_d073d559153a,"Uto, Sweden -> Bunkeflostand, Sweden",33.5,66,66,60,30,13,95,29,0.09710144927536232,5,False,False,False,26.5,7.0
+SE,landing_region_3c99e4792a25::landing_region_5631d1801aee,"Stavsnas, Sweden -> Tallinn, Estonia",6.0,12,12,12,6,4,95,29,0.017391304347826087,6,False,False,False,0.0,6.0
+SE,landing_region_5631d1801aee::landing_region_c607af4095db,"Tallinn, Estonia -> Kista, Sweden",6.0,12,12,12,6,4,95,29,0.017391304347826087,7,False,False,False,0.0,6.0
+SE,landing_region_1ce0b85cd8b9::landing_region_3d94d1c98c16,"Uto, Sweden -> Näsby, Sweden",2.0,2,2,2,1,1,95,29,0.005797101449275362,8,False,False,False,2.0,0.0
+SE,landing_region_3c99e4792a25::landing_region_3eb4f4d89687,"Stavsnas, Sweden -> Hamnäs, Finland",2.0,2,2,2,1,1,95,29,0.005797101449275362,9,False,False,False,0.0,2.0
+SG,landing_region_5d023e72c246::landing_region_b37879c52c2b,"Singapore, Singapore -> Batam, Indonesia",326.3333333333333,979,979,382,195,82,198,83,0.31468981035036964,1,True,False,False,326.3333333333333,0.0
+SG,landing_region_9430e1a9028b::landing_region_b37879c52c2b,"Changi North, Singapore -> Batam, Indonesia",326.3333333333333,979,979,382,195,82,198,83,0.31468981035036964,2,False,True,False,326.3333333333333,0.0
+SG,landing_region_af2b1cb46785::landing_region_b37879c52c2b,"Tuas, Singapore -> Batam, Indonesia",326.3333333333333,979,979,382,195,82,198,83,0.31468981035036964,3,False,False,True,326.3333333333333,0.0
+SG,landing_region_08ea81d123b5::landing_region_af2b1cb46785,"Marseille, France -> Tuas, Singapore",20.0,40,40,40,26,10,198,83,0.019286403085824494,4,False,False,False,0.0,20.0
+SG,landing_region_16217d497d23::landing_region_af2b1cb46785,"Toulon, France -> Tuas, Singapore",20.0,40,40,40,26,10,198,83,0.019286403085824494,5,False,False,False,0.0,20.0
+SG,landing_region_5d023e72c246::landing_region_7a7da5f2aeb1,"Singapore, Singapore -> Lantau Island, China",4.0,16,16,16,8,3,198,83,0.003857280617164899,6,False,False,False,0.0,4.0
+SG,landing_region_7a7da5f2aeb1::landing_region_9430e1a9028b,"Lantau Island, China -> Changi North, Singapore",4.0,16,16,16,8,3,198,83,0.003857280617164899,7,False,False,False,0.0,4.0
+SG,landing_region_85e39fb7d29e::landing_region_9430e1a9028b,"Chai Wan, China -> Changi North, Singapore",4.0,16,16,16,8,3,198,83,0.003857280617164899,8,False,False,False,0.0,4.0
+SG,landing_region_85e39fb7d29e::landing_region_af2b1cb46785,"Chai Wan, China -> Tuas, Singapore",4.0,16,16,16,8,3,198,83,0.003857280617164899,9,False,False,False,0.0,4.0
+SG,landing_region_af2b1cb46785::landing_region_d5376611ccce,"Tuas, Singapore -> Morib, Malaysia",2.0,2,2,2,2,2,198,83,0.0019286403085824494,10,False,False,False,0.0,2.0
+SN,landing_region_343850da3642::landing_region_9d5009d65552,"Carcavelos, Portugal -> Dakar, Senegal",1.0,2,2,2,1,1,1,1,0.5,1,True,False,False,0.0,1.0
+SN,landing_region_9d5009d65552::landing_region_f7627feb3284,"Dakar, Senegal -> Seixal, Portugal",1.0,2,2,2,1,1,1,1,0.5,2,False,True,False,0.0,1.0
+TG,landing_region_c40dbe766ade::landing_region_f7627feb3284,"Lome, Togo -> Seixal, Portugal",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
+TH,landing_region_04269067e649::landing_region_9430e1a9028b,"Songkhla, Thailand -> Changi North, Singapore",0.6666666666666666,2,2,2,1,1,1,1,0.3333333333333333,1,True,False,False,0.0,0.6666666666666666
+TH,landing_region_04269067e649::landing_region_af2b1cb46785,"Songkhla, Thailand -> Tuas, Singapore",0.6666666666666666,2,2,2,1,1,1,1,0.3333333333333333,2,False,True,False,0.0,0.6666666666666666
+TH,landing_region_04269067e649::landing_region_b37879c52c2b,"Songkhla, Thailand -> Batam, Indonesia",0.6666666666666666,2,2,2,1,1,1,1,0.3333333333333333,3,False,False,True,0.0,0.6666666666666666
 TO,landing_region_1cece50a3587::landing_region_ab5fcb6a28e2,"Suva, Fiji -> Nuku'alofa, Tonga",2.0,2,2,2,1,1,1,1,1.0,1,True,False,False,0.0,2.0
-TR,landing_region_8935cd2c0a21::landing_region_bea624a510ae,"Athens, Greece -> Istanbul, Turkey",17.0,17,17,17,9,3,9,3,1.0,1,True,False,False,0.0,17.0
+TR,landing_region_bea624a510ae::landing_region_e3bb6769193d,"Istanbul, Turkey -> Athens, Greece",17.0,17,17,17,9,3,9,3,1.0,1,True,False,False,0.0,17.0
 TW,landing_region_3362110f86da::landing_region_7a95dbddaa36,"Pa Li, Taiwan -> Yuanli, Taiwan",56.0,56,56,46,23,4,33,10,0.691358024691358,1,True,False,False,56.0,0.0
-TW,landing_region_3362110f86da::landing_region_ddcc0ff066ef,"Pa Li, Taiwan -> Budai, Taiwan",8.0,8,8,8,5,3,33,10,0.09876543209876543,2,False,True,False,8.0,0.0
-TW,landing_region_149ad599e1a3::landing_region_8eebb9f0ec75,"Tanjung Bemban, Indonesia -> Toucheng, Taiwan",4.0,12,12,12,6,5,33,10,0.04938271604938271,3,False,False,True,0.0,4.0
-TW,landing_region_3362110f86da::landing_region_d0ecf913edd7,"Pa Li, Taiwan -> Katong, Singapore",4.0,12,12,12,6,5,33,10,0.04938271604938271,4,False,False,False,0.0,4.0
-TW,landing_region_8eebb9f0ec75::landing_region_d0ecf913edd7,"Toucheng, Taiwan -> Katong, Singapore",4.0,12,12,12,6,5,33,10,0.04938271604938271,5,False,False,False,0.0,4.0
-TW,landing_region_7a95dbddaa36::landing_region_ddcc0ff066ef,"Yuanli, Taiwan -> Budai, Taiwan",2.0,2,2,2,1,1,33,10,0.024691358024691357,6,False,False,False,2.0,0.0
-TW,landing_region_319252418c1f::landing_region_3362110f86da,"Deep Water Bay, China -> Pa Li, Taiwan",1.5,3,3,3,3,1,33,10,0.018518518518518517,7,False,False,False,0.0,1.5
-TW,landing_region_319252418c1f::landing_region_8eebb9f0ec75,"Deep Water Bay, China -> Toucheng, Taiwan",1.5,3,3,3,3,1,33,10,0.018518518518518517,8,False,False,False,0.0,1.5
-US,landing_region_35391ab448ed::landing_region_a4e660c6c620,"Brookhaven, NY, United States -> Island Park, NY, United States",101.0,101,101,37,20,3,55,25,0.5489130434782609,1,True,False,False,101.0,0.0
-US,landing_region_5f578929a68a::landing_region_fee5a5fdbba8,"Harbour Pointe, WA, United States -> Cama Beach, WA, United States",27.666666666666668,29,29,17,9,5,55,25,0.1503623188405797,2,False,True,False,27.666666666666668,0.0
-US,landing_region_5f578929a68a::landing_region_94c53aa4a6d7,"Harbour Pointe, WA, United States -> Vancouver, BC, Canada",14.666666666666666,16,16,14,7,4,55,25,0.07971014492753623,3,False,False,True,14.666666666666666,0.0
-US,landing_region_0c894d5ef6d3::landing_region_af7df63397a0,"Dania Beach, FL, United States -> Jacksonville, FL, United States",14.0,14,14,14,8,7,55,25,0.07608695652173914,4,False,False,False,14.0,0.0
-US,landing_region_91000f65ec77::landing_region_c227a3796213,"Kapolei, HI, United States -> Keawaula, HI, United States",9.0,9,9,6,3,3,55,25,0.04891304347826087,5,False,False,False,9.0,0.0
-US,landing_region_91000f65ec77::landing_region_df61fea74887,"Kapolei, HI, United States -> El Segundo, CA, United States",3.5,7,7,7,4,3,55,25,0.019021739130434784,6,False,False,False,3.5,0.0
-US,landing_region_c227a3796213::landing_region_df61fea74887,"Keawaula, HI, United States -> El Segundo, CA, United States",3.5,7,7,7,4,3,55,25,0.019021739130434784,7,False,False,False,3.5,0.0
-US,landing_region_ad2e1f237edf::landing_region_df3d1db01d0e,"Buffalo, NY, United States -> Toronto, ON, Canada",3.0,3,3,3,3,1,55,25,0.016304347826086956,8,False,False,False,0.0,3.0
-US,landing_region_5f578929a68a::landing_region_f41a83b9b5b3,"Harbour Pointe, WA, United States -> Cordova Bay, BC, Canada",2.6666666666666665,4,4,4,2,2,55,25,0.014492753623188404,9,False,False,False,2.6666666666666665,0.0
-US,landing_region_35391ab448ed::landing_region_59a210e88c9e,"Brookhaven, NY, United States -> New Haven, CT, United States",2.0,2,2,2,1,1,55,25,0.010869565217391304,10,False,False,False,2.0,0.0
-US,landing_region_58084817cbe7::landing_region_df61fea74887,"Paddington, NSW, Australia -> El Segundo, CA, United States",2.0,2,2,2,1,1,55,25,0.010869565217391304,11,False,False,False,0.0,2.0
-US,landing_region_0c894d5ef6d3::landing_region_83c1ffe3b901,"Dania Beach, FL, United States -> Mahuma, Curaçao",1.0,1,1,1,1,1,55,25,0.005434782608695652,12,False,False,False,0.0,1.0
-VI,landing_region_0c894d5ef6d3::landing_region_fd5565d28cce,"Dania Beach, FL, United States -> St. Croix, Virgin Islands, Virgin Islands (U.S.)",4.0,4,4,4,2,1,2,1,1.0,1,True,False,False,0.0,4.0
-VN,landing_region_54f9d6b44a8a::landing_region_d0ecf913edd7,"Danang, Vietnam -> Katong, Singapore",4.0,4,4,4,2,2,2,2,1.0,1,True,False,False,0.0,4.0
+TW,landing_region_069f1cd0a78f::landing_region_3362110f86da,"Tainan, Taiwan -> Pa Li, Taiwan",5.0,8,8,8,5,3,33,10,0.06172839506172839,2,False,True,False,5.0,0.0
+TW,landing_region_3362110f86da::landing_region_3f5e2b5e2386,"Pa Li, Taiwan -> Budai, Taiwan",3.0,6,6,6,4,2,33,10,0.037037037037037035,3,False,False,True,3.0,0.0
+TW,landing_region_3362110f86da::landing_region_5d023e72c246,"Pa Li, Taiwan -> Singapore, Singapore",2.4000000000000004,12,12,12,6,5,33,10,0.029629629629629634,4,False,False,False,0.0,2.4000000000000004
+TW,landing_region_3362110f86da::landing_region_9430e1a9028b,"Pa Li, Taiwan -> Changi North, Singapore",2.4000000000000004,12,12,12,6,5,33,10,0.029629629629629634,5,False,False,False,0.0,2.4000000000000004
+TW,landing_region_8eebb9f0ec75::landing_region_9430e1a9028b,"Toucheng, Taiwan -> Changi North, Singapore",2.4000000000000004,12,12,12,6,5,33,10,0.029629629629629634,6,False,False,False,0.0,2.4000000000000004
+TW,landing_region_8eebb9f0ec75::landing_region_af2b1cb46785,"Toucheng, Taiwan -> Tuas, Singapore",2.4000000000000004,12,12,12,6,5,33,10,0.029629629629629634,7,False,False,False,0.0,2.4000000000000004
+TW,landing_region_8eebb9f0ec75::landing_region_b37879c52c2b,"Toucheng, Taiwan -> Batam, Indonesia",2.4000000000000004,12,12,12,6,5,33,10,0.029629629629629634,8,False,False,False,0.0,2.4000000000000004
+TW,landing_region_3f5e2b5e2386::landing_region_7a95dbddaa36,"Budai, Taiwan -> Yuanli, Taiwan",2.0,2,2,2,1,1,33,10,0.024691358024691357,9,False,False,False,2.0,0.0
+TW,landing_region_3362110f86da::landing_region_7a7da5f2aeb1,"Pa Li, Taiwan -> Lantau Island, China",0.75,3,3,3,3,1,33,10,0.009259259259259259,10,False,False,False,0.0,0.75
+TW,landing_region_3362110f86da::landing_region_85e39fb7d29e,"Pa Li, Taiwan -> Chai Wan, China",0.75,3,3,3,3,1,33,10,0.009259259259259259,11,False,False,False,0.0,0.75
+TW,landing_region_7a7da5f2aeb1::landing_region_8eebb9f0ec75,"Lantau Island, China -> Toucheng, Taiwan",0.75,3,3,3,3,1,33,10,0.009259259259259259,12,False,False,False,0.0,0.75
+TW,landing_region_85e39fb7d29e::landing_region_8eebb9f0ec75,"Chai Wan, China -> Toucheng, Taiwan",0.75,3,3,3,3,1,33,10,0.009259259259259259,13,False,False,False,0.0,0.75
+US,landing_region_08d221ee162c::landing_region_b451e83206f9,"Clinton, WA, United States -> Lynnwood, WA, United States",580.5,591,591,309,160,57,202,76,0.769893899204244,1,True,False,False,580.5,0.0
+US,landing_region_3b64f12b5328::landing_region_a4e660c6c620,"Northport, NY, United States -> Island Park, NY, United States",101.0,101,101,37,20,3,202,76,0.13395225464190982,2,False,True,False,101.0,0.0
+US,landing_region_b451e83206f9::landing_region_fee5a5fdbba8,"Lynnwood, WA, United States -> Cama Beach, WA, United States",17.166666666666668,29,29,17,9,5,202,76,0.02276746242263484,3,False,False,True,17.166666666666668,0.0
+US,landing_region_b451e83206f9::landing_region_d026f3e5a07d,"Lynnwood, WA, United States -> Point Roberts, WA, United States",14.666666666666666,16,16,14,7,4,202,76,0.01945181255526083,4,False,False,False,14.666666666666666,0.0
+US,landing_region_af7df63397a0::landing_region_bd03623e84bf,"Jacksonville, FL, United States -> Hollywood, FL, United States",14.0,14,14,14,8,7,202,76,0.01856763925729443,5,False,False,False,14.0,0.0
+US,landing_region_1188870205d8::landing_region_8d528e077d6e,"Koko Head, HI, United States -> Kahe Point, HI, United States",9.0,9,9,6,3,3,202,76,0.011936339522546418,6,False,False,False,9.0,0.0
+US,landing_region_8d528e077d6e::landing_region_df61fea74887,"Kahe Point, HI, United States -> El Segundo, CA, United States",7.0,7,7,7,4,3,202,76,0.009283819628647215,7,False,False,False,7.0,0.0
+US,landing_region_ad2e1f237edf::landing_region_df3d1db01d0e,"Buffalo, NY, United States -> Toronto, ON, Canada",3.0,3,3,3,3,1,202,76,0.003978779840848806,8,False,False,False,0.0,3.0
+US,landing_region_b451e83206f9::landing_region_f41a83b9b5b3,"Lynnwood, WA, United States -> Cordova Bay, BC, Canada",2.6666666666666665,4,4,4,2,2,202,76,0.0035366931918656055,9,False,False,False,2.6666666666666665,0.0
+US,landing_region_58084817cbe7::landing_region_df61fea74887,"Paddington, NSW, Australia -> El Segundo, CA, United States",2.0,2,2,2,1,1,202,76,0.002652519893899204,10,False,False,False,0.0,2.0
+US,landing_region_59a210e88c9e::landing_region_a815bd4c40bf,"New Haven, CT, United States -> Shirley, NY, United States",2.0,2,2,2,1,1,202,76,0.002652519893899204,11,False,False,False,2.0,0.0
+US,landing_region_83c1ffe3b901::landing_region_bd03623e84bf,"Mahuma, Curaçao -> Hollywood, FL, United States",1.0,1,1,1,1,1,202,76,0.001326259946949602,12,False,False,False,0.0,1.0
+VE,landing_region_382d2f85d165::landing_region_b3c39d3335c0,"Cabimas, Venezuela -> Maracaibo, Venezuela",14.0,14,14,8,4,2,4,2,1.0,1,True,False,False,14.0,0.0
+VI,landing_region_bd03623e84bf::landing_region_fd5565d28cce,"Hollywood, FL, United States -> St. Croix, Virgin Islands, Virgin Islands (U.S.)",4.0,4,4,4,2,1,2,1,1.0,1,True,False,False,0.0,4.0
+VN,landing_region_54f9d6b44a8a::landing_region_9430e1a9028b,"Danang, Vietnam -> Changi North, Singapore",4.0,4,4,4,2,2,2,2,1.0,1,True,False,False,0.0,4.0

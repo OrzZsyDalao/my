@@ -5,23 +5,23 @@
     "analysis_scope": "probe_country_service",
     "auditable_paper_case": true
   },
-  "total_units": 295,
+  "total_units": 370,
   "dataset_family_unit_counts": {
-    "DNS Roots": 169,
-    "Applications": 43,
-    "Topology references": 83
+    "DNS Roots": 222,
+    "Applications": 53,
+    "Topology references": 95
   },
   "service_facing_combined": {
     "target_class": "network_broad_physical_concentrated",
-    "target_units": 112,
-    "total_units": 212,
-    "target_share": 0.5283018867924528
+    "target_units": 81,
+    "total_units": 275,
+    "target_share": 0.29454545454545455
   },
   "topology_references": {
     "target_class": "network_broad_physical_concentrated",
-    "target_units": 3,
-    "total_units": 83,
-    "target_share": 0.03614457831325301
+    "target_units": 4,
+    "total_units": 95,
+    "target_share": 0.042105263157894736
   },
-  "classification_row_count": 11
+  "classification_row_count": 14
 }

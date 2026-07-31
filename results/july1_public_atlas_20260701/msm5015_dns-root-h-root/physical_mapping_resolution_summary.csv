@@ -1,5 +1,5 @@
 ﻿mapping_resolution_state,atomic_segment_count,atomic_segment_share,rtt_conclusive_segments,rtt_inconclusive_segments,rtt_conclusive_share,rtt_inconclusive_share,insufficiently_resolved_traces,total_valid_traces,interpretation
-uniquely_resolved,3323,0.018463162573619293,2421,902,0.7285585314474872,0.2714414685525128,1482,27055,exactly one feasible inter-region corridor candidate
-bounded_candidate_set,318,0.0017668629847760863,256,62,0.8050314465408805,0.1949685534591195,1482,27055,two or more feasible inter-region corridor candidates retained
-no_matched_corridor,128988,0.7166796310701189,82225,46763,0.6374623996030638,0.36253760039693617,1482,27055,sufficient atomic segment with no feasible inter-region corridor candidate
+uniquely_resolved,3802,0.02112456939659962,2421,1381,0.6367701209889531,0.3632298790110468,1482,27055,exactly one feasible inter-region corridor candidate
+bounded_candidate_set,1943,0.01079564396044005,1327,616,0.6829644879053011,0.31703551209469893,1482,27055,two or more feasible inter-region corridor candidates retained
+no_matched_corridor,126884,0.7049894432714746,81154,45730,0.6395920683458908,0.3604079316541093,1482,27055,sufficient atomic segment with no feasible inter-region corridor candidate
 insufficiently_resolved,47351,0.26309034337148574,37943,9408,0.801313594221875,0.19868640577812507,1482,27055,atomic segment lacks required country-level resolution

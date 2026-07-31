@@ -6,5 +6,5 @@
 5,segments_with_complete_asn_labels,atomic_segment,168912,mappable_atomic_segments,177203.0,0.9532118530724649,True
 6,segments_with_landing_candidates,atomic_segment,32544,mappable_atomic_segments,177203.0,0.1836537756132797,True
 7,segments_with_feasible_corridors,atomic_segment,12415,segments_with_landing_candidates,32544.0,0.38148352999016716,True
-8,inter_region_candidate_bearing_segments,atomic_segment,8213,segments_with_feasible_corridors,12415.0,0.6615384615384615,True
-9,paper_auditable_country_service_units,country_service_unit,50,all_country_service_scope_units,372.0,0.13440860215053763,True
+8,inter_region_candidate_bearing_segments,atomic_segment,9928,segments_with_feasible_corridors,12415.0,0.7996778091018929,True
+9,paper_auditable_country_service_units,country_service_unit,54,all_country_service_scope_units,372.0,0.14516129032258066,True

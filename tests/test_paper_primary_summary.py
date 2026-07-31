@@ -81,7 +81,7 @@ def test_build_units_joins_resolution_and_uses_explicit_family() -> None:
 
 
 def test_current_aggregate_reproduces_paper_primary_unit_counts() -> None:
-    """The checked-in July 1 aggregate retains the documented 295-unit corpus."""
+    """The checked-in 30 km July 1 aggregate retains its documented corpus."""
     root = Path(__file__).resolve().parents[1]
     aggregate = root / "results" / "july1_public_atlas_20260701" / "aggregate"
     entropy_path = (
@@ -96,9 +96,9 @@ def test_current_aggregate_reproduces_paper_primary_unit_counts() -> None:
         pd.read_csv(entropy_path, low_memory=False),
         pd.read_csv(resolution_path, low_memory=False),
     )
-    assert len(units) == 295
+    assert len(units) == 370
     assert units["dataset_family"].value_counts().to_dict() == {
-        "DNS Roots": 169,
-        "Topology references": 83,
-        "Applications": 43,
+        "DNS Roots": 222,
+        "Topology references": 95,
+        "Applications": 53,
     }

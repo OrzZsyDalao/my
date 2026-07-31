@@ -1401,6 +1401,24 @@ Neither path overlaps the historical sensitivity results.
 - `hop_pair_as_class` distinguishes `cross_as_transition`, `intra_as_hop_pair`, and `country_fallback`. Same-AS hop pairs remain in the complete same-population view but never enter the AS-boundary-only view.
 - ASN sentinels such as `-1`, `0`, `NA`, and `unknown` are treated as missing and use the explicit country fallback; this is post-processing semantics and does not alter IP-to-AS resolution.
 
+### Current 30 km Full Paper-Primary Package
+
+The full 18-measurement July 1 package was reaggregated with the locked 30 km
+landing-region maximum diameter. Every per-measurement `method_manifest.json`
+records `landing_region_maximum_diameter_km = 30.0`,
+`postprocess_candidate_output_v4`, and `observation_identity_v1`. The bundle
+manifest records generation from Git commit `08fd387` and rejects mixed or
+non-30 km measurement inputs.
+
+The fixed paper scope (`all_publicly_visible`, `probe_country_service`,
+`auditable_paper_case == True`) now contains 370 units: 222 DNS Root units,
+53 application units, and 95 topology-reference units. The
+`network_broad_physical_concentrated` class contains 81 of 275 service-facing
+units (29.45%) and 4 of 95 topology-reference units (4.21%). These values
+supersede the former 50 km counts of 295 total units, 112/212 service-facing
+target units, and 3/83 topology-reference target units. The former values must
+not be cited as 30 km results.
+
 ### July 1 Network-Transition Result Bundle
 
 The 18 public RIPE Atlas measurements from the July 1 window have been evaluated using the explicit network-transition distribution. The reviewable outputs are stored under `output/public_traceroute_by_msmid/`.
