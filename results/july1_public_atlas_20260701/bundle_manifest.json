@@ -1,6 +1,6 @@
 {
-  "generated_at_utc": "2026-07-30T11:48:22.946629+00:00",
-  "git_commit": "97a67e1608497fafff6dfae0448b7abc7c723b4d",
+  "generated_at_utc": "2026-07-31T01:14:00.820044+00:00",
+  "git_commit": "6e9993909dbdacb918cfe5dfed6189687596649b",
   "measurement_count": 18,
   "source": "output\\public_traceroute_by_msmid",
   "interpretation": "Corrected diameter-limited corridor reaggregation and physical mapping resolution audit; candidate relations are not ground-truth cable use.",
@@ -3116,9 +3116,14 @@
       "sha256": "5fa32322addd612f4037ab378e8a849c4510de20d19eb744726c3246c5a418e0"
     },
     {
-      "path": "results\\july1_public_atlas_20260701\\aggregate\\all_measurements_cross_layer_normalized_entropy_audit.csv",
+      "path": "results\\july1_public_atlas_20260701\\aggregate\\all_measurements_cross_layer_normalized_entropy_audit_full.csv",
       "bytes": 3115346,
       "sha256": "1037824bf38bce44fdef106b7ddfc51c21b7c5f5ea00e8b17722f99c4bd2d3b1"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\aggregate\\all_measurements_cross_layer_normalized_entropy_audit.csv",
+      "bytes": 924114,
+      "sha256": "901508817e297de3e66d9c64cba7096e2e62035a523c88e2ece4018558b32ddc"
     },
     {
       "path": "results\\july1_public_atlas_20260701\\aggregate\\all_measurements_uniquely_resolved_service_country_cross_layer_distribution.csv",
@@ -3191,7 +3196,12 @@
     "cross_layer_normalized_entropy_audit.csv": {
       "source_file_count": 18,
       "source_row_count": 6668,
-      "aggregate_row_count": 6668
+      "aggregate_row_count": 6668,
+      "full_aggregate_row_count": 6668,
+      "compact_aggregate_row_count": 6668,
+      "compact_column_count": 15,
+      "compact_bytes": 924114,
+      "github_contents_api_inline_limit_bytes": 1048576
     },
     "uniquely_resolved_service_country_cross_layer_distribution.csv": {
       "source_file_count": 18,
