@@ -1,0 +1,120 @@
+{
+  "sensitivity_schema_version": "landing_region_diameter_sensitivity_v1",
+  "analysis_type": "landing_region_maximum_diameter_sensitivity",
+  "core_analysis_commit": "unknown",
+  "sensitivity_analysis_commit": "unknown",
+  "identity_schema_version": "observation_identity_v1",
+  "postprocess_schema_version": "postprocess_candidate_output_v4",
+  "generation_git_head": "4b3292a588a789127fec46f3cff26607ab2828fa",
+  "generation_worktree_dirty": true,
+  "generated_at_utc": "2026-07-31T08:21:08.435637+00:00",
+  "source_result_directory": "D:\\Workspace\\infocom26\\output\\sensitivity_a_root\\catchment50_diameter50_rtt5",
+  "runtime_output_directory": "D:\\Workspace\\infocom26\\output\\sensitivity_landing_region_diameter_30km_baseline",
+  "publication_output_directory": "D:\\Workspace\\infocom26\\results\\july1_public_atlas_20260701\\sensitivity_landing_region_diameter_30km_baseline",
+  "source_file_sha256": {
+    "pipeline\\run_landing_region_diameter_sensitivity.py": "824917c432fdce89cfea0103d58b9db00833f82c7bef7a3d56da2caa902d45c6",
+    "pipeline\\run_a_root_sensitivity.py": "eadb44f1513553a65d4501538a707567851739bd172556add61452d86a3f7053",
+    "source\\postprocess_candidate_output.py": "a5da910f1b753943980eb0b06120fcb4399d35e621a19ab2bde6247dbdb728f0",
+    "source\\physical_corridor_model.py": "4bb180dfe123420b07bd9f547ccc8c309379a4d420e85e36c5dfc9b8a0c74dab"
+  },
+  "input_files": [
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt5\\cable_matching_output.json",
+      "bytes": 164686256,
+      "sha256": "b6a359d0079798957b62f3c9ca7434b784d3c73bbe35017e25a1a9237411f39d",
+      "row_count": null
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt5\\atomic_segment_inventory.csv.gz",
+      "bytes": 2202658,
+      "sha256": "7524c4f273fb33f56cdb5d42d93bc81cec7fbaa39fb3b8f2c7952ff3036adbd4",
+      "row_count": null
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt5\\atomic_segment_inventory_manifest.json",
+      "bytes": 963,
+      "sha256": "f853016ffcf929e477767a6c69a95b1f0e261f7bb9231c496946cf89b4e2d09f",
+      "row_count": null
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt5\\cable_matching_manifest.json",
+      "bytes": 3032,
+      "sha256": "b82bc4b2862c2c0e254a243b440233320ec00168b9fc6260570a23d4610cd530",
+      "row_count": null
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt5\\cable_matching_stats_5051.json",
+      "bytes": 20616,
+      "sha256": "07b4188637f00609276f04e26f06dffaf43b41c79cb5c6418c13ec09fa2e837d",
+      "row_count": null
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt5\\trace_observation_summary.csv",
+      "bytes": 3481411,
+      "sha256": "e5069dd38bad02f54c95235d369d73aede6caa8bd7e83d81bce590aa2908fdc2",
+      "row_count": 10211
+    },
+    {
+      "path": "output\\sensitivity_a_root\\catchment50_diameter50_rtt5\\trace_denominator_audit.csv",
+      "bytes": 389,
+      "sha256": "c99891367b2e812b268ea8f3842464eb7159ebc24fce5148abc3d7f6c000e1aa",
+      "row_count": 1
+    }
+  ],
+  "generated_outputs": [
+    {
+      "path": "output\\sensitivity_landing_region_diameter_30km_baseline\\landing_region_diameter_sensitivity_summary.csv",
+      "bytes": 6437,
+      "sha256": "a82e707988bcf48e97e6b0ac3a2cdde103eeb9bd3e104ba78b9e166a1eb4803c",
+      "row_count": 5
+    },
+    {
+      "path": "output\\sensitivity_landing_region_diameter_30km_baseline\\landing_region_diameter_sensitivity_shared_unit_comparison.csv",
+      "bytes": 99105,
+      "sha256": "b56afaba0f0686c1a7d31558651bab69127f6833c71f2b9d7e9ce2c7a1f8e2d9",
+      "row_count": 71
+    }
+  ],
+  "settings": [
+    {
+      "landing_catchment_radius_km": 50,
+      "landing_region_maximum_diameter_km": 10,
+      "rtt_tolerance_ms": 5,
+      "is_baseline": false
+    },
+    {
+      "landing_catchment_radius_km": 50,
+      "landing_region_maximum_diameter_km": 20,
+      "rtt_tolerance_ms": 5,
+      "is_baseline": false
+    },
+    {
+      "landing_catchment_radius_km": 50,
+      "landing_region_maximum_diameter_km": 30,
+      "rtt_tolerance_ms": 5,
+      "is_baseline": true
+    },
+    {
+      "landing_catchment_radius_km": 50,
+      "landing_region_maximum_diameter_km": 40,
+      "rtt_tolerance_ms": 5,
+      "is_baseline": false
+    },
+    {
+      "landing_catchment_radius_km": 50,
+      "landing_region_maximum_diameter_km": 50,
+      "rtt_tolerance_ms": 5,
+      "is_baseline": false
+    }
+  ],
+  "baseline": {
+    "landing_catchment_radius_km": 50,
+    "landing_region_maximum_diameter_km": 30,
+    "rtt_tolerance_ms": 5
+  },
+  "historical_result_protection": {
+    "historical_output_directory": "D:\\Workspace\\infocom26\\output\\sensitivity_a_root",
+    "historical_outputs_modified": false
+  },
+  "interpretation": "This analysis varies only landing-region maximum diameter. Stable exact cable/landing-pair candidates are reused, while corridor remapping and paper statistics are recomputed. Candidate relations remain feasible hypotheses, not ground-truth cable use."
+}

@@ -1,8 +1,8 @@
 {
-  "generation_git_head": "094fab80d86a04c8bc3cfdd567ca4d9b7f179009",
+  "generation_git_head": "4b3292a588a789127fec46f3cff26607ab2828fa",
   "generation_worktree_dirty": true,
-  "generated_at_utc": "2026-07-31T06:56:58.680046+00:00",
-  "git_commit": "094fab80d86a04c8bc3cfdd567ca4d9b7f179009",
+  "generated_at_utc": "2026-07-31T08:22:59.104758+00:00",
+  "git_commit": "4b3292a588a789127fec46f3cff26607ab2828fa",
   "git_commit_deprecated_alias": true,
   "packaging_commit": "unknown",
   "sensitivity_analysis_commit": "unknown",
@@ -3184,6 +3184,21 @@
       "path": "results\\july1_public_atlas_20260701\\sensitivity\\a_root_sensitivity_manifest.json",
       "bytes": 76285,
       "sha256": "f188e2b166e78c1f6cc9b9a5ae65e530306ba628b0f493eb766fc469b935a01b"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\sensitivity_landing_region_diameter_30km_baseline\\landing_region_diameter_sensitivity_summary.csv",
+      "bytes": 6437,
+      "sha256": "a82e707988bcf48e97e6b0ac3a2cdde103eeb9bd3e104ba78b9e166a1eb4803c"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\sensitivity_landing_region_diameter_30km_baseline\\landing_region_diameter_sensitivity_shared_unit_comparison.csv",
+      "bytes": 99105,
+      "sha256": "b56afaba0f0686c1a7d31558651bab69127f6833c71f2b9d7e9ce2c7a1f8e2d9"
+    },
+    {
+      "path": "results\\july1_public_atlas_20260701\\sensitivity_landing_region_diameter_30km_baseline\\landing_region_diameter_sensitivity_manifest.json",
+      "bytes": 5225,
+      "sha256": "b4d3b2f7344f8aef7fecd135e021c03d46cd7089592624425ed4b09fc1f0adc8"
     }
   ],
   "skipped": [],
@@ -4509,7 +4524,7 @@
     "output\\public_traceroute_by_msmid\\msm86710103_popular-application-wikipedia\\geography_type_candidate_dependency_summary.csv": "86faf3550fb3ca93aa75d9b8f4f1e0e1f803e2990f4136b78abd81832136fece"
   },
   "source_file_sha256": {
-    "ripe_atlas_public_download\\package_reaggregated_paper_results.py": "e906c7ac77326a6e380891047f72bbb71a4ae25a2bccf8bbcf083a4892cf4bfd",
+    "ripe_atlas_public_download\\package_reaggregated_paper_results.py": "ce014717fb7111146afa2ba7b8ffa44efb65b7c5c50dc24239f5f69076f64158",
     "source\\build_paper_primary_summary.py": "854d78011df7b57e2a545b038680d30aff7688c7f95154d7d800a6f34ce7a8a9",
     "source\\result_provenance.py": "6af6995be00772ccd2fbce3b523211fdf1e1c2387c42d1b2ebabe776e64c175f"
   },
@@ -4517,6 +4532,19 @@
     "included": true,
     "setting_count": 27,
     "baseline_setting": "catchment50_diameter50_rtt5"
+  },
+  "landing_region_diameter_sensitivity": {
+    "included": true,
+    "setting_count": 5,
+    "diameters_km": [
+      10,
+      20,
+      30,
+      40,
+      50
+    ],
+    "baseline_diameter_km": 30,
+    "historical_sensitivity_overwritten": false
   },
   "large_runtime_outputs_not_packaged": [
     "cable_matching_output.json",

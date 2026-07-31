@@ -597,6 +597,58 @@ def main() -> None:
             "baseline_setting": "catchment50_diameter50_rtt5",
         }
 
+    diameter_sensitivity_source_root = (
+        REPO_ROOT
+        / "output"
+        / "sensitivity_landing_region_diameter_30km_baseline"
+    )
+    diameter_sensitivity_files = [
+        "landing_region_diameter_sensitivity_summary.csv",
+        "landing_region_diameter_sensitivity_shared_unit_comparison.csv",
+        "landing_region_diameter_sensitivity_manifest.json",
+    ]
+    diameter_summary_source = (
+        diameter_sensitivity_source_root
+        / "landing_region_diameter_sensitivity_summary.csv"
+    )
+    diameter_sensitivity_accounting: Dict[str, Any] = {
+        "included": False,
+        "setting_count": 0,
+    }
+    if diameter_summary_source.exists() and diameter_summary_source.stat().st_size > 0:
+        diameter_frame = pd.read_csv(diameter_summary_source)
+        observed_diameters = set(
+            pd.to_numeric(
+                diameter_frame["landing_region_maximum_diameter_km"],
+                errors="raise",
+            ).astype(int)
+        )
+        expected_diameters = {10, 20, 30, 40, 50}
+        if len(diameter_frame) != 5 or observed_diameters != expected_diameters:
+            raise RuntimeError(
+                "Expected isolated diameter sensitivity settings "
+                f"{sorted(expected_diameters)}, found {sorted(observed_diameters)}."
+            )
+        diameter_target_root = (
+            destination_root
+            / "sensitivity_landing_region_diameter_30km_baseline"
+        )
+        for filename in diameter_sensitivity_files:
+            copy_if_compact(
+                diameter_sensitivity_source_root / filename,
+                diameter_target_root / filename,
+                max_bytes,
+                copied,
+                skipped,
+            )
+        diameter_sensitivity_accounting = {
+            "included": True,
+            "setting_count": int(len(diameter_frame)),
+            "diameters_km": sorted(observed_diameters),
+            "baseline_diameter_km": 30,
+            "historical_sensitivity_overwritten": False,
+        }
+
     paper_primary_command = [
         sys.executable,
         str(REPO_ROOT / "source" / "build_paper_primary_summary.py"),
@@ -663,6 +715,9 @@ def main() -> None:
             REPO_ROOT,
         ),
         "a_root_sensitivity": sensitivity_accounting,
+        "landing_region_diameter_sensitivity": (
+            diameter_sensitivity_accounting
+        ),
         "large_runtime_outputs_not_packaged": [
             "cable_matching_output.json",
             "trace_candidate_support.csv",

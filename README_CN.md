@@ -124,7 +124,7 @@ Application observation
 
 1. 下载或准备 RIPE Atlas traceroute。
 2. 准备 probe metadata、pfx2as、IP geolocation、AS relationship、owner-to-AS、cable metadata。
-3. 运行 Stage 1 feasible corridor construction：`python source/main_analysis.py --landing-region-maximum-diameter-km 50 --rtt-tolerance-ms 5`
+3. 运行 Stage 1 feasible corridor construction：`python source/main_analysis.py --landing-region-maximum-diameter-km 30 --rtt-tolerance-ms 5`
 4. 运行 Stage 2 application/network/corridor distribution audit：`python source/postprocess_candidate_output.py --input output/result/cable_matching_output.json --output output/result`
 5. 运行 robustness analyses：`python source/robustness_compare.py --input output/result/trace_candidate_support.csv --output output/result`
 6. 可选运行 legacy cable / owner analysis。
@@ -1384,6 +1384,26 @@ python source/build_paper_primary_summary.py
 当该 27 行汇总存在时，紧凑论文结果打包器还会将其复制到
 `results/july1_public_atlas_20260701/sensitivity/a_root_sensitivity_summary.csv`，
 并在 `bundle_manifest.json` 中记录参数组合数量和基线组合。
+
+### 30 km 论文默认值与独立直径敏感性
+
+论文主方法的 landing-region 最大直径默认值现为 30 km。历史 27 组 A-Root
+敏感性结果继续完整保留在 `output/sensitivity_a_root/`，其中原有
+`50/50/5` 基线不作修改，以保证已有实验可复现。
+
+运行新的独立直径敏感性分析：
+
+```bash
+python pipeline/run_landing_region_diameter_sensitivity.py --skip-existing
+```
+
+该分析固定 landing catchment radius 为 50 km、RTT tolerance 为 5 ms，对
+`10/20/30/40/50 km` 最大直径重新聚合，并以 30 km 为新基线。脚本复用稳定的
+exact cable/landing-pair candidates，不重新运行 traceroute matching。完整运行
+结果写入 `output/sensitivity_landing_region_diameter_30km_baseline/`，适合上传
+GitHub 的紧凑汇总写入
+`results/july1_public_atlas_20260701/sensitivity_landing_region_diameter_30km_baseline/`。
+两个目录均不会覆盖历史敏感性结果。
 - `hop_pair_as_class` 将 hop pair 分为 `cross_as_transition`、`intra_as_hop_pair` 和 `country_fallback`。同 AS hop pair 继续保留在完整同分母视图中，但不会进入 AS-boundary-only 视图。
 - `-1`、`0`、`NA`、`unknown` 等 ASN sentinel 会作为缺失值进入显式 country fallback；该规则只属于后处理语义，不修改 IP-to-AS 解析逻辑。
 
@@ -1458,7 +1478,7 @@ Stage 1 现在补充记录与论文方法定义对齐的元数据，但不改变
 - 如需指定其他 IPinfo ASN 数据库，可以使用 `--asn-mmdb-path`。
 ## 有界直径走廊、映射解析状态与统一计数
 
-Landing region 现在采用确定性的有界直径聚类。自动生成的 region 只有在任意两个成员 landing station 的距离均不超过 `landing_region_maximum_diameter_km` 时才允许合并。默认 50 km 因此表示自动 region 的最大直径，而不是 single-linkage 的连边阈值。默认 CLI 参数为 `--landing-region-maximum-diameter-km`；`--landing-region-radius-km` 仅作为会输出警告的兼容别名；人工 override 仍单独标记。
+Landing region 现在采用确定性的有界直径聚类。自动生成的 region 只有在任意两个成员 landing station 的距离均不超过 `landing_region_maximum_diameter_km` 时才允许合并。默认 30 km 因此表示自动 region 的最大直径，而不是 single-linkage 的连边阈值。默认 CLI 参数为 `--landing-region-maximum-diameter-km`；`--landing-region-radius-km` 仅作为会输出警告的兼容别名；人工 override 仍单独标记。
 
 `strict parallel` 与 `corridor co-group` 的语义不同：
 

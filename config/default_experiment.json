@@ -1,7 +1,7 @@
 {
   "measurement_window": null,
   "landing_catchment_radius_km": 50.0,
-  "landing_region_maximum_diameter_km": 50.0,
+  "landing_region_maximum_diameter_km": 30.0,
   "same_city_policy": "retain",
   "same_city_distance_threshold_km": 25.0,
   "timeout_gap_policy": "allow_timeout_bridged",

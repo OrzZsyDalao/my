@@ -176,7 +176,7 @@ Recommended paper-facing run order:
 1. Download or prepare RIPE Atlas traceroute inputs.
 2. Prepare probe metadata, IPinfo geolocation, IPinfo ASN MMDB, AS relationship, owner-to-AS, and cable metadata.
 3. Run Stage 1 feasible corridor construction with landing-region grouping:
-   `python source/main_analysis.py --landing-region-maximum-diameter-km 50 --rtt-tolerance-ms 5`
+   `python source/main_analysis.py --landing-region-maximum-diameter-km 30 --rtt-tolerance-ms 5`
 4. Run Stage 2 application/network/corridor distribution audit:
    `python source/postprocess_candidate_output.py --input output/result/cable_matching_output.json --output output/result`
 5. Run robustness analyses:
@@ -1376,6 +1376,28 @@ When the 27-row summary is available, the compact publication packager also
 copies it to
 `results/july1_public_atlas_20260701/sensitivity/a_root_sensitivity_summary.csv`
 and records the setting count and baseline in `bundle_manifest.json`.
+
+### 30 km Paper Default and Dedicated Diameter Sensitivity
+
+The paper-primary landing-region maximum diameter is now 30 km. The historical
+27-setting A-Root sensitivity remains unchanged under
+`output/sensitivity_a_root/`; its `50/50/5` baseline is retained for
+reproducibility.
+
+Run the new isolated diameter-only analysis with:
+
+```bash
+python pipeline/run_landing_region_diameter_sensitivity.py --skip-existing
+```
+
+It fixes landing catchment radius at 50 km and RTT tolerance at 5 ms, then
+reaggregates maximum diameters `10/20/30/40/50 km`, with 30 km as the new
+baseline. It reuses stable exact cable/landing-pair candidates and does not
+repeat traceroute matching. Runtime outputs are written to
+`output/sensitivity_landing_region_diameter_30km_baseline/`, while compact
+GitHub-ready summaries are written to
+`results/july1_public_atlas_20260701/sensitivity_landing_region_diameter_30km_baseline/`.
+Neither path overlaps the historical sensitivity results.
 - `hop_pair_as_class` distinguishes `cross_as_transition`, `intra_as_hop_pair`, and `country_fallback`. Same-AS hop pairs remain in the complete same-population view but never enter the AS-boundary-only view.
 - ASN sentinels such as `-1`, `0`, `NA`, and `unknown` are treated as missing and use the explicit country fallback; this is post-processing semantics and does not alter IP-to-AS resolution.
 
@@ -1450,7 +1472,7 @@ All current IP-to-ASN lookups use `data/ipinfo/ipinfo_asn.mmdb`.
 - Use `--asn-mmdb-path` to point either stage at another IPinfo ASN MMDB file.
 ## Diameter-Limited Corridors, Mapping Resolution, and Accounting
 
-Landing regions now use deterministic diameter-limited clustering. An automatically generated region may contain multiple landing stations only when every member remains within `landing_region_maximum_diameter_km` of every other member. The default 50 km value is therefore a maximum automatic region diameter, not a single-linkage edge threshold. The CLI option is `--landing-region-maximum-diameter-km`; `--landing-region-radius-km` remains only as a warning-emitting deprecated alias. Manual overrides remain explicit.
+Landing regions now use deterministic diameter-limited clustering. An automatically generated region may contain multiple landing stations only when every member remains within `landing_region_maximum_diameter_km` of every other member. The default 30 km value is therefore a maximum automatic region diameter, not a single-linkage edge threshold. The CLI option is `--landing-region-maximum-diameter-km`; `--landing-region-radius-km` remains only as a warning-emitting deprecated alias. Manual overrides remain explicit.
 
 `strict parallel` and `corridor co-group` have different meanings:
 

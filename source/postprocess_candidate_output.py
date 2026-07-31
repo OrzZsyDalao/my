@@ -32,7 +32,7 @@ PEERINGDB_DESCRIPTOR_PATH = os.path.join(DEFAULT_OUTPUT, "country_peeringdb_desc
 DEFAULT_COUNTRY_GEOGRAPHY_CATALOG = os.path.join(BASE_DIR, "data", "country_geography_types.json")
 DEFAULT_CABLE_DIR = os.path.join(BASE_DIR, "data", "cable")
 DEFAULT_LANDING_GEO = os.path.join(DEFAULT_CABLE_DIR, "landing-point-geo.json")
-DEFAULT_LANDING_REGION_MAXIMUM_DIAMETER_KM = 50.0
+DEFAULT_LANDING_REGION_MAXIMUM_DIAMETER_KM = 30.0
 POSTPROCESS_SCHEMA_VERSION = "postprocess_candidate_output_v4"
 DEFAULT_UNIT_FIELDS = ["probe_country", "service_id"]
 # Paper-primary relative target for the upper-bound mismatch view.
@@ -235,7 +235,7 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help=(
             "Maximum diameter used by the landing-region model during corridor "
-            "remapping. The default preserves the 50 km paper-primary setting."
+            "remapping. The paper-primary default is 30 km."
         ),
     )
     parser.add_argument(

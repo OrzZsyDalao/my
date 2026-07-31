@@ -915,7 +915,7 @@ class CableMatcher:
         as_graph_precompute: Optional[Dict[str, Any]] = None,
         rtt_tolerance_ms: float = 5.0,
         landing_catchment_radius_km: float = 50.0,
-        landing_region_maximum_diameter_km: float = 50.0,
+        landing_region_maximum_diameter_km: float = 30.0,
         landing_region_override: Optional[Dict[str, Dict[str, str]]] = None,
         landing_region_override_file: Optional[str] = None,
         cable_availability_mode: str = "confirmed_active_only",
@@ -2396,7 +2396,7 @@ def parse_args() -> argparse.Namespace:
         new_value if new_value is not None else legacy_value
     )
     if args.landing_region_maximum_diameter_km is None:
-        args.landing_region_maximum_diameter_km = 50.0
+        args.landing_region_maximum_diameter_km = 30.0
     return args
 
 
