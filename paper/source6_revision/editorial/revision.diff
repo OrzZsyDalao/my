@@ -1,0 +1,1058 @@
+--- original/IEEE-conference-template-062824.tex
++++ IEEE-conference-template-062824.tex
+@@ -22,27 +22,24 @@
+ \maketitle
+ 
+ \begin{abstract}
+-Submarine cables underpin Internet connectivity, yet the diversity
+-visible in traceroute does not reveal how broadly service paths are supported
+-by physical infrastructure. A country may reach a service through many network
+-transitions while those paths converge on only a few feasible coastal
+-directions. We study this cross-layer divergence by comparing, over identical
+-path segments, distributions of observed AS transitions and feasible
+-landing-region corridors. Our analysis covers RIPE Atlas measurements of DNS
+-Roots, applications, and multi-target topology references. The results reveal
+-that network diversity and
+-physical-corridor diversity often diverge for service-facing paths. Some
+-country--service populations combine broad network transitions with
+-concentrated feasible-corridor support, while others remain broad at both
++The diversity visible in traceroute does not reveal how broadly physical
++infrastructure supports Internet service paths. A country may reach a service
++through many network transitions while those paths converge on only a few
++feasible coastal directions. We study this cross-layer divergence by comparing
++distributions of observed AS transitions and feasible landing-region corridors
++over identical path segments. Our analysis covers RIPE Atlas measurements of
++DNS Roots, applications, and multi-target topology references. Network
++diversity and physical-corridor diversity often diverge for service-facing
++paths: some country--service populations combine broad network transitions
++with concentrated feasible-corridor support, while others remain broad at both
+ layers. This contraction is much less common in multi-target topology
+ measurements, showing that service selection and deployment must be retained
+-when characterizing the user-visible physical footprint. Geography shapes
+-entry into submarine infrastructure; service deployment and target selection
+-shape whether that exposure spreads across coastal directions or concentrates
+-within a few. Exposure and physical concentration are distinct properties.
+-Multiple network routes can rest on a narrow feasible
+-physical-corridor space, making a cross-layer view essential to evaluating
+-service diversity.
++when characterizing the user-visible physical footprint. Exposure and physical
++concentration describe distinct properties. Geography shapes entry into
++submarine infrastructure; service deployment and target selection shape
++whether that exposure spreads across coastal directions or concentrates within
++a few. Multiple network routes can rest on a narrow feasible physical-corridor
++space, making a cross-layer view essential to evaluating service diversity.
+ \end{abstract}
+ 
+ \begin{IEEEkeywords}
+--- original/files/1-introduction.tex
++++ files/1-introduction.tex
+@@ -5,68 +5,74 @@
+ nearly all intercontinental traffic and connecting users to services worldwide
+ ~\cite{telegeography_submarine_map}. Cable disruptions can isolate regions,
+ degrade remote-service access, and redirect paths toward longer or congested
+-alternatives. Internet measurements expose these paths through logical
++alternatives. Internet measurements describe the paths through logical
+ indicators such as routers, Autonomous Systems (ASes), and service replicas.
+ 
+ Logical and physical diversity describe different structures. Paths traversing
+-different routers or ASes may leave a country or region (for convenience, country hereafter refers to countries or regions) through the same coastal area or
+-converge on the same submarine corridor. A service can therefore present a
+-broad network-layer path population while its feasible physical support
+-occupies only a few coastal directions. Joint analysis of the application
+-target, observed network path, and physical candidate space reveals whether
++different routers or ASes may leave a country or region through the same
++coastal area or converge on the same submarine corridor. Hereafter, country
++refers to countries or regions. A service can therefore present a broad
++network-layer path population while its feasible physical support occupies
++only a few coastal directions. Joint analysis of the application target,
++observed network path, and physical candidate space reveals whether
+ network-layer diversity is preserved across coastal directions.
+ 
+ Prior work measures user-path involvement with submarine infrastructure
+ ~\cite{liu2020outofsight}, associates AS links with cable systems
+ ~\cite{ye2023impact,ramanathan2023nautilus,wang2025calypso}, and constructs
+ cross-layer infrastructure maps~\cite{durairajan2013atlas,anderson2022igdb}.
+-We build a paired distribution audit: for each country-service population, the
+-network transitions observed in traceroute are compared with feasible
+-landing-region corridors supported by the same atomic segments.
++Our paired distribution audit compares the network transitions and feasible
++landing-region corridors of each country-service population. Both
++distributions are constructed from the same atomic segments.
+ 
+ A \emph{landing-region corridor} is a direction-independent pair of bounded
+ landing regions connected by at least one active cable candidate. Router
+ locations, cable landing points and lifecycles, and propagation time determine
+-each segment's feasible corridor set. Equal shares of segment observation mass
+-are aggregated into a candidate-support distribution aligned with the
+-network-transition distribution.
++each segment's feasible corridor set. We allocate equal shares of segment
++observation mass across this set and aggregate them into a candidate-support
++distribution aligned with the network-transition distribution.
+ 
+-We study three questions: 
++We organize the audit around three research questions:
+ 
+-\textbf{RQ1} Measures how frequently country-service paths contain a feasible inter-region submarine corridor.
++\textbf{RQ1} How frequently do country-service paths contain a feasible inter-region submarine corridor?
+ 
+-\textbf{RQ2} Characterizes how observation mass is distributed across feasible corridors.
++\textbf{RQ2} How is observation mass distributed across feasible corridors?
+ 
+-\textbf{RQ3} Identifies country-service populations whose broad network
+-transition distributions project onto narrower corridor distributions.
++\textbf{RQ3} Which country-service populations have broad network
++transition distributions that project onto narrower corridor distributions?
+ 
+-We used dataset contains 490,911 valid traceroutes from 18 public RIPE Atlas
+-measurements covering all 13 DNS Roots, Wikipedia, Reddit, Netflix Assets, and
+-two multi-target topology references. The aligned one-hour snapshot yields
+-3,291,063 atomic segments of which 2,432,559 are projection-eligible and 124,350 support at least one feasible inter-region corridor. Under the 30-km landing-region
+-abstraction, 42.1\% of candidate-bearing segments support multiple corridors.
++We analyze 490,911 valid traceroutes from 18 public RIPE Atlas measurements
++covering all 13 DNS Roots, Wikipedia, Reddit, Netflix Assets, and two
++multi-target topology references. The aligned one-hour snapshot yields
++3,291,063 atomic segments. Of these, 2,432,559 are projection-eligible and
++124,350 support at least one feasible inter-region corridor. Under the 30-km
++landing-region abstraction, 42.1\% of candidate-bearing segments support
++multiple corridors.
+ 
+-For each auditable country-measurement unit, ordered endpoint-AS pairs form
+-the network distribution and uniformly allocated segment mass forms the
+-corridor distribution. Top-2 share measures absolute concentration, effective
+-category count measures breadth, and normalized entropy measures
+-support-relative evenness. A common 80\% Top-2 threshold supplies a descriptive
+-four-class view.
++We compare the distributions within each auditable country-measurement unit.
++Ordered endpoint-AS pairs form the network distribution, and uniformly
++allocated segment mass forms the corridor distribution. Top-2 share measures
++absolute concentration, effective category count measures breadth, and
++normalized entropy measures support-relative evenness. A common 80\% Top-2
++threshold supplies a descriptive four-class view.
+ 
+-The 370-unit analysis contains 222 DNS Root, 53 application, and 95 topology-
+-reference units. Median corridor Top-2 shares are 72.0\%, 70.3\%, and 30.6\%,
+-with effective corridor counts of 3.84, 3.51, and 18.01. Among 275 service-
+-facing units, 81 (29.5\%) combine broad network and concentrated corridor
+-distributions and 158 (57.5\%) remain broad at both layers; 4 of 95 topology-
+-reference units enter the first class. Country-matched comparisons further show
+-lower inter-region candidate exposure for service-facing measurements, with
+-island and archipelagic countries forming the highest-exposure group.
++The 370-unit analysis identifies both contraction and broad support across
++layers. It contains 222 DNS Root, 53 application, and 95 topology-reference
++units. Median corridor Top-2 shares are 72.0\%, 70.3\%, and 30.6\%, with
++effective corridor counts of 3.84, 3.51, and 18.01. Among 275 service-facing
++units, 81 (29.5\%) combine broad network and concentrated corridor
++distributions, and 158 (57.5\%) remain broad at both layers; 4 of 95
++topology-reference units enter the first class.
++
++Country-matched comparisons further show lower inter-region candidate
++exposure for service-facing measurements. Island and archipelagic countries
++form the highest-exposure group.
+ 
+ This paper makes three contributions. First, it formulates application-aware
+ submarine-cable measurement as a three-layer audit connecting services,
+ network transitions, and feasible physical corridors. Second, it develops a
+-reproducible projection using geographic, lifecycle, and propagation
+-feasibility with uniform allocation over each segment's corridor set. Third, it
+-measures exposure, concentration, and cross-layer contraction across DNS Roots,
+-applications, and topology references, including geographic and resolution
+-sensitivity analyses.
++reproducible projection that applies geographic, lifecycle, and propagation
++feasibility and allocates observation mass uniformly over each segment's
++corridor set. Third, it measures exposure, concentration, and cross-layer
++contraction across DNS Roots, applications, and topology references,
++including geographic and resolution sensitivity analyses.--- original/files/2-background.tex
++++ files/2-background.tex
+@@ -7,41 +7,40 @@
+ Users reach services through domain names, CDN resources, replicas, and anycast
+ targets. Traceroute exposes the intervening IP hops and AS transitions. For
+ geographically separated regions, these logical paths depend on submarine
+-cables joining coastal landing stations to terrestrial backhaul and visible
++cables that join coastal landing stations to terrestrial backhaul and visible
+ ASes. Multiple cables can connect the same coastal regions, and one cable can
+ serve several landing locations.
+ 
+ The network-to-physical relationship is many-to-many. Different routers or AS
+ transitions may project onto one landing-region corridor, while a recurring
+-network transition may support several physical alternatives. We therefore
+-measure network diversity as the distribution of observed logical transitions
+-and physical diversity as the corridor distribution supported by the same
+-observations.
++network transition may support several physical alternatives. We measure the
++two distributions over the same observations: network diversity describes
++observed logical transitions, and physical diversity describes their supported
++corridor distribution.
+ 
+-Landing regions provide a stable geographic unit between exact landing stations
+-and country-wide cable counts. Exact stations preserve facility detail but split
+-nearby coastal access points that serve the same direction. Country-level cable
+-inventories combine distinct coastlines and international directions. A bounded
+-landing region retains coastal structure, and a corridor identifies the paired
+-entry-exit direction connecting two such regions. Parallel cable systems can
+-therefore share one corridor while remaining distinguishable in the underlying
+-candidate records.
++Landing regions provide a stable geographic unit between exact landing
++stations and country-wide cable counts. Exact stations preserve facility
++detail but split nearby coastal access points that serve the same direction.
++Country-level cable inventories combine distinct coastlines and international
++directions. A bounded landing region retains coastal structure, and a corridor
++identifies the paired entry-exit direction connecting two such regions.
++Parallel cable systems can share one corridor while remaining distinguishable
++in the underlying candidate records.
+ 
+ Countries provide a shared geographic and external-connectivity context.
+ Island, coastal, and landlocked geography shapes access to submarine
+ infrastructure; landing facilities, backhaul, gateways, exchanges, and operator
+ interconnection shape the paths available to users. Country grouping retains
+-variation among access networks and upstream providers within that context. So it is natural to research on country-level.
++variation among access networks and upstream providers within that context.
+ 
+ \subsection{Existing Cross-Layer Measurements}
+ \label{sec:background_existing_work}
+ 
+ Event-oriented studies relate new submarine connectivity to routing changes.
+ Bischof et al.\ characterized Cuba's connectivity before and after ALBA-1 and
+-later formulated the broader task of connecting Internet observations to the
+-worldwide cable mesh~\cite{bischof2015cuba,bischof2018untangling}. Fanou et al.\
+-measured routing changes following new cable deployments
+-~\cite{fanou2020unintended}.
++later formulated the task of connecting Internet observations to the worldwide
++cable mesh~\cite{bischof2015cuba,bischof2018untangling}. Fanou et al.\ measured
++routing changes following new cable deployments~\cite{fanou2020unintended}.
+ 
+ User-oriented work measures submarine involvement in service paths. Liu et
+ al.\ combine resource discovery, RIPE Atlas traceroutes, geolocation, and
+@@ -51,7 +50,7 @@
+ international cable and landing-station structures and analyze their
+ interaction with routing~\cite{ye2023impact}.
+ 
+-These two perspectives motivate separate exposure and concentration measures.
++Exposure and concentration describe complementary aspects of service paths.
+ Exposure counts how frequently a service path enters a feasible submarine
+ candidate space. Concentration examines the structure of that space after
+ entry. A country may have high exposure and broad corridor support, or low
+@@ -69,35 +68,35 @@
+ Xaminer applies cross-layer maps to configurable infrastructure analyses
+ ~\cite{ramanathan2024xaminer}.
+ 
+-Service deployment determines which paths enter these mappings. Anycast routing,
+-replica placement, and interconnection select service instances and their
+-network paths~\cite{cicalese2015anycast,devries2017anycast}. We combine this
+-service-specific path view with physical-candidate projection and compare the
+-resulting network and corridor distributions over identical atomic segments.
++Service deployment determines which paths enter these mappings. Anycast
++routing, replica placement, and interconnection select service instances and
++their network paths~\cite{cicalese2015anycast,devries2017anycast}. We retain
++this service-specific path view when projecting physical candidates and
++comparing network and corridor distributions over identical atomic segments.
+ 
+-The paired construction also aligns the statistical unit across layers. A
+-network transition and its corridor support originate from the same atomic
+-segment, so changes in concentration reflect the projection of a fixed
+-observation population. Country-service aggregation then preserves deployment
+-differences among equivalent services and geographic differences among their
+-users.
++The paired construction aligns the statistical unit across layers. A network
++transition and its corridor support originate from the same atomic segment,
++so changes in concentration reflect the projection of a fixed observation
++population. Country-service aggregation preserves deployment differences
++among equivalent services and geographic differences among their users.
+ 
+ \subsection{Country-Service View of Cross-Layer Diversity}
+ \label{sec:background_motivation}
+ 
+ Country and service jointly define each observation population. Geographic and
+ interconnection environments shape source-side options; anycast, replica
+-selection, and routing choose among them. DNS Roots illustrate this interaction:
+-functionally equivalent services operate independent anycast deployments, so a
+-country may reach different Roots through distinct instances, AS transitions,
+-and corridors. Distributed applications similarly localize access in some
+-countries and direct others toward remote infrastructure.
++selection, and routing choose among them. DNS Roots illustrate this
++interaction. Functionally equivalent services operate independent anycast
++deployments, so a country may reach different Roots through distinct
++instances, AS transitions, and corridors. Distributed applications similarly
++localize access in some countries and direct others toward remote
++infrastructure.
+ 
+ Multi-target topology measurements provide a broader reference population.
+-Their dynamic destinations sample many network directions during the same time
+-window, whereas each service measurement retains the destinations selected for
+-that service. Comparing these families characterizes the observed footprints of
+-their respective target-selection and routing processes.
++Their dynamic destinations sample many network directions during the same
++time window. Each service measurement instead retains the destinations
++selected for that service. Comparing these families characterizes the
++observed footprints of their target-selection and routing processes.
+ 
+ Our measurement separates three properties. \emph{Submarine exposure} is the
+ fraction of valid traceroutes containing an inter-region feasible corridor.
+--- original/files/3-framework.tex
++++ files/3-framework.tex
+@@ -4,17 +4,20 @@
+ \subsection{Overview}
+ \label{sec:framework_overview}
+ 
+-The framework combines traceroute, probe metadata, IP geolocation and ASN
+-mappings, AS context, and cable metadata. Figure~\ref{fig:framework_pipeline}
+-shows its three components: path extraction creates atomic hop-pair segments,
+-corridor projection constructs each segment's feasible landing-region corridor
+-set, and aggregation forms paired network and corridor distributions for every
+-country-service group. Complete traceroutes supply the exposure denominator.
+-
+-The two outputs answer complementary questions. Trace-level exposure records
+-whether a path contains at least one inter-region feasible corridor. Segment-
+-level distributions condition on candidate-bearing observations and compare
+-how their mass is organized across logical transitions and physical directions.
++The framework constructs paired network and corridor distributions for each
++country-service group. It combines traceroute, probe metadata, IP geolocation
++and ASN mappings, AS context, and cable metadata. Figure
++~\ref{fig:framework_pipeline} shows the three components in processing order:
++path extraction creates atomic hop-pair segments, corridor projection
++constructs each segment's feasible landing-region corridor set, and
++aggregation forms the paired distributions. Complete traceroutes supply the
++exposure denominator.
++
++The outputs retain the distinction between trace-level exposure and
++segment-level distributions. Exposure records whether a path contains at
++least one inter-region feasible corridor. The distributions condition on
++candidate-bearing observations and compare how their mass is organized across
++logical transitions and physical directions.
+ 
+ \begin{figure*}[t]
+ \centerline{\includegraphics[width=\textwidth]{figures/framework_cross_layer_audit.pdf}}
+@@ -25,25 +28,27 @@
+ \subsection{Path Extraction}
+ \label{sec:framework_path_segmentation}
+ 
+-Traceroutes are grouped by probe country and measured service, retaining the
+-source-side connectivity context and deployment-specific destination selection.
+-Hop countries remain segment attributes.
+-
+-Each traceroute is normalized into visible hops with locations, ASNs, and RTTs.
+-The analysis uses the complete visible sequence; an auxiliary path-entry view
++We group traceroutes by probe country and measured service to retain the
++source-side connectivity context and deployment-specific destination
++selection. Hop countries remain segment attributes.
++
++We normalize each traceroute into visible hops with locations, ASNs, and RTTs.
++The analysis uses the complete visible sequence. An auxiliary path-entry view
+ ends at the first appearance of the target ASN.
+ 
+-Successive visible, geolocated hops form atomic segments carrying endpoint
+-locations, ASNs, countries, positions, RTT difference, and bridged-hop count.
+-Repeated hops and RTT samples retain their trace identity and ordering. When
+-timeouts separate two visible hops, the bridged-hop count records the gap for
+-pipeline accounting.
++Successive visible, geolocated hops form atomic segments. Each segment records
++endpoint locations, ASNs, countries, positions, RTT difference, and bridged-hop
++count. Repeated hops and RTT samples retain their trace identity and ordering.
++When timeouts separate two visible hops, the bridged-hop count records the gap
++for pipeline accounting.
+ 
+ When both endpoint ASNs are available, their ordered pair is the segment's
+ network-transition label. Segments with one missing endpoint ASN receive an
+-ordered country-pair fallback label. Audit eligibility requires a country-
+-fallback share of at most 30\%, together with at least 30 candidate-bearing
+-segments, 10 probes, and 3 probe ASNs in the complete country-service group.
++ordered country-pair fallback label.
++
++Audit eligibility is evaluated over the complete country-service group. It
++requires a country-fallback share of at most 30\%, at least 30
++candidate-bearing segments, 10 probes, and 3 probe ASNs.
+ 
+ \subsection{Corridor Projection}
+ \label{sec:framework_projection}
+@@ -54,10 +59,10 @@
+ cable segments; unordered landing-point membership defines reachability at the
+ metadata's topology resolution and is recorded in provenance.
+ 
+-Endpoint catchment and landing-region grouping serve different roles. The
+-50-km catchment retrieves stations consistent with router geolocation; the
+-30-km diameter groups retrieved stations into coastal regions. Cable lifecycle
+-filtering is applied before region pairs are formed.
++Endpoint catchment retrieves landing stations, and landing-region grouping
++organizes them into coastal regions. The 50-km catchment retrieves stations
++consistent with router geolocation; the 30-km diameter groups the retrieved
++stations. Cable lifecycle filtering is applied before region pairs are formed.
+ 
+ \paragraph{Geographic and delay feasibility.}
+ Let \(D\) be the great-circle distance between a candidate landing pair and
+@@ -84,10 +89,10 @@
+ pairs may contribute to one corridor; distinct coastal entry-exit patterns
+ remain separate.
+ 
+-The corridor is the primary physical unit; cable candidates and exact landing
++The aggregate distribution uses the complete feasible corridor set, with the
++corridor as its primary physical unit. Cable candidates and exact landing
+ pairs remain linked in the outputs. A supplementary ranking uses landing
+-proximity, propagation consistency, and AS context. The aggregate distribution
+-uses the complete feasible corridor set.
++proximity, propagation consistency, and AS context.
+ 
+ \paragraph{Observation mass.}
+ Duplicate cable rows belonging to the same corridor are collapsed within each
+@@ -100,8 +105,9 @@
+     \label{eq:uniform-mass}
+ \end{equation}
+ 
+-Thus \(\sum_{c\in\mathcal{C}_s} w_{s,c}=1\): every candidate-bearing segment has
+-equal total influence, allocated according to candidate multiplicity.
++Thus \(\sum_{c\in\mathcal{C}_s} w_{s,c}=1\): each candidate-bearing segment
++contributes equal total observation mass, distributed according to candidate
++multiplicity.
+ 
+ \subsection{Measurement Configuration}
+ \label{sec:framework_configuration}
+@@ -160,29 +166,27 @@
+   \end{tabular}
+ \end{table}
+ 
+-Single- and bounded multi-corridor segments form the physical distribution;
+-pipeline accounting retains the other states and all valid traces form the
++Single- and bounded multi-corridor segments form the physical distribution.
++Pipeline accounting retains the other states, and all valid traces form the
+ exposure denominator.
+ 
+-This state assignment separates candidate-set size from aggregate
+-concentration. A unit may contain many bounded segments yet concentrate after
++Candidate-set size and aggregate concentration describe different levels of
++the analysis. A unit may contain many bounded segments yet concentrate after
+ their uniformly allocated mass repeatedly supports the same corridors.
+ 
+ \subsection{Distribution Aggregation}
+ \label{sec:framework_distribution_analysis}
+ 
+-For each probe-country and service group, candidate-bearing atomic segments
+-construct two distributions. Counting ordered endpoint-AS labels gives the
+-network-transition probabilities \(p^{N}\). Summing the corridor masses in
+-Eq.~\eqref{eq:uniform-mass} and normalizing within the group gives the corridor
+-probabilities \(p^{C}\). Both distributions therefore represent the same
+-atomic-segment population.
+-
+-To be specific, for each auditable country--measurement unit \(u\), we construct a
+-network-side distribution from its candidate-bearing atomic segments.
+-Each distinct segment contributes once to an ordered network-side label
+-at its available mapping resolution. Let \(S_u\) denote these segments
+-and \(\ell(s)\) the label assigned to segment \(s\). The probability of
++For each probe-country and service group, we construct both distributions
++from candidate-bearing atomic segments. Counting ordered endpoint-AS labels
++gives the network-transition probabilities \(p^{N}\). Summing the corridor
++masses in Eq.~\eqref{eq:uniform-mass} and normalizing within the group gives
++the corridor probabilities \(p^{C}\).
++
++For each auditable country--measurement unit \(u\), let \(S_u\) denote the
++candidate-bearing atomic segments and \(\ell(s)\) the label assigned to
++segment \(s\). Each distinct segment contributes once to an ordered
++network-side label at its available mapping resolution. The probability of
+ label \(t\) is
+ 
+ \[
+@@ -197,10 +201,10 @@
+ that the observed network-side structure is concentrated in fewer
+ dominant labels.
+ 
+-Submarine exposure is computed from complete valid traceroutes. A traceroute
+-is exposed when at least one segment has a feasible inter-region corridor. The
+-exposure rate is the exposed-trace count divided by all valid traces in the
+-country-service unit.
++Submarine exposure uses complete valid traceroutes. A traceroute is exposed
++when at least one segment has a feasible inter-region corridor. Dividing the
++exposed-trace count by all valid traces in the country-service unit gives the
++exposure rate.
+ 
+ Three metrics summarize each distribution. Top-2 share is the sum of the two
+ largest probabilities. The effective category count is
+@@ -208,10 +212,10 @@
+ weighted category count. Normalized entropy divides Shannon entropy by log
+ support size. Network-to-corridor differences are computed within each unit.
+ 
+-Top-2 share emphasizes leading categories, effective count incorporates the
+-complete probability vector, and normalized entropy measures evenness relative
+-to observed support. Their joint use distinguishes dominant-corridor mass from
+-changes in the long tail or support size.
++The metrics distinguish dominant-corridor mass from the long tail and support
++size. Top-2 share emphasizes leading categories, effective count incorporates
++the complete probability vector, and normalized entropy measures evenness
++relative to observed support.
+ 
+ A common 80\% Top-2 threshold supplies four descriptive classes: broad at both
+ layers, concentrated at both, network-broad/corridor-concentrated, and the
+--- original/files/4-datasets.tex
++++ files/4-datasets.tex
+@@ -1,21 +1,21 @@
+ \section{Datasets}
+ \label{sec:datasets}
+ 
+-We combine network-path observations with network and submarine-cable
+-metadata. All inputs are aligned to July~1, 2026 (UTC), so the observed paths,
+-IP and AS annotations, and cable lifecycle records describe a common analysis
+-period.
++All inputs are aligned to July~1, 2026 (UTC). Network-path observations,
++IP and AS annotations, and cable lifecycle records therefore describe a
++common analysis period. We combine these observations with network and
++submarine-cable metadata.
+ 
+ \subsection{RIPE Atlas Measurements}
+ \label{subsec:atlas_corpus}
+ 
+ Our network observations comprise 18 public RIPE Atlas IPv4 traceroute
+-measurements collected from 00:00 to 01:00 UTC. Thirteen measurements cover the
++measurements collected from 00:00 to 01:00 UTC. Thirteen measurements cover
+ independently operated anycast DNS Root services. Wikipedia, Reddit, and
+ \texttt{assets.nflxext.com} provide three application-facing observations.
+-Measurements 5051 and 5151 use dynamic targets and provide multi-target UDP and
+-ICMP topology references. Table~\ref{tab:atlas_measurements} summarizes the
+-corpus after canonical trace-identity deduplication.
++Measurements 5051 and 5151 use dynamic targets as multi-target UDP and ICMP
++topology references. Table~\ref{tab:atlas_measurements} summarizes the corpus
++after canonical trace-identity deduplication.
+ 
+ \begin{table*}[ht]
+   \centering
+@@ -44,10 +44,10 @@
+   \end{tabular}
+ \end{table*}
+ 
+-Each record retains the destination address returned by RIPE Atlas. The two
+-dynamic-target measurements therefore retain their multi-target structure,
+-while service measurements preserve the destination instances selected during
+-the aligned window.
++Each record retains the destination address returned by RIPE Atlas. This
++preserves the multi-target structure of the two dynamic-target measurements
++and the destination instances selected by service measurements during the
++aligned window.
+ 
+ \subsection{Supporting Datasets}
+ \label{subsec:supporting_data}
+@@ -55,11 +55,13 @@
+ Table~\ref{tab:supporting_datasets} lists the supporting datasets and versions.
+ RIPE Atlas probe metadata supplies the probe country and source-network
+ context~\cite{ripe_atlas}. IPinfo Location and ASN databases annotate visible
+-hops with geographic and AS information~\cite{ipinfo}. The Submarine Cable Map
+-provides the cable and landing-point inventory, including lifecycle and
+-organizational fields~\cite{telegeography_submarine_map}; the analysis includes
+-systems in service on the measurement date. CAIDA AS Relationships and the
+-derived owner-AS associations supply supplementary ranking context
++hops with geographic and AS information~\cite{ipinfo}.
++
++The Submarine Cable Map provides the cable and landing-point inventory,
++including lifecycle and organizational fields
++~\cite{telegeography_submarine_map}. The analysis includes systems in service
++on the measurement date. CAIDA AS Relationships and the derived owner-AS
++associations supply supplementary ranking context
+ ~\cite{caida_as_relationships}. A versioned country taxonomy classifies probe
+ countries as island or archipelagic, landlocked, or other coastal.
+ 
+--- original/files/5-result.tex
++++ files/5-result.tex
+@@ -1,46 +1,50 @@
+ \section{Results}
+ \label{sec:result}
+ 
+-We organize the results around two complementary properties of service paths.
+-Exposure measures how often a path enters the feasible inter-region corridor
+-space. Conditional breadth measures how the candidate-bearing observations are
+-distributed once they enter that space. We then examine how geography shapes
+-the two properties and compare the network and corridor distributions built
+-from the same segments.
+-
+-The processing pipeline begins with 707,314 raw records and retains 490,911
+-valid traceroutes containing 3,291,063 atomic segments. Of the 2,432,559
+-mappable segments, 555,119 reach candidate landing points, 171,232 satisfy the
+-corridor constraints, and 124,350 support inter-region corridors. The final set
+-contains 71,990 single-corridor segments and 52,360 bounded multi-corridor
+-segments. Together they form 370 auditable country-measurement units under the
+-unit-mass aggregation rule.
++The results compare network and corridor distributions built from the same
++segments and examine how their relationship varies across services and
++countries. Exposure measures how often a path enters the feasible inter-region
++corridor space. Conditional breadth measures how candidate-bearing
++observations are distributed within that space. We first establish these two
++properties, then examine their geographic variation and the paired cross-layer
++distributions.
++
++The processing pipeline retains 490,911 valid traceroutes from 707,314 raw
++records, yielding 3,291,063 atomic segments. Of the 2,432,559 mappable
++segments, 555,119 reach candidate landing points, 171,232 satisfy the corridor
++constraints, and 124,350 support inter-region corridors. The final set contains
++71,990 single-corridor segments and 52,360 bounded multi-corridor segments.
++Under the unit-mass aggregation rule, they form 370 auditable
++country-measurement units.
+ 
+ \subsection{Service-Facing Paths Show Lower Candidate Exposure}
+ \label{subsec:overall-exposure}
+ 
+-The DNS family contains 945 country-measurement units with at least 30 valid
+-traceroutes, covering 77 countries. Pooling eligible Root observations within
+-each country by valid-trace count yields a median exposure of 5.50\% (IQR:
++DNS exposure has a pronounced upper tail: inter-region candidates appear
++infrequently for most countries and recur in a smaller group. The DNS family
++contains 945 country-measurement units with at least 30 valid traceroutes,
++covering 77 countries. Pooling eligible Root observations within each country
++by valid-trace count yields a median exposure of 5.50\% (IQR:
+ 1.10\%-23.04\%; mean: 17.80\%). The difference between the median and mean
+-reveals a pronounced upper tail: inter-region candidates appear infrequently
+-for most countries and recur in a smaller group.
+-
+-The three application measurements occupy the same low-exposure range. Median
+-country-measurement exposure is 1.90\% for Wikipedia, 1.96\% for Reddit, and
+-1.43\% for Netflix Assets. The multi-target topology references reach 23.24\%
+-for MSM~5051 and 23.81\% for MSM~5151. Figure~\ref{fig:result-overview} shows
+-this separation across the complete country distributions.
+-
+-Country-matched comparisons preserve the source geography while changing the
+-target population. DNS exposure is lower than MSM~5051 in 70 of 77 shared
+-countries, with a median paired difference of \(-14.52\) percentage points. It
+-is lower than MSM~5151 in 54 of 59 shared countries, with a median difference
+-of \(-14.82\) points. The paired direction holds for 90.9\% and 91.5\% of the
+-shared countries, respectively. The two protocols therefore reveal the same
+-family ordering: service-facing targets expose a smaller inter-region path
+-population than the dynamic multi-target measurements observed from the same
+-countries.
++reveals this uneven distribution across countries.
++
++The three application measurements occupy the same low-exposure range.
++Median country-measurement exposure is 1.90\% for Wikipedia, 1.96\% for
++Reddit, and 1.43\% for Netflix Assets. The multi-target topology references
++reach 23.24\% for MSM~5051 and 23.81\% for MSM~5151. Figure
++~\ref{fig:result-overview} compares the complete country distributions and
++shows this separation.
++
++Country-matched comparisons show lower DNS exposure while preserving source
++geography and changing the target population. DNS exposure is lower than
++MSM~5051 in 70 of 77 shared countries, with a median paired difference of
++\(-14.52\) percentage points. It is lower than MSM~5151 in 54 of 59 shared
++countries, with a median difference of \(-14.82\) points. The paired direction
++holds for 90.9\% and 91.5\% of the shared countries, respectively.
++
++The two protocols therefore reveal the same family ordering: service-facing
++targets expose a smaller inter-region path population than the dynamic
++multi-target measurements observed from the same countries.
+ 
+ \begin{figure*}[htb]
+   \centering
+@@ -56,11 +60,12 @@
+ \subsection{Service-Facing Observations Occupy Narrower Corridor Spaces}
+ \label{subsec:exposure-concentration}
+ 
+-Corridor breadth is measured over 222 DNS Root, 53 application, and 95
+-topology-reference units. Every unit uses the audit thresholds in
+-Section~\ref{sec:framework_path_segmentation}, and its network and corridor
++We measure corridor breadth over 222 DNS Root, 53 application, and 95
++topology-reference units. Every unit meets the audit thresholds in
++Section~\ref{sec:framework_path_segmentation}. Its network and corridor
+ distributions contain the same candidate-bearing segments. Table
+-~\ref{tab:family-summary} reports their median concentration and breadth.
++~\ref{tab:family-summary} reports the median concentration and breadth of
++each family.
+ 
+ \begin{table*}[htb]
+   \centering
+@@ -80,32 +85,35 @@
+   \end{tabular}
+ \end{table*}
+ 
+-DNS Roots and applications have median corridor Top-2 shares of 72.0\% and
+-70.3\%, compared with 30.6\% for topology references. Their effective corridor
+-counts are 3.84, 3.51, and 18.01. Thus, the topology-reference median contains
+-4.7 times as many effective corridors as DNS and 5.1 times as many as the
+-applications. Its Top-2 share is 41.4 percentage points below DNS and 39.7
+-points below the applications.
+-
+-The high-concentration tail follows the same ordering. The leading two
+-corridors receive at least 80\% of mass in 83 of 222 DNS units (37.4\%), 16 of
+-53 application units (30.2\%), and 4 of 95 topology-reference units (4.2\%).
+-The family medians and threshold counts therefore describe the same separation
+-at both the center and upper end of the corridor-concentration distributions.
+-
+-The three applications also share a narrow physical footprint. Wikipedia,
+-Reddit, and Netflix Assets have median corridor Top-2 shares of 68.3\%, 71.0\%,
+-and 71.6\%, with 4.25, 3.25, and 3.47 effective corridors. Their median Top-2
+-shifts are 11.0, 25.6, and 23.6 percentage points, respectively. The service
+-targets reach similar absolute corridor breadth through different amounts of
+-redistribution from their network-transition distributions.
+-
+-Figure~\ref{fig:corridor-breadth} shows that the separation extends across the
+-distributions. The service-facing ECDFs occupy the higher-concentration range,
+-and their effective-count distributions remain centered on three to four
+-equally weighted corridors. Top-2 share captures mass in the dominant
+-directions; effective count captures breadth across the full support. Both
+-metrics yield the same family ordering.
++DNS Roots and applications occupy narrower corridor spaces than the topology
++references. Their median corridor Top-2 shares are 72.0\% and 70.3\%,
++compared with 30.6\% for topology references; their effective corridor counts
++are 3.84 and 3.51, compared with 18.01. The topology-reference median thus
++contains 4.7 times as many effective corridors as DNS and 5.1 times as many as
++the applications. Its Top-2 share is 41.4 percentage points below DNS and
++39.7 points below the applications.
++
++The high-concentration tail follows the same family ordering. The leading two
++corridors receive at least 80\% of mass in 83 of 222 DNS units (37.4\%),
++16 of 53 application units (30.2\%), and 4 of 95 topology-reference units
++(4.2\%). These threshold counts and the family medians describe the
++separation at the upper end and center of the concentration distributions,
++respectively.
++
++The three applications reach similar absolute corridor breadth through
++different amounts of redistribution from their network-transition
++distributions. Wikipedia, Reddit, and Netflix Assets have median corridor
++Top-2 shares of 68.3\%, 71.0\%, and 71.6\%, with 4.25, 3.25, and 3.47
++effective corridors. Their median Top-2 shifts are 11.0, 25.6, and 23.6
++percentage points, respectively. Together, these measurements describe their
++shared narrow physical footprint and different cross-layer shifts.
++
++Figure~\ref{fig:corridor-breadth} shows that the family separation extends
++across the distributions. The service-facing ECDFs occupy the
++higher-concentration range, and their effective-count distributions remain
++centered on three to four equally weighted corridors. Top-2 share captures
++mass in the dominant directions, while effective count captures breadth across
++the full support. Both metrics yield the same family ordering.
+ 
+ \begin{figure*}[htb]
+   \centering
+@@ -118,41 +126,42 @@
+   \label{fig:corridor-breadth}
+ \end{figure*}
+ 
+-Normalized entropy adds a support-relative view. Median entropy reduction is
+-0.126 for DNS Roots, 0.164 for applications, and 0.081 for topology references.
+ The largest family difference remains the absolute physical breadth reached
+-after projection. Service-facing paths repeatedly occupy a smaller feasible-
+-corridor space, while the multi-target references distribute observations over
+-many more coastal directions.
++after projection. Normalized entropy provides a support-relative view:
++median entropy reduction is 0.126 for DNS Roots, 0.164 for applications, and
++0.081 for topology references. Service-facing paths repeatedly occupy a
++smaller feasible-corridor space, while the multi-target references distribute
++observations over many more coastal directions.
+ 
+ \subsection{Geography Separates Exposure from Concentration}
+ \label{subsec:geography}
+ 
+-Following Liu et al.~\cite{liu2020outofsight}, probe countries are grouped as
+-island or archipelagic, landlocked, and other coastal. Each country contributes
+-one pooled DNS exposure observation and the median corridor distribution over
+-its auditable DNS units. This gives equal weight to countries represented by
+-different numbers of Root measurements.
+-
+-Island and archipelagic countries form the highest-exposure group. Their median
+-country-pooled DNS exposure is 49.61\% across 9 countries, compared with 7.88\%
+-for 54 other coastal countries and 1.70\% for 14 landlocked countries. The
+-ordering follows the frequency with which observed Root paths enter an
+-inter-region candidate space.
++We compare geography at the country level, giving equal weight to countries
++represented by different numbers of Root measurements. Following Liu et
++al.~\cite{liu2020outofsight}, probe countries are grouped as island or
++archipelagic, landlocked, and other coastal. Each country contributes one
++pooled DNS exposure observation and the median corridor distribution over its
++auditable DNS units.
++
++Island and archipelagic countries form the highest-exposure group. Their
++median country-pooled DNS exposure is 49.61\% across 9 countries, compared
++with 7.88\% for 54 other coastal countries and 1.70\% for 14 landlocked
++countries. This ordering describes how frequently observed Root paths enter
++an inter-region candidate space.
+ 
+ Conditional corridor breadth follows a different ordering. Island and
+-archipelagic countries have a median Top-2 corridor share of 53.3\% and 5.58
+-effective corridors. Other coastal countries reach 75.4\% and 3.39. The two
+-represented landlocked countries reach 80.2\% and 2.51. Figure
+-~\ref{fig:country-geography} shows both distributions and the contributing
+-country counts.
++archipelagic countries have a median Top-2 corridor share of 53.3\% and
++5.58 effective corridors. Other coastal countries reach 75.4\% and 3.39.
++The two represented landlocked countries reach 80.2\% and 2.51. Figure
++~\ref{fig:country-geography} presents both distributions together with the
++contributing country counts.
+ 
+ Across the 38 countries with both pooled exposure and an auditable corridor
+-summary, exposure and corridor Top-2 share have a Spearman rank association of
+-\(-0.29\); exposure and effective corridor count have the corresponding
+-association of 0.30. The country-level ordering thus follows the geographic
+-group result: more frequent entry into the candidate space tends to accompany
+-broader conditional support.
++summary, more frequent entry into the candidate space tends to accompany
++broader conditional support. Exposure and corridor Top-2 share have a
++Spearman rank association of \(-0.29\); exposure and effective corridor count
++have the corresponding association of 0.30. The country-level ordering thus
++follows the geographic group result.
+ 
+ \begin{figure*}[htb]
+   \centering
+@@ -161,21 +170,22 @@
+   \label{fig:country-geography}
+ \end{figure*}
+ 
+-Geography therefore separates the two physical properties. Island and
+-archipelagic countries enter the candidate space more frequently, yet their
+-candidate-bearing observations span more coastal directions. Other coastal
+-countries enter less frequently and concentrate more strongly once exposure
+-occurs. Exposure describes the frequency of submarine involvement; corridor
+-breadth describes the physical directions supporting that involvement.
++Geography therefore separates exposure from conditional corridor breadth.
++Island and archipelagic countries enter the candidate space more frequently,
++yet their candidate-bearing observations span more coastal directions. Other
++coastal countries enter less frequently and concentrate more strongly once
++exposure occurs. Exposure records the frequency of submarine involvement;
++corridor breadth describes the physical directions supporting that
++involvement.
+ 
+ \subsection{Cross-Layer Contraction Is Heterogeneous}
+ \label{subsec:cross-layer}
+ 
+-Figure~\ref{fig:cross-layer} pairs the network-transition and corridor Top-2
+-shares for all 370 auditable units. DNS and application units shift upward more
+-strongly than topology references. The common 80\% lines organize the paired
+-distributions into four descriptive classes, and the diagonal separates
+-increases in corridor concentration from decreases.
++DNS and application units shift upward more strongly than topology references
++in the paired network-transition and corridor Top-2 comparison. Figure
++~\ref{fig:cross-layer} shows all 370 auditable units. The common 80\% lines
++organize the distributions into four descriptive classes, and the diagonal
++separates increases in corridor concentration from decreases.
+ 
+ \begin{figure*}[htb]
+   \centering
+@@ -184,48 +194,54 @@
+   \label{fig:cross-layer}
+ \end{figure*}
+ 
+-Among 275 service-facing units, 81 (29.5\%) are network-broad/corridor-
+-concentrated, 158 (57.5\%) remain broad at both layers, 18 (6.5\%) are
+-concentrated at both, and 18 (6.5\%) are network-concentrated/corridor-broad.
+-Four of 95 topology-reference units (4.2\%) enter the contraction class; the
+-other 91 remain broad at both layers. Contraction is therefore a recurring
+-service-facing pattern, while broad support at both layers remains the largest
+-service-facing class.
+-
+-DNS and applications enter the contraction class at similar rates: 66 of 222
+-(29.7\%) and 15 of 53 (28.3\%). Their median continuous Top-2 shifts are 11.0
+-and 21.0 percentage points, respectively. The application units cross the 80\%
+-boundary at a similar frequency and redistribute more mass toward their two
+-leading corridors. Continuous shifts also reveal substantial narrowing within
+-the broad-broad class.
+-
+-Across the service-facing population, corridor Top-2 share increases in 184 of
+-275 units (66.9\%), and effective category count contracts in 204 (74.2\%). Of
+-the 239 units with a broad network distribution, 178 (74.5\%) move upward in
+-Top-2 share: 81 cross the concentration threshold, while 97 remain broad at
+-both layers with a median increase of 6.3 percentage points. The threshold
+-classes and continuous metrics therefore trace the same redistribution toward
+-fewer leading physical directions at different magnitudes.
+-
+-Three cases illustrate the range. \textbf{Singapore-Netflix} moves from 32.5\%
+-network Top-2 share to 65.0\% corridor Top-2 share, while its effective count
+-contracts from 19.86 to 3.41. It exhibits strong continuous narrowing while
+-remaining below the 80\% boundary. \textbf{New Zealand-Netflix} moves from
+-63.6\% to 37.6\%, with effective count expanding from 5.18 to 6.92; it shows
+-corridor expansion. \textbf{Singapore-H-Root} moves from 39.6\% to 50.1\%
+-and contracts from 20.67 to 5.99 effective categories, while normalized entropy
+-changes only slightly. This combination separates absolute breadth from
+-support-relative evenness.
+-
+-Bounded multi-corridor segments account for 99.9\% of candidate-bearing
+-observations in Singapore-Netflix, 78.1\% in New Zealand-Netflix, and 98.2\%
+-in Singapore-H-Root. Repeated overlap among these bounded sets produces the
+-aggregate distributions above. The cases show contraction, expansion, and
+-metric-specific change under the same projection and aggregation rules.
+-
+-Taken together, the four analyses identify a consistent cross-layer structure.
++Contraction is a recurring service-facing pattern, while broad support at
++both layers remains the largest service-facing class. Among 275
++service-facing units, 81 (29.5\%) are network-broad/corridor-concentrated,
++158 (57.5\%) remain broad at both layers, 18 (6.5\%) are concentrated at
++both, and 18 (6.5\%) are network-concentrated/corridor-broad. Four of 95
++topology-reference units (4.2\%) enter the contraction class; the other 91
++remain broad at both layers.
++
++DNS and applications enter the contraction class at similar rates but show
++different median continuous shifts. The class contains 66 of 222 DNS units
++(29.7\%) and 15 of 53 application units (28.3\%). Their median continuous
++Top-2 shifts are 11.0 and 21.0 percentage points, respectively. Application
++units cross the 80\% boundary at a similar frequency and redistribute more
++mass toward their two leading corridors. Continuous shifts also reveal
++substantial narrowing within the broad-broad class.
++
++Continuous metrics identify redistribution toward fewer leading physical
++directions both within and across the threshold classes. Across the
++service-facing population, corridor Top-2 share increases in 184 of 275
++units (66.9\%), and effective category count contracts in 204 (74.2\%). Of
++the 239 units with a broad network distribution, 178 (74.5\%) move upward
++in Top-2 share: 81 cross the concentration threshold, while 97 remain broad
++at both layers with a median increase of 6.3 percentage points.
++
++Three cases distinguish continuous narrowing, expansion, and changes in
++absolute breadth from support-relative evenness.
++\textbf{Singapore-Netflix} moves from 32.5\% network Top-2 share to 65.0\%
++corridor Top-2 share, while its effective count contracts from 19.86 to
++3.41. It exhibits strong continuous narrowing while remaining below the
++80\% boundary.
++
++\textbf{New Zealand-Netflix} shows corridor expansion. Its share moves
++from 63.6\% to 37.6\%, with effective count expanding from 5.18 to 6.92.
++
++\textbf{Singapore-H-Root} separates absolute breadth from support-relative
++evenness. Its share moves from 39.6\% to 50.1\%, and its effective
++count contracts from 20.67 to 5.99, while normalized entropy changes only
++slightly.
++
++Repeated overlap among bounded multi-corridor sets produces the aggregate
++distributions in these cases. Bounded multi-corridor segments account for
++99.9\% of candidate-bearing observations in Singapore-Netflix, 78.1\% in
++New Zealand-Netflix, and 98.2\% in Singapore-H-Root. Under the same
++projection and aggregation rules, the cases show contraction, expansion,
++and metric-specific change.
++
+ Service-facing measurements enter the inter-region candidate space less often
+ and occupy narrower corridor distributions than the topology references.
+ Within the service-facing population, country-service units span contraction,
+ preservation, and expansion. Network diversity and physical-corridor diversity
+-therefore describe distinct properties of application reachability.
++therefore describe distinct properties of application reachability.--- original/files/6-measurement-scope-and-implications.tex
++++ files/6-measurement-scope-and-implications.tex
+@@ -4,34 +4,36 @@
+ \subsection{Resilience and Infrastructure Implications}
+ \label{subsec:resilience-implications}
+ 
+-Routing diversity and corridor breadth capture distinct structures: 81
+-service-facing units project broad network alternatives onto narrow feasible
+-coastal directions, whereas 158 retain distributed support at both layers.
+-Exposure links service localization and interconnection to the frequency of
+-inter-region access; concentration links landing-region diversification to the
+-breadth of physical support. Together they locate country-service populations
+-relevant to replica placement, peering, and international connectivity planning.
++Routing diversity and corridor breadth capture distinct structures relevant
++to replica placement, peering, and international connectivity planning. In the
++service-facing population, 81 units project broad network alternatives onto
++narrow feasible coastal directions, whereas 158 retain distributed support
++at both layers. Exposure links service localization and interconnection to
++the frequency of inter-region access; concentration links landing-region
++diversification to the breadth of physical support. Together, they locate
++the country-service populations associated with these structures.
+ 
+-The paired view also distinguishes two intervention points. Deploying a closer
++The paired view distinguishes two intervention points. Deploying a closer
+ service instance or changing interconnection can reduce exposure by keeping
+-more paths within a region. Adding access through distinct landing regions can
+-broaden the corridor distribution of paths that continue to cross regions.
++more paths within a region. Adding access through distinct landing regions
++can broaden the corridor distribution of paths that continue to cross regions.
+ 
+ \subsection{Physical Mapping Resolution}
+ \label{subsec:mapping-resolution-scope}
+ 
+-Each segment records one mapping-resolution state. At 30~km, 57.9\% of
+-candidate-bearing segments have one corridor and 42.1\% divide unit mass across
+-a bounded set. Segments with no feasible corridor or incomplete construction
+-inputs remain separate in pipeline accounting. Corridor, exact landing-pair,
+-and cable identities remain linked in the outputs, supporting analysis across
+-physical resolutions.
++The mapping-resolution states retain both single-corridor and bounded
++multi-corridor observations. Each segment records one state. At 30~km,
++57.9\% of candidate-bearing segments have one corridor and 42.1\% divide
++unit mass across a bounded set. Segments with no feasible corridor or
++incomplete construction inputs remain separate in pipeline accounting.
++Corridor, exact landing-pair, and cable identities remain linked in the
++outputs, supporting analysis across physical resolutions.
+ 
+-Uniform allocation gives each observed segment one total unit of influence.
+-Repeated support for the same corridor accumulates across traces, while
+-segments with several feasible corridors distribute their unit across that
+-finite set. Aggregate concentration thus combines observation frequency with
+-candidate overlap.
++Aggregate concentration combines observation frequency with candidate
++overlap. Uniform allocation gives each observed segment one total unit of
++influence. Repeated support for the same corridor accumulates across traces,
++while segments with several feasible corridors distribute their unit across
++that finite set.
+ 
+ \subsection{Landing-Region Resolution Sensitivity}
+ \label{subsec:resolution-sensitivity}
+@@ -60,30 +62,31 @@
+ \subsection{Measurement Scope}
+ \label{subsec:measurement-scope}
+ 
+-RIPE Atlas probe density varies across countries and networks; reported
+-quantities are observation-weighted over participating probes in the aligned
+-window. DNS Roots and applications form service-specific populations, while
+-MSM 5051 and 5151 retain dynamic multi-target populations as topology
++Reported quantities are observation-weighted over participating probes in the
++aligned window; RIPE Atlas probe density varies across countries and
++networks. DNS Roots and applications form service-specific populations,
++while MSM 5051 and 5151 retain dynamic multi-target populations as topology
+ references. Anycast observations integrate deployed footprint, BGP selection,
+ interconnection, and source-network context.
+ 
+-The primary corridor distribution includes domestic and international inter-
+-region candidates, with the corresponding label retained per segment. All
+-measurements cover 00:00-01:00 UTC on July~1, 2026 and align with IP, AS,
+-cable-lifecycle, and deployment metadata. Corridor concentration quantifies
+-geographic candidate support; cable multiplicity, landing-station redundancy,
+-hazard correlation, rerouting capacity, and repair processes supply additional
+-operational dimensions.
++The primary corridor distribution includes domestic and international
++inter-region candidates, with the corresponding label retained per segment.
++All measurements cover 00:00-01:00 UTC on July~1, 2026 and align with IP,
++AS, cable-lifecycle, and deployment metadata.
++
++Corridor concentration quantifies geographic candidate support. Cable
++multiplicity, landing-station redundancy, hazard correlation, rerouting
++capacity, and repair processes supply additional operational dimensions.
+ 
+ The snapshot provides a common temporal basis across all service families.
+-Repeating the aligned construction over time can track changes caused by
+-routing, service deployment, or cable lifecycle events at the same country-
+-measurement granularity.
++Repeating the aligned construction at the same country-measurement
++granularity can track changes caused by routing, service deployment, or
++cable lifecycle events.
+ 
+ \subsection{Ethics and Reproducibility}
+ \label{subsec:ethics-reproducibility}
+ 
+ The study uses archived public RIPE Atlas measurements and infrastructure
+-metadata and reports aggregate country-measurement statistics. Released
+-measurement IDs, configuration values, resolution states, pipeline counts, and
+-scripts reconstruct the primary tables and figures from versioned inputs.
++metadata and reports aggregate country-measurement statistics. The released
++measurement IDs, configuration values, resolution states, pipeline counts,
++and scripts reconstruct the primary tables and figures from versioned inputs.--- original/files/7-conclusion.tex
++++ files/7-conclusion.tex
+@@ -1,19 +1,21 @@
+ \section{Conclusion}
+ \label{sec:conclusion}
+ 
+-We presented an application-aware cross-layer audit of network transitions and
+-feasible submarine corridors. The framework applies geographic, lifecycle,
+-and propagation feasibility to atomic traceroute segments, distributes each
+-segment's observation mass uniformly across its feasible corridors, and compares network
+-and corridor distributions over identical segment populations.
++We presented an application-aware cross-layer audit that compares network
++transitions and feasible submarine corridors over identical segment
++populations. The framework applies geographic, lifecycle, and propagation
++feasibility to atomic traceroute segments and distributes each segment's
++observation mass uniformly across its feasible corridors.
+ 
+-Across 490,911 valid traceroutes, the 30-km analysis identifies 124,350 inter-
+-region candidate-bearing segments and 370 auditable country-measurement
+-units. DNS Roots and applications have median effective corridor counts of
+-3.84 and 3.51, compared with 18.01 for the multi-target topology references.
+-Under the descriptive Top-2 threshold, 81 of 275 service-facing units exhibit
+-network-broad/corridor-concentrated structure, compared with 4 of 95 topology-
+-reference units; 158 service-facing units remain broad at both layers. These
+-measurements show that application reachability frequently occupies a narrower
+-feasible physical-corridor space than its network-transition representation,
+-with substantial variation across countries and services.
++Across 490,911 valid traceroutes, the 30-km analysis identifies 124,350
++inter-region candidate-bearing segments and 370 auditable
++country-measurement units. DNS Roots and applications have median effective
++corridor counts of 3.84 and 3.51, compared with 18.01 for the multi-target
++topology references. Under the descriptive Top-2 threshold, 81 of 275
++service-facing units exhibit network-broad/corridor-concentrated structure,
++compared with 4 of 95 topology-reference units; 158 service-facing units
++remain broad at both layers.
++
++These measurements show that application reachability frequently occupies a
++narrower feasible physical-corridor space than its network-transition
++representation, with substantial variation across countries and services.

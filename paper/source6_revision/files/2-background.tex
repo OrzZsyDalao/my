@@ -1,0 +1,107 @@
+\section{Background}
+\label{sec:background}
+
+\subsection{Network and Submarine-Cable Infrastructure}
+\label{sec:background_cross_layer}
+
+Users reach services through domain names, CDN resources, replicas, and anycast
+targets. Traceroute exposes the intervening IP hops and AS transitions. For
+geographically separated regions, these logical paths depend on submarine
+cables that join coastal landing stations to terrestrial backhaul and visible
+ASes. Multiple cables can connect the same coastal regions, and one cable can
+serve several landing locations.
+
+The network-to-physical relationship is many-to-many. Different routers or AS
+transitions may project onto one landing-region corridor, while a recurring
+network transition may support several physical alternatives. We measure the
+two distributions over the same observations: network diversity describes
+observed logical transitions, and physical diversity describes their supported
+corridor distribution.
+
+Landing regions provide a stable geographic unit between exact landing
+stations and country-wide cable counts. Exact stations preserve facility
+detail but split nearby coastal access points that serve the same direction.
+Country-level cable inventories combine distinct coastlines and international
+directions. A bounded landing region retains coastal structure, and a corridor
+identifies the paired entry-exit direction connecting two such regions.
+Parallel cable systems can share one corridor while remaining distinguishable
+in the underlying candidate records.
+
+Countries provide a shared geographic and external-connectivity context.
+Island, coastal, and landlocked geography shapes access to submarine
+infrastructure; landing facilities, backhaul, gateways, exchanges, and operator
+interconnection shape the paths available to users. Country grouping retains
+variation among access networks and upstream providers within that context.
+
+\subsection{Existing Cross-Layer Measurements}
+\label{sec:background_existing_work}
+
+Event-oriented studies relate new submarine connectivity to routing changes.
+Bischof et al.\ characterized Cuba's connectivity before and after ALBA-1 and
+later formulated the task of connecting Internet observations to the worldwide
+cable mesh~\cite{bischof2015cuba,bischof2018untangling}. Fanou et al.\ measured
+routing changes following new cable deployments~\cite{fanou2020unintended}.
+
+User-oriented work measures submarine involvement in service paths. Liu et
+al.\ combine resource discovery, RIPE Atlas traceroutes, geolocation, and
+propagation feasibility to quantify how users reach Web resources through
+submarine paths~\cite{liu2020outofsight}. Routing-oriented work connects cable
+infrastructure to AS-level structure; Ye et al.\ infer AS relationships with
+international cable and landing-station structures and analyze their
+interaction with routing~\cite{ye2023impact}.
+
+Exposure and concentration describe complementary aspects of service paths.
+Exposure counts how frequently a service path enters a feasible submarine
+candidate space. Concentration examines the structure of that space after
+entry. A country may have high exposure and broad corridor support, or low
+exposure with the exposed observations concentrated on a few directions.
+
+Cross-layer cartography supplies geographic infrastructure representations.
+Internet Atlas and InterTubes connect long-haul fiber facilities to observed
+paths~\cite{durairajan2013atlas,durairajan2015intertubes}; iGDB integrates
+facilities, fiber, and network entities~\cite{anderson2022igdb}; measurements of
+intercontinental links identify layer-3 links and gateway routers
+~\cite{carisimo2023hopaway}. Nautilus associates IP links with candidate cables
+using traceroute, geolocation, latency, ownership, and cable metadata
+~\cite{ramanathan2023nautilus}. Calypso combines cable layouts, network
+relationships, latency, and country-level paths~\cite{wang2025calypso}, while
+Xaminer applies cross-layer maps to configurable infrastructure analyses
+~\cite{ramanathan2024xaminer}.
+
+Service deployment determines which paths enter these mappings. Anycast
+routing, replica placement, and interconnection select service instances and
+their network paths~\cite{cicalese2015anycast,devries2017anycast}. We retain
+this service-specific path view when projecting physical candidates and
+comparing network and corridor distributions over identical atomic segments.
+
+The paired construction aligns the statistical unit across layers. A network
+transition and its corridor support originate from the same atomic segment,
+so changes in concentration reflect the projection of a fixed observation
+population. Country-service aggregation preserves deployment differences
+among equivalent services and geographic differences among their users.
+
+\subsection{Country-Service View of Cross-Layer Diversity}
+\label{sec:background_motivation}
+
+Country and service jointly define each observation population. Geographic and
+interconnection environments shape source-side options; anycast, replica
+selection, and routing choose among them. DNS Roots illustrate this
+interaction. Functionally equivalent services operate independent anycast
+deployments, so a country may reach different Roots through distinct
+instances, AS transitions, and corridors. Distributed applications similarly
+localize access in some countries and direct others toward remote
+infrastructure.
+
+Multi-target topology measurements provide a broader reference population.
+Their dynamic destinations sample many network directions during the same
+time window. Each service measurement instead retains the destinations
+selected for that service. Comparing these families characterizes the
+observed footprints of their target-selection and routing processes.
+
+Our measurement separates three properties. \emph{Submarine exposure} is the
+fraction of valid traceroutes containing an inter-region feasible corridor.
+\emph{Corridor concentration} describes how candidate-bearing segment mass is
+distributed across landing-region corridors. \emph{Cross-layer contraction}
+compares that physical distribution with the network transitions formed from
+the same segments. The framework next derives these quantities; Section
+~\ref{sec:datasets} introduces the aligned path and infrastructure datasets.

@@ -1,0 +1,12 @@
+*.tex text eol=lf
+*.md text eol=lf
+*.py text eol=lf
+*.json text eol=lf
+*.diff -text
+*.bib -text
+*.bst -text
+*.cls -text
+*.svg -text
+*.pdf -text
+*.png -text
+*.zip -text

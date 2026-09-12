@@ -1,0 +1,86 @@
+\section{Datasets}
+\label{sec:datasets}
+
+All inputs are aligned to July~1, 2026 (UTC). Network-path observations,
+IP and AS annotations, and cable lifecycle records therefore describe a
+common analysis period. We combine these observations with network and
+submarine-cable metadata.
+
+\subsection{RIPE Atlas Measurements}
+\label{subsec:atlas_corpus}
+
+Our network observations comprise 18 public RIPE Atlas IPv4 traceroute
+measurements collected from 00:00 to 01:00 UTC. Thirteen measurements cover
+independently operated anycast DNS Root services. Wikipedia, Reddit, and
+\texttt{assets.nflxext.com} provide three application-facing observations.
+Measurements 5051 and 5151 use dynamic targets as multi-target UDP and ICMP
+topology references. Table~\ref{tab:atlas_measurements} summarizes the corpus
+after canonical trace-identity deduplication.
+
+\begin{table*}[ht]
+  \centering
+  \caption{RIPE Atlas measurement corpus.}
+  \label{tab:atlas_measurements}
+  \footnotesize
+  \setlength{\tabcolsep}{4.2pt}
+  \begin{tabular}{p{0.15\textwidth}p{0.27\textwidth}p{0.30\textwidth}rr}
+    \toprule
+    Group & Target & MSM ID(s) & Raw & Valid \\
+    \midrule
+    DNS Roots & A-M Root
+      & 5009, 5010, 5011, 5012, 5013, 5004, 5014, 5015, 5005, 5016,
+        5001, 5008, 5006
+      & 534,276 & 317,873 \\
+    Applications & Wikipedia; Reddit; Netflix Assets
+      & 86710103; 176906957; 176517335
+      & 115,596 & 115,596 \\
+    Topology references & IPv4 UDP; IPv4 ICMP
+      & 5051; 5151
+      & 57,442 & 57,442 \\
+    \midrule
+    \textbf{Total} & \textbf{18 measurements} & -
+      & \textbf{707,314} & \textbf{490,911} \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+Each record retains the destination address returned by RIPE Atlas. This
+preserves the multi-target structure of the two dynamic-target measurements
+and the destination instances selected by service measurements during the
+aligned window.
+
+\subsection{Supporting Datasets}
+\label{subsec:supporting_data}
+
+Table~\ref{tab:supporting_datasets} lists the supporting datasets and versions.
+RIPE Atlas probe metadata supplies the probe country and source-network
+context~\cite{ripe_atlas}. IPinfo Location and ASN databases annotate visible
+hops with geographic and AS information~\cite{ipinfo}.
+
+The Submarine Cable Map provides the cable and landing-point inventory,
+including lifecycle and organizational fields
+~\cite{telegeography_submarine_map}. The analysis includes systems in service
+on the measurement date. CAIDA AS Relationships and the derived owner-AS
+associations supply supplementary ranking context
+~\cite{caida_as_relationships}. A versioned country taxonomy classifies probe
+countries as island or archipelagic, landlocked, or other coastal.
+
+\begin{table*}[htb]
+  \centering
+  \caption{Supporting datasets.}
+  \label{tab:supporting_datasets}
+  \footnotesize
+  \begin{tabular}{p{0.30\textwidth}p{0.25\textwidth}p{0.35\textwidth}}
+    \toprule
+    Dataset & Version & Content \\
+    \midrule
+    RIPE Atlas probe metadata & 2026-07-01 & Probe country and source ASN \\
+    IPinfo Location MMDB & 2026-07-01 & Hop geolocation \\
+    IPinfo ASN MMDB & 2026-07-01 & IP-AS mapping \\
+    Submarine Cable Map & 2026-07-01 & 694 cables; 1,916 landing points \\
+    CAIDA AS Relationships & 2026-07-01 release & AS relationships \\
+    Owner-AS mapping & 2026-07-01 inputs & Owner-AS associations \\
+    Country geography taxonomy & 2026-07-01 & Operational geography classes \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
