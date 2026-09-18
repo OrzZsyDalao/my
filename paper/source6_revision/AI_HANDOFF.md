@@ -6,6 +6,8 @@
 
 论文正在从此前的 INFOCOM 版本重构为 IMC 2027 稿件。当前完整初稿以 `revised_source6.zip` 原文为底稿，源文件位于 `revised_source6_imc_full_source/`，可上传包为 `revised_source6_imc_full_draft.zip`。该版本保留原文的背景、方法、数据与结果细节，并整合 Layer Agreement 叙事；仅使用仓库内已有实验结果，不新增实验。
 
+中文逐段阅读版位于 `revised_source6_imc_full_zh_translation.docx` 和 `revised_source6_imc_full_zh_translation.md`。中文版本仅用于作者通读和批注，主张、数字、引用和后续正式修改仍以英文 LaTeX 源文件为准。
+
 ## 2. 文件优先级
 
 发生冲突时，按以下顺序判断：
