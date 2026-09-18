@@ -1,0 +1,96 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Submarine cables form the physical backbone of the global Internet and carry
+nearly all intercontinental traffic~\cite{telegeography_submarine_map}. Cable
+failures can isolate regions, degrade remote-service access, and redirect
+traffic toward longer or congested alternatives. Routes that share a cable or
+coastal corridor can be affected by the same physical event even when their
+network-layer paths appear different. Evaluating path diversity therefore
+requires measuring whether logically distinct routes also occupy distinct
+physical directions.
+
+Path diversity is usually measured at the network layer. Traceroute records
+routers and Autonomous System (AS) transitions, so distinct hops or AS paths
+are counted as distinct alternatives. It does not identify the submarine
+infrastructure that could carry those paths. Two paths that appear independent
+in traceroute may leave a region through the same coast and rely on the same
+small set of feasible corridors. Whether network-layer diversity corresponds
+to physical-corridor diversity is therefore an empirical question.
+
+Prior work supplies the cross-layer mappings needed to study this question.
+Internet Atlas, InterTubes, and iGDB connect observed Internet links to long-
+haul infrastructure; Nautilus associates IP links with candidate submarine
+cables; Calypso maps routes using cable layouts, network relationships, and
+inland connectivity; and Xaminer applies cross-layer maps to infrastructure
+risk analysis~\cite{durairajan2013atlas,durairajan2015intertubes,
+anderson2022igdb,ramanathan2023nautilus,wang2025calypso,
+ramanathan2024xaminer}. These systems identify physical infrastructure that
+could carry an individual link or path. We use such assignments to measure a
+population-level property: whether concentration among observed network
+transitions tracks concentration among feasible physical corridors.
+
+We present \emph{CLASP}, a Cross-Layer Audit of Service Paths. CLASP normalizes
+each traceroute into visible, geolocated hop-pair segments. Within every
+country--measurement population, ordered endpoint-AS transitions form the
+network distribution and feasible pairs of landing regions form the physical-
+corridor distribution. Both distributions contain the same candidate-bearing
+segments. Each segment contributes one unit of observation mass, allocated
+among candidate corridors by the existing projection score. We call the
+Spearman rank association between network and corridor concentration across a
+reported group of units \emph{Layer Agreement}. The coefficient records an
+observed monotonic association; it is not a causal or predictive model.
+
+Three questions organize the measurement. \textbf{RQ1} asks how frequently
+country--service paths contain a feasible inter-region submarine corridor.
+\textbf{RQ2} asks whether network-layer concentration tracks feasible-corridor
+concentration, and whether the association differs across geographic groups
+and candidate-allocation rules. \textbf{RQ3} asks how much variation is hidden
+by aggregate summaries: which populations contract, remain broad at both
+layers, remain concentrated, or expand after projection.
+
+We apply CLASP to 490,911 valid IPv4 traceroutes from 18 public RIPE Atlas
+measurements. The corpus covers all 13 DNS Roots, Wikipedia, Reddit, Netflix
+Assets, and two dynamic multi-target measurements used as topology references.
+The aligned one-hour snapshot yields 3,291,063 atomic segments, of which
+2,432,559 are mappable and 124,350 support at least one feasible inter-region
+corridor. After audit-quality filtering, the analysis contains 370 country--
+measurement units: 222 DNS Root, 53 application, and 95 topology-reference
+units. Each unit retains its source-country and measurement identity.
+
+The main result is a geographic difference in the observed Layer Agreement.
+Under projection-score weighting, the coefficient is 0.632 among 67 island and
+archipelagic service-facing units: units that are more concentrated at the
+network layer also tend to be more concentrated across feasible corridors.
+Among 202 coastal-mainland units, the coefficient is 0.001, so the network-
+layer ordering contains essentially no information about the corridor
+ordering. No uncertainty interval is available in the existing experiment
+set, and we make no significance claim for either coefficient.
+
+The geographic contrast remains in the same direction under all three
+candidate-allocation rules already computed. Equal-share allocation gives
+Layer Agreement of 0.380 for island and archipelagic units and -0.081 for
+coastal-mainland units; projection-score weighting gives 0.632 and 0.001; and
+Top-1 allocation gives 0.820 and 0.105. The corresponding between-group
+differences are 0.461, 0.631, and 0.715. The measured association increases as
+more observation mass is placed on higher-scoring candidates, but physical-
+route ground truth is unavailable, so these results do not identify one rule
+as the true assignment.
+
+The service-facing population is also heterogeneous. Of 275 units, 81
+(29.5\%) have a broad network distribution and a concentrated corridor
+distribution, while 158 (57.5\%) remain broad at both layers. Eighteen are
+concentrated at both layers and 18 expand from concentrated network support to
+broad corridor support. Singapore--Netflix illustrates continuous narrowing:
+its effective network-transition count of 19.86 becomes an effective corridor
+count of 3.41 without crossing the 80\% concentration threshold. These outcomes
+show why a single contraction rate cannot represent all populations.
+
+This paper makes three contributions. First, CLASP constructs paired network-
+transition and feasible-corridor distributions from identical traceroute
+segments, separating trace-level exposure from conditional concentration.
+Second, we measure a geographic difference in Layer Agreement that remains in
+the same direction under three existing candidate-allocation rules. Third, we
+provide a reproducible audit structure that records measurement IDs,
+configuration values, mapping states, and pipeline counts, allowing the
+reported distributions and their limitations to be inspected.

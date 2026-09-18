@@ -1,0 +1,64 @@
+\documentclass[10pt,conference,letterpaper]{IEEEtran}
+
+\usepackage[T1]{fontenc}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage[caption=false,font=footnotesize]{subfig}
+\usepackage{booktabs}
+\usepackage{url}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{When Does Network Diversity Reflect Physical Diversity?\\
+A Cross-Layer Audit of Internet Service Paths}
+
+\author{\IEEEauthorblockN{Anonymous Author(s)}}
+
+\maketitle
+
+\begin{abstract}
+Network-layer path diversity is often used as a proxy for the physical
+diversity supporting Internet services, but traceroute does not identify the
+submarine corridors that could carry an observed path. We present CLASP, a
+Cross-Layer Audit of Service Paths that constructs network-transition and
+feasible-corridor distributions from the same traceroute segments. We apply
+CLASP to 490,911 valid IPv4 traceroutes from 18 public RIPE Atlas measurements
+covering all 13 DNS Roots, three applications, and two dynamic multi-target
+topology references. The resulting audit contains 370 country--measurement
+units. Under projection-score weighting, the Spearman association between
+network and corridor concentration, which we call Layer Agreement, is 0.632
+for 67 island and archipelagic service-facing units and 0.001 for 202 coastal-
+mainland units. The geographic difference remains in the same direction under
+equal-share and Top-1 candidate allocation, with differences of 0.461, 0.631,
+and 0.715. The service-facing population is heterogeneous: 81 of 275 units
+have broad network support and concentrated corridor support, while 158 remain
+broad at both layers. These measurements show that the correspondence between
+network-layer and feasible physical-corridor diversity varies across the
+observed geographic settings; they do not establish a causal geographic
+mechanism or ground-truth cable use.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Internet measurement, submarine cables, traceroute, cross-layer analysis,
+anycast, path diversity
+\end{IEEEkeywords}
+
+\input{files/1-introduction}
+\input{files/2-background}
+\input{files/3-framework}
+\input{files/4-datasets}
+\input{files/5-result}
+\input{files/6-measurement-scope-and-implications}
+\input{files/7-conclusion}
+\input{files/7-ai-disclosure}
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\end{document}

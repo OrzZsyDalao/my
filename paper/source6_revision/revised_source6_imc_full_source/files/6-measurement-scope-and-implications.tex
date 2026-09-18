@@ -1,0 +1,174 @@
+\section{Robustness, Scope, and Implications}
+\label{sec:scope}
+
+The cross-layer distributions are feasible-corridor estimates rather than
+observations of cable use. This section reports the robustness checks already
+present in the experiment set and states which uncertainties remain
+unmeasured. It then separates the measured quantities from their operational
+interpretation.
+
+\subsection{Candidate-Allocation Robustness}
+\label{subsec:allocation-robustness}
+
+Candidate allocation changes the magnitude of Layer Agreement but not the
+geographic ordering in the existing results. As Table
+~\ref{tab:geographic-agreement} reports, the island--coastal coefficient
+difference is 0.461 under equal shares, 0.631 under projection-score weighting,
+and 0.715 under Top-1 allocation. The corresponding island coefficients are
+0.380, 0.632, and 0.820; the coastal-mainland coefficients are -0.081, 0.001,
+and 0.105.
+
+This comparison addresses one source of ambiguity directly. Equal allocation
+spreads each segment's mass across every feasible corridor, projection-score
+weighting places more mass on better-supported candidates, and Top-1 retains
+only the highest-scoring candidate. The increasing coefficients show that the
+estimated agreement depends on candidate allocation. The repeated geographic
+ordering shows that the observed contrast is not produced by one of these
+three rules. The experiment does not provide cable-use ground truth and
+therefore does not establish which coefficient is closest to the physical
+route actually used.
+
+\subsection{Landing-Region Resolution}
+\label{subsec:resolution-sensitivity}
+
+The available landing-region-diameter analysis covers the A-Root subset, not
+all 18 measurements. It varies maximum diameter over 10, 20, 30, 40, and
+50~km while holding the endpoint catchment at 50~km and the RTT tolerance at
+5~ms. Table~\ref{tab:diameter-sensitivity} reports the recorded values. Exact
+landing-pair and cable candidate sets have mean Jaccard 1.0 on segments shared
+with the 30-km baseline, but the candidate-bearing population and number of
+auditable units change with diameter. The sensitivity therefore cannot be
+described as isolating grouping resolution over a fixed global cohort.
+
+\begin{table}[t]
+  \centering
+  \caption{A-Root landing-region diameter sensitivity.}
+  \label{tab:diameter-sensitivity}
+  \footnotesize
+  \setlength{\tabcolsep}{3.2pt}
+  \begin{tabular}{rrrr}
+    \toprule
+    Diameter & Single-corridor & Median Top-2 & Units \\
+    \midrule
+    10 km & 47.4\% & 53.6\% & 16 \\
+    20 km & 46.2\% & 62.8\% & 15 \\
+    30 km & 54.8\% & 64.4\% & 15 \\
+    40 km & 90.1\% & 81.6\% & 13 \\
+    50 km & 94.8\% & 84.9\% & 13 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.84\columnwidth]{figures/fig_sensitivity_diameter.pdf}
+  \caption{Recorded A-Root landing-region diameter sensitivity. The analysis
+  does not recompute the main geographic Layer Agreement result.}
+  \label{fig:diameter-sensitivity}
+\end{figure}
+
+The 10--30-km settings retain a finer coastal partition than the 40--50-km
+settings. Single-corridor share rises to 90.1\% and 94.8\% at 40 and 50~km,
+and median Top-2 share reaches 81.6\% and 84.9\%. Because the analysis is
+limited to A-Root, it does not establish that the headline geographic
+difference is invariant to landing-region diameter. No complete existing sweep
+recomputes the main result across endpoint catchment, propagation speed, or
+RTT tolerance.
+
+\subsection{Dependence on Geolocation and Candidate Construction}
+\label{subsec:geolocation-scope}
+
+Every corridor projection begins with hop geolocation. A hop placed farther
+inland can remove a nearby landing candidate, while a location shifted toward
+a coast can add one. The 50-km endpoint catchment is the fixed setting in the
+reported analysis. The current experiment set contains no completed location-
+perturbation analysis or alternative-geolocation comparison, so the effect of
+residual IPinfo error is not bounded.
+
+The projection also lacks physical-route ground truth. Geographic, lifecycle,
+and propagation constraints identify feasible candidates rather than the
+cable used by a packet. Exact landing-pair, cable, and corridor identities
+remain linked in the output, permitting later inspection, but the available
+materials contain no completed manual corridor audit. We therefore report
+candidate support and avoid statements that require verified cable traversal.
+
+Cable lifecycle filtering uses the inventory fields available for the
+measurement date. These fields do not report transient failures or outages,
+and the inventory can be revised. A recorded refresh changed 222 of 694 cable
+records, including 26 planned-flag changes and 47 revised service dates. The
+pre-refresh inventory was not used for an existing sensitivity result. Units
+whose feasible sets lie near a metadata revision may consequently change with
+the inventory.
+
+\subsection{Snapshot and Population Scope}
+\label{subsec:measurement-scope}
+
+All 18 measurements cover 00:00--01:00 UTC on July~1, 2026. Routing, service
+deployment, and cable availability can change outside this window, so the
+reported distributions describe one aligned snapshot and do not establish
+temporal stability. A failure-based validation would require comparable
+traceroutes on both sides of a cable event, which this snapshot does not
+provide.
+
+Reported quantities are observation-weighted over participating RIPE Atlas
+probes. Probe density varies across countries and networks, so a country's
+distribution represents the probes and source ASNs present in the corpus, not
+its user population or traffic volume. The eligibility thresholds of 10
+probes and 3 probe ASNs limit sparse units but do not make the sample
+representative.
+
+The service measurements and dynamic multi-target references also contain
+different target populations. The references deliberately sample many
+destinations during the window, whereas each service measurement retains its
+selected instances. Their differences characterize the observed populations;
+they are not a matched estimate of a service-selection or deployment effect.
+Anycast observations jointly reflect deployed footprint, BGP selection,
+interconnection, and source-network context.
+
+\subsection{Implications for Diversity Measurement}
+\label{subsec:resilience-implications}
+
+Layer Agreement separates two questions that a network-layer count can
+otherwise combine. Network Top-2 share records concentration among observed
+network transitions. Corridor Top-2 share records concentration among feasible
+physical directions for the same candidate-bearing segments. In this snapshot,
+the association between the quantities is stronger for island and
+archipelagic service-facing units than for coastal-mainland units under all
+three allocation rules.
+
+One possible explanation is that island paths reach submarine infrastructure
+through a smaller set of coastal gateways, whereas coastal-mainland paths can
+include more terrestrial routing. The current measurements do not test that
+mechanism. The geographic result is an association, not evidence that
+topography, gateway structure, or terrestrial routing causes the difference.
+
+The heterogeneous cross-layer classes also constrain operational conclusions.
+A broad network distribution projects to a concentrated corridor distribution
+in 81 service-facing units, but 158 remain broad at both layers and some units
+expand. A universal conversion from network breadth to physical breadth is
+therefore unsupported. Exposure and corridor concentration can identify where
+paths enter the candidate space and how candidate-bearing observations are
+distributed, but this study does not estimate the effect of deploying a closer
+service instance, changing interconnection, or adding landing-region access.
+
+Corridor concentration is not an operational resilience metric by itself. It
+does not measure cable multiplicity within a corridor, landing-station
+redundancy, shared terrestrial backhaul, correlated hazards, available
+rerouting capacity, or repair processes. These dimensions are required before
+a feasible-corridor distribution can support claims about failure tolerance.
+
+\subsection{Ethics and Reproducibility}
+\label{subsec:ethics-reproducibility}
+
+The study uses archived public RIPE Atlas measurements and infrastructure
+metadata and reports aggregate country--measurement statistics. It does not
+target individual users or report individual probe addresses. Candidate
+assignments are feasible hypotheses and should not be interpreted as
+disclosure of an operator's actual cable use.
+
+The released measurement IDs, configuration values, mapping-resolution
+states, pipeline counts, and scripts reconstruct the primary tables and
+figures from versioned inputs. The paper's 80\% four-class rule is the primary
+descriptive classification; the repository's tier-based auxiliary
+classification uses a different rule and must remain separately named in the
+artifact.

@@ -4,16 +4,16 @@
 
 ## 1. 当前任务
 
-论文正在从此前的 INFOCOM 版本重构为 IMC 2027 稿件。首份可编译的 IMC LaTeX 初稿已经形成，入口为 `IMC2027-overleaf.tex`，章节位于 `imc/`。该初稿仅整合仓库内已有实验结果，不新增实验；原 INFOCOM 源文件保留不动。
+论文正在从此前的 INFOCOM 版本重构为 IMC 2027 稿件。当前完整初稿以 `revised_source6.zip` 原文为底稿，源文件位于 `revised_source6_imc_full_source/`，可上传包为 `revised_source6_imc_full_draft.zip`。该版本保留原文的背景、方法、数据与结果细节，并整合 Layer Agreement 叙事；仅使用仓库内已有实验结果，不新增实验。
 
 ## 2. 文件优先级
 
 发生冲突时，按以下顺序判断：
 
 1. `AI_HANDOFF.md`：最近的跨会话决策和工作状态。
-2. `IMC2027-overleaf.tex` 与 `imc/*.tex`：当前权威 LaTeX 初稿。
+2. `revised_source6_imc_full_source/` 与 `revised_source6_imc_full_draft.zip`：当前权威完整 LaTeX 初稿及 Overleaf 包。
 3. `IMC2027_STORY_SPEC.md`：主张、证据链、措辞红线与章节承诺。
-4. `IMC2027_DRAFT_intro_v2.md`、`IMC2027_DRAFT_sec2.md`、`IMC2027_DRAFT_sec3.md`、`IMC2027_DRAFT_sec4-5.md`、`IMC2027_DRAFT_sec6-8.md`：形成 LaTeX 初稿时使用的章节草稿；后续修改以 LaTeX 为准。
+4. `IMC2027_DRAFT_intro_v2.md`、`IMC2027_DRAFT_sec2.md`、`IMC2027_DRAFT_sec3.md`、`IMC2027_DRAFT_sec4-5.md`、`IMC2027_DRAFT_sec6-8.md`：形成完整 LaTeX 初稿时使用的章节草稿；后续修改以 `revised_source6_imc_full_source/` 为准。
 5. `IMC2027_ARCHITECTURE.md` 与 `IMC2027_LEARNED_STRUCTURE.md`：结构设计和对照论文分析。
 6. `MANUSCRIPT_REVISED.md`、`files/*.tex`：此前的 INFOCOM 段落级修订版，只作为事实、数字、公式和既有表述来源，不代表当前 IMC 叙事。
 7. `IMC2027_DRAFT_intro.md`、`IMC2027_DRAFT_abstract_intro.md`：已被 `IMC2027_DRAFT_intro_v2.md` 取代，不应继续编辑。
@@ -120,7 +120,7 @@ Singapore–Netflix 不从论文中删除。它应保留在结果节，用完整
 - 为 `200 km/ms` 与 `τ=5 ms` 补具体先例或证据；
 - 将 Calypso 的 SIGCOMM 2025 短文引用与 IMC 长文版本区分；
 - 给 Results 中的图补正式引用；
-- 初稿已写回独立的 IMC LaTeX 源文件；后续修改应直接更新 `IMC2027-overleaf.tex` 与 `imc/*.tex`，并同步维护本文件。
+- 完整初稿已基于 `revised_source6.zip` 写回 `revised_source6_imc_full_source/`；后续修改应以该目录为准，并同步维护 Overleaf 包与本文件。
 
 ## 9. 学术写作硬约束
 

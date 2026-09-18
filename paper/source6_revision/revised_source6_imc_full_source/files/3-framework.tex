@@ -1,0 +1,242 @@
+\section{CLASP: The Paired Cross-Layer Audit}
+\label{sec:framework}
+
+\subsection{Overview}
+\label{sec:framework_overview}
+
+CLASP constructs paired network-transition and feasible-corridor distributions
+for each country--measurement unit. It combines traceroute, probe metadata, IP
+geolocation and ASN mappings, AS context, and cable metadata. Figure
+~\ref{fig:framework_pipeline} shows the processing order: path extraction
+creates atomic hop-pair segments, corridor projection constructs each
+segment's feasible landing-region corridor set, and aggregation forms the two
+distributions over the same candidate-bearing segments.
+
+The construction keeps trace-level exposure separate from segment-level
+concentration. Exposure records whether a valid traceroute contains at least
+one feasible inter-region corridor. The paired distributions condition on
+candidate-bearing segments and describe how their observation mass is
+organized. Because these quantities use different denominators, CLASP reports
+them separately.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/framework_cross_layer_audit.pdf}
+  \caption{CLASP extracts atomic segments, projects feasible landing-region
+  corridors, and constructs paired network-transition and corridor
+  distributions over the same candidate-bearing observations.}
+  \label{fig:framework_pipeline}
+\end{figure*}
+
+\subsection{Path Extraction}
+\label{sec:framework_path_segmentation}
+
+We group traceroutes by probe country and measured service. This grouping
+retains the source-side connectivity context and the destination selection
+observed for each measurement. Hop countries remain segment attributes rather
+than grouping keys.
+
+Each traceroute is normalized into its complete sequence of visible hops with
+locations, ASNs, and RTTs. Successive visible, geolocated hops form atomic
+segments. Each segment records endpoint locations, ASNs, countries, hop
+positions, RTT difference, and bridged-hop count. Repeated hops and RTT samples
+retain their trace identity and ordering. When timeouts separate two visible
+hops, the bridged-hop count records the hidden gap for audit accounting.
+
+When both endpoint ASNs are available, their ordered pair forms the segment's
+network-transition label. A segment missing one endpoint ASN receives an
+ordered country-pair fallback label, which is strictly coarser. We record the
+fallback share for each unit. Audit eligibility requires that share to be at
+most 30\%, together with at least 30 candidate-bearing segments, 10 probes,
+and 3 probe ASNs. These thresholds remove units whose network labels or
+observation support are too sparse for the paired summaries; they are quality
+floors rather than guarantees of representativeness.
+
+\subsection{Feasible Landing-Region Corridors}
+\label{sec:framework_projection}
+
+\paragraph{Landing stations and cable lifecycle.}
+For each segment endpoint, CLASP retrieves landing stations within 50~km and
+pairs them through cable systems in service on July~1, 2026. The catchment
+allows endpoint locations to be associated with nearby coastal facilities at
+the resolution of the geolocation input. Explicit cable path or branch
+information defines direct landing-point adjacency. When the inventory does
+not provide that information, the pipeline retains reachability at the
+metadata's topology resolution and records that provenance state rather than
+presenting it as an observed cable traversal.
+
+\paragraph{Landing regions.}
+Landing stations are grouped into regions with maximum pairwise distance
+30~km. The diameter merges nearby facilities serving the same coastal
+direction while retaining separated coastal entry and exit patterns. A
+\emph{landing-region corridor} is a direction-independent pair of regions
+connected by at least one feasible cable candidate. Several cable systems and
+exact landing pairs may support one corridor. Exact landing-pair, cable, and
+corridor identities remain linked in the outputs so that the aggregation can
+be audited at each resolution.
+
+\paragraph{Propagation feasibility.}
+A candidate must satisfy geographic, lifecycle, and propagation constraints.
+Let \(D\) be the great-circle distance between its landing points,
+\(v_f=200\)~km/ms the configured effective propagation speed in fiber,
+\(\Delta RTT\) the segment's RTT difference, and \(\tau=5\)~ms the RTT
+tolerance. The candidate is propagation-feasible when
+
+\begin{equation}
+  \Delta RTT + \tau \geq \frac{2D}{v_f}.
+  \label{eq:rtt-feasibility}
+\end{equation}
+
+The inequality asks whether the observed round-trip increment can accommodate
+the minimum round-trip propagation time between the landing points. When
+\(\Delta RTT\) is non-positive or inconclusive, CLASP retains the geographic
+and lifecycle constraints and flags the segment. The 200~km/ms speed and
+5~ms tolerance are fixed configuration values in the existing experiment set;
+Section~\ref{sec:scope} treats the absence of a complete parameter sweep as a
+measurement limitation.
+
+\subsection{Candidate Allocation and Observation Mass}
+\label{sec:framework_allocation}
+
+Duplicate cable rows belonging to the same corridor are collapsed within an
+atomic segment. For a segment \(s\) with feasible corridor set
+\(\mathcal{C}_s\), the primary analysis allocates its observation mass using
+the projection score:
+
+\begin{equation}
+  w_{s,c}=
+  \frac{\sigma_{s,c}}
+       {\sum_{c'\in\mathcal{C}_s}\sigma_{s,c'}},
+  \qquad
+  \sum_{c\in\mathcal{C}_s}w_{s,c}=1,
+  \label{eq:weighted-mass}
+\end{equation}
+
+where \(\sigma_{s,c}\) is the support assigned by the existing projection to
+corridor \(c\), summed over its cable candidates. Every candidate-bearing
+segment contributes exactly one unit of total mass, so a segment with more
+candidates does not contribute more total influence.
+
+Candidate ambiguity remains observable. We therefore retain two alternative
+allocations already computed in the artifact. Equal-share allocation assigns
+\(w_{s,c}=1/|\mathcal{C}_s|\). Top-1 allocation assigns the unit mass to the
+highest-scoring corridor. Equal sharing preserves every feasible direction but
+spreads mass without using the score; Top-1 removes that spread but discards
+lower-ranked candidates. Reporting all three rules shows which conclusions
+survive these treatments of ambiguity.
+
+\subsection{Mapping Resolution and Pipeline Accounting}
+\label{sec:framework_mapping_resolution}
+
+Table~\ref{tab:mapping-resolution} classifies each segment by input coverage
+and the size of its feasible corridor set. Single- and bounded multi-corridor
+segments form the physical distribution. Segments with no feasible corridor or
+insufficient inputs remain in pipeline accounting, and every valid traceroute
+remains in the exposure denominator.
+
+\begin{table}[t]
+  \centering
+  \caption{Segment-level physical mapping resolution.}
+  \label{tab:mapping-resolution}
+  \footnotesize
+  \setlength{\tabcolsep}{3.2pt}
+  \begin{tabular}{p{0.30\columnwidth}p{0.60\columnwidth}}
+    \toprule
+    State & Operational definition \\
+    \midrule
+    Single corridor
+      & Feasibility inputs available and \(|\mathcal{C}_s|=1\) \\
+    Bounded multi-corridor
+      & Feasibility inputs available and \(|\mathcal{C}_s|>1\) \\
+    No feasible corridor
+      & Feasibility inputs available and \(|\mathcal{C}_s|=0\) \\
+    Insufficiently resolved
+      & Insufficient location, path-visibility, or metadata fields for stable
+        corridor construction \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Candidate-set size and aggregate concentration describe different levels. A
+unit may contain many bounded multi-corridor segments yet concentrate after
+their allocated mass repeatedly supports the same corridors. CLASP therefore
+retains the resolution state instead of using candidate multiplicity as a
+substitute for distribution breadth.
+
+\subsection{Paired Distributions}
+\label{sec:framework_distribution_analysis}
+
+For an auditable country--measurement unit \(u\), let \(S_u\) denote its
+candidate-bearing atomic segments and \(\ell(s)\) the ordered network label of
+segment \(s\). The network-transition probability of label \(t\) is
+
+\begin{equation}
+  p_u^{N}(t)=
+  \frac{\sum_{s\in S_u}\mathbf{1}[\ell(s)=t]}
+       {|S_u|}.
+  \label{eq:network-distribution}
+\end{equation}
+
+The corridor distribution sums the masses in Eq.~\eqref{eq:weighted-mass} for
+each corridor and normalizes within the same \(S_u\). Before normalization,
+both distributions have total mass \(|S_u|\). Their difference therefore
+describes how the same candidate-bearing observations are organized at the two
+layers, not a comparison between different trace populations. Direction is
+preserved for network transitions; the physical corridor is direction-
+independent because it represents a coastal connection rather than forwarding
+order.
+
+Submarine exposure uses the complete valid-trace population. A traceroute is
+exposed when at least one of its segments has a feasible inter-region corridor.
+The number of exposed traces divided by all valid traces in the unit gives the
+exposure rate. This denominator differs intentionally from \(|S_u|\), which
+conditions the distributions on candidate-bearing segments.
+
+\subsection{Distribution Summaries and Layer Agreement}
+\label{sec:framework_metrics}
+
+Three metrics summarize each distribution. Top-2 share is the sum of the two
+largest probabilities and records mass in the dominant categories. Effective
+category count is
+\(\exp[-\sum_i p_i\log p_i]\) and reports breadth on the scale of an equally
+weighted category count. Normalized entropy divides Shannon entropy by the
+logarithm of observed support size and measures evenness relative to that
+support. Network-to-corridor differences are computed within each unit.
+
+\emph{Layer Agreement} is the Spearman rank association, across a reported
+set of units, between network Top-2 share and corridor Top-2 share. A positive
+coefficient means that units ordered as more concentrated at the network layer
+tend to be ordered as more concentrated at the corridor layer. It describes an
+observed monotonic association and is not a causal or predictive model. We
+report it separately by measurement family, geography, and candidate-
+allocation rule. The existing results do not include clustered uncertainty
+intervals, so we do not make significance claims.
+
+A common 80\% Top-2 threshold supplies four descriptive classes: broad at both
+layers, concentrated at both, network-broad/corridor-concentrated, and
+network-concentrated/corridor-broad. Continuous Top-2 shifts, effective counts,
+and normalized entropy accompany the classes so that threshold crossings do
+not replace the underlying distributions.
+
+\begin{table}[t]
+  \centering
+  \caption{CLASP measurement configuration.}
+  \label{tab:measurement-configuration}
+  \footnotesize
+  \setlength{\tabcolsep}{3.5pt}
+  \begin{tabular}{lr}
+    \toprule
+    Parameter & Value \\
+    \midrule
+    Endpoint landing catchment & 50 km \\
+    Landing-region maximum diameter & 30 km \\
+    Fiber propagation speed & 200 km/ms \\
+    RTT tolerance & 5 ms \\
+    Same-city threshold & 25 km \\
+    Cable lifecycle date & July 1, 2026 \\
+    Inconclusive RTT & Retained and flagged \\
+    Timeout-bridged segment & Retained and flagged \\
+    Path scope & Complete visible sequence \\
+    \bottomrule
+  \end{tabular}
+\end{table}

@@ -8,7 +8,7 @@
 
 ## IMC 2027 初稿与 Overleaf 包
 
-当前权威初稿入口为 `IMC2027-overleaf.tex`。`IMC2027_Overleaf_Draft.zip` 包含主文件、`imc/` 章节、所用图、`refs.bib`、IEEE 模板文件和作者说明，可直接上传到 Overleaf；上传后将 `IMC2027-overleaf.tex` 设为 Main document，并使用 pdfLaTeX 与 BibTeX。预览文件位于 `output/pdf/IMC2027_initial_draft.pdf`。
+当前权威完整初稿位于 `revised_source6_imc_full_source/`，它以 `revised_source6.zip` 原文为底稿并整合现有 draft。`revised_source6_imc_full_draft.zip` 可直接上传到 Overleaf；上传后将 `IEEE-conference-template-062824.tex` 设为 Main document，并使用 pdfLaTeX 与 BibTeX。预览文件位于 `output/pdf/revised_source6_imc_full_draft.pdf`。此前的 `IMC2027-overleaf.tex` 保留为精简结构稿，不再作为完整初稿。
 
 ## 先阅读什么
 
