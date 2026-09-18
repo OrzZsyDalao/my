@@ -1,0 +1,49 @@
+\section{Background and Related Work}
+\label{sec:background}
+
+\subsection{Reading Service Paths at the Network Layer}
+
+Users reach services through domain names, anycast targets, and replica
+deployments. Routing selects the resulting path, and traceroute exposes the
+hops and AS transitions along it. Path-diversity measurements count these
+transitions and compare them across vantage points.
+
+Prior work measures the user's view of submarine criticality
+~\cite{liu2020outofsight}, characterizes anycast deployment
+~\cite{cicalese2015anycast,devries2017anycast}, and relates cable
+infrastructure to AS-level structure~\cite{ye2023impact}. These measurements
+describe network-layer reachability. Our question is whether diversity at that
+layer corresponds to breadth across feasible physical directions.
+
+\subsection{Mapping Paths onto Submarine Infrastructure}
+
+Internet Atlas and InterTubes associate long-haul facilities with observed
+paths~\cite{durairajan2013atlas,durairajan2015intertubes}. iGDB integrates
+facilities, fiber, and network entities into a cross-layer map
+~\cite{anderson2022igdb}. Nautilus associates IP links with candidate
+submarine cables and attaches a confidence score to each assignment
+~\cite{ramanathan2023nautilus}. Calypso combines cable layouts, network
+relationships, and inland connectivity to map routes and defines Route Stress
+over those assignments~\cite{wang2025calypso}. Xaminer applies cross-layer
+maps to infrastructure analysis under disaster models
+~\cite{ramanathan2024xaminer}. Carisimo et al. use intercontinental-link
+measurements to identify gateway routers~\cite{carisimo2023hopaway}.
+
+These systems produce an assignment from a link or path to physical
+infrastructure that could plausibly carry it. Their validation evaluates those
+assignments using cable failures, targeted traceroutes, operator maps, or
+expert feedback. CLASP adopts this projection approach; it does not claim to
+identify ground-truth cable use.
+
+\subsection{From Mapping to Distribution Measurement}
+
+An assignment does not by itself describe how observation mass is distributed
+across physical directions or whether that distribution tracks the one visible
+at the network layer. CLASP aggregates assignments into two population-level
+quantities. \emph{Submarine exposure} is the fraction of valid traceroutes
+containing a feasible inter-region corridor. \emph{Corridor concentration}
+describes how candidate-bearing segment mass is distributed across corridors.
+A country can enter the candidate space frequently and distribute observations
+widely, or enter infrequently with the candidate-bearing observations
+concentrated on one direction. Section~\ref{sec:framework} defines both
+quantities and preserves their separate denominators.

@@ -1,0 +1,81 @@
+\section{Robustness and Measurement Scope}
+\label{sec:robustness}
+
+\subsection{Candidate Allocation}
+
+Table~\ref{tab:geographic-agreement} reports all three allocation rules already
+computed for the geographic comparison. The island--coastal difference is
+0.461 under equal shares, 0.631 under projection-score weighting, and 0.715
+under Top-1 allocation. The ordering is stable across these rules, while the
+coefficient magnitudes are not. The paper therefore reports the allocation
+rule with each result.
+
+\subsection{Landing-Region Resolution}
+
+The existing landing-region-diameter analysis covers the A-Root subset, not all
+18 measurements. It varies maximum diameter over 10, 20, 30, 40, and 50~km
+while holding the 50-km endpoint catchment and 5-ms RTT tolerance fixed.
+Table~\ref{tab:diameter-sensitivity} reports the recorded values. Exact
+landing-pair and cable candidate sets have mean Jaccard 1.0 on segments shared
+with the 30-km baseline, but the candidate-bearing segment population and the
+number of auditable units change with diameter.
+
+\begin{table}[t]
+  \centering
+  \caption{A-Root landing-region diameter sensitivity.}
+  \label{tab:diameter-sensitivity}
+  \footnotesize
+  \setlength{\tabcolsep}{3.2pt}
+  \begin{tabular}{rrrr}
+    \toprule
+    Diameter & Single-corridor & Median Top-2 & Units \\
+    \midrule
+    10 km & 47.4\% & 53.6\% & 16 \\
+    20 km & 46.2\% & 62.8\% & 15 \\
+    30 km & 54.8\% & 64.4\% & 15 \\
+    40 km & 90.1\% & 81.6\% & 13 \\
+    50 km & 94.8\% & 84.9\% & 13 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The 10--30-km settings retain a finer coastal partition than the 40--50-km
+settings. Because the existing analysis is limited to A-Root and does not
+recompute the main geographic Layer Agreement result, it does not establish
+that the headline geographic difference is invariant to landing-region
+diameter.
+
+\subsection{Dependence on Geolocation and Candidate Construction}
+
+Every corridor projection begins with hop geolocation. A hop placed farther
+inland can remove a nearby landing candidate; a location shifted toward a coast
+can add one. The 50-km catchment is the fixed setting used in the reported
+analysis. No location-perturbation or alternative-geolocation result is
+available in the existing experiment set, so the effect of residual IPinfo
+error is not bounded here.
+
+The projection also lacks physical-route ground truth. Geographic, lifecycle,
+and propagation constraints define feasible candidates rather than observed
+cable use. Exact landing-pair, cable, and corridor identities remain linked in
+the pipeline outputs, but no completed manual corridor audit is reported in
+this draft.
+
+\subsection{Snapshot and Population Scope}
+
+All 18 measurements cover 00:00--01:00 UTC on July~1, 2026. Routing, service
+deployment, and cable availability can change outside this window, so the
+reported distributions describe one aligned snapshot. RIPE Atlas probe density
+varies across countries and networks, and all quantities are observation-
+weighted over participating probes.
+
+The service measurements and dynamic multi-target references have different
+target populations. Family comparisons describe those observed populations
+and are not matched estimates of a service-selection or deployment effect.
+Anycast observations jointly reflect deployed footprint, BGP selection,
+interconnection, and source-network context.
+
+Cable lifecycle filtering uses the inventory fields available for the
+measurement date. These fields do not report transient failures or outages,
+and the cable inventory can be revised. The results therefore measure feasible
+candidate support under the recorded metadata, not operational redundancy,
+hazard correlation, rerouting capacity, or repair performance.

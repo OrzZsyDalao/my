@@ -1,0 +1,68 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Submarine cables carry nearly all intercontinental Internet traffic and connect
+users to remote services~\cite{telegeography_submarine_map}. A cable or coastal
+corridor shared by several routes can expose those routes to the same physical
+failure. Evaluating path diversity therefore requires knowing whether routes
+that appear distinct at the network layer also occupy distinct physical
+directions.
+
+Traceroute records routers and Autonomous System (AS) transitions, so network-
+layer measurements count distinct hops or AS paths as distinct alternatives.
+It does not identify the submarine infrastructure that could carry those
+paths. Two paths that appear independent in traceroute may leave a region
+through the same coast and rely on the same small set of physical directions.
+Whether network-layer diversity corresponds to physical-corridor diversity is
+an empirical question.
+
+Cross-layer systems make this comparison possible. Internet Atlas, InterTubes,
+and iGDB connect observed Internet links to long-haul infrastructure;
+Nautilus associates IP links with candidate submarine cables; Calypso maps
+routes using cable layouts, network relationships, and inland connectivity;
+and Xaminer applies cross-layer maps to infrastructure risk analysis
+~\cite{durairajan2013atlas,durairajan2015intertubes,anderson2022igdb,
+ramanathan2023nautilus,wang2025calypso,ramanathan2024xaminer}. These systems
+produce mappings for individual links or paths. We use such mappings to ask a
+population-level question: does concentration at the network layer track
+concentration across feasible physical corridors?
+
+We present \emph{CLASP}, a Cross-Layer Audit of Service Paths. CLASP normalizes
+each traceroute into visible, geolocated hop-pair segments. For every country--
+measurement population, ordered endpoint-AS transitions form the network
+distribution and feasible pairs of landing regions form the corridor
+distribution. Both distributions contain the same candidate-bearing segments.
+Each segment contributes one unit of observation mass, allocated among its
+candidate corridors by the projection score. We call the Spearman rank
+association between network and corridor concentration across a reported group
+of units \emph{Layer Agreement}.
+
+We apply CLASP to 490,911 valid IPv4 traceroutes from 18 public RIPE Atlas
+measurements. The corpus covers all 13 DNS Roots, Wikipedia, Reddit, Netflix
+Assets, and two dynamic multi-target measurements used as topology references.
+The aligned one-hour snapshot yields 3,291,063 atomic segments, of which
+2,432,559 are mappable and 124,350 support at least one feasible inter-region
+corridor. The audit contains 370 country--measurement units: 222 DNS Root, 53
+application, and 95 topology-reference units.
+
+The observed Layer Agreement differs between geographic groups. Under
+projection-score weighting, it is 0.632 among 67 island and archipelagic
+service-facing units and 0.001 among 202 coastal-mainland units. The group
+difference remains in the same direction under equal-share and Top-1
+allocation. These coefficients describe rank associations within the observed
+snapshot; the analysis does not establish that geography causes the
+difference.
+
+The service-facing population is also heterogeneous. Of 275 units, 81 (29.5\%)
+have a broad network distribution and a concentrated corridor distribution,
+while 158 (57.5\%) remain broad at both layers. Other units are concentrated at
+both layers or expand after projection. A single contraction rate therefore
+does not represent all country--service populations.
+
+This paper makes three contributions. First, CLASP constructs paired network
+and corridor distributions from identical traceroute segments. Second, we
+measure a geographic difference in the observed association between the two
+layers and report it under three existing candidate-allocation rules. Third,
+we provide a reproducible audit structure that records measurement IDs,
+configuration values, mapping states, and pipeline counts, allowing the
+reported distributions and their limitations to be inspected.

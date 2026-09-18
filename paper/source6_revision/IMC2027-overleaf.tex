@@ -1,0 +1,63 @@
+\documentclass[10pt,conference,letterpaper]{IEEEtran}
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage[caption=false,font=footnotesize]{subfig}
+\usepackage{booktabs}
+\usepackage{url}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{When Network Diversity Narrows at Sea:\\
+A Cross-Layer View of Internet Service Paths}
+
+\author{\IEEEauthorblockN{Anonymous Author(s)}}
+
+\maketitle
+
+\begin{abstract}
+Network-layer path diversity is often used to describe the alternatives
+available to an Internet service, but traceroute does not reveal whether those
+alternatives occupy distinct physical directions. We present CLASP, a paired
+cross-layer audit that constructs network-transition and feasible
+landing-region-corridor distributions from the same traceroute segments. We
+apply CLASP to 490,911 valid IPv4 traceroutes from 18 public RIPE Atlas
+measurements covering 13 DNS Roots, three applications, and two dynamic
+multi-target references. Under projection-score weighting, the Spearman rank
+association between network and corridor Top-2 concentration is 0.632 across
+67 island and archipelagic service-facing units and 0.001 across 202 coastal-
+mainland units. The observed difference remains in the same direction under
+equal-share and Top-1 candidate allocation, where the corresponding gaps are
+0.461 and 0.715. The relationship is heterogeneous within the service-facing
+population: 81 of 275 units move from a broad network distribution to a
+concentrated corridor distribution, while 158 remain broad at both layers.
+These measurements show that the correspondence between network and feasible
+physical-corridor diversity varies across geographic settings and cannot be
+inferred from network-layer breadth alone.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Internet measurement, submarine cables, traceroute, cross-layer analysis,
+anycast, path diversity
+\end{IEEEkeywords}
+
+\input{imc/1-introduction}
+\input{imc/2-background}
+\input{imc/3-framework}
+\input{imc/4-data}
+\input{imc/5-results}
+\input{imc/6-robustness}
+\input{imc/7-discussion}
+\input{imc/8-conclusion}
+\input{imc/9-ai-disclosure}
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\end{document}
