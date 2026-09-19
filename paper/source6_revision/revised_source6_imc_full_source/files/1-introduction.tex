@@ -60,22 +60,28 @@ units. Each unit retains its source-country and measurement identity.
 
 The main result is a geographic difference in the observed Layer Agreement.
 Under projection-score weighting, the coefficient is 0.632 among 67 island and
-archipelagic service-facing units: units that are more concentrated at the
-network layer also tend to be more concentrated across feasible corridors.
-Among 202 coastal-mainland units, the coefficient is 0.001, so the network-
-layer ordering contains essentially no information about the corridor
-ordering. No uncertainty interval is available in the existing experiment
-set, and we make no significance claim for either coefficient.
+archipelagic service-facing units drawn from 10 countries: units that are more
+concentrated at the network layer also tend to be more concentrated across
+feasible corridors. Among 202 coastal-mainland units drawn from 28 countries,
+the coefficient is 0.001, so the network-layer ordering contains essentially
+no information about the corridor ordering. The saved score-weighted artifact
+does not retain the per-unit table required for clustered inference. A
+country-clustered analysis of the available equal-share result gives a 95\%
+bootstrap interval of [-0.213, 0.902] for its 0.461 between-group difference
+and a two-sided country-label permutation value of $p=0.161$. We therefore
+make no significance claim for the geographic contrast.
 
 The geographic contrast remains in the same direction under all three
 candidate-allocation rules already computed. Equal-share allocation gives
 Layer Agreement of 0.380 for island and archipelagic units and -0.081 for
 coastal-mainland units; projection-score weighting gives 0.632 and 0.001; and
 Top-1 allocation gives 0.820 and 0.105. The corresponding between-group
-differences are 0.461, 0.631, and 0.715. The measured association increases as
-more observation mass is placed on higher-scoring candidates, but physical-
-route ground truth is unavailable, so these results do not identify one rule
-as the true assignment.
+differences are 0.461, 0.631, and 0.715. The equal-share comparison contains
+205 coastal-mainland units, whereas the saved score-weighted and Top-1
+comparisons contain 202. The measured association increases as more observation
+mass is placed on higher-scoring candidates, but physical-route ground truth
+is unavailable, so these results do not identify one rule as the true
+assignment.
 
 The service-facing population is also heterogeneous. Of 275 units, 81
 (29.5\%) have a broad network distribution and a concentrated corridor

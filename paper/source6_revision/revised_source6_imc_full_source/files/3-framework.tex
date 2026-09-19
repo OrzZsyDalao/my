@@ -209,8 +209,18 @@ coefficient means that units ordered as more concentrated at the network layer
 tend to be ordered as more concentrated at the corridor layer. It describes an
 observed monotonic association and is not a causal or predictive model. We
 report it separately by measurement family, geography, and candidate-
-allocation rule. The existing results do not include clustered uncertainty
-intervals, so we do not make significance claims.
+allocation rule.
+
+For the frozen equal-share result, we quantify geographic uncertainty at the
+level where geography is assigned. A cluster-bootstrap replicate samples
+countries with replacement within each geographic group and carries every
+country--measurement unit from each sampled country together. We use 50,000
+replicates and report percentile intervals. A separate two-sided reference
+test permutes the geographic labels of whole countries 100,000 times while
+retaining the observed number of countries in each group. Both procedures use
+seed 20260919. The saved projection-score and Top-1 artifacts do not retain
+the per-unit summaries needed to repeat this clustered analysis, so their
+coefficients remain descriptive and we do not make significance claims.
 
 A common 80\% Top-2 threshold supplies four descriptive classes: broad at both
 layers, concentrated at both, network-broad/corridor-concentrated, and

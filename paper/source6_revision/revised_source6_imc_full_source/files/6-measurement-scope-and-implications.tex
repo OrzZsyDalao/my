@@ -18,6 +18,17 @@ and 0.715 under Top-1 allocation. The corresponding island coefficients are
 0.380, 0.632, and 0.820; the coastal-mainland coefficients are -0.081, 0.001,
 and 0.105.
 
+The allocation results do not all use an identical coastal-mainland cohort.
+Equal sharing retains 205 coastal-mainland units; the saved projection-score
+and Top-1 comparison retains 202. For equal sharing, country-cluster 95\%
+intervals are [-0.203, 0.760] for island and archipelagic units and [-0.284,
+0.238] for coastal-mainland units. The interval for their 0.461 difference is
+[-0.213, 0.902], and the two-sided country-label permutation value is
+$p=0.161$. These results quantify substantial country-level uncertainty and
+do not establish statistical separation. The current artifact cannot supply
+the corresponding clustered intervals for the 0.632 and 0.001 score-weighted
+coefficients because its per-unit score-weighted table was not retained.
+
 This comparison addresses one source of ambiguity directly. Equal allocation
 spreads each segment's mass across every feasible corridor, projection-score
 weighting places more mass on better-supported candidates, and Top-1 retains
@@ -73,7 +84,12 @@ and median Top-2 share reaches 81.6\% and 84.9\%. Because the analysis is
 limited to A-Root, it does not establish that the headline geographic
 difference is invariant to landing-region diameter. No complete existing sweep
 recomputes the main result across endpoint catchment, propagation speed, or
-RTT tolerance.
+RTT tolerance. We therefore use 30~km as an operational reporting resolution,
+not as an estimated optimum or a globally validated physical scale. Within
+the A-Root check, 10--30~km remain on the finer side of the observed transition
+and 40--50~km merge substantially more support into single corridors. This
+observation explains what the selected resolution preserves in that subset;
+it does not prove that 30~km is parameter-invariant across the corpus.
 
 \subsection{Dependence on Geolocation and Candidate Construction}
 \label{subsec:geolocation-scope}
@@ -108,7 +124,9 @@ deployment, and cable availability can change outside this window, so the
 reported distributions describe one aligned snapshot and do not establish
 temporal stability. A failure-based validation would require comparable
 traceroutes on both sides of a cable event, which this snapshot does not
-provide.
+provide. Subdividing this hour would reuse the same routing interval and could
+only measure within-window composition; it would not supply independent
+evidence of stability across hours or days.
 
 Reported quantities are observation-weighted over participating RIPE Atlas
 probes. Probe density varies across countries and networks, so a country's
@@ -136,11 +154,31 @@ the association between the quantities is stronger for island and
 archipelagic service-facing units than for coastal-mainland units under all
 three allocation rules.
 
-One possible explanation is that island paths reach submarine infrastructure
-through a smaller set of coastal gateways, whereas coastal-mainland paths can
-include more terrestrial routing. The current measurements do not test that
-mechanism. The geographic result is an association, not evidence that
-topography, gateway structure, or terrestrial routing causes the difference.
+The existing absolute-breadth results rule out a simple explanation based on
+island units occupying a universally narrower corridor space. In the DNS
+country-level summary, island and archipelagic countries have a lower median
+corridor Top-2 share than other coastal countries (53.3\% versus 75.4\%) and a
+higher median effective corridor count (5.58 versus 3.39). Their higher Layer
+Agreement therefore concerns how network and corridor concentration rankings
+move together, not uniformly higher corridor concentration.
+
+One mechanism consistent with the measurements is that maritime access and
+network organization impose partly shared constraints on the two rankings for
+island and archipelagic sources, whereas terrestrial routing, domestic
+backhaul, and interconnection can vary network concentration more independently
+in coastal-mainland settings. The exposure results do not test that mechanism:
+island and archipelagic countries enter the candidate space more often, but
+exposure uses all valid traces while Layer Agreement conditions on candidate-
+bearing segments. Across the 38 countries with both summaries, exposure has
+associations of -0.29 with corridor Top-2 share and 0.30 with effective
+corridor count, which do not identify a pathway from geography to agreement.
+
+Other explanations remain compatible with the data, including anycast and
+service-instance selection, probe and source-AS composition, hop-geolocation
+error, and geography-dependent candidate ambiguity. The current measurements
+do not separate these explanations. The geographic result is an association,
+not evidence that topography, gateway structure, terrestrial routing, or a
+particular deployment mechanism causes the difference.
 
 The heterogeneous cross-layer classes also constrain operational conclusions.
 A broad network distribution projects to a concentrated corridor distribution

@@ -1,0 +1,38 @@
+{
+  "input_scope": "272 non-landlocked service-facing units; frozen equal-share 30-km outputs",
+  "allocation": "equal_share",
+  "cluster": "probe_country",
+  "seed": 20260919,
+  "bootstrap_replicates": 50000,
+  "permutation_replicates": 100000,
+  "groups": {
+    "island_or_archipelagic": {
+      "units": 67,
+      "countries": 10,
+      "rho": 0.37999840370340815,
+      "cluster_bootstrap_95_percent_ci": [
+        -0.20257674499792752,
+        0.7602262088993332
+      ]
+    },
+    "coastal_mainland_or_mixed": {
+      "units": 205,
+      "countries": 30,
+      "rho": -0.08120159161341775,
+      "cluster_bootstrap_95_percent_ci": [
+        -0.2841897099247651,
+        0.2376689479440022
+      ]
+    }
+  },
+  "difference_island_minus_coastal": {
+    "estimate": 0.4611999953168259,
+    "cluster_bootstrap_95_percent_ci": [
+      -0.21349555637392287,
+      0.9019109071949665
+    ],
+    "country_label_permutation_two_sided_p": 0.16120838791612083,
+    "valid_permutations": 100000
+  },
+  "interpretation": "The resampling unit is country because geography is a country-level attribute. The permutation p-value is a descriptive randomization reference for the difference in rho, not evidence of a causal geographic mechanism."
+}

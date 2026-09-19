@@ -60,25 +60,25 @@ is descriptive and does not identify a deployment or target-selection effect.
 The association between network and corridor concentration differs across the
 observed service-facing geographic groups. Under projection-score weighting,
 Layer Agreement is 0.632 across 67 island and archipelagic units and 0.001
-across 202 coastal-mainland units. The observed coefficient difference is
-0.631. Landlocked units are not included in either group. No clustered
-uncertainty interval is available in the existing experiment set, so the
-coefficients are reported as descriptive associations without a significance
-claim.
+across 202 coastal-mainland units. These units represent 10 and 28 countries,
+respectively, and the observed coefficient difference is 0.631. Landlocked
+units are not included in either group. The coefficients are descriptive
+associations; the saved score-weighted per-unit table required for a country-
+clustered uncertainty interval is not available.
 
 \begin{table}[t]
   \centering
-  \caption{Service-facing Layer Agreement by geography and allocation rule.}
+  \caption{Service-facing Layer Agreement. Parentheses give unit counts.}
   \label{tab:geographic-agreement}
   \footnotesize
-  \setlength{\tabcolsep}{3.3pt}
+  \setlength{\tabcolsep}{2.4pt}
   \begin{tabular}{lrrr}
     \toprule
     Allocation & Island/arch. & Coastal mainland & Difference \\
     \midrule
-    Equal share & 0.380 & -0.081 & 0.461 \\
-    Projection score & 0.632 & 0.001 & 0.631 \\
-    Top-1 & 0.820 & 0.105 & 0.715 \\
+    Equal share & 0.380 (67) & -0.081 (205) & 0.461 \\
+    Projection score & 0.632 (67) & 0.001 (202) & 0.631 \\
+    Top-1 & 0.820 (67) & 0.105 (202) & 0.715 \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -88,16 +88,29 @@ candidate-allocation rules. As allocation moves from equal shares to
 projection-score weighting and then Top-1, the island coefficient increases
 from 0.380 to 0.632 and 0.820, while the coastal-mainland coefficient changes
 from -0.081 to 0.001 and 0.105. The between-group difference consequently
-increases from 0.461 to 0.631 and 0.715. This monotonic change shows that the
-measured association is sensitive to how ambiguous corridor mass is allocated,
-but the geographic ordering does not depend on one allocation rule. Without
-physical-route ground truth, the comparison does not establish that one rule
-recovers the true association.
+increases from 0.461 to 0.631 and 0.715. The equal-share result contains three
+additional coastal-mainland DNS units that are absent from the saved score-
+weighted and Top-1 comparison. The monotonic sequence therefore describes the
+available allocation-specific cohorts rather than a fully paired estimator
+comparison. It shows that the geographic ordering does not arise under only
+one allocation rule, but it does not isolate allocation as the cause of the
+coefficient change. Without physical-route ground truth, the comparison also
+does not establish that one rule recovers the true association.
+
+The reproducible equal-share result supports a country-level uncertainty
+check. Its 67 island and archipelagic units represent 10 countries, and its
+205 coastal-mainland units represent 30 countries. Country-cluster bootstrap
+intervals are [-0.203, 0.760] for the island coefficient, [-0.284, 0.238] for
+the coastal-mainland coefficient, and [-0.213, 0.902] for their 0.461
+difference. A two-sided country-label permutation gives $p=0.161$. The wide
+interval for the difference includes zero, so the repeated direction across
+allocation rules is reported as a descriptive robustness pattern rather than
+as statistically established geographic separation.
 
 The result does not imply that geography causes the two layers to agree or
 disagree. It records how the two concentration rankings relate within the
-measured snapshot. A mechanism that would explain the difference requires
-additional evidence beyond these coefficients.
+measured snapshot. The existing results constrain possible explanations but
+do not identify a causal mechanism.
 
 \subsection{Absolute Exposure and Breadth by Geography}
 \label{subsec:geography}
