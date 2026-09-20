@@ -6,4 +6,14 @@ This source is based on `revised_source6.zip` and integrates the confirmed IMC 2
 2. Set `IEEE-conference-template-062824.tex` as the Main document.
 3. Compile with pdfLaTeX and BibTeX.
 
-The paper uses only results already present in the repository. The main result is the geographic Layer Agreement contrast (0.632 for island and archipelagic units versus 0.001 for coastal-mainland units), with the same ordering under equal-share and Top-1 allocation. Results report the equal-share country-cluster interval and permutation value once, and the A-Root resolution sweep provides the empirical basis for the 30 km reporting setting within that subset.
+The paper uses only existing experimental results. The narrative first
+quantifies differences between network-transition and feasible-corridor
+diversity within country--measurement units, then examines geographic
+variation in concentration-rank association and the three allocation rules.
+The country-clustered equal-share uncertainty check appears once in Results.
+Figure numbers are preserved from the previous draft as the result sections
+are reordered.
+
+The current bilingual reading copy is maintained separately as
+revised_source6_imc_full_zh_translation.md, with each English paragraph
+followed by its Chinese translation. The historical DOCX is not updated.

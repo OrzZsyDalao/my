@@ -24,25 +24,24 @@ A Cross-Layer Audit of Internet Service Paths}
 
 \begin{abstract}
 Network-layer path diversity is often used as a proxy for the physical
-diversity supporting Internet services, but traceroute does not identify the
-submarine corridors that could carry an observed path. We present CLASP, a
-Cross-Layer Audit of Service Paths that constructs network-transition and
-feasible-corridor distributions from the same traceroute segments. We apply
-CLASP to 490,911 valid IPv4 traceroutes from 18 public RIPE Atlas measurements
-covering all 13 DNS Roots, three applications, and two dynamic multi-target
-topology references. The resulting audit contains 370 country--measurement
-units. Under projection-score weighting, the Spearman association between
-network and corridor concentration, which we call Layer Agreement, is 0.632
-for 67 island and archipelagic service-facing units and 0.001 for 202 coastal-
-mainland units. The geographic difference remains in the same direction under equal-share
-and Top-1 candidate allocation, with differences of 0.461, 0.631, and 0.715.
-Across all three allocation rules, network concentration is much more strongly
-aligned with feasible-corridor concentration for island and archipelagic
-sources than for coastal-mainland sources. The service-facing population is
-heterogeneous: 81 of 275 units have broad network support and concentrated
-corridor support, while 158 remain broad at both layers. These measurements
-show that the value of network-layer diversity as a proxy for feasible
-physical-corridor diversity varies across geographic settings.
+diversity supporting Internet services. We present CLASP, a Cross-Layer
+Audit of Service Paths that compares network-transition and feasible
+landing-region-corridor distributions over the same traceroute segments.
+We apply CLASP to 490,911 valid IPv4 traceroutes from 18 public RIPE Atlas
+measurements covering all 13 DNS Roots, three applications, and two
+dynamic multi-target topology references, yielding 370 auditable
+country--measurement units. Under equal-share allocation, 81 of 275
+service-facing units have broad network support and concentrated corridor
+support, while 158 remain broad at both layers; effective category count
+contracts in 204 units (74.2\%). Across units, the Spearman association
+between network and corridor concentration, termed Layer Agreement, varies
+by geography. Under projection-score weighting it is 0.632 for 67 island
+and archipelagic units and 0.001 for 202 coastal-mainland units. The
+island--coastal difference remains positive under equal-share, projection-
+score, and Top-1 allocation, at 0.461, 0.631, and 0.715. These results show
+why auditing physical-corridor diversity requires both measuring
+within-unit cross-layer differences and examining how concentration
+rankings correspond across geographic populations.
 \end{abstract}
 
 \begin{IEEEkeywords}

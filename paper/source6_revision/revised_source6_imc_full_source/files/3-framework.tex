@@ -91,9 +91,7 @@ The inequality asks whether the observed round-trip increment can accommodate
 the minimum round-trip propagation time between the landing points. When
 \(\Delta RTT\) is non-positive or inconclusive, CLASP retains the geographic
 and lifecycle constraints and flags the segment. The 200~km/ms speed and
-5~ms tolerance are fixed configuration values in the existing experiment set;
-Section~\ref{sec:scope} treats the absence of a complete parameter sweep as a
-measurement limitation.
+5~ms tolerance are fixed configuration values in the reported analysis.
 
 \subsection{Candidate Allocation and Observation Mass}
 \label{sec:framework_allocation}
@@ -112,18 +110,28 @@ the projection score:
   \label{eq:weighted-mass}
 \end{equation}
 
-where \(\sigma_{s,c}\) is the support assigned by the existing projection to
-corridor \(c\), summed over its cable candidates. Every candidate-bearing
-segment contributes exactly one unit of total mass, so a segment with more
-candidates does not contribute more total influence.
+where \(\sigma_{s,c}\) sums the evidence-support scores of the cable candidates
+assigned to corridor \(c\). The implementation forms each candidate score
+as the product of landing-proximity support, AS-economic support, RTT
+support, and a latency penalty. Landing-proximity support decreases with
+the distances from the two hop endpoints to their candidate landing points.
+AS-economic support uses endpoint-AS membership in cable-owner AS sets and
+relationships or owner-group reachability in the AS graph. RTT support
+compares the observed increment with the propagation lower bound and applies
+a penalty to highly inflated short-path increments; inconclusive increments
+receive neutral RTT factors. The candidate scores are summed by corridor
+and normalized as in Eq.~\eqref{eq:weighted-mass}, so every candidate-bearing
+segment contributes one unit of mass.
 
-Candidate ambiguity remains observable. We therefore retain two alternative
-allocations already computed in the artifact. Equal-share allocation assigns
-\(w_{s,c}=1/|\mathcal{C}_s|\). Top-1 allocation assigns the unit mass to the
-highest-scoring corridor. Equal sharing preserves every feasible direction but
-spreads mass without using the score; Top-1 removes that spread but discards
-lower-ranked candidates. Reporting all three rules shows which conclusions
-survive these treatments of ambiguity.
+Projection-score weighting retains the relative evidence used to rank
+feasible candidates and is the primary allocation for Layer Agreement.
+These weights express relative support within a candidate set. Endpoint-AS
+information contributes both to network-transition labels and to candidate
+ranking, which makes the equal-share comparison particularly useful:
+equal sharing assigns \(w_{s,c}=1/|\mathcal{C}_s|\) to each feasible corridor
+without using the score magnitudes. Top-1 allocation places all mass on the
+highest-scoring corridor. Together, the three rules compare equal support,
+graded support, and a single preferred candidate over the feasible sets.
 
 \subsection{Mapping Resolution and Pipeline Accounting}
 \label{sec:framework_mapping_resolution}
@@ -205,12 +213,14 @@ support. Network-to-corridor differences are computed within each unit.
 
 \emph{Layer Agreement} is the Spearman rank association, across a reported
 set of units, between network Top-2 share and corridor Top-2 share. A
-coefficient approaching +1 means that network concentration closely preserves
-the corridor-concentration ordering among units. A coefficient near zero means
-that the network ordering provides little information about the corridor
-ordering; a negative coefficient means that the two orderings tend to move in
-opposite directions. We report it separately by measurement family, geography,
-and candidate-allocation rule.
+coefficient approaching +1 indicates closely aligned concentration rankings;
+a coefficient near zero indicates little monotonic rank association, and a
+negative coefficient indicates opposing rankings. This comparison concerns
+ordering across units. Within-unit Top-2 differences and effective category
+counts separately measure how concentration and breadth change across
+layers. A group can therefore exhibit aligned rankings alongside substantial
+within-unit narrowing. We report Layer Agreement by measurement family,
+geography, and candidate-allocation rule.
 
 For the frozen equal-share result, we quantify geographic uncertainty at the
 level where geography is assigned. A cluster-bootstrap replicate samples

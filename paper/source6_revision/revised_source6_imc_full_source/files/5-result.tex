@@ -1,11 +1,12 @@
 \section{Results}
 \label{sec:result}
 
-The results first record how often paths enter the feasible inter-region
-candidate space, then compare network and corridor concentration within the
-same candidate-bearing observations. Layer Agreement is the primary cross-
-layer summary. Absolute exposure and breadth remain separate results because
-they use different denominators and answer different questions.
+The paired audit reveals cross-layer differences within country--measurement
+units and geographic variation in the association between their
+concentration rankings. We first quantify within-unit changes, then compare
+Layer Agreement across geographic groups and candidate-allocation rules.
+Exposure, absolute corridor breadth, and measurement-family summaries
+provide context for these results.
 
 The processing pipeline retains 490,911 valid traceroutes from 707,314 raw
 records and yields 3,291,063 atomic segments. Of 2,432,559 mappable segments,
@@ -17,55 +18,73 @@ corridor segments. After the eligibility filters in Section
 country--measurement units: 222 DNS Root, 53 application, and 95 topology-
 reference units.
 
-\subsection{Inter-Region Candidate Exposure}
-\label{subsec:overall-exposure}
+\subsection{Network and Corridor Diversity Differ within Units}
+\label{subsec:cross-layer}
 
-Inter-region candidates occur infrequently for most service-facing
-populations. The DNS family contains 945 country--measurement units with at
-least 30 valid traceroutes across 77 countries. Pooling eligible Root
-observations within each country by valid-trace count yields median DNS
-exposure of 5.50\% (IQR 1.10--23.04\%; mean 17.80\%). The difference between
-the median and mean records a pronounced upper tail across countries.
+Under equal-share allocation, the 80\% Top-2 threshold identifies four
+service-facing cross-layer outcomes (Fig.~\ref{fig:cross-layer}). Among 275
+service-facing units, 81 (29.5\%) are network-broad/corridor-concentrated,
+158 (57.5\%) remain broad at both layers, 18 (6.5\%) are concentrated at
+both, and 18 (6.5\%) are network-concentrated/corridor-broad. Four of 95
+topology-reference units (4.2\%) enter the first class; the other 91 remain
+broad at both layers. The 81 units in the first class directly identify
+populations whose broad network support accompanies concentrated
+feasible-corridor support.
 
-The three application measurements occupy the same low-exposure range. Median
-country--measurement exposure is 1.90\% for Wikipedia, 1.96\% for Reddit, and
-1.43\% for Netflix Assets. The dynamic multi-target topology references reach
-23.24\% for MSM~5051 and 23.81\% for MSM~5151. These figures describe how
-often paths in each observed population contain a feasible inter-region
-corridor; they do not describe concentration after entry.
+Continuous measures reveal narrowing within as well as across concentration
+classes. Across all service-facing units, corridor Top-2 share increases in
+184 of 275 (66.9\%), and effective category count contracts in 204 (74.2\%).
+Of 239 units with a broad network distribution, 178 (74.5\%) move upward in
+Top-2 share: 81 cross the threshold, while 97 remain broad at both layers
+with a median increase of 6.3 percentage points. Thus, remaining in the
+broad--broad class can coexist with an increase in concentration. DNS Roots
+and applications enter the network-broad/corridor-concentrated class at
+similar rates: 66 of 222 DNS units (29.7\%) and 15 of 53 application units
+(28.3\%). Their median continuous Top-2 shifts are 11.0 and 21.0 percentage
+points.
 
-Country-matched comparisons retain source geography while changing the target
-population. DNS exposure is lower than MSM~5051 in 70 of 77 shared countries,
-with a median paired difference of -14.52 percentage points. It is lower than
-MSM~5151 in 54 of 59 shared countries, with a median difference of -14.82
-points. The paired direction holds for 90.9\% and 91.5\% of shared countries,
-respectively. Because the target populations differ by design, the comparison
-is descriptive and does not identify a deployment or target-selection effect.
-
+\setcounter{figure}{4}
 \begin{figure*}[t]
   \centering
-  \subfloat[Country--measurement exposure.\label{fig:result-overview-distribution}]{%
-    \includegraphics[width=0.39\textwidth]{figures/fig_result_overview_distribution.pdf}}
-  \hspace{0.045\textwidth}
-  \subfloat[Country-matched comparison.\label{fig:result-overview-paired}]{%
-    \includegraphics[width=0.34\textwidth]{figures/fig_result_overview_paired.pdf}}
-  \caption{Inter-region candidate exposure in the observed measurement
-  populations.}
-  \label{fig:result-overview}
+  \includegraphics[width=0.92\textwidth]{figures/fig_cross_layer_distribution.pdf}
+  \caption{Equal-share network-transition and corridor Top-2 shares for 370
+auditable units. The 80\% lines define the descriptive four-class view; the
+diagonal separates increases from decreases in concentration.}
+  \label{fig:cross-layer}
 \end{figure*}
+
+Three existing cases distinguish continuous narrowing, expansion, and changes
+in absolute breadth from support-relative evenness. \textbf{Singapore--
+Netflix} moves from 32.5\% network Top-2 share to 65.0\% corridor Top-2 share,
+while its effective count contracts from 19.86 to 3.41. The continuous
+measures capture this substantial narrowing within the broad--broad class.
+\textbf{New Zealand--Netflix} moves from 63.6\%
+to 37.6\%, with effective count expanding from 5.18 to 6.92.
+\textbf{Singapore--H-Root} moves from 39.6\% to 50.1\%, and its effective
+count contracts from 20.67 to 5.99 while normalized entropy changes only
+slightly.
+
+Bounded multi-corridor segments account for 99.9\%, 78.1\%, and 98.2\% of
+candidate-bearing observations in these three cases. Repeated overlap among
+the bounded sets produces different aggregate distributions under the same
+projection and aggregation rules. Together, the cases and four-class counts
+establish cross-layer heterogeneity
+and show why the audit reports both continuous measures and categorical
+outcomes.
 
 \subsection{Layer Agreement Differs by Geography}
 \label{subsec:geographic-agreement}
 
-The association between network and corridor concentration differs across the
-observed service-facing geographic groups. Under projection-score weighting,
-Layer Agreement is 0.632 across 67 island and archipelagic units and 0.001
-across 202 coastal-mainland units. These units represent 10 and 28 countries,
-respectively, and the observed coefficient difference is 0.631. Network
-concentration therefore preserves much more of the corridor-concentration
-ordering among island and archipelagic units, whereas the two rankings are
-almost unrelated among coastal-mainland units. Landlocked units form a
-separate geographic category.
+Within-unit differences raise a second question: does network concentration
+at least preserve the ordering of corridor concentration across units?
+Under projection-score weighting, Layer Agreement is 0.632 across 67 island
+and archipelagic service-facing units and 0.001 across 202 coastal-mainland
+units (Table~\ref{tab:geographic-agreement}). These units represent 10 and
+28 countries, respectively, and the observed coefficient difference is
+0.631. The island and archipelagic group exhibits a stronger positive
+concentration-rank association, while the coastal-mainland group exhibits
+almost no monotonic rank association. Landlocked units form a separate
+geographic category.
 
 \begin{table}[t]
   \centering
@@ -84,31 +103,73 @@ separate geographic category.
   \end{tabular}
 \end{table}
 
-The geographic contrast remains in the same direction under all three
+\subsection{Geographic Ordering across Candidate Allocations}
+\label{subsec:allocation-robustness}
+
+The geographic contrast retains the same direction under all three
 candidate-allocation rules. As allocation moves from equal shares to
 projection-score weighting and then Top-1, the island coefficient increases
 from 0.380 to 0.632 and 0.820, while the coastal-mainland coefficient changes
 from -0.081 to 0.001 and 0.105. The between-group difference consequently
 increases from 0.461 to 0.631 and 0.715. The equal-share result contains three
-additional coastal-mainland DNS units that are absent from the projection-
-score and Top-1 comparisons. Across these allocation-specific cohorts, the
-island coefficient exceeds the coastal-mainland coefficient by 0.461--0.715.
-The repeated ordering shows that the geographic contrast persists whether
-ambiguous mass is spread equally, weighted by projection score, or assigned
-to the Top-1 candidate. Across the available allocation-specific cohorts, the monotonic increase is
-consistent with higher-scoring candidates carrying more of the cross-layer
-signal.
+additional coastal-mainland DNS units relative to the projection-score and
+Top-1 comparisons. Across these allocation-specific cohorts, the
+island coefficient exceeds the coastal-mainland coefficient under equal,
+graded, and Top-1 support. Equal sharing preserves this ordering while
+assigning corridor mass independently of score magnitudes.
 
 The reproducible equal-share result supports a country-level uncertainty
 check. Its 67 island and archipelagic units represent 10 countries, and its
 205 coastal-mainland units represent 30 countries. Country-cluster bootstrap
-intervals are [-0.203, 0.760] for the island coefficient, [-0.284, 0.238] for
-the coastal-mainland coefficient, and [-0.213, 0.902] for their 0.461
+95\% intervals are [-0.203, 0.760] for the island coefficient, [-0.284, 0.238]
+for the coastal-mainland coefficient, and [-0.213, 0.902] for their 0.461
 difference. A two-sided country-label permutation gives $p=0.161$. The wide
 interval for the difference includes zero. This check quantifies uncertainty
 across 10 island and 30 coastal country clusters; the three allocation rules
-separately test whether the observed ordering depends on ambiguous candidate-
-mass assignment.
+separately compare the observed ordering under alternative candidate-mass
+assignments.
+
+
+
+\subsection{Inter-Region Candidate Exposure}
+\label{subsec:overall-exposure}
+
+Inter-region candidates occur infrequently for most service-facing
+populations. The DNS family contains 945 country--measurement units with at
+least 30 valid traceroutes across 77 countries. Pooling eligible Root
+observations within each country by valid-trace count yields median DNS
+exposure of 5.50\% (IQR 1.10--23.04\%; mean 17.80\%). The difference between
+the median and mean records a pronounced upper tail across countries.
+
+The three application measurements occupy the same low-exposure range. Median
+country--measurement exposure is 1.90\% for Wikipedia, 1.96\% for Reddit, and
+1.43\% for Netflix Assets. The dynamic multi-target topology references reach
+23.24\% for MSM~5051 and 23.81\% for MSM~5151. These figures describe how
+often paths in each observed population contain a feasible inter-region
+corridor; they do not describe concentration after entry.
+
+Country-matched comparisons describe exposure differences between service
+and topology-reference populations with the same source-country identity.
+DNS exposure is lower than MSM~5051 in 70 of 77 shared countries, with a
+median paired difference of -14.52 percentage points. It is lower than
+MSM~5151 in 54 of 59 shared countries, with a median difference of -14.82
+points. The paired direction holds for 90.9\% and 91.5\% of shared countries,
+respectively (Fig.~\ref{fig:result-overview}).
+
+\setcounter{figure}{1}
+\begin{figure*}[t]
+  \centering
+  \subfloat[Country--measurement exposure.\label{fig:result-overview-distribution}]{%
+    \includegraphics[width=0.39\textwidth]{figures/fig_result_overview_distribution.pdf}}
+  \hspace{0.045\textwidth}
+  \subfloat[Country-matched comparison.\label{fig:result-overview-paired}]{%
+    \includegraphics[width=0.34\textwidth]{figures/fig_result_overview_paired.pdf}}
+  \caption{Inter-region candidate exposure in the observed measurement
+  populations.}
+  \label{fig:result-overview}
+\end{figure*}
+
+
 
 \subsection{Absolute Exposure and Breadth by Geography}
 \label{subsec:geography}
@@ -137,6 +198,8 @@ concentration are not interchangeable.
   the service-facing unit counts in Table~\ref{tab:geographic-agreement}.}
   \label{fig:country-geography}
 \end{figure*}
+
+
 
 \subsection{Layer Agreement within Measurement Families}
 \label{subsec:family-agreement}
@@ -221,49 +284,5 @@ references. The family summaries therefore agree on observed absolute breadth
 and concentration, while the Layer Agreement coefficients show that within-
 family rankings remain weak and allocation-sensitive.
 
-\subsection{Cross-Layer Outcomes Are Heterogeneous}
-\label{subsec:cross-layer}
 
-The 80\% Top-2 threshold identifies four service-facing cross-layer outcomes.
-Among 275 service-facing units, 81 (29.5\%) are
-network-broad/corridor-concentrated, 158 (57.5\%) remain broad at both layers,
-18 (6.5\%) are concentrated at both, and 18 (6.5\%) are network-concentrated/
-corridor-broad. Four of 95 topology-reference units (4.2\%) enter the first
-class; the other 91 remain broad at both layers.
-
-DNS Roots and applications enter the network-broad/corridor-concentrated class
-at similar rates: 66 of 222 DNS units (29.7\%) and 15 of 53 application units
-(28.3\%). Their median continuous Top-2 shifts are 11.0 and 21.0 percentage
-points. Across all service-facing units, corridor Top-2 share increases in 184
-of 275 (66.9\%), and effective category count contracts in 204 (74.2\%). Of
-239 units with a broad network distribution, 178 (74.5\%) move upward in Top-2
-share: 81 cross the threshold, while 97 remain broad at both layers with a
-median increase of 6.3 percentage points.
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=0.92\textwidth]{figures/fig_cross_layer_distribution.pdf}
-  \caption{Equal-share network-transition and corridor Top-2 shares for 370
-auditable units. The 80\% lines define the descriptive four-class view; the
-diagonal separates increases from decreases in concentration.}
-  \label{fig:cross-layer}
-\end{figure*}
-
-Three existing cases distinguish continuous narrowing, expansion, and changes
-in absolute breadth from support-relative evenness. \textbf{Singapore--
-Netflix} moves from 32.5\% network Top-2 share to 65.0\% corridor Top-2 share,
-while its effective count contracts from 19.86 to 3.41. The continuous
-measures capture this substantial narrowing within the broad--broad class.
-\textbf{New Zealand--Netflix} moves from 63.6\%
-to 37.6\%, with effective count expanding from 5.18 to 6.92.
-\textbf{Singapore--H-Root} moves from 39.6\% to 50.1\%, and its effective
-count contracts from 20.67 to 5.99 while normalized entropy changes only
-slightly.
-
-Bounded multi-corridor segments account for 99.9\%, 78.1\%, and 98.2\% of
-candidate-bearing observations in these three cases. Repeated overlap among
-the bounded sets produces different aggregate distributions under the same
-projection and aggregation rules. Together, the cases and four-class counts
-establish cross-layer heterogeneity
-and show why the audit reports both continuous measures and categorical
-outcomes.
+\setcounter{figure}{5}
