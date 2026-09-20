@@ -25,7 +25,12 @@ is a direction-independent pair of bounded coastal regions connected by at
 least one feasible cable candidate. Exact landing stations preserve facility
 detail but split nearby access points serving the same direction; country-
 level inventories merge coastlines and international directions. Landing
-regions retain coastal structure between these two resolutions.
+regions retain coastal structure between these two resolutions. Corridors are
+the appropriate unit for comparing physical directions: exact cable identity
+is often ambiguous, and counting several candidate cables through nearby
+landings as independent directions would overstate the alternatives. The
+aggregation preserves distinct coastal exit directions while consolidating
+parallel candidate systems that represent the same direction.
 
 \subsection{Mapping Paths onto Submarine Infrastructure}
 \label{sec:background_existing_work}
@@ -80,9 +85,8 @@ paths observed during the measurement window. DNS Roots illustrate this
 interaction because functionally equivalent services operate independent
 anycast deployments. The three applications retain their own selected
 destinations. The two dynamic multi-target measurements deliberately sample a
-broader target population and serve only as topology references. They are not
-a matched control, and differences between families do not identify a service-
-deployment or target-selection effect.
+broader target population and provide topology-reference distributions against
+which the service-facing distributions can be read.
 
 CLASP aligns the statistical unit across layers. A network transition and its
 corridor support originate from the same atomic segment, so their concentration

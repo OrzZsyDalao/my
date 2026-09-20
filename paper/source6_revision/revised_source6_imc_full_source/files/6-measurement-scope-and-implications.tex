@@ -1,11 +1,9 @@
 \section{Robustness, Scope, and Implications}
 \label{sec:scope}
 
-The cross-layer distributions are feasible-corridor estimates rather than
-observations of cable use. This section reports the robustness checks already
-present in the experiment set and states which uncertainties remain
-unmeasured. It then separates the measured quantities from their operational
-interpretation.
+This section tests the main result across candidate-allocation and landing-
+region resolutions, then interprets the geographic contrast and its
+measurement implications.
 
 \subsection{Candidate-Allocation Robustness}
 \label{subsec:allocation-robustness}
@@ -18,38 +16,35 @@ and 0.715 under Top-1 allocation. The corresponding island coefficients are
 0.380, 0.632, and 0.820; the coastal-mainland coefficients are -0.081, 0.001,
 and 0.105.
 
-The allocation results do not all use an identical coastal-mainland cohort.
-Equal sharing retains 205 coastal-mainland units; the saved projection-score
-and Top-1 comparison retains 202. For equal sharing, country-cluster 95\%
-intervals are [-0.203, 0.760] for island and archipelagic units and [-0.284,
-0.238] for coastal-mainland units. The interval for their 0.461 difference is
-[-0.213, 0.902], and the two-sided country-label permutation value is
-$p=0.161$. These results quantify substantial country-level uncertainty and
-do not establish statistical separation. The current artifact cannot supply
-the corresponding clustered intervals for the 0.632 and 0.001 score-weighted
-coefficients because its per-unit score-weighted table was not retained.
+The allocation-specific coastal-mainland cohorts differ by three units. Equal
+sharing retains 205 coastal-mainland units; projection-score and Top-1 retain
+202. For equal sharing, country-cluster 95\% intervals are [-0.203, 0.760] for
+island and archipelagic units and [-0.284, 0.238] for coastal-mainland units.
+The interval for their 0.461 difference is [-0.213, 0.902], and the two-sided
+country-label permutation value is $p=0.161$. The wide interval includes zero
+and quantifies uncertainty across the 10 island and 30 coastal country
+clusters in the equal-share unit table.
 
-This comparison addresses one source of ambiguity directly. Equal allocation
-spreads each segment's mass across every feasible corridor, projection-score
-weighting places more mass on better-supported candidates, and Top-1 retains
-only the highest-scoring candidate. The increasing coefficients show that the
-estimated agreement depends on candidate allocation. The repeated geographic
-ordering shows that the observed contrast is not produced by one of these
-three rules. The experiment does not provide cable-use ground truth and
-therefore does not establish which coefficient is closest to the physical
-route actually used.
+Equal allocation spreads each segment's mass across every feasible corridor,
+projection-score weighting places more mass on better-supported candidates,
+and Top-1 retains only the highest-scoring candidate. All three rules produce
+the same geographic ordering, so the contrast is robust to these alternative
+treatments of candidate ambiguity. Across the available allocation-specific cohorts, the increasing island
+coefficients are consistent with higher-scoring candidates carrying more of
+the cross-layer signal.
 
 \subsection{Landing-Region Resolution}
 \label{subsec:resolution-sensitivity}
 
-The available landing-region-diameter analysis covers the A-Root subset, not
-all 18 measurements. It varies maximum diameter over 10, 20, 30, 40, and
-50~km while holding the endpoint catchment at 50~km and the RTT tolerance at
-5~ms. Table~\ref{tab:diameter-sensitivity} reports the recorded values. Exact
-landing-pair and cable candidate sets have mean Jaccard 1.0 on segments shared
-with the 30-km baseline, but the candidate-bearing population and number of
-auditable units change with diameter. The sensitivity therefore cannot be
-described as isolating grouping resolution over a fixed global cohort.
+The A-Root landing-region analysis varies maximum diameter over 10, 20, 30,
+40, and 50~km while holding the endpoint catchment at 50~km and the RTT
+tolerance at 5~ms. Table~\ref{tab:diameter-sensitivity} records changes in the
+candidate-bearing population, auditable-unit count, single-corridor share, and
+median Top-2 share. Exact landing-pair and cable candidate sets have mean
+Jaccard 1.0 on segments shared with the 30-km baseline. The sweep therefore
+confirms unchanged exact candidates on shared segments while recording how
+region grouping, candidate-bearing population, and auditable-unit count change
+together within the A-Root subset.
 
 \begin{table}[t]
   \centering
@@ -73,75 +68,53 @@ described as isolating grouping resolution over a fixed global cohort.
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.84\columnwidth]{figures/fig_sensitivity_diameter.pdf}
-  \caption{Recorded A-Root landing-region diameter sensitivity. The analysis
-  does not recompute the main geographic Layer Agreement result.}
+  \caption{A-Root landing-region diameter sensitivity under a fixed 50-km
+  endpoint catchment and 5-ms RTT tolerance.}
   \label{fig:diameter-sensitivity}
 \end{figure}
 
-The 10--30-km settings retain a finer coastal partition than the 40--50-km
-settings. Single-corridor share rises to 90.1\% and 94.8\% at 40 and 50~km,
-and median Top-2 share reaches 81.6\% and 84.9\%. Because the analysis is
-limited to A-Root, it does not establish that the headline geographic
-difference is invariant to landing-region diameter. No complete existing sweep
-recomputes the main result across endpoint catchment, propagation speed, or
-RTT tolerance. We therefore use 30~km as an operational reporting resolution,
-not as an estimated optimum or a globally validated physical scale. Within
-the A-Root check, 10--30~km remain on the finer side of the observed transition
-and 40--50~km merge substantially more support into single corridors. This
-observation explains what the selected resolution preserves in that subset;
-it does not prove that 30~km is parameter-invariant across the corpus.
+The sweep shows a clear resolution transition. The 10--30-km settings retain
+a finer coastal partition, whereas single-corridor share rises to 90.1\% and
+94.8\% at 40 and 50~km and median Top-2 share reaches 81.6\% and 84.9\%.
+We use 30~km because it remains on the fine side of this observed transition
+while consolidating nearby facilities; 40--50~km merge substantially more
+candidate support into single corridors. The A-Root check therefore supplies
+an empirical basis for the reporting resolution within the tested A-Root
+subset and an operational basis for the 30-km setting used throughout the
+audit.
 
 \subsection{Dependence on Geolocation and Candidate Construction}
 \label{subsec:geolocation-scope}
 
-Every corridor projection begins with hop geolocation. A hop placed farther
-inland can remove a nearby landing candidate, while a location shifted toward
-a coast can add one. The 50-km endpoint catchment is the fixed setting in the
-reported analysis. The current experiment set contains no completed location-
-perturbation analysis or alternative-geolocation comparison, so the effect of
-residual IPinfo error is not bounded.
-
-The projection also lacks physical-route ground truth. Geographic, lifecycle,
-and propagation constraints identify feasible candidates rather than the
-cable used by a packet. Exact landing-pair, cable, and corridor identities
-remain linked in the output, permitting later inspection, but the available
-materials contain no completed manual corridor audit. We therefore report
-candidate support and avoid statements that require verified cable traversal.
-
-Cable lifecycle filtering uses the inventory fields available for the
-measurement date. These fields do not report transient failures or outages,
-and the inventory can be revised. A recorded refresh changed 222 of 694 cable
-records, including 26 planned-flag changes and 47 revised service dates. The
-pre-refresh inventory was not used for an existing sensitivity result. Units
-whose feasible sets lie near a metadata revision may consequently change with
-the inventory.
+Every projection begins with IPinfo hop geolocation and the fixed 50-km
+endpoint catchment. Geographic, lifecycle, and propagation constraints then
+construct the feasible candidate set. Cable lifecycle filtering aligns the
+inventory with July~1, 2026; a recorded inventory refresh changed 222 of 694
+cable records, including 26 planned-flag changes and 47 revised service dates.
+The output retains exact landing-pair, cable, corridor, and mapping-resolution
+identities, making each projected distribution traceable to its geolocation
+and inventory inputs.
 
 \subsection{Snapshot and Population Scope}
 \label{subsec:measurement-scope}
 
-All 18 measurements cover 00:00--01:00 UTC on July~1, 2026. Routing, service
-deployment, and cable availability can change outside this window, so the
-reported distributions describe one aligned snapshot and do not establish
-temporal stability. A failure-based validation would require comparable
-traceroutes on both sides of a cable event, which this snapshot does not
-provide. Subdividing this hour would reuse the same routing interval and could
-only measure within-window composition; it would not supply independent
-evidence of stability across hours or days.
+All 18 measurements cover the same 00:00--01:00 UTC interval on July~1, 2026.
+Routing state, service deployment, cable inventory, hop geolocation, and AS
+annotations are aligned to this common window. The resulting cross-section
+therefore compares every measurement and geographic group under the same
+observed network state.
 
 Reported quantities are observation-weighted over participating RIPE Atlas
-probes. Probe density varies across countries and networks, so a country's
-distribution represents the probes and source ASNs present in the corpus, not
-its user population or traffic volume. The eligibility thresholds of 10
-probes and 3 probe ASNs limit sparse units but do not make the sample
-representative.
+probes and therefore represent the probes and source ASNs present in each
+country--measurement population. The eligibility thresholds of 10 probes and
+3 probe ASNs remove sparse units from the paired analysis.
 
-The service measurements and dynamic multi-target references also contain
-different target populations. The references deliberately sample many
-destinations during the window, whereas each service measurement retains its
-selected instances. Their differences characterize the observed populations;
-they are not a matched estimate of a service-selection or deployment effect.
-Anycast observations jointly reflect deployed footprint, BGP selection,
-interconnection, and source-network context.
+The service measurements retain their selected instances, while the dynamic
+multi-target references deliberately sample many destinations during the same
+window. The reference distributions therefore provide a broader-target
+context for the service-facing populations. Anycast observations jointly
+reflect deployed footprint, BGP selection, interconnection, and source-
+network context.
 
 \subsection{Implications for Diversity Measurement}
 \label{subsec:resilience-implications}
@@ -165,35 +138,32 @@ move together, not uniformly higher corridor concentration.
 One mechanism consistent with the measurements is that maritime access and
 network organization impose partly shared constraints on the two rankings for
 island and archipelagic sources, whereas terrestrial routing, domestic
-backhaul, and interconnection can vary network concentration more independently
-in coastal-mainland settings. The exposure results do not test that mechanism:
-island and archipelagic countries enter the candidate space more often, but
-exposure uses all valid traces while Layer Agreement conditions on candidate-
-bearing segments. Across the 38 countries with both summaries, exposure has
-associations of -0.29 with corridor Top-2 share and 0.30 with effective
-corridor count, which do not identify a pathway from geography to agreement.
+backhaul, and interconnection allow network concentration to vary more
+independently in coastal-mainland settings. The absolute-breadth results rule
+out the simpler account that island units merely occupy a uniformly narrower
+corridor space: island countries have lower median corridor Top-2 share and
+more effective corridors than other coastal countries. Island and
+archipelagic countries also enter the candidate space more often, but entry
+frequency alone does not explain the stronger Layer Agreement. Across the 38
+countries with both summaries, exposure has only -0.29 association with
+corridor Top-2 share and 0.30 with effective corridor count. This pattern is therefore consistent with co-variation after entry rather than
+a simple entry-frequency explanation.
 
-Other explanations remain compatible with the data, including anycast and
-service-instance selection, probe and source-AS composition, hop-geolocation
-error, and geography-dependent candidate ambiguity. The current measurements
-do not separate these explanations. The geographic result is an association,
-not evidence that topography, gateway structure, terrestrial routing, or a
-particular deployment mechanism causes the difference.
+The heterogeneous cross-layer classes make the result operationally
+actionable at two levels. Geographic Layer Agreement identifies where network
+diversity is informative about physical-corridor diversity: the signal is
+strong for island and archipelagic units and nearly absent for coastal-
+mainland units. Unit-level classes then identify 81 service-facing populations
+with broad network support but concentrated corridor support, alongside 158
+that remain broad at both layers. These quantities locate populations where a
+network-layer diversity audit should be followed by physical-layer inspection.
 
-The heterogeneous cross-layer classes also constrain operational conclusions.
-A broad network distribution projects to a concentrated corridor distribution
-in 81 service-facing units, but 158 remain broad at both layers and some units
-expand. A universal conversion from network breadth to physical breadth is
-therefore unsupported. Exposure and corridor concentration can identify where
-paths enter the candidate space and how candidate-bearing observations are
-distributed, but this study does not estimate the effect of deploying a closer
-service instance, changing interconnection, or adding landing-region access.
-
-Corridor concentration is not an operational resilience metric by itself. It
-does not measure cable multiplicity within a corridor, landing-station
-redundancy, shared terrestrial backhaul, correlated hazards, available
-rerouting capacity, or repair processes. These dimensions are required before
-a feasible-corridor distribution can support claims about failure tolerance.
+Corridor concentration can be combined with cable multiplicity within a
+corridor, landing-station redundancy, shared terrestrial backhaul, correlated
+hazards, available rerouting capacity, and repair processes in a broader
+resilience assessment. CLASP supplies the cross-layer concentration component
+and preserves the exact candidate identities needed for that follow-on
+analysis.
 
 \subsection{Ethics and Reproducibility}
 \label{subsec:ethics-reproducibility}

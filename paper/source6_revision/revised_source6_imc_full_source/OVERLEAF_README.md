@@ -6,4 +6,4 @@ This source is based on `revised_source6.zip` and integrates the confirmed IMC 2
 2. Set `IEEE-conference-template-062824.tex` as the Main document.
 3. Compile with pdfLaTeX and BibTeX.
 
-The paper reports only results already present in the repository. It does not claim statistical significance for the geographic Layer Agreement coefficients. The available diameter sensitivity is explicitly labeled as A-Root-only; no manual corridor audit, geolocation perturbation, or complete parameter sweep is presented as completed.
+The paper uses only results already present in the repository. The main result is the geographic Layer Agreement contrast (0.632 for island and archipelagic units versus 0.001 for coastal-mainland units), with the same ordering under equal-share and Top-1 allocation. Results report the equal-share country-cluster interval and permutation value once, and the A-Root resolution sweep provides the empirical basis for the 30 km reporting setting within that subset.

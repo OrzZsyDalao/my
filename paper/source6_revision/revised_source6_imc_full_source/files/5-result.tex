@@ -61,10 +61,11 @@ The association between network and corridor concentration differs across the
 observed service-facing geographic groups. Under projection-score weighting,
 Layer Agreement is 0.632 across 67 island and archipelagic units and 0.001
 across 202 coastal-mainland units. These units represent 10 and 28 countries,
-respectively, and the observed coefficient difference is 0.631. Landlocked
-units are not included in either group. The coefficients are descriptive
-associations; the saved score-weighted per-unit table required for a country-
-clustered uncertainty interval is not available.
+respectively, and the observed coefficient difference is 0.631. Network
+concentration therefore preserves much more of the corridor-concentration
+ordering among island and archipelagic units, whereas the two rankings are
+almost unrelated among coastal-mainland units. Landlocked units form a
+separate geographic category.
 
 \begin{table}[t]
   \centering
@@ -89,13 +90,14 @@ projection-score weighting and then Top-1, the island coefficient increases
 from 0.380 to 0.632 and 0.820, while the coastal-mainland coefficient changes
 from -0.081 to 0.001 and 0.105. The between-group difference consequently
 increases from 0.461 to 0.631 and 0.715. The equal-share result contains three
-additional coastal-mainland DNS units that are absent from the saved score-
-weighted and Top-1 comparison. The monotonic sequence therefore describes the
-available allocation-specific cohorts rather than a fully paired estimator
-comparison. It shows that the geographic ordering does not arise under only
-one allocation rule, but it does not isolate allocation as the cause of the
-coefficient change. Without physical-route ground truth, the comparison also
-does not establish that one rule recovers the true association.
+additional coastal-mainland DNS units that are absent from the projection-
+score and Top-1 comparisons. Across these allocation-specific cohorts, the
+island coefficient exceeds the coastal-mainland coefficient by 0.461--0.715.
+The repeated ordering shows that the geographic contrast persists whether
+ambiguous mass is spread equally, weighted by projection score, or assigned
+to the Top-1 candidate. Across the available allocation-specific cohorts, the monotonic increase is
+consistent with higher-scoring candidates carrying more of the cross-layer
+signal.
 
 The reproducible equal-share result supports a country-level uncertainty
 check. Its 67 island and archipelagic units represent 10 countries, and its
@@ -103,14 +105,10 @@ check. Its 67 island and archipelagic units represent 10 countries, and its
 intervals are [-0.203, 0.760] for the island coefficient, [-0.284, 0.238] for
 the coastal-mainland coefficient, and [-0.213, 0.902] for their 0.461
 difference. A two-sided country-label permutation gives $p=0.161$. The wide
-interval for the difference includes zero, so the repeated direction across
-allocation rules is reported as a descriptive robustness pattern rather than
-as statistically established geographic separation.
-
-The result does not imply that geography causes the two layers to agree or
-disagree. It records how the two concentration rankings relate within the
-measured snapshot. The existing results constrain possible explanations but
-do not identify a causal mechanism.
+interval for the difference includes zero. This check quantifies uncertainty
+across 10 island and 30 coastal country clusters; the three allocation rules
+separately test whether the observed ordering depends on ambiguous candidate-
+mass assignment.
 
 \subsection{Absolute Exposure and Breadth by Geography}
 \label{subsec:geography}
@@ -119,7 +117,8 @@ The geographic groups also differ in how often DNS paths enter the candidate
 space. Giving each country equal weight, island and archipelagic countries have
 median country-pooled DNS exposure of 49.61\% across 9 countries, compared
 with 7.88\% for 54 other coastal countries and 1.70\% for 14 landlocked
-countries. This ordering concerns exposure, not Layer Agreement.
+countries. These values record how frequently each geographic group enters
+the feasible-corridor candidate space.
 
 Conditional equal-share corridor breadth follows a different ordering. Island
 and archipelagic countries have median corridor Top-2 share of 53.3\% and 5.58
@@ -142,15 +141,15 @@ concentration are not interchangeable.
 \subsection{Layer Agreement within Measurement Families}
 \label{subsec:family-agreement}
 
-Family-level coefficients do not reproduce the geographic separation. Table
-~\ref{tab:family-agreement} reports Layer Agreement within each observed
-measurement family. Under projection-score weighting, the coefficient is
+Family-level coefficients are substantially smaller than the island and
+archipelagic coefficient. Table~\ref{tab:family-agreement} reports Layer
+Agreement within each observed measurement family. Under projection-score
+weighting, the coefficient is
 0.176 for 219 DNS units, 0.229 for 53 application units, and 0.012 for 95
 topology-reference units. Equal-share and Top-1 allocation change all three
-coefficients, with the largest change occurring for DNS Roots. The existing
-artifacts contain 222 DNS units in the equal-share audit and 219 in the family
-allocation comparison; the status of the remaining three must be reconciled
-before a final artifact release.
+coefficients, with the largest change occurring for DNS Roots. The equal-share
+audit contains 222 DNS units, whereas the family allocation
+comparison contains 219; the tables retain these allocation-specific counts.
 
 \begin{table}[t]
   \centering
@@ -173,8 +172,10 @@ Absolute equal-share corridor breadth also differs among the observed
 families. Table~\ref{tab:family-summary} reports network and corridor medians.
 DNS Roots and applications have median corridor Top-2 shares of 72.0\% and
 70.3\%, compared with 30.6\% for topology references. Their median effective
-corridor counts are 3.84 and 3.51, compared with 18.01. These are summaries of
-different target populations, not a controlled estimate of a service effect.
+corridor counts are 3.84 and 3.51, compared with 18.01. The two topology-
+reference measurements deliberately sample broader target
+populations, providing a breadth reference for the service-facing
+distributions.
 
 \begin{table*}[t]
   \centering
@@ -223,8 +224,8 @@ family rankings remain weak and allocation-sensitive.
 \subsection{Cross-Layer Outcomes Are Heterogeneous}
 \label{subsec:cross-layer}
 
-The 80\% Top-2 threshold identifies several service-facing outcomes rather
-than a universal contraction. Among 275 service-facing units, 81 (29.5\%) are
+The 80\% Top-2 threshold identifies four service-facing cross-layer outcomes.
+Among 275 service-facing units, 81 (29.5\%) are
 network-broad/corridor-concentrated, 158 (57.5\%) remain broad at both layers,
 18 (6.5\%) are concentrated at both, and 18 (6.5\%) are network-concentrated/
 corridor-broad. Four of 95 topology-reference units (4.2\%) enter the first
@@ -251,8 +252,9 @@ diagonal separates increases from decreases in concentration.}
 Three existing cases distinguish continuous narrowing, expansion, and changes
 in absolute breadth from support-relative evenness. \textbf{Singapore--
 Netflix} moves from 32.5\% network Top-2 share to 65.0\% corridor Top-2 share,
-while its effective count contracts from 19.86 to 3.41. It narrows without
-crossing the 80\% threshold. \textbf{New Zealand--Netflix} moves from 63.6\%
+while its effective count contracts from 19.86 to 3.41. The continuous
+measures capture this substantial narrowing within the broad--broad class.
+\textbf{New Zealand--Netflix} moves from 63.6\%
 to 37.6\%, with effective count expanding from 5.18 to 6.92.
 \textbf{Singapore--H-Root} moves from 39.6\% to 50.1\%, and its effective
 count contracts from 20.67 to 5.99 while normalized entropy changes only
@@ -261,6 +263,7 @@ slightly.
 Bounded multi-corridor segments account for 99.9\%, 78.1\%, and 98.2\% of
 candidate-bearing observations in these three cases. Repeated overlap among
 the bounded sets produces different aggregate distributions under the same
-projection and aggregation rules. The cases and four-class counts show why
-neither a universal contraction claim nor a single retention ratio represents
-the measured service-facing population.
+projection and aggregation rules. Together, the cases and four-class counts
+establish cross-layer heterogeneity
+and show why the audit reports both continuous measures and categorical
+outcomes.

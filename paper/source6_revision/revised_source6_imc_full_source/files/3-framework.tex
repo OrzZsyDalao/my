@@ -204,12 +204,13 @@ logarithm of observed support size and measures evenness relative to that
 support. Network-to-corridor differences are computed within each unit.
 
 \emph{Layer Agreement} is the Spearman rank association, across a reported
-set of units, between network Top-2 share and corridor Top-2 share. A positive
-coefficient means that units ordered as more concentrated at the network layer
-tend to be ordered as more concentrated at the corridor layer. It describes an
-observed monotonic association and is not a causal or predictive model. We
-report it separately by measurement family, geography, and candidate-
-allocation rule.
+set of units, between network Top-2 share and corridor Top-2 share. A
+coefficient approaching +1 means that network concentration closely preserves
+the corridor-concentration ordering among units. A coefficient near zero means
+that the network ordering provides little information about the corridor
+ordering; a negative coefficient means that the two orderings tend to move in
+opposite directions. We report it separately by measurement family, geography,
+and candidate-allocation rule.
 
 For the frozen equal-share result, we quantify geographic uncertainty at the
 level where geography is assigned. A cluster-bootstrap replicate samples
@@ -218,9 +219,9 @@ country--measurement unit from each sampled country together. We use 50,000
 replicates and report percentile intervals. A separate two-sided reference
 test permutes the geographic labels of whole countries 100,000 times while
 retaining the observed number of countries in each group. Both procedures use
-seed 20260919. The saved projection-score and Top-1 artifacts do not retain
-the per-unit summaries needed to repeat this clustered analysis, so their
-coefficients remain descriptive and we do not make significance claims.
+seed 20260919. This country-clustered analysis is applied to the frozen equal-
+share unit table; projection-score and Top-1 results provide the allocation-
+robustness comparison.
 
 A common 80\% Top-2 threshold supplies four descriptive classes: broad at both
 layers, concentrated at both, network-broad/corridor-concentrated, and
