@@ -4,51 +4,47 @@
 \subsection{Reading Service Paths at the Network Layer}
 \label{sec:background_cross_layer}
 
-Service paths connect a source network to the instances selected through
-DNS resolution, replica selection, and routing. Traceroute exposes the
-visible IP hops along these paths, from which AS transitions can be
-constructed. Comparing such transitions describes how observations are
-distributed across network-layer categories. The measurement target and
-source population remain part of that description: paths toward a selected
-service and paths toward many changing destinations sample different
-populations.
+A service-path population is defined by both its sources and its measured
+targets. DNS resolution, replica selection, and routing determine the
+instances and paths observed from those sources. Traceroute exposes visible
+IP hops, from which AS transitions can be constructed. A population aimed
+at a selected service and one aimed at many changing destinations therefore
+need not describe the same network footprint. Source and measurement
+identity must remain explicit when comparing their diversity.
 
-Prior measurements connect this service perspective to infrastructure.
-Liu et al. quantify the fraction of popular Web resources reached through
-the submarine cable network and consider redundancy by weighting
-criticality using cable and bundle counts~\cite{liu2020outofsight}.
-Studies of anycast characterize deployment and network footprints
-~\cite{cicalese2015anycast,devries2017anycast}, while other work relates
-cable infrastructure to AS-level structure~\cite{ye2023impact}.
-These studies establish complementary views of resource dependence,
-service deployment, and network organization. Our comparison asks how
-network-transition diversity corresponds to the distribution of feasible
-physical support within a measured service-path population.
+Measurements of user-facing infrastructure dependence retain this context
+in different ways. Liu et al. identify popular Web resources for each
+country, measure their dependence on the submarine cable network, and
+consider redundancy using cable and bundle counts~\cite{liu2020outofsight}.
+Anycast studies characterize service deployment and network footprints
+~\cite{cicalese2015anycast,devries2017anycast}; other work relates cable
+infrastructure to AS-level structure~\cite{ye2023impact}. These perspectives
+motivate retaining the service, source, and physical-support context rather
+than describing diversity through network labels alone.
 
-Physical support is represented here by a \emph{landing-region corridor}:
+The physical object used in this study is a \emph{landing-region corridor},
 a direction-independent pair of bounded coastal regions connected by at
-least one feasible cable candidate. This abstraction lies between exact
-landing stations, which distinguish nearby facilities, and country-level
-inventories, which combine separated coastlines. It consolidates nearby
-candidate systems while retaining distinct coastal entry and exit regions.
-Different network transitions may support the same corridor, and one
-transition may admit several corridors. The resulting many-to-many
-relationship is the basis of the paired comparison; candidate multiplicity
-records feasible support rather than observed simultaneous use.
+least one feasible cable candidate. Exact landing stations distinguish
+nearby facilities, whereas country-level inventories combine separated
+coastlines; landing regions retain coastal structure between these scales.
+Several cables may support one corridor, and a network transition may admit
+more than one corridor. These identities describe different resolutions of
+feasible support, so neither cable multiplicity nor corridor multiplicity
+alone establishes how support is distributed across the observed paths.
 
 \subsection{Mapping Paths onto Submarine Infrastructure}
 \label{sec:background_existing_work}
 
-Event-oriented studies show how submarine infrastructure changes are
-reflected in observed routing. Bischof et al. characterized Cuba's
-connectivity before and after ALBA-1 and later formulated the task of
-connecting Internet observations to the worldwide cable mesh
-~\cite{bischof2015cuba,bischof2018untangling}. Fanou et al. measured
-routing changes following new cable deployments~\cite{fanou2020unintended}.
-For user-facing resources, Liu et al. combine resource discovery, RIPE
-Atlas traceroutes, geolocation, and propagation feasibility to identify
-submarine dependence~\cite{liu2020outofsight}. These approaches link
-observed paths to the infrastructure on which access may depend.
+Studies of infrastructure change establish why observed routing and
+physical connectivity should be examined together. Bischof et al.
+characterized Cuba's connectivity before and after ALBA-1 and later
+formulated the task of connecting Internet observations to the worldwide
+cable mesh~\cite{bischof2015cuba,bischof2018untangling}. Fanou et al.
+measured routing changes following new cable deployments
+~\cite{fanou2020unintended}. Complementing these event-oriented studies,
+Liu et al. combine resource discovery, RIPE Atlas traceroutes, geolocation,
+and propagation feasibility to identify submarine dependence in user
+access~\cite{liu2020outofsight}.
 
 Cross-layer cartography extends this connection through explicit
 infrastructure mappings. Internet Atlas and InterTubes associate long-haul
@@ -63,53 +59,51 @@ cross-layer maps for disaster-oriented infrastructure analysis
 ~\cite{ramanathan2024xaminer}. Measurements of intercontinental links also
 identify layer-3 links and gateway routers~\cite{carisimo2023hopaway}.
 
-This body of work supports both infrastructure inference and analyses of
-dependence or risk. CLASP builds on the projection approach to study a
-paired distribution question: whether concentration among network
-transitions corresponds to concentration among feasible coastal corridors
-over the same observations. The contribution is this comparison, not a
-claim to recover the exact cable traversed by every path. Keeping feasible
-candidate sets allows the comparison to retain mapping ambiguity rather
-than silently treating every assignment as a confirmed traversal.
+These approaches already support analyses beyond individual mappings,
+including resource dependence, cable importance, and infrastructure risk.
+Our study uses physical projection to compare two distributions over
+identical observations. It asks whether concentration among network
+transitions corresponds to concentration among feasible corridors, within
+units and in their ordering across units. Feasible candidate sets are
+retained throughout this comparison; the physical distribution represents
+candidate support rather than confirmed traffic shares on specific cables.
 
 \subsection{From Mapping to Distribution Measurement}
 \label{sec:background_motivation}
 
-A candidate inventory identifies which physical alternatives are feasible;
-a distribution describes how repeatedly those alternatives support the
-observed paths. Two populations can have the same number of feasible
-corridors yet differ in whether their observation mass is spread across
-them or concentrated in a few. Likewise, counting network transitions
-does not reveal whether different transitions repeatedly support the same
-physical directions. Distribution measurement is needed to distinguish
-these organizations of support, which an inventory count alone does not
-describe.
+Moving from a candidate inventory to a distribution makes repeated
+dependence measurable. Two populations can admit the same number of
+corridors while differing in how much observation mass supports each one.
+If candidate sets repeatedly overlap, many network transitions may support
+the same few physical directions. Counting distinct transitions or corridors
+alone cannot distinguish that organization from more dispersed support.
+Aggregating the observations at each layer provides the concentration and
+breadth measures needed for the comparison.
 
-The comparison also separates entry into the feasible corridor space from
-concentration within it. \emph{Submarine exposure} is the fraction of valid
+Exposure and concentration answer different parts of the dependence
+question. \emph{Submarine exposure} records the fraction of valid
 traceroutes containing at least one feasible inter-region corridor.
-\emph{Corridor concentration} describes the distribution of observation
-mass over corridors, conditional on candidate-bearing segments. Frequent
-exposure can accompany broad or concentrated support; exposure alone
-does not distinguish them. Reporting these quantities separately preserves
-their different denominators and avoids interpreting entry frequency as
-physical breadth.
+\emph{Corridor concentration} describes how observation mass is allocated
+among corridors, conditional on candidate-bearing segments. Frequent
+exposure can accompany either broad or concentrated support. Reporting
+the two quantities separately preserves the distinction between how often
+paths enter the feasible corridor space and how support is distributed
+within that space.
 
-Country and measurement identity define the population for both layers.
-Source geography and interconnection retain the origin context; the
-measurement retains the selected destination or target set. DNS Roots
-provide functionally equivalent services through independent anycast
-deployments, while the three applications retain their selected targets.
-The two dynamic multi-target measurements sample a broader destination
-population and serve as topology references, not matched controls for
-service deployment. Keeping these identities prevents changes in the
-target population from being mistaken for a cross-layer difference.
+The unit of comparison must preserve the service context introduced
+above. CLASP groups observations by source country and measurement:
+DNS Roots retain their independent anycast deployments, the three
+applications retain their selected targets, and the two dynamic multi-target
+measurements provide broader-target topology references. The latter are
+reference populations, not matched controls for service deployment.
+This grouping keeps source and target context explicit when interpreting
+differences among units.
 
-CLASP then aligns the observations within each population. Every
-candidate-bearing atomic segment supplies a network-transition label and
-a feasible corridor set. Its unit observation mass is counted once in
-the network distribution and allocated across its physical candidates
-before aggregation. The paired distributions therefore compare the
-organization of the same segment population. Section~\ref{sec:framework}
-defines this construction, and Section~\ref{sec:datasets} describes the
-aligned path and infrastructure inputs.
+Within each unit, the comparison must also preserve observation mass.
+Each candidate-bearing segment has one network-transition label but may
+have several feasible corridors. Counting every corridor candidate as a
+full observation would give ambiguous segments more physical-layer mass
+than network-layer mass. CLASP instead allocates one unit of mass across
+the candidate set and aggregates both layers over the same segments.
+Section~\ref{sec:framework} formalizes this construction and the resulting
+comparisons; Section~\ref{sec:datasets} describes the measurement inputs.

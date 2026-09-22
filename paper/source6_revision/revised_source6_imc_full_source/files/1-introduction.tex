@@ -18,69 +18,69 @@ support remains concentrated in a few coastal directions. Assessing
 service-path diversity therefore requires comparing how observations are
 distributed across network transitions and feasible physical corridors.
 
-Cross-layer mapping provides a starting point for this comparison.
-Internet Atlas, InterTubes, and iGDB connect observed Internet links to
-long-haul infrastructure; Nautilus associates IP links with candidate
-submarine cables; Calypso maps routes using cable layouts, network
-relationships, and inland connectivity; and Xaminer uses cross-layer maps
-to analyze infrastructure risk~\cite{durairajan2013atlas,durairajan2015intertubes,
-anderson2022igdb,ramanathan2023nautilus,wang2025calypso,
-ramanathan2024xaminer}. These studies make physical dependencies accessible
-to measurement and analysis. Building on this capability, we ask whether
-the diversity visible in a population of service paths reflects how its
-feasible physical support is distributed.
+Cross-layer mapping makes the physical support of network paths accessible
+to measurement. Internet Atlas, InterTubes, and iGDB connect observed links
+to infrastructure, while Nautilus and Calypso infer candidate submarine
+connections; Xaminer uses cross-layer maps to analyze infrastructure risk
+~\cite{durairajan2013atlas,durairajan2015intertubes,anderson2022igdb,
+ramanathan2023nautilus,wang2025calypso,ramanathan2024xaminer}.
+These capabilities provide the basis for a further comparison: whether
+the diversity visible across a population of service paths corresponds
+to the distribution of its feasible physical support. This comparison
+concerns the relationship between two layers, rather than the physical
+assignment of an individual path alone.
 
-Answering this question requires more than counting distinct network
-transitions or feasible corridors. Different transitions may repeatedly
-support the same corridors, while a recurring transition may admit several
-physical candidates. Counts alone do not describe how observations are
-distributed among those categories. Comparing the two layers therefore
-requires retaining each segment's network identity and physical candidate
-set, and aggregating both over the same service-path population.
+Three issues must be addressed to make this comparison meaningful.
+First, network transitions and corridors describe different categories:
+their counts do not reveal whether observation mass is dispersed or
+repeatedly concentrated in a few categories. Second, a segment may admit
+several physical candidates, so its contribution must be allocated without
+counting each candidate as another observed segment. Third, the two
+distributions must describe the same source--measurement population and
+the same candidate-bearing segments. Otherwise, differences in the sampled
+paths can be mistaken for differences between layers.
 
-We present \emph{CLASP}, a Cross-Layer Audit of Service Paths, to construct
-this paired comparison. CLASP extracts atomic segments from traceroutes,
-records their network-transition labels, and identifies feasible
-landing-region corridors using geographic, cable-lifecycle, and propagation
-constraints. Each candidate-bearing segment contributes the same total
-observation mass to both layers; candidate allocation distributes its
-physical-layer mass among feasible corridors. Aggregating by country and
-measurement then produces paired distributions while preserving the
-source-country and measured-target context. This construction compares
-the organization of a fixed set of observations rather than distributions
-drawn from different path populations.
+We present \emph{CLASP}, a Cross-Layer Audit of Service Paths, to address
+these issues through paired distributions. CLASP extracts atomic segments
+from traceroutes, records their network-transition labels, and constructs
+feasible landing-region corridors using geographic, cable-lifecycle, and
+propagation constraints. Each candidate-bearing segment contributes one
+unit of observation mass at each layer; physical-layer allocation divides
+that mass among its feasible corridors. Aggregating the same segments
+within each country--measurement unit then retains both their network
+identities and their physical support. The resulting distributions allow
+concentration and breadth to be compared without changing the observation
+population between layers.
 
-The paired distributions support two complementary analyses. Within a
-country--measurement unit, we measure changes in concentration and breadth
-between network transitions and feasible corridors. Across units, we measure
-whether network concentration preserves the ordering of corridor
-concentration, using Spearman rank correlation, termed \emph{Layer Agreement}.
-These analyses address \textbf{RQ1}, how diversity differs within units, and
-\textbf{RQ2}, how concentration-rank association varies by geography and
-candidate allocation. \textbf{RQ3} examines exposure, absolute corridor
-breadth, and measurement-family composition as context for these results.
-Exposure is reported separately because the frequency of encountering a
-feasible corridor and the distribution of support among corridors describe
-different properties.
+The audit separates two questions that a single diversity summary cannot
+answer together. \textbf{RQ1} asks how concentration and breadth differ
+between layers within a country--measurement unit. \textbf{RQ2} asks
+whether concentration rankings correspond across units and how this
+association varies by geography and candidate allocation. We call this
+Spearman rank association \emph{Layer Agreement}. Aligned rankings do not
+imply equal breadth within each unit, so the two comparisons are reported
+together. \textbf{RQ3} examines exposure, absolute corridor breadth, and
+measurement-family composition to contextualize the cross-layer results.
 
 We apply CLASP to 490,911 valid IPv4 traceroutes from 18 public RIPE Atlas
 measurements covering all 13 DNS Roots, Wikipedia, Reddit, Netflix Assets,
 and two dynamic multi-target topology references. The aligned one-hour
-snapshot yields 370 auditable country--measurement units. The service
-measurements retain their selected targets, while the multi-target
-measurements provide a broader-target reference. Equal-share,
-projection-score, and Top-1 allocation compare how the results depend on
-distributing observation mass among feasible candidates.
+snapshot yields 370 auditable country--measurement units. Retaining each
+measurement's selected targets supports service-specific comparisons,
+while the multi-target measurements provide a broader-target reference.
+Equal-share, projection-score, and Top-1 allocation examine the results
+under alternative distributions of mass within the feasible candidate sets.
 
-The audit identifies service-facing populations whose broad network
-support accompanies concentrated corridor support, as well as narrowing
-within populations classified as broad at both layers. Across geographic
-groups, concentration rankings track more closely among island and
+The measurements show broad network support alongside concentrated
+corridor support in some service-facing populations, with additional
+narrowing among populations classified as broad at both layers. They also
+show that concentration rankings track more closely among island and
 archipelagic units than among coastal-mainland units under all three
-allocation rules. The two findings describe different aspects of the
-cross-layer relationship: aligned rankings can coexist with within-unit
-narrowing. Together, they motivate examining physical-corridor distributions
-alongside network-layer summaries when characterizing service-path diversity.
+allocation rules. These findings locate cross-layer differences within
+units and describe geographic variation in the correspondence between
+rankings. They support examining physical-corridor distributions alongside
+network-layer summaries rather than treating the two as interchangeable
+descriptions of service-path diversity.
 
 This paper makes three contributions. First, CLASP constructs paired
 network-transition and feasible-corridor distributions over identical
