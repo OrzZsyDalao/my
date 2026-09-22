@@ -30,19 +30,19 @@ Internet measurement, submarine cables, traceroute, cross-layer analysis, anycas
 
 **原文 P002**
 
-Submarine cables form the physical backbone of the global Internet and carry nearly all intercontinental traffic [1]. They connect users to services across oceans, providing the physical infrastructure beneath the network paths observed in traceroute. These observations identify routers and Autonomous System (AS) transitions, but do not directly reveal the submarine infrastructure supporting them.
+Submarine cables form the physical backbone of the global Internet and carry nearly all intercontinental traffic [1]. For users accessing services across oceans, these cables provide the physical connections underlying end-to-end network paths. Traceroute exposes the network-layer structure of these paths through visible routers and Autonomous System (AS) transitions between sources and service destinations.
 
 **译文**
 
-海底光缆构成全球互联网的物理骨干，并承载几乎全部洲际流量 [1]。它们跨越海洋连接用户与服务，为 traceroute 观测到的网络路径提供底层物理基础设施。这些观测能够识别路由器和自治系统（Autonomous System，AS）转换，却不能直接揭示支撑这些路径的海底基础设施。
+海底光缆构成全球互联网的物理骨干，并承载几乎全部洲际流量 [1]。对于跨洋访问服务的用户，这些光缆提供了端到端网络路径所依托的物理连接。Traceroute 通过源端与服务目的地之间的可见路由器和自治系统（Autonomous System，AS）转换，呈现这些路径的网络层结构。
 
 **原文 P003**
 
-This distinction matters when assessing the diversity of service paths. Cable failures can isolate regions, degrade remote-service access, and redirect traffic toward longer or congested alternatives. Paths traversing different routers or ASes may nevertheless share a cable or coastal corridor and be affected by the same physical event. A service can therefore present many distinct network transitions while its feasible physical support remains concentrated in a few coastal directions. Assessing this dependence requires measuring whether the diversity observed at the network layer corresponds to diversity across feasible physical corridors.
+Failures in this physical infrastructure can isolate regions, degrade remote-service access, and redirect traffic toward longer or congested alternatives. Paths traversing different routers or ASes may nevertheless share a cable or coastal corridor and be affected by the same physical event. Such shared dependencies are not directly visible in traceroute: a service may present many distinct network transitions while its feasible physical support remains concentrated in a few coastal directions. Assessing service-path diversity therefore requires comparing how observations are distributed across network transitions and feasible physical corridors.
 
 **译文**
 
-评估服务路径的多样性时，需要区分这两个层次。光缆故障可能使地区与外界隔离，降低远程服务的访问质量，并使流量改道至更长或更拥塞的替代路径。经过不同路由器或 AS 的路径仍可能共用同一条光缆或沿海走廊，并受到同一物理事件的影响。因此，一项服务可以呈现许多不同的网络转换，而其可行物理支撑仍集中在少数沿海方向。评估这种依赖，需要测量网络层观测到的多样性是否对应可行物理走廊之间的多样性。
+这些物理基础设施发生故障，可能使地区与外界隔离，降低远程服务的访问质量，并使流量改道至更长或更拥塞的替代路径。经过不同路由器或 AS 的路径仍可能共用同一条光缆或沿海走廊，并受到同一物理事件的影响。这种共享依赖无法直接从 traceroute 中看出：一项服务可能呈现许多不同的网络转换，而其可行物理支撑仍集中在少数沿海方向。因此，评估服务路径多样性，需要比较观测在网络转换与可行物理走廊之间分别如何分布。
 
 **原文 P004**
 

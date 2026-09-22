@@ -3,20 +3,20 @@
 
 Submarine cables form the physical backbone of the global Internet and carry
 nearly all intercontinental traffic~\cite{telegeography_submarine_map}.
-They connect users to services across oceans, providing the physical
-infrastructure beneath the network paths observed in traceroute. These
-observations identify routers and Autonomous System (AS) transitions,
-but do not directly reveal the submarine infrastructure supporting them.
+For users accessing services across oceans, these cables provide the physical
+connections underlying end-to-end network paths. Traceroute exposes the
+network-layer structure of these paths through visible routers and
+Autonomous System (AS) transitions between sources and service destinations.
 
-This distinction matters when assessing the diversity of service paths.
-Cable failures can isolate regions, degrade remote-service access, and
-redirect traffic toward longer or congested alternatives. Paths traversing
-different routers or ASes may nevertheless share a cable or coastal corridor
-and be affected by the same physical event. A service can therefore present
-many distinct network transitions while its feasible physical support remains
-concentrated in a few coastal directions. Assessing this dependence requires
-measuring whether the diversity observed at the network layer corresponds
-to diversity across feasible physical corridors.
+Failures in this physical infrastructure can isolate regions, degrade
+remote-service access, and redirect traffic toward longer or congested
+alternatives. Paths traversing different routers or ASes may nevertheless
+share a cable or coastal corridor and be affected by the same physical event.
+Such shared dependencies are not directly visible in traceroute: a service
+may present many distinct network transitions while its feasible physical
+support remains concentrated in a few coastal directions. Assessing
+service-path diversity therefore requires comparing how observations are
+distributed across network transitions and feasible physical corridors.
 
 Cross-layer mapping provides a starting point for this comparison.
 Internet Atlas, InterTubes, and iGDB connect observed Internet links to
