@@ -1,6 +1,6 @@
 # IMC 2027 论文修改交接说明
 
-本文件供多个 AI 会话共同使用。开始修改论文前，应先阅读本文件，再读取所列的权威文件。最后更新：2026-09-20。
+本文件供多个 AI 会话共同使用。开始修改论文前，应先阅读本文件，再读取所列的权威文件。最后更新：2026-09-22。
 
 ## 1. 当前任务
 
@@ -156,3 +156,10 @@ Singapore–Netflix 不从论文中删除。它应保留在结果节，用完整
 方法根据 source/main_analysis.py 中 compute_geo_spatial_score、compute_as_economic_support、compute_rtt_feasibility_score、fuse_candidate_support 补充评分构成：登陆点邻近支持度、AS-economic 支持度、RTT 支持度及延迟惩罚的乘积。明确端点 AS 同时用于网络标签与候选排序；均匀分配在固定可行集合上不使用分数大小。
 
 中文交付改为 revised_source6_imc_full_zh_translation.md：每段英文原文后附中文翻译，包含摘要、各章正文、公式及 AI 披露；图表及图表标题省略，参考文献保留原书目信息。DOCX 是历史版本，本轮不再生成或维护，不应当作最新译稿。最终 ZIP 与英文 PDF 同步更新。
+
+
+## 13. 2026-09-22 引言前两段局部重构
+
+本轮按用户“前两段”要求，仅修改 Introduction P002–P003，同步英文源文件、中英对照 Markdown 和 Overleaf ZIP。参考 expanded/design_references/calypso.pdf（21 页长文）的开篇段落功能：基础设施及作用 → 风险与研究必要性；不引入其事故归因、规模数字或修复成本。本文第一段交代物理基础设施与网络观测，第二段承接二者区别，说明共享物理依赖为何需要跨层多样性测量，再接原第三段已有映射工作。
+
+用户批注还要求：摘要减少细碎结果并解释方法；引言突出工作内容与测量亮点、增强段间衔接；明确已有工作到 CLASP 的增量；解释从映射到分布的必要性。这些其余位置本轮尚未改动，不应称为已完成。保留桌面批注原件。此轮不重新交付 PDF，output/pdf 中 PDF 仍为 2026-09-20 版本；最新文字以 LaTeX、ZIP 与 Markdown 为准。

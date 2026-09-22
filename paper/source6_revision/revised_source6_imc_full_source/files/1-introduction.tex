@@ -2,21 +2,21 @@
 \label{sec:introduction}
 
 Submarine cables form the physical backbone of the global Internet and carry
-nearly all intercontinental traffic~\cite{telegeography_submarine_map}. Cable
-failures can isolate regions, degrade remote-service access, and redirect
-traffic toward longer or congested alternatives. Routes that share a cable or
-coastal corridor can be affected by the same physical event even when their
-network-layer paths appear different. Evaluating path diversity therefore
-requires measuring whether logically distinct routes also occupy distinct
-physical directions.
+nearly all intercontinental traffic~\cite{telegeography_submarine_map}.
+They connect users to services across oceans, providing the physical
+infrastructure beneath the network paths observed in traceroute. These
+observations identify routers and Autonomous System (AS) transitions,
+but do not directly reveal the submarine infrastructure supporting them.
 
-Path diversity is usually measured at the network layer. Traceroute records
-routers and Autonomous System (AS) transitions, so distinct hops or AS paths
-are counted as distinct alternatives. It does not identify the submarine
-infrastructure that could carry those paths. Two paths that appear independent
-in traceroute may leave a region through the same coast and rely on the same
-small set of feasible corridors. Whether network-layer diversity corresponds
-to physical-corridor diversity is therefore an empirical question.
+This distinction matters when assessing the diversity of service paths.
+Cable failures can isolate regions, degrade remote-service access, and
+redirect traffic toward longer or congested alternatives. Paths traversing
+different routers or ASes may nevertheless share a cable or coastal corridor
+and be affected by the same physical event. A service can therefore present
+many distinct network transitions while its feasible physical support remains
+concentrated in a few coastal directions. Assessing this dependence requires
+measuring whether the diversity observed at the network layer corresponds
+to diversity across feasible physical corridors.
 
 Prior work supplies the cross-layer mappings needed to study this question.
 Internet Atlas, InterTubes, and iGDB connect observed Internet links to long-
