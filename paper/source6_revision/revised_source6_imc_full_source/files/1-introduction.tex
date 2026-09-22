@@ -18,73 +18,76 @@ concentrated in a few coastal directions. Assessing this dependence requires
 measuring whether the diversity observed at the network layer corresponds
 to diversity across feasible physical corridors.
 
-Prior work supplies the cross-layer mappings needed to study this question.
-Internet Atlas, InterTubes, and iGDB connect observed Internet links to long-
-haul infrastructure; Nautilus associates IP links with candidate submarine
-cables; Calypso maps routes using cable layouts, network relationships, and
-inland connectivity; and Xaminer applies cross-layer maps to infrastructure
-risk analysis~\cite{durairajan2013atlas,durairajan2015intertubes,
+Cross-layer mapping provides a starting point for this comparison.
+Internet Atlas, InterTubes, and iGDB connect observed Internet links to
+long-haul infrastructure; Nautilus associates IP links with candidate
+submarine cables; Calypso maps routes using cable layouts, network
+relationships, and inland connectivity; and Xaminer uses cross-layer maps
+to analyze infrastructure risk~\cite{durairajan2013atlas,durairajan2015intertubes,
 anderson2022igdb,ramanathan2023nautilus,wang2025calypso,
-ramanathan2024xaminer}. These systems identify physical infrastructure that
-could carry an individual link or path. We use such assignments to measure a
-population-level property: whether concentration among observed network
-transitions tracks concentration among feasible physical corridors.
+ramanathan2024xaminer}. These studies make physical dependencies accessible
+to measurement and analysis. Building on this capability, we ask whether
+the diversity visible in a population of service paths reflects how its
+feasible physical support is distributed.
 
-We present \emph{CLASP}, a Cross-Layer Audit of Service Paths. Within
-each country--measurement population, CLASP constructs a network-transition
-distribution and a feasible landing-region-corridor distribution from the
-same traceroute segments. This paired construction supports two comparisons:
-changes in concentration and breadth within a unit, and the association
-between concentration rankings across units. We call the latter
-\emph{Layer Agreement}, measured by Spearman rank correlation.
+Answering this question requires more than counting distinct network
+transitions or feasible corridors. Different transitions may repeatedly
+support the same corridors, while a recurring transition may admit several
+physical candidates. Counts alone do not describe how observations are
+distributed among those categories. Comparing the two layers therefore
+requires retaining each segment's network identity and physical candidate
+set, and aggregating both over the same service-path population.
 
-Three questions organize the measurement. \textbf{RQ1} asks how network
-and feasible-corridor concentration and breadth differ within the same
-country--measurement population. \textbf{RQ2} asks whether network
-concentration tracks corridor concentration across units, and how this
-association varies by geography and candidate allocation. \textbf{RQ3}
-asks how exposure, absolute corridor breadth, and measurement-family
-composition contextualize these cross-layer results.
+We present \emph{CLASP}, a Cross-Layer Audit of Service Paths, to construct
+this paired comparison. CLASP extracts atomic segments from traceroutes,
+records their network-transition labels, and identifies feasible
+landing-region corridors using geographic, cable-lifecycle, and propagation
+constraints. Each candidate-bearing segment contributes the same total
+observation mass to both layers; candidate allocation distributes its
+physical-layer mass among feasible corridors. Aggregating by country and
+measurement then produces paired distributions while preserving the
+source-country and measured-target context. This construction compares
+the organization of a fixed set of observations rather than distributions
+drawn from different path populations.
+
+The paired distributions support two complementary analyses. Within a
+country--measurement unit, we measure changes in concentration and breadth
+between network transitions and feasible corridors. Across units, we measure
+whether network concentration preserves the ordering of corridor
+concentration, using Spearman rank correlation, termed \emph{Layer Agreement}.
+These analyses address \textbf{RQ1}, how diversity differs within units, and
+\textbf{RQ2}, how concentration-rank association varies by geography and
+candidate allocation. \textbf{RQ3} examines exposure, absolute corridor
+breadth, and measurement-family composition as context for these results.
+Exposure is reported separately because the frequency of encountering a
+feasible corridor and the distribution of support among corridors describe
+different properties.
 
 We apply CLASP to 490,911 valid IPv4 traceroutes from 18 public RIPE Atlas
 measurements covering all 13 DNS Roots, Wikipedia, Reddit, Netflix Assets,
 and two dynamic multi-target topology references. The aligned one-hour
-snapshot yields 370 auditable country--measurement units: 222 DNS Root,
-53 application, and 95 topology-reference units. Each unit retains its
-source-country and measurement identity.
+snapshot yields 370 auditable country--measurement units. The service
+measurements retain their selected targets, while the multi-target
+measurements provide a broader-target reference. Equal-share,
+projection-score, and Top-1 allocation compare how the results depend on
+distributing observation mass among feasible candidates.
 
-Across service-facing units, broad network support can coexist with
-concentrated corridor support. Under equal-share allocation, 81 of 275
-units (29.5\%) are network-broad/corridor-concentrated, while 158 (57.5\%)
-remain broad at both layers. Eighteen units are concentrated at both layers,
-and 18 expand from concentrated network support to broad corridor support.
-Continuous measures reveal further differences: effective category count
-contracts in 204 units (74.2\%). The paired audit thus identifies both
-changes in concentration class and narrowing within the same class.
-
-The relationship between the two concentration rankings varies by geography.
-Under projection-score weighting, Layer Agreement is 0.632 among 67 island
-and archipelagic service-facing units from 10 countries and 0.001 among
-202 coastal-mainland units from 28 countries. Network concentration tracks
-corridor concentration more closely in the island and archipelagic group;
-the coastal-mainland group exhibits almost no monotonic rank association.
-The between-group difference is 0.631.
-
-The geographic ordering persists under all three candidate-allocation rules.
-Equal-share allocation gives Layer Agreement of 0.380 for island and
-archipelagic units and -0.081 for coastal-mainland units; projection-score
-weighting gives 0.632 and 0.001; and Top-1 gives 0.820 and 0.105. The
-corresponding differences are 0.461, 0.631, and 0.715. These results connect
-the two levels of the audit: within-unit changes reveal where network and
-corridor diversity differ, while Layer Agreement describes how closely
-their rankings track across geographic populations.
+The audit identifies service-facing populations whose broad network
+support accompanies concentrated corridor support, as well as narrowing
+within populations classified as broad at both layers. Across geographic
+groups, concentration rankings track more closely among island and
+archipelagic units than among coastal-mainland units under all three
+allocation rules. The two findings describe different aspects of the
+cross-layer relationship: aligned rankings can coexist with within-unit
+narrowing. Together, they motivate examining physical-corridor distributions
+alongside network-layer summaries when characterizing service-path diversity.
 
 This paper makes three contributions. First, CLASP constructs paired
 network-transition and feasible-corridor distributions over identical
-traceroute segments, with trace-level exposure reported separately.
-Second, the audit quantifies within-unit cross-layer differences and
-identifies a geographic contrast in concentration-rank association that
-persists under three candidate-allocation rules. Third, the reproducible
-audit records measurement IDs, configuration values, mapping states, and
-pipeline counts so that the reported distributions can be reconstructed
-and inspected.
+traceroute segments, separating trace-level exposure from conditional
+corridor concentration. Second, the audit measures within-unit diversity
+differences and geographic variation in concentration-rank association,
+with three candidate-allocation rules providing complementary views of
+the feasible support. Third, it records measurement IDs, configuration
+values, mapping states, and pipeline counts so that the reported
+distributions can be reconstructed and inspected.

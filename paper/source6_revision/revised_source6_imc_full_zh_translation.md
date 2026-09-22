@@ -46,147 +46,147 @@ This distinction matters when assessing the diversity of service paths. Cable fa
 
 **原文 P004**
 
-Prior work supplies the cross-layer mappings needed to study this question. Internet Atlas, InterTubes, and iGDB connect observed Internet links to long-haul infrastructure; Nautilus associates IP links with candidate submarine cables; Calypso maps routes using cable layouts, network relationships, and inland connectivity; and Xaminer applies cross-layer maps to infrastructure risk analysis [2], [3], [4], [5], [6], [7]. These systems identify physical infrastructure that could carry an individual link or path. We use such assignments to measure a population-level property: whether concentration among observed network transitions tracks concentration among feasible physical corridors.
+Cross-layer mapping provides a starting point for this comparison. Internet Atlas, InterTubes, and iGDB connect observed Internet links to long-haul infrastructure; Nautilus associates IP links with candidate submarine cables; Calypso maps routes using cable layouts, network relationships, and inland connectivity; and Xaminer uses cross-layer maps to analyze infrastructure risk [2], [3], [4], [5], [6], [7]. These studies make physical dependencies accessible to measurement and analysis. Building on this capability, we ask whether the diversity visible in a population of service paths reflects how its feasible physical support is distributed.
 
 **译文**
 
-已有研究提供了分析这一问题所需的跨层映射。Internet Atlas、InterTubes 和 iGDB 将观测到的互联网链路与长途基础设施连接起来；Nautilus 将 IP 链路与候选海底光缆相关联；Calypso 使用光缆布局、网络关系和内陆连通性来映射路由；Xaminer 则将跨层地图用于基础设施风险分析 [2]–[7]。这些系统识别可能承载单条链路或路径的物理基础设施。本文使用这类关联来测量一个总体层面的属性：观测到的网络转换之间的集中度，是否能够跟踪可行物理走廊之间的集中度。
+跨层映射为这一比较提供了起点。Internet Atlas、InterTubes 和 iGDB 将观测到的互联网链路与长途基础设施联系起来；Nautilus 将 IP 链路与候选海底光缆相关联；Calypso 使用光缆布局、网络关系和内陆连通性映射路由；Xaminer 则使用跨层地图分析基础设施风险 [2]–[7]。这些研究使物理依赖能够被测量和分析。在这一能力的基础上，本文研究一个服务路径总体中可见的多样性，是否反映其可行物理支撑的分布。
 
 **原文 P005**
 
-We present CLASP, a Cross-Layer Audit of Service Paths. Within each country–measurement population, CLASP constructs a network-transition distribution and a feasible landing-region-corridor distribution from the same traceroute segments. This paired construction supports two comparisons: changes in concentration and breadth within a unit, and the association between concentration rankings across units. We call the latter Layer Agreement, measured by Spearman rank correlation.
+Answering this question requires more than counting distinct network transitions or feasible corridors. Different transitions may repeatedly support the same corridors, while a recurring transition may admit several physical candidates. Counts alone do not describe how observations are distributed among those categories. Comparing the two layers therefore requires retaining each segment's network identity and physical candidate set, and aggregating both over the same service-path population.
 
 **译文**
 
-本文提出 CLASP，即服务路径跨层审计（Cross-Layer Audit of Service Paths）。在每个“国家—测量”总体内部，CLASP 使用相同的 traceroute 线段构建网络转换分布和可行登陆区域走廊分布。这一配对构造支持两种比较：单元内部集中度和宽度的变化，以及多个单元之间集中度排序的关联。本文将后一种关系称为 Layer Agreement，并使用 Spearman 秩相关进行测量。
+回答这一问题，仅统计不同网络转换或可行走廊的数量还不够。不同转换可能反复支持相同的走廊，而反复出现的同一种转换也可能对应多个物理候选。仅凭数量无法描述观测在这些类别之间如何分布。因此，比较两个层次需要保留每个线段的网络身份和物理候选集合，并在同一个服务路径总体上分别聚合。
 
 **原文 P006**
 
-Three questions organize the measurement. RQ1 asks how network and feasible-corridor concentration and breadth differ within the same country–measurement population. RQ2 asks whether network concentration tracks corridor concentration across units, and how this association varies by geography and candidate allocation. RQ3 asks how exposure, absolute corridor breadth, and measurement-family composition contextualize these cross-layer results.
+We present CLASP, a Cross-Layer Audit of Service Paths, to construct this paired comparison. CLASP extracts atomic segments from traceroutes, records their network-transition labels, and identifies feasible landing-region corridors using geographic, cable-lifecycle, and propagation constraints. Each candidate-bearing segment contributes the same total observation mass to both layers; candidate allocation distributes its physical-layer mass among feasible corridors. Aggregating by country and measurement then produces paired distributions while preserving the source-country and measured-target context. This construction compares the organization of a fixed set of observations rather than distributions drawn from different path populations.
 
 **译文**
 
-三个问题组织本文的测量。**RQ1** 询问同一个“国家—测量”总体内部，网络层与可行走廊层的集中度和宽度有何差异。**RQ2** 询问不同单元之间的网络集中度是否跟踪走廊集中度，以及这种关联如何随地理分组和候选分配方式变化。**RQ3** 询问暴露率、绝对走廊宽度和测量家族构成如何为这些跨层结果提供背景。
+本文提出 CLASP，即服务路径跨层审计（Cross-Layer Audit of Service Paths），构建这种配对比较。CLASP 从 traceroute 中抽取原子段，记录其网络转换标签，并利用地理、光缆生命周期和传播约束识别可行登陆区域走廊。每个具有候选的线段向两个层次贡献相同的观测权重总量；候选分配规则将其物理层权重分配到可行走廊之间。随后按国家和测量进行聚合，在保留源国家和测量目标背景的同时生成配对分布。这一构造比较的是同一组观测的组织方式，而不是来自不同路径总体的分布。
 
 **原文 P007**
 
-We apply CLASP to 490,911 valid IPv4 traceroutes from 18 public RIPE Atlas measurements covering all 13 DNS Roots, Wikipedia, Reddit, Netflix Assets, and two dynamic multi-target topology references. The aligned one-hour snapshot yields 370 auditable country–measurement units: 222 DNS Root, 53 application, and 95 topology-reference units. Each unit retains its source-country and measurement identity.
+The paired distributions support two complementary analyses. Within a country–measurement unit, we measure changes in concentration and breadth between network transitions and feasible corridors. Across units, we measure whether network concentration preserves the ordering of corridor concentration, using Spearman rank correlation, termed Layer Agreement. These analyses address RQ1, how diversity differs within units, and RQ2, how concentration-rank association varies by geography and candidate allocation. RQ3 examines exposure, absolute corridor breadth, and measurement-family composition as context for these results. Exposure is reported separately because the frequency of encountering a feasible corridor and the distribution of support among corridors describe different properties.
 
 **译文**
 
-我们将 CLASP 应用于来自 18 项公开 RIPE Atlas 测量的 490,911 条有效 IPv4 traceroute，覆盖全部 13 个 DNS 根服务、Wikipedia、Reddit、Netflix Assets，以及两项动态多目标拓扑参考测量。对齐的一小时快照产生 370 个可审计的“国家—测量”单元：222 个 DNS 根单元、53 个应用单元和 95 个拓扑参考单元。每个单元保留其源国家和测量身份。
+配对分布支持两类互补分析。在单个“国家—测量”单元内，本文测量网络转换与可行走廊之间集中度和宽度的变化。在多个单元之间，本文使用 Spearman 秩相关测量网络集中度是否保留走廊集中度的排序，并将这一关联称为 Layer Agreement。这两类分析分别回答 RQ1：单元内的多样性如何不同，以及 RQ2：集中度的秩关联如何随地理分组和候选分配方式变化。RQ3 考察暴露率、绝对走廊宽度及测量家族构成，为上述结果提供背景。暴露率单独报告，因为遇到可行走廊的频率与支撑在走廊之间的分布描述的是不同属性。
 
 **原文 P008**
 
-Across service-facing units, broad network support can coexist with concentrated corridor support. Under equal-share allocation, 81 of 275 units (29.5%) are network-broad/corridor-concentrated, while 158 (57.5%) remain broad at both layers. Eighteen units are concentrated at both layers, and 18 expand from concentrated network support to broad corridor support. Continuous measures reveal further differences: effective category count contracts in 204 units (74.2%). The paired audit thus identifies both changes in concentration class and narrowing within the same class.
+We apply CLASP to 490,911 valid IPv4 traceroutes from 18 public RIPE Atlas measurements covering all 13 DNS Roots, Wikipedia, Reddit, Netflix Assets, and two dynamic multi-target topology references. The aligned one-hour snapshot yields 370 auditable country–measurement units. The service measurements retain their selected targets, while the multi-target measurements provide a broader-target reference. Equal-share, projection-score, and Top-1 allocation compare how the results depend on distributing observation mass among feasible candidates.
 
 **译文**
 
-在面向服务的单元中，宽广的网络支撑可以与集中的走廊支撑同时存在。均匀分配下，275 个单元中有 81 个（29.5%）属于“网络宽广、走廊集中”，158 个（57.5%）在两个层面都保持宽广。18 个单元在两个层面都集中，另有 18 个单元从集中的网络支撑扩张为宽广的走廊支撑。连续指标揭示了进一步的差异：204 个单元（74.2%）的有效类别数收缩。因此，配对审计既识别集中度类别的变化，也识别同一类别内部的收窄。
+本文将 CLASP 应用于来自 18 项公开 RIPE Atlas 测量的 490,911 条有效 IPv4 traceroute，覆盖全部 13 个 DNS 根服务、Wikipedia、Reddit、Netflix Assets，以及两项动态多目标拓扑参考测量。对齐的一小时快照得到 370 个可审计的“国家—测量”单元。服务测量保留各自选定的目标，多目标测量则提供目标范围更广的参考。均匀分配、投影分数加权和 Top-1 分配用于比较：观测权重在可行候选之间的分配方式如何影响结果。
 
 **原文 P009**
 
-The relationship between the two concentration rankings varies by geography. Under projection-score weighting, Layer Agreement is 0.632 among 67 island and archipelagic service-facing units from 10 countries and 0.001 among 202 coastal-mainland units from 28 countries. Network concentration tracks corridor concentration more closely in the island and archipelagic group; the coastal-mainland group exhibits almost no monotonic rank association. The between-group difference is 0.631.
+The audit identifies service-facing populations whose broad network support accompanies concentrated corridor support, as well as narrowing within populations classified as broad at both layers. Across geographic groups, concentration rankings track more closely among island and archipelagic units than among coastal-mainland units under all three allocation rules. The two findings describe different aspects of the cross-layer relationship: aligned rankings can coexist with within-unit narrowing. Together, they motivate examining physical-corridor distributions alongside network-layer summaries when characterizing service-path diversity.
 
 **译文**
 
-两个集中度排序之间的关系随地理分组而变化。在投影分数加权下，来自 10 个国家的 67 个岛屿与群岛地区面向服务单元的 Layer Agreement 为 0.632，来自 28 个国家的 202 个沿海大陆单元为 0.001。在岛屿与群岛组中，网络集中度更紧密地跟踪走廊集中度；沿海大陆组几乎没有单调秩关联。组间差值为 0.631。
+审计识别出网络支撑宽广但走廊支撑集中的面向服务总体，也识别出两个层次均被归类为宽广的总体内部存在的收窄。在地理组之间，三种分配规则下岛屿与群岛单元的集中度排序均比沿海大陆单元更紧密地对应。这两项发现描述跨层关系的不同方面：排序一致可以与单元内部的收窄同时存在。因此，刻画服务路径多样性时，需要结合网络层汇总指标检查物理走廊分布。
 
 **原文 P010**
 
-The geographic ordering persists under all three candidate-allocation rules. Equal-share allocation gives Layer Agreement of 0.380 for island and archipelagic units and -0.081 for coastal-mainland units; projection-score weighting gives 0.632 and 0.001; and Top-1 gives 0.820 and 0.105. The corresponding differences are 0.461, 0.631, and 0.715. These results connect the two levels of the audit: within-unit changes reveal where network and corridor diversity differ, while Layer Agreement describes how closely their rankings track across geographic populations.
+This paper makes three contributions. First, CLASP constructs paired network-transition and feasible-corridor distributions over identical traceroute segments, separating trace-level exposure from conditional corridor concentration. Second, the audit measures within-unit diversity differences and geographic variation in concentration-rank association, with three candidate-allocation rules providing complementary views of the feasible support. Third, it records measurement IDs, configuration values, mapping states, and pipeline counts so that the reported distributions can be reconstructed and inspected.
 
 **译文**
 
-三种候选分配规则下，地理排序均保持不变。均匀分配下，岛屿与群岛单元和沿海大陆单元的 Layer Agreement 分别为 0.380 和 -0.081；投影分数加权下分别为 0.632 和 0.001；Top-1 下分别为 0.820 和 0.105。对应差值为 0.461、0.631 和 0.715。这些结果连接了审计的两个层次：单元内部的变化揭示网络多样性与走廊多样性在何处不同，而 Layer Agreement 描述它们在不同地理总体中的排序跟踪程度。
-
-**原文 P011**
-
-This paper makes three contributions. First, CLASP constructs paired network-transition and feasible-corridor distributions over identical traceroute segments, with trace-level exposure reported separately. Second, the audit quantifies within-unit cross-layer differences and identifies a geographic contrast in concentration-rank association that persists under three candidate-allocation rules. Third, the reproducible audit records measurement IDs, configuration values, mapping states, and pipeline counts so that the reported distributions can be reconstructed and inspected.
-
-**译文**
-
-本文作出三项贡献。第一，CLASP 在完全相同的 traceroute 线段上构建配对的网络转换分布和可行走廊分布，并单独报告轨迹层面的暴露率。第二，审计量化单元内部的跨层差异，并识别集中度秩关联的地理差异；这一地理差异在三种候选分配规则下均保持不变。第三，可复现审计记录测量 ID、配置值、映射状态和流水线计数，使报告的分布能够被重建和检查。
+本文作出三项贡献。第一，CLASP 在完全相同的 traceroute 线段上构建配对的网络转换分布和可行走廊分布，将轨迹层面的暴露率与条件走廊集中度区分开。第二，审计测量单元内部的多样性差异，以及集中度秩关联的地理变化，三种候选分配规则为可行支撑提供互补视角。第三，审计记录测量 ID、配置值、映射状态和流水线计数，使报告的分布能够被重建和检查。
 
 ## 2 Background and Related Work / 背景与相关工作
 
 ### 2.1 Reading Service Paths at the Network Layer / 从网络层观察服务路径
 
-**原文 P012**
+**原文 P011**
 
-Users reach services through domain names, CDN resources, replicas, and anycast targets. Routing selects the resulting path, and traceroute exposes the intervening IP hops and AS transitions. These transitions are the usual unit of path-diversity measurement: they are counted, compared across vantage points, and used to describe how many distinct routes a service presents.
+Service paths connect a source network to the instances selected through DNS resolution, replica selection, and routing. Traceroute exposes the visible IP hops along these paths, from which AS transitions can be constructed. Comparing such transitions describes how observations are distributed across network-layer categories. The measurement target and source population remain part of that description: paths toward a selected service and paths toward many changing destinations sample different populations.
 
 **译文**
 
-用户通过域名、CDN 资源、副本和 anycast 目标访问服务。路由选择由此形成的路径，traceroute 则暴露其中的 IP 跳和 AS 转换。这些转换是路径多样性测量通常采用的单位：研究者对其计数、在不同观测点之间进行比较，并用它们描述一项服务呈现了多少条不同的路径。
+服务路径通过 DNS 解析、副本选择和路由，将源网络连接到选定的服务实例。Traceroute 显示这些路径上的可见 IP 跳，由此可以构建 AS 转换。比较这些转换，可以描述观测在网络层类别之间的分布。测量目标和源总体仍是这一描述的组成部分：通向选定服务的路径与通向多个不断变化的目标的路径，采样的是不同总体。
+
+**原文 P012**
+
+Prior measurements connect this service perspective to infrastructure. Liu et al. quantify the fraction of popular Web resources reached through the submarine cable network and consider redundancy by weighting criticality using cable and bundle counts [8]. Studies of anycast characterize deployment and network footprints  [9], [10], while other work relates cable infrastructure to AS-level structure [11]. These studies establish complementary views of resource dependence, service deployment, and network organization. Our comparison asks how network-transition diversity corresponds to the distribution of feasible physical support within a measured service-path population.
+
+**译文**
+
+已有测量将这种服务视角与基础设施联系起来。Liu 等人量化热门 Web 资源经由海底光缆网访问的比例，并使用 cable 和 bundle 数量对关键性加权，以考虑冗余 [8]。Anycast 研究刻画部署及其网络足迹 [9]、[10]，另有工作将光缆基础设施与 AS 层结构联系起来 [11]。这些研究分别提供了资源依赖、服务部署和网络组织的互补视角。本文比较的是：在一个被测服务路径总体内，网络转换多样性如何对应可行物理支撑的分布。
 
 **原文 P013**
 
-This is also the layer at which service reachability is commonly assessed. Prior work measures the user's view of submarine criticality  [8], characterizes anycast deployment and its network footprint [9], [10], and relates cable infrastructure to AS-level structure [11]. These measurements describe network-layer reachability. Our question is whether diversity at that layer corresponds to breadth across feasible physical directions.
+Physical support is represented here by a landing-region corridor: a direction-independent pair of bounded coastal regions connected by at least one feasible cable candidate. This abstraction lies between exact landing stations, which distinguish nearby facilities, and country-level inventories, which combine separated coastlines. It consolidates nearby candidate systems while retaining distinct coastal entry and exit regions. Different network transitions may support the same corridor, and one transition may admit several corridors. The resulting many-to-many relationship is the basis of the paired comparison; candidate multiplicity records feasible support rather than observed simultaneous use.
 
 **译文**
 
-服务可达性通常也在这一层进行评估。已有工作测量用户视角下的海底光缆关键性 [8]，刻画 anycast 的部署及其网络足迹 [9]、[10]，并将光缆基础设施与 AS 层结构联系起来 [11]。这些测量描述网络层可达性。本文的问题是：这一层的多样性是否对应可行物理方向上的宽度。
-
-**原文 P014**
-
-The relationship is many-to-many. Different routers or AS transitions may project onto one landing-region corridor, while a recurring network transition may support several physical alternatives. A landing-region corridor is a direction-independent pair of bounded coastal regions connected by at least one feasible cable candidate. Exact landing stations preserve facility detail but split nearby access points serving the same direction; country-level inventories merge coastlines and international directions. Landing regions retain coastal structure between these two resolutions. Corridors are the appropriate unit for comparing physical directions: exact cable identity is often ambiguous, and counting several candidate cables through nearby landings as independent directions would overstate the alternatives. The aggregation preserves distinct coastal exit directions while consolidating parallel candidate systems that represent the same direction.
-
-**译文**
-
-这种关系是多对多的。不同的路由器或 AS 转换可能投影到同一条登陆区域走廊，而一个反复出现的网络转换也可能支持多个物理替代方案。**登陆区域走廊**是由至少一条可行光缆候选连接的一对有界沿海区域，并且不区分方向。精确的登陆站能够保留设施细节，但会把服务于同一方向的相邻接入点拆开；国家层面的清单则会合并不同海岸线和不同国际方向。登陆区域在这两个分辨率之间保留了沿海结构。走廊是比较物理方向的适当单元：精确光缆身份通常具有歧义，如果把通过相邻登陆点的多条候选光缆计为相互独立的方向，就会高估替代路径。走廊聚合在合并代表同一方向的平行候选系统时，仍保留不同的沿海离开方向。
+本文以登陆区域走廊表示物理支撑：它是由至少一条可行光缆候选连接的一对有界沿海区域，并且不区分方向。这一抽象介于精确登陆站与国家层面清单之间：前者区分相邻设施，后者则合并分离的海岸线。走廊抽象合并相邻候选系统，同时保留不同的沿海进入和离开区域。不同网络转换可能支持同一走廊，一种转换也可能对应多个走廊。这种多对多关系构成配对比较的基础；候选的多重性记录可行支撑，而不是已观测到的同时使用。
 
 ### 2.2 Mapping Paths onto Submarine Infrastructure / 将路径映射到海底基础设施
 
-**原文 P015**
+**原文 P014**
 
-Event-oriented studies connect new submarine infrastructure to observed routing changes. Bischof et al. characterized Cuba's connectivity before and after ALBA-1 and later formulated the task of connecting Internet observations to the worldwide cable mesh [12], [13]. Fanou et al. measured routing changes following new cable deployments  [14]. Liu et al. combine resource discovery, RIPE Atlas traceroutes, geolocation, and propagation feasibility to quantify how users reach Web resources through submarine paths [8].
+Event-oriented studies show how submarine infrastructure changes are reflected in observed routing. Bischof et al. characterized Cuba's connectivity before and after ALBA-1 and later formulated the task of connecting Internet observations to the worldwide cable mesh  [12], [13]. Fanou et al. measured routing changes following new cable deployments [14]. For user-facing resources, Liu et al. combine resource discovery, RIPE Atlas traceroutes, geolocation, and propagation feasibility to identify submarine dependence [8]. These approaches link observed paths to the infrastructure on which access may depend.
 
 **译文**
 
-面向事件的研究将新建海底基础设施与观测到的路由变化联系起来。Bischof 等人刻画了 ALBA-1 建成前后古巴的连接性，随后又提出了将互联网观测与全球海底光缆网格连接起来的问题 [12]、[13]。Fanou 等人测量了新光缆部署后的路由变化 [14]。Liu 等人结合资源发现、RIPE Atlas traceroute、地理定位和传播可行性，量化用户如何通过海底路径访问 Web 资源 [8]。
+面向事件的研究说明海底基础设施变化如何体现在观测路由中。Bischof 等人刻画了 ALBA-1 建成前后古巴的连接性，随后提出将互联网观测与全球海底光缆网格连接起来的问题 [12]、[13]。Fanou 等人测量新光缆部署后的路由变化 [14]。对于面向用户的资源，Liu 等人结合资源发现、RIPE Atlas traceroute、地理定位和传播可行性识别海缆依赖 [8]。这些方法将观测路径与访问可能依赖的基础设施联系起来。
+
+**原文 P015**
+
+Cross-layer cartography extends this connection through explicit infrastructure mappings. Internet Atlas and InterTubes associate long-haul facilities with observed paths [2], [3], and iGDB integrates facilities, fiber, and network entities into a cross-layer map [4]. Nautilus associates IP links with candidate submarine cables and attaches confidence to each assignment  [5]. Calypso combines cable layouts, network relationships, latency, and inland connectivity to map routes and defines Route Stress over those assignments [6]. Xaminer uses cross-layer maps for disaster-oriented infrastructure analysis  [7]. Measurements of intercontinental links also identify layer-3 links and gateway routers [15].
+
+**译文**
+
+跨层制图通过显式基础设施映射进一步建立这种联系。Internet Atlas 和 InterTubes 将长途设施与观测路径相关联 [2]、[3]，iGDB 将设施、光纤和网络实体整合成跨层地图 [4]。Nautilus 将 IP 链路与候选海底光缆相关联，并为每个关联附加置信度 [5]。Calypso 结合光缆布局、网络关系、时延和内陆连通性映射路由，并在这些关联之上定义 Route Stress [6]。Xaminer 使用跨层地图进行面向灾害的基础设施分析 [7]。洲际链路测量还识别第三层链路和网关路由器 [15]。
 
 **原文 P016**
 
-Cross-layer cartography supplies the assignments used by our measurement. Internet Atlas and InterTubes associate long-haul facilities with observed paths [2], [3]. iGDB integrates facilities, fiber, and network entities into a cross-layer map  [4]. Nautilus associates IP links with candidate submarine cables and attaches confidence to each assignment  [5]. Calypso combines cable layouts, network relationships, latency, and inland connectivity to map routes and defines Route Stress over those assignments [6]. Xaminer applies cross-layer maps to disaster-oriented infrastructure analysis  [7]. Measurements of intercontinental links also identify layer-3 links and gateway routers [15].
+This body of work supports both infrastructure inference and analyses of dependence or risk. CLASP builds on the projection approach to study a paired distribution question: whether concentration among network transitions corresponds to concentration among feasible coastal corridors over the same observations. The contribution is this comparison, not a claim to recover the exact cable traversed by every path. Keeping feasible candidate sets allows the comparison to retain mapping ambiguity rather than silently treating every assignment as a confirmed traversal.
 
 **译文**
 
-跨层制图工作提供了本文测量所使用的关联。Internet Atlas 和 InterTubes 将长途设施与观测路径相关联 [2]、[3]。iGDB 将设施、光纤和网络实体整合成一张跨层地图 [4]。Nautilus 将 IP 链路与候选海底光缆相关联，并为每一个关联附加置信度 [5]。Calypso 结合光缆布局、网络关系、时延和内陆连通性来映射路由，并在这些关联之上定义 Route Stress [6]。Xaminer 将跨层地图用于面向灾害的基础设施分析 [7]。洲际链路测量还用于识别第三层链路和网关路由器 [15]。
-
-**原文 P017**
-
-These systems produce an assignment from a link or path to physical infrastructure that could plausibly carry it. Their validation evaluates the assignment using cable failures, targeted traceroutes, operator maps, or expert feedback. CLASP adopts this projection approach rather than claiming to identify ground-truth cable use. The individual assignments are inputs to our measurement; distributions aggregated over a path population are the objects we compare.
-
-**译文**
-
-这些系统产出的是从链路或路径到可能承载它的物理基础设施的关联。它们通过光缆故障、定向 traceroute、运营商地图或专家反馈来验证这种关联。CLASP 采用这种投影方法，而不声称识别真实使用的光缆。单次关联是本文测量的输入；在一个路径总体上聚合得到的分布，才是本文进行比较的对象。
+这些工作既支持基础设施推断，也支持依赖或风险分析。CLASP 基于投影方法研究一个配对分布问题：在同一组观测上，网络转换之间的集中度是否对应可行沿海走廊之间的集中度。贡献在于这一比较，而不是声称恢复每条路径实际经过的精确光缆。保留可行候选集合，使比较能够保留映射歧义，而不把每一次关联默认当作已确认的经过关系。
 
 ### 2.3 From Mapping to Distribution Measurement / 从映射到分布测量
 
-**原文 P018**
+**原文 P017**
 
-An assignment does not by itself describe how observation mass is distributed across physical directions or whether that distribution tracks the one visible at the network layer. We separate two quantities that are easy to conflate. Submarine exposure is the fraction of valid traceroutes containing a feasible inter-region corridor. Corridor concentration describes how candidate-bearing segment mass is distributed across corridors after entry. A country can enter the candidate space frequently and distribute observations widely, or enter infrequently with the exposed observations concentrated on one direction.
+A candidate inventory identifies which physical alternatives are feasible; a distribution describes how repeatedly those alternatives support the observed paths. Two populations can have the same number of feasible corridors yet differ in whether their observation mass is spread across them or concentrated in a few. Likewise, counting network transitions does not reveal whether different transitions repeatedly support the same physical directions. Distribution measurement is needed to distinguish these organizations of support, which an inventory count alone does not describe.
 
 **译文**
 
-单次关联本身并不说明观测质量如何分布在各个物理方向上，也不说明这一分布是否跟踪网络层可见的分布。本文区分两个容易混淆的量。**海底暴露率**是包含可行跨区域走廊的有效 traceroute 比例。**走廊集中度**描述进入候选空间以后，候选承载线段的观测质量如何分布在各条走廊上。一个国家可以频繁进入候选空间，同时把观测分散到多个方向；也可以很少进入候选空间，但进入后的观测集中在一个方向上。
+候选清单识别哪些物理替代方案可行；分布则描述这些替代方案反复支持观测路径的程度。两个总体可以具有相同数量的可行走廊，但其观测权重可能分散在这些走廊之间，也可能集中于少数走廊。同样，统计网络转换数量并不能说明不同转换是否反复支持相同物理方向。需要通过分布测量区分这些支撑组织方式，而仅凭清单数量无法描述这种区别。
+
+**原文 P018**
+
+The comparison also separates entry into the feasible corridor space from concentration within it. Submarine exposure is the fraction of valid traceroutes containing at least one feasible inter-region corridor. Corridor concentration describes the distribution of observation mass over corridors, conditional on candidate-bearing segments. Frequent exposure can accompany broad or concentrated support; exposure alone does not distinguish them. Reporting these quantities separately preserves their different denominators and avoids interpreting entry frequency as physical breadth.
+
+**译文**
+
+比较还区分进入可行走廊空间的频率与进入后的集中程度。海底暴露率是至少包含一条可行跨区域走廊的有效 traceroute 比例。走廊集中度描述以具有候选的线段为条件时，观测权重在各条走廊上的分布。频繁暴露既可以伴随宽广支撑，也可以伴随集中支撑；仅凭暴露率无法区分二者。分别报告这些量，能够保留不同的分母，避免将进入频率解释为物理宽度。
 
 **原文 P019**
 
-Country and measurement identity jointly define each observation population. Source geography and interconnection describe the context from which paths start; anycast, replica selection, and routing determine the destinations and paths observed during the measurement window. DNS Roots illustrate this interaction because functionally equivalent services operate independent anycast deployments. The three applications retain their own selected destinations. The two dynamic multi-target measurements deliberately sample a broader target population and provide topology-reference distributions against which the service-facing distributions can be read.
+Country and measurement identity define the population for both layers. Source geography and interconnection retain the origin context; the measurement retains the selected destination or target set. DNS Roots provide functionally equivalent services through independent anycast deployments, while the three applications retain their selected targets. The two dynamic multi-target measurements sample a broader destination population and serve as topology references, not matched controls for service deployment. Keeping these identities prevents changes in the target population from being mistaken for a cross-layer difference.
 
 **译文**
 
-国家身份和测量身份共同定义每一个观测总体。源端地理环境和互连情况描述路径起始位置的背景；anycast、副本选择和路由决定测量窗口中观测到的目的地和路径。DNS 根服务体现了这种相互作用，因为功能等价的服务运行彼此独立的 anycast 部署。三个应用保留各自选中的目的地。两项动态多目标测量有意采样更宽的目标总体，并提供拓扑参考分布，用于理解面向服务的分布。
+国家和测量身份共同定义两个层次的总体。源地理位置和互联关系保留出发侧背景，测量身份则保留选定的目的地或目标集合。DNS 根服务通过独立的 anycast 部署提供功能等价的服务，三个应用则保留各自选定的目标。两项动态多目标测量采样更广的目的地总体，作为拓扑参考，而不是服务部署的匹配对照。保留这些身份，可避免将目标总体的变化误当作跨层差异。
 
 **原文 P020**
 
-CLASP aligns the statistical unit across layers. A network transition and its corridor support originate from the same atomic segment, so their concentration difference describes how a fixed observation population is organized. The framework next defines this paired construction, and Section  IV records the aligned path and infrastructure inputs.
+CLASP then aligns the observations within each population. Every candidate-bearing atomic segment supplies a network-transition label and a feasible corridor set. Its unit observation mass is counted once in the network distribution and allocated across its physical candidates before aggregation. The paired distributions therefore compare the organization of the same segment population. Section III defines this construction, and Section IV describes the aligned path and infrastructure inputs.
 
 **译文**
 
-CLASP 在不同层之间对齐统计单元。一个网络转换及其走廊支撑来自同一条原子线段，因此它们的集中度差异描述的是同一固定观测总体的组织方式。下一节定义这一配对构造，第 4 节记录对齐后的路径数据和基础设施输入。
+随后，CLASP 在每个总体内部对齐观测。每个具有候选的原子段提供一个网络转换标签和一个可行走廊集合。该线段的一单位观测权重在网络分布中计数一次，在物理层则先分配到候选之间，再进行聚合。因此，配对分布比较的是同一线段总体的组织方式。第 III 节定义这一构造，第 IV 节介绍对齐的路径和基础设施输入。
 
 ## 3 CLASP: The Paired Cross-Layer Audit / CLASP：配对跨层审计
 
