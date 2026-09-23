@@ -1,10 +1,12 @@
 \section{Datasets}
 \label{sec:datasets}
 
-All inputs are aligned to July~1, 2026 (UTC). Network-path observations,
-IP and AS annotations, and cable lifecycle records therefore describe a
-common analysis period. We combine these observations with network and
-submarine-cable metadata.
+The corpus retains source and target identity for the paired audit.
+All inputs are aligned to July~1, 2026 (UTC): network-path observations
+are combined with IP and AS annotations and cable lifecycle records for
+the analysis date. The following datasets supply the path population,
+the annotations used in projection, and the geographic grouping used
+in the comparisons.
 
 \subsection{RIPE Atlas Measurements}
 \label{subsec:atlas_corpus}
@@ -49,12 +51,12 @@ preserves the multi-target structure of the two dynamic-target measurements
 and the destination instances selected by service measurements during the
 aligned window.
 
-The measurement families do not form a controlled comparison. The two dynamic-
-target measurements sample many destinations during the window, whereas each
-service measurement retains the destinations selected for that service. We use
-the former as topology references and describe differences between the
-observed populations; we do not attribute those differences to service
-deployment or target selection.
+The two dynamic-target measurements provide a broader-target reference
+for the service populations. They sample many destinations during the
+window, whereas service measurements retain the destinations selected for
+each service. The comparison describes these observed populations;
+their different target-selection processes do not constitute a controlled
+test of service deployment or target-selection effects.
 
 \subsection{Supporting Datasets}
 \label{subsec:supporting_data}

@@ -4,37 +4,41 @@
 \subsection{Overview}
 \label{sec:framework_overview}
 
-CLASP constructs paired network-transition and feasible-corridor distributions
-for each country--measurement unit. It combines traceroute, probe metadata, IP
-geolocation and ASN mappings, AS context, and cable metadata. Figure
-~\ref{fig:framework_pipeline} shows the processing order: path extraction
-creates atomic hop-pair segments, corridor projection constructs each
-segment's feasible landing-region corridor set, and aggregation forms the two
-distributions over the same candidate-bearing segments.
+CLASP compares two representations of the same observations. Within each
+country--measurement unit, every candidate-bearing segment contributes one
+unit of mass to a network-transition distribution and one unit, allocated
+among candidates, to a feasible-corridor distribution. Figure
+~\ref{fig:framework_pipeline} places this paired construction at the center
+of the workflow: path extraction defines the observations, corridor
+projection supplies feasible support, and allocation and aggregation produce
+the distributions used for within-unit and cross-unit comparisons.
 
-The construction keeps trace-level exposure separate from segment-level
-concentration. Exposure records whether a valid traceroute contains at least
-one feasible inter-region corridor. The paired distributions condition on
-candidate-bearing segments and describe how their observation mass is
-organized. Because these quantities use different denominators, CLASP reports
-them separately.
+The inputs are traceroutes, probe metadata, IP geolocation and ASN
+mappings, AS context, and cable metadata. The main branch conditions both
+distributions on candidate-bearing segments. A separate trace-level branch
+reports exposure using all valid traceroutes and the presence of feasible
+inter-region candidates. Keeping these branches separate makes their
+different populations and denominators explicit.
 
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/framework_cross_layer_audit.pdf}
-  \caption{CLASP extracts atomic segments, projects feasible landing-region
-  corridors, and constructs paired network-transition and corridor
-  distributions over the same candidate-bearing observations.}
+  \caption{CLASP preserves the same candidate-bearing segments and total
+  observation mass in the two distributions. The main flow separates inputs,
+  feasible support, paired construction, and comparison. The trace-level
+  exposure branch uses all valid traces and inter-region candidate flags;
+  dashed arrows denote supporting evidence or flags.}
   \label{fig:framework_pipeline}
 \end{figure*}
 
 \subsection{Path Extraction}
 \label{sec:framework_path_segmentation}
 
-We group traceroutes by probe country and measured service. This grouping
-retains the source-side connectivity context and the destination selection
-observed for each measurement. Hop countries remain segment attributes rather
-than grouping keys.
+Country and measurement identity define the comparison unit before
+segments are aggregated. We group traceroutes by probe country and measured
+service, retaining source-side connectivity and observed destination
+selection. Hop countries remain segment attributes rather than grouping
+keys, so intermediate locations do not redefine the source population.
 
 Each traceroute is normalized into its complete sequence of visible hops with
 locations, ASNs, and RTTs. Successive visible, geolocated hops form atomic
@@ -96,10 +100,11 @@ and lifecycle constraints and flags the segment. The 200~km/ms speed and
 \subsection{Candidate Allocation and Observation Mass}
 \label{sec:framework_allocation}
 
-Duplicate cable rows belonging to the same corridor are collapsed within an
-atomic segment. For a segment \(s\) with feasible corridor set
-\(\mathcal{C}_s\), the primary analysis allocates its observation mass using
-the projection score:
+Candidate multiplicity must not increase a segment's observation mass.
+Duplicate cable rows belonging to the same corridor are collapsed within
+an atomic segment. For a segment \(s\) with feasible corridor set
+\(\mathcal{C}_s\), projection-score allocation distributes one unit of mass
+according to the candidates' relative support:
 
 \begin{equation}
   w_{s,c}=
@@ -123,24 +128,26 @@ receive neutral RTT factors. The candidate scores are summed by corridor
 and normalized as in Eq.~\eqref{eq:weighted-mass}, so every candidate-bearing
 segment contributes one unit of mass.
 
-Projection-score weighting retains the relative evidence used to rank
-feasible candidates and is the primary allocation for Layer Agreement.
-These weights express relative support within a candidate set. Endpoint-AS
-information contributes both to network-transition labels and to candidate
-ranking, which makes the equal-share comparison particularly useful:
-equal sharing assigns \(w_{s,c}=1/|\mathcal{C}_s|\) to each feasible corridor
-without using the score magnitudes. Top-1 allocation places all mass on the
-highest-scoring corridor. Together, the three rules compare equal support,
-graded support, and a single preferred candidate over the feasible sets.
+The three allocation rules retain different amounts of candidate-score
+information while preserving this unit-mass constraint. Projection-score
+weighting is the primary allocation for Layer Agreement and retains
+relative evidence support. Equal sharing assigns
+\(w_{s,c}=1/|\mathcal{C}_s|\) without using score magnitudes, and Top-1
+assigns all mass to the highest-scoring corridor. Endpoint-AS information
+contributes both to network labels and to candidate ranking; equal sharing
+therefore provides a comparison that does not use the score magnitudes
+within the feasible sets. The rules express equal, graded, and single-
+candidate support, not confirmed cable usage probabilities.
 
 \subsection{Mapping Resolution and Pipeline Accounting}
 \label{sec:framework_mapping_resolution}
 
-Table~\ref{tab:mapping-resolution} classifies each segment by input coverage
-and the size of its feasible corridor set. Single- and bounded multi-corridor
-segments form the physical distribution. Segments with no feasible corridor or
-insufficient inputs remain in pipeline accounting, and every valid traceroute
-remains in the exposure denominator.
+Mapping states determine which segments enter the paired distributions.
+Table~\ref{tab:mapping-resolution} distinguishes input coverage and candidate-
+set size. Single- and bounded multi-corridor segments enter the physical
+distribution and its paired network distribution. Segments with no feasible
+corridor or insufficient inputs remain in pipeline accounting; every valid
+traceroute remains in the exposure denominator.
 
 \begin{table}[t]
   \centering
@@ -185,14 +192,14 @@ segment \(s\). The network-transition probability of label \(t\) is
   \label{eq:network-distribution}
 \end{equation}
 
-The corridor distribution sums the masses in Eq.~\eqref{eq:weighted-mass} for
-each corridor and normalizes within the same \(S_u\). Before normalization,
-both distributions have total mass \(|S_u|\). Their difference therefore
-describes how the same candidate-bearing observations are organized at the two
-layers, not a comparison between different trace populations. Direction is
-preserved for network transitions; the physical corridor is direction-
-independent because it represents a coastal connection rather than forwarding
-order.
+The corridor distribution sums the allocated masses in
+Eq.~\eqref{eq:weighted-mass} and normalizes over the same \(S_u\).
+Before normalization, each layer has total mass \(|S_u|\): candidate
+ambiguity changes the allocation, not the amount contributed by a segment.
+The paired distributions thus compare how a fixed observation population
+is organized. Network labels preserve direction, whereas corridors are
+direction-independent coastal connections; the comparison retains this
+difference in category meaning.
 
 Submarine exposure uses the complete valid-trace population. A traceroute is
 exposed when at least one of its segments has a feasible inter-region corridor.
@@ -203,13 +210,14 @@ conditions the distributions on candidate-bearing segments.
 \subsection{Distribution Summaries and Layer Agreement}
 \label{sec:framework_metrics}
 
-Three metrics summarize each distribution. Top-2 share is the sum of the two
-largest probabilities and records mass in the dominant categories. Effective
-category count is
-\(\exp[-\sum_i p_i\log p_i]\) and reports breadth on the scale of an equally
-weighted category count. Normalized entropy divides Shannon entropy by the
-logarithm of observed support size and measures evenness relative to that
-support. Network-to-corridor differences are computed within each unit.
+Within-unit comparisons measure concentration and breadth separately.
+Top-2 share sums the two largest probabilities, recording mass in the
+dominant categories. Effective category count,
+\(\exp[-\sum_i p_i\log p_i]\), expresses breadth as an equally weighted
+category count. Normalized entropy divides Shannon entropy by the logarithm
+of observed support size and describes evenness relative to that support.
+For each metric, network-to-corridor differences are computed within
+the same unit.
 
 \emph{Layer Agreement} is the Spearman rank association, across a reported
 set of units, between network Top-2 share and corridor Top-2 share. A

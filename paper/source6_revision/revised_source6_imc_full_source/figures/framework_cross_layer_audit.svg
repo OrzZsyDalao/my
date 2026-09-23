@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="740" height="322" viewBox="0 0 740 322"><rect width="100%" height="100%" fill="white"/>
+<text x="12" y="18" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="700" fill="#203447">CLASP</text>
+<text x="67" y="18" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="400" fill="#203447">One country-measurement unit; paired comparison over the same segments</text>
+<rect x="12" y="31" width="149" height="45" rx="5" fill="#F3F6F8" stroke="#B9C8D3" stroke-width=".8"/>
+<text x="21" y="48" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" fill="#203447">Traceroutes + probe metadata</text>
+<text x="21" y="64" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="400" fill="#203447">Hop locations, ASNs, RTTs</text>
+<rect x="184" y="31" width="166" height="45" rx="5" fill="#F3F6F8" stroke="#B9C8D3" stroke-width=".8"/>
+<text x="193" y="48" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" fill="#203447">Cable / landing-point inventory</text>
+<text x="193" y="64" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="400" fill="#203447">Lifecycle + geographic constraints</text>
+<rect x="372" y="31" width="171" height="45" rx="5" fill="#F3F6F8" stroke="#B9C8D3" stroke-width=".8"/>
+<text x="381" y="48" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="700" fill="#203447">Allocation evidence</text>
+<text x="381" y="64" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="400" fill="#203447">Proximity, AS context, RTT</text>
+<polyline points="86,76 86,94" fill="none" stroke="#526575" stroke-width="1.2"/>
+<polygon points="86,94 88.5,89.0 83.5,89.0" fill="#526575"/>
+<polyline points="267,76 267,94" fill="none" stroke="#526575" stroke-width="1.2"/>
+<polygon points="267,94 269.5,89.0 264.5,89.0" fill="#526575"/>
+<rect x="12" y="94" width="149" height="145" rx="5" fill="#F7F9FB" stroke="#B9C8D3" stroke-width=".8"/>
+<text x="22" y="116" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" fill="#203447">1  Extract segments</text>
+<text x="22" y="132" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="400" fill="#526575">Section III-B</text>
+<text x="22" y="159" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="400" fill="#203447">Successive visible hops</text>
+<text x="22" y="177" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="400" fill="#203447">Network-transition label</text>
+<text x="22" y="195" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="400" fill="#203447">Trace identity retained</text>
+<text x="22" y="224" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="400" fill="#526575">All valid traces retained</text>
+<rect x="184" y="94" width="166" height="145" rx="5" fill="#FFF8F0" stroke="#B9C8D3" stroke-width=".8"/>
+<text x="194" y="116" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" fill="#203447">2  Feasible support</text>
+<text x="194" y="132" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="400" fill="#526575">Sections III-C / III-E</text>
+<text x="194" y="159" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="400" fill="#203447">Landing-region corridors</text>
+<text x="194" y="177" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="400" fill="#203447">Geography, lifecycle, RTT</text>
+<text x="194" y="195" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="400" fill="#203447">Candidate set + map state</text>
+<text x="194" y="224" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="400" fill="#A44E1D">Candidate-bearing segments</text>
+<polyline points="161,171 184,171" fill="none" stroke="#526575" stroke-width="1.2"/>
+<polygon points="184,171 179.0,168.5 179.0,173.5" fill="#526575"/>
+<rect x="372" y="94" width="171" height="145" rx="5" fill="#F7FAFB" stroke="#B9C8D3" stroke-width=".8"/>
+<text x="382" y="116" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" fill="#203447">3  Paired distributions</text>
+<text x="382" y="132" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="400" fill="#526575">Sections III-D / III-F</text>
+<rect x="382" y="145" width="151" height="34" rx="5" fill="#EAF3F9" stroke="#24668E" stroke-width=".8"/>
+<text x="390" y="161" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#24668E">Network transitions</text>
+<text x="390" y="174.8" font-family="Arial,Helvetica,sans-serif" font-size="9.8" font-weight="400" fill="#24668E">Count each segment once</text>
+<rect x="382" y="184" width="151" height="34" rx="5" fill="#FFF1E4" stroke="#A44E1D" stroke-width=".8"/>
+<text x="390" y="200" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#A44E1D">Corridor support</text>
+<text x="390" y="213.3" font-family="Arial,Helvetica,sans-serif" font-size="9.3" font-weight="400" fill="#A44E1D">Allocate unit mass to candidates</text>
+<text x="382" y="232.6" font-family="Arial,Helvetica,sans-serif" font-size="9.6" font-weight="700" fill="#203447">Same segments; equal total mass</text>
+<polyline points="350,171 363,171 363,161 382,161" fill="none" stroke="#24668E" stroke-width="1.2"/>
+<polygon points="382,161 377.0,158.5 377.0,163.5" fill="#24668E"/>
+<polyline points="363,171 363,201 382,201" fill="none" stroke="#A44E1D" stroke-width="1.2"/>
+<polygon points="382,201 377.0,198.5 377.0,203.5" fill="#A44E1D"/>
+<polyline points="458,76 552,76 552,201 533,201" fill="none" stroke="#A44E1D" stroke-width="1.2" stroke-dasharray="3 2"/>
+<polygon points="533,201 538.0,203.5 538.0,198.5" fill="#A44E1D"/>
+<rect x="565" y="94" width="163" height="145" rx="5" fill="#F2F8F5" stroke="#B9C8D3" stroke-width=".8"/>
+<text x="575" y="116" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="700" fill="#203447">4  Compare layers</text>
+<text x="575" y="132" font-family="Arial,Helvetica,sans-serif" font-size="10" font-weight="400" fill="#526575">Section III-G</text>
+<text x="575" y="158" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#21685D">Within each unit</text>
+<text x="575" y="173.4" font-family="Arial,Helvetica,sans-serif" font-size="10.4" font-weight="400" fill="#203447">Concentration + breadth</text>
+<text x="575" y="195" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#21685D">Across units</text>
+<text x="575" y="211" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="400" fill="#203447">Layer Agreement</text>
+<text x="575" y="230.6" font-family="Arial,Helvetica,sans-serif" font-size="9.6" font-weight="400" fill="#526575">Spearman rank association</text>
+<polyline points="543,171 565,171" fill="none" stroke="#526575" stroke-width="1.2"/>
+<polygon points="565,171 560.0,168.5 560.0,173.5" fill="#526575"/>
+<rect x="184" y="268" width="544" height="42" rx="5" fill="#F7F4FA" stroke="#B3A5C2" stroke-width=".8"/>
+<text x="195" y="285" font-family="Arial,Helvetica,sans-serif" font-size="11" font-weight="700" fill="#65517B">Separate trace-level output: submarine exposure</text>
+<text x="195" y="301.5" font-family="Arial,Helvetica,sans-serif" font-size="10.5" font-weight="400" fill="#65517B">Traces with an inter-region candidate / all valid traces</text>
+<polyline points="86,239 86,289 184,289" fill="none" stroke="#65517B" stroke-width="1.2"/>
+<polygon points="184,289 179.0,286.5 179.0,291.5" fill="#65517B"/>
+<polyline points="267,239 267,268" fill="none" stroke="#65517B" stroke-width="1.2" stroke-dasharray="3 2"/>
+<polygon points="267,268 269.5,263.0 264.5,263.0" fill="#65517B"/>
+<text x="279" y="256.8" font-family="Arial,Helvetica,sans-serif" font-size="9.8" font-weight="400" fill="#65517B">Inter-region candidate flags</text>
+<text x="12" y="306.1" font-family="Arial,Helvetica,sans-serif" font-size="9.1" font-weight="400" fill="#526575">Solid: main flow</text>
+<text x="12" y="317.8" font-family="Arial,Helvetica,sans-serif" font-size="8.8" font-weight="400" fill="#526575">Dashed: inputs / flags</text>
+</svg>

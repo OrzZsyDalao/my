@@ -194,29 +194,29 @@ Within each unit, the comparison must also preserve observation mass. Each candi
 
 **原文 P021**
 
-CLASP constructs paired network-transition and feasible-corridor distributions for each country–measurement unit. It combines traceroute, probe metadata, IP geolocation and ASN mappings, AS context, and cable metadata. Figure  1 shows the processing order: path extraction creates atomic hop-pair segments, corridor projection constructs each segment's feasible landing-region corridor set, and aggregation forms the two distributions over the same candidate-bearing segments.
+CLASP compares two representations of the same observations. Within each country–measurement unit, every candidate-bearing segment contributes one unit of mass to a network-transition distribution and one unit, allocated among candidates, to a feasible-corridor distribution. Figure  1 places this paired construction at the center of the workflow: path extraction defines the observations, corridor projection supplies feasible support, and allocation and aggregation produce the distributions used for within-unit and cross-unit comparisons.
 
 **译文**
 
-CLASP 为每一个“国家—测量”单元构建配对的网络转换分布和可行走廊分布。它结合 traceroute、探针元数据、IP 地理位置和 ASN 映射、AS 背景信息以及光缆元数据。图 1 展示了处理顺序：路径抽取产生原子跳对线段，走廊投影构建每条线段的可行登陆区域走廊集合，聚合步骤则在相同的候选承载线段上形成两个分布。
+CLASP 比较同一组观测的两种表示。在每个“国家—测量”单元内，每个具有候选的线段向网络转换分布贡献一单位权重，并向可行走廊分布贡献分配于候选之间的一单位权重。图 1 将这一配对构造置于工作流程的中心：路径抽取定义观测，走廊投影提供可行支撑，分配与聚合生成用于单元内和跨单元比较的分布。
 
 **原文 P022**
 
-The construction keeps trace-level exposure separate from segment-level concentration. Exposure records whether a valid traceroute contains at least one feasible inter-region corridor. The paired distributions condition on candidate-bearing segments and describe how their observation mass is organized. Because these quantities use different denominators, CLASP reports them separately.
+The inputs are traceroutes, probe metadata, IP geolocation and ASN mappings, AS context, and cable metadata. The main branch conditions both distributions on candidate-bearing segments. A separate trace-level branch reports exposure using all valid traceroutes and the presence of feasible inter-region candidates. Keeping these branches separate makes their different populations and denominators explicit.
 
 **译文**
 
-这一构造将轨迹层面的暴露率与线段层面的集中度分开。暴露率记录一条有效 traceroute 是否至少包含一条可行的跨区域走廊。配对分布以候选承载线段为条件，描述这些线段的观测质量如何组织。由于这两个量使用不同的分母，CLASP 对它们分别报告。
+输入包括 traceroute、探针元数据、IP 地理定位与 ASN 映射、AS 背景和光缆元数据。主分支以具有候选的线段为条件构建两个分布。另一个轨迹层面分支使用全部有效 traceroute 以及可行跨区域候选的存在情况报告暴露率。将这两个分支分开，可以明确各自不同的总体与分母。
 
 ### 3.2 Path Extraction / 路径抽取
 
 **原文 P023**
 
-We group traceroutes by probe country and measured service. This grouping retains the source-side connectivity context and the destination selection observed for each measurement. Hop countries remain segment attributes rather than grouping keys.
+Country and measurement identity define the comparison unit before segments are aggregated. We group traceroutes by probe country and measured service, retaining source-side connectivity and observed destination selection. Hop countries remain segment attributes rather than grouping keys, so intermediate locations do not redefine the source population.
 
 **译文**
 
-我们按照探针国家和被测服务对 traceroute 分组。这一分组保留源端连接性背景，以及每项测量中观测到的目的地选择。跳所在的国家作为线段属性保留，而不作为分组键。
+在线段聚合之前，国家和测量身份定义比较单元。本文按探针国家和被测服务对 traceroute 分组，保留来源侧连通背景与观测到的目的地选择。跳所在国家保留为线段属性，而不作为分组键，因此中间位置不会重新定义源总体。
 
 **原文 P024**
 
@@ -282,15 +282,15 @@ The inequality asks whether the observed round-trip increment can accommodate th
 
 该不等式检验观测到的往返时延增量能否容纳两个登陆点之间的最小往返传播时间。当 ΔRTT 为非正值或无法判定时，CLASP 保留地理约束和生命周期约束，并对该线段作出标记。200 km/ms 的速度和 5 ms 的容差是所报告分析中的固定配置值。
 
-### 3.4 Candidate Allocation and Observation Mass / 候选分配与观测质量
+### 3.4 Candidate Allocation and Observation Mass / 候选分配与观测权重
 
 **原文 P031**
 
-Duplicate cable rows belonging to the same corridor are collapsed within an atomic segment. For a segment $s$ with feasible corridor set $\mathcal{C}_s$, the primary analysis allocates its observation mass using the projection score:
+Candidate multiplicity must not increase a segment's observation mass. Duplicate cable rows belonging to the same corridor are collapsed within an atomic segment. For a segment $s$ with feasible corridor set $\mathcal{C}_s$, projection-score allocation distributes one unit of mass according to the candidates' relative support:
 
 **译文**
 
-在每条原子线段内部，属于同一走廊的重复光缆记录会被合并。对于可行走廊集合为 C_s 的线段 s，主分析使用投影分数分配其观测质量：
+候选的多重性不应增加线段的观测权重。属于同一走廊的重复光缆记录在原子段内部合并。对于可行走廊集合为 $\mathcal{C}_s$ 的线段 $s$，投影分数分配按照候选的相对支撑度分配一单位权重：
 
 **原文 P032**
 
@@ -316,21 +316,21 @@ where $\sigma_{s,c}$ sums the evidence-support scores of the cable candidates as
 
 **原文 P034**
 
-Projection-score weighting retains the relative evidence used to rank feasible candidates and is the primary allocation for Layer Agreement. These weights express relative support within a candidate set. Endpoint-AS information contributes both to network-transition labels and to candidate ranking, which makes the equal-share comparison particularly useful: equal sharing assigns $w_{s,c}=1/|\mathcal{C}_s|$ to each feasible corridor without using the score magnitudes. Top-1 allocation places all mass on the highest-scoring corridor. Together, the three rules compare equal support, graded support, and a single preferred candidate over the feasible sets.
+The three allocation rules retain different amounts of candidate-score information while preserving this unit-mass constraint. Projection-score weighting is the primary allocation for Layer Agreement and retains relative evidence support. Equal sharing assigns $w_{s,c}=1/|\mathcal{C}_s|$ without using score magnitudes, and Top-1 assigns all mass to the highest-scoring corridor. Endpoint-AS information contributes both to network labels and to candidate ranking; equal sharing therefore provides a comparison that does not use the score magnitudes within the feasible sets. The rules express equal, graded, and single-candidate support, not confirmed cable usage probabilities.
 
 **译文**
 
-投影分数加权保留对可行候选进行排序所用的相对证据，是 Layer Agreement 的主要分配口径。这些权重表达候选集合内部的相对支持度。端点 AS 信息同时参与网络转换标签构造和候选排序，因此均匀分配比较尤其有用：均匀分配向每个可行走廊赋予 w_{s,c}=1/|C_s|，不使用分数大小。Top-1 分配把全部质量放到得分最高的走廊。三种规则共同比较可行集合上的等量支持、分级支持和单个首选候选。
+三种分配规则在保持这一单位权重约束的同时，保留不同程度的候选评分信息。投影分数加权是 Layer Agreement 的主要分配口径，保留相对证据支撑。均匀分配按 $w_{s,c}=1/|\mathcal{C}_s|$ 分配，不使用分数大小；Top-1 将全部权重分给最高分走廊。端点 AS 信息同时参与网络标签和候选排序，因此均匀分配提供了在可行集合内部不使用分数大小的比较。三种规则分别表示均等、分级和单一候选支撑，而不是已确认的光缆使用概率。
 
 ### 3.5 Mapping Resolution and Pipeline Accounting / 映射分辨率与流水线计数
 
 **原文 P035**
 
-Table I classifies each segment by input coverage and the size of its feasible corridor set. Single-and bounded multi-corridor segments form the physical distribution. Segments with no feasible corridor or insufficient inputs remain in pipeline accounting, and every valid traceroute remains in the exposure denominator.
+Mapping states determine which segments enter the paired distributions. Table I distinguishes input coverage and candidate-set size. Single-and bounded multi-corridor segments enter the physical distribution and its paired network distribution. Segments with no feasible corridor or insufficient inputs remain in pipeline accounting; every valid traceroute remains in the exposure denominator.
 
 **译文**
 
-表 1 根据输入覆盖情况和可行走廊集合大小，对每条线段进行分类。单走廊线段和有界多走廊线段构成物理分布。没有可行走廊或输入不足的线段仍保留在流水线计数中，每一条有效 traceroute 仍保留在暴露率分母中。
+映射状态决定哪些线段进入配对分布。表 I 区分输入覆盖情况和候选集合大小。单走廊与有界多走廊线段进入物理分布及与之配对的网络分布。没有可行走廊或输入不足的线段保留在流水线计数中；每条有效 traceroute 仍保留在暴露率分母中。
 
 **原文 P036**
 
@@ -366,11 +366,11 @@ $$
 
 **原文 P039**
 
-The corridor distribution sums the masses in Eq. (2) for each corridor and normalizes within the same $S_u$. Before normalization, both distributions have total mass $|S_u|$. Their difference therefore describes how the same candidate-bearing observations are organized at the two layers, not a comparison between different trace populations. Direction is preserved for network transitions; the physical corridor is direction-independent because it represents a coastal connection rather than forwarding order.
+The corridor distribution sums the allocated masses in Eq. (2) and normalizes over the same $S_u$. Before normalization, each layer has total mass $|S_u|$: candidate ambiguity changes the allocation, not the amount contributed by a segment. The paired distributions thus compare how a fixed observation population is organized. Network labels preserve direction, whereas corridors are direction-independent coastal connections; the comparison retains this difference in category meaning.
 
 **译文**
 
-走廊分布对式（2）中每一条走廊的质量求和，并在相同的 S_u 内归一化。归一化以前，两个分布的总质量均为 |S_u|。因此，它们之间的差异描述的是同一批候选承载观测如何在两个层面上组织，而不是对不同轨迹总体进行比较。网络转换始终保留方向；物理走廊不区分方向，因为它表示沿海连接关系，而不是转发顺序。
+走廊分布对公式 (2) 中分配的权重求和，并在相同的 $S_u$ 上归一化。归一化之前，每层总权重均为 $|S_u|$：候选歧义改变分配方式，而不改变线段贡献的权重总量。因此，配对分布比较固定观测总体的组织方式。网络标签保留方向，而走廊是不区分方向的沿海连接；比较保留了这一类别含义的差别。
 
 **原文 P040**
 
@@ -384,11 +384,11 @@ Submarine exposure uses the complete valid-trace population. A traceroute is exp
 
 **原文 P041**
 
-Three metrics summarize each distribution. Top-2 share is the sum of the two largest probabilities and records mass in the dominant categories. Effective category count is $\exp[-\sum_i p_i\log p_i]$ and reports breadth on the scale of an equally weighted category count. Normalized entropy divides Shannon entropy by the logarithm of observed support size and measures evenness relative to that support. Network-to-corridor differences are computed within each unit.
+Within-unit comparisons measure concentration and breadth separately. Top-2 share sums the two largest probabilities, recording mass in the dominant categories. Effective category count, $\exp[-\sum_i p_i\log p_i]$, expresses breadth as an equally weighted category count. Normalized entropy divides Shannon entropy by the logarithm of observed support size and describes evenness relative to that support. For each metric, network-to-corridor differences are computed within the same unit.
 
 **译文**
 
-每个分布使用三个指标进行汇总。Top-2 占比是两个最大概率之和，用于记录主导类别中的质量。有效类别数为 exp[-Σ_i p_i log p_i]，以等权类别数量的尺度报告分布宽度。归一化熵将 Shannon 熵除以观测支撑大小的对数，用于测量相对于该支撑的均匀程度。网络到走廊的差值在每个单元内部计算。
+单元内比较分别测量集中度和宽度。Top-2 份额对最大的两个概率求和，记录主要类别中的权重。有效类别数 $\exp[-\sum_i p_i\log p_i]$ 将宽度表示为等权类别数。归一化熵将 Shannon 熵除以观测支撑规模的对数，描述相对于该支撑规模的均匀程度。每项指标的网络到走廊差异均在同一单元内计算。
 
 **原文 P042**
 
@@ -418,11 +418,11 @@ A common 80% Top-2 threshold supplies four descriptive classes: broad at both la
 
 **原文 P045**
 
-All inputs are aligned to July 1, 2026 (UTC). Network-path observations, IP and AS annotations, and cable lifecycle records therefore describe a common analysis period. We combine these observations with network and submarine-cable metadata.
+The corpus retains source and target identity for the paired audit. All inputs are aligned to July 1, 2026 (UTC): network-path observations are combined with IP and AS annotations and cable lifecycle records for the analysis date. The following datasets supply the path population, the annotations used in projection, and the geographic grouping used in the comparisons.
 
 **译文**
 
-所有输入均与 2026 年 7 月 1 日（UTC）对齐。因此，网络路径观测、IP 与 AS 注释以及光缆生命周期记录描述同一分析时段。本文将这些观测与网络元数据和海底光缆元数据结合起来。
+语料为配对审计保留来源和目标身份。全部输入对齐到 2026 年 7 月 1 日（UTC）：网络路径观测与分析日期的 IP、AS 注释和光缆生命周期记录结合。以下数据集分别提供路径总体、投影使用的注释，以及比较使用的地理分组。
 
 ### 4.1 RIPE Atlas Measurements / RIPE Atlas 测量
 
@@ -444,11 +444,11 @@ Each record retains the destination address returned by RIPE Atlas. This preserv
 
 **原文 P048**
 
-The measurement families do not form a controlled comparison. The two dynamic-target measurements sample many destinations during the window, whereas each service measurement retains the destinations selected for that service. We use the former as topology references and describe differences between the observed populations; we do not attribute those differences to service deployment or target selection.
+The two dynamic-target measurements provide a broader-target reference for the service populations. They sample many destinations during the window, whereas service measurements retain the destinations selected for each service. The comparison describes these observed populations; their different target-selection processes do not constitute a controlled test of service deployment or target-selection effects.
 
 **译文**
 
-不同测量家族不构成受控比较。两项动态目标测量在该时间窗口内采样多个目的地，而每项服务测量保留为该服务选择的目的地。本文将前者作为拓扑参考，并描述观测总体之间的差异；我们不把这些差异归因于服务部署或目标选择。
+两项动态目标测量为服务总体提供目标范围更广的参考。它们在窗口内采样多个目的地，而服务测量保留每个服务选定的目的地。比较描述这些观测总体；不同的目标选择过程并不构成对服务部署或目标选择效应的受控检验。
 
 ### 4.2 Supporting Datasets / 支撑数据集
 
@@ -524,11 +524,11 @@ Bounded multi-corridor segments account for 99.9%, 78.1%, and 98.2% of candidate
 
 **原文 P057**
 
-Within-unit differences raise a second question: does network concentration at least preserve the ordering of corridor concentration across units? Under projection-score weighting, Layer Agreement is 0.632 across 67 island and archipelagic service-facing units and 0.001 across 202 coastal-mainland units (Table V). These units represent 10 and 28 countries, respectively, and the observed coefficient difference is 0.631. The island and archipelagic group exhibits a stronger positive concentration-rank association, while the coastal-mainland group exhibits almost no monotonic rank association. Landlocked units form a separate geographic category.
+The second comparison examines concentration ordering rather than within-unit breadth. Under projection-score weighting, Layer Agreement is 0.632 across 67 island and archipelagic service-facing units and 0.001 across 202 coastal-mainland units (Table V). These units represent 10 and 28 countries, respectively, and the observed coefficient difference is 0.631. The island and archipelagic group exhibits a stronger positive concentration-rank association; the coastal-mainland group exhibits almost no monotonic rank association. Landlocked units form a separate geographic category.
 
 **译文**
 
-单元内部的差异引出第二个问题：网络集中度能否至少保留不同单元之间的走廊集中度排序？投影分数加权下，67 个岛屿与群岛地区面向服务单元的 Layer Agreement 为 0.632，202 个沿海大陆单元为 0.001（表 5）。这些单元分别来自 10 个和 28 个国家，观测到的系数差为 0.631。岛屿与群岛组表现出更强的集中度正秩关联，而沿海大陆组几乎没有单调秩关联。内陆单元构成单独的地理类别。
+第二类比较考察集中度排序，而不是单元内部的宽度。投影分数加权下，67 个岛屿与群岛面向服务单元的 Layer Agreement 为 0.632，202 个沿海大陆单元为 0.001（表 V）。这些单元分别来自 10 个和 28 个国家，观测系数差值为 0.631。岛屿与群岛组表现出更强的正集中度秩关联；沿海大陆组几乎没有单调秩关联。内陆国家形成独立地理类别。
 
 ### 5.3 Geographic Ordering across Candidate Allocations / 不同候选分配下的地理排序
 
@@ -546,17 +546,17 @@ The reproducible equal-share result supports a country-level uncertainty check. 
 
 **译文**
 
-可复现的均匀分配结果支持国家层面的不确定性检验。67 个岛屿与群岛单元来自 10 个国家，205 个沿海大陆单元来自 30 个国家。按国家聚类的 bootstrap 95% 区间分别为：岛屿系数 [-0.203, 0.760]，沿海大陆系数 [-0.284, 0.238]，二者 0.461 差值 [-0.213, 0.902]。双侧国家标签置换检验得到 p=0.161。差值的宽区间包含 0。该检验量化 10 个岛屿国家簇与 30 个沿海国家簇之间的不确定性；三种分配规则则另行比较不同候选质量分配方式下观测到的排序。
+可复现的均匀分配结果支持国家层面的不确定性检验。67 个岛屿与群岛单元来自 10 个国家，205 个沿海大陆单元来自 30 个国家。按国家聚类的 bootstrap 95% 区间分别为：岛屿系数 [-0.203, 0.760]，沿海大陆系数 [-0.284, 0.238]，二者 0.461 差值 [-0.213, 0.902]。双侧国家标签置换检验得到 p=0.161。差值的宽区间包含 0。该检验量化 10 个岛屿国家簇与 30 个沿海国家簇之间的不确定性；三种分配规则则另行比较不同候选权重分配方式下观测到的排序。
 
 ### 5.4 Inter-Region Candidate Exposure / 跨区域候选暴露率
 
 **原文 P060**
 
-Inter-region candidates occur infrequently for most service-facing populations. The DNS family contains 945 country–measurement units with at least 30 valid traceroutes across 77 countries. Pooling eligible Root observations within each country by valid-trace count yields median DNS exposure of 5.50% (IQR 1.10–23.04%; mean 17.80%). The difference between the median and mean records a pronounced upper tail across countries.
+Exposure places these conditional distribution comparisons in the full valid-trace population. Inter-region candidates occur infrequently for most service-facing populations. The DNS family contains 945 country–measurement units with at least 30 valid traceroutes across 77 countries. Pooling eligible Root observations within each country by valid-trace count yields median DNS exposure of 5.50% (IQR 1.10–23.04%; mean 17.80%). The difference between the median and mean records a pronounced upper tail across countries.
 
 **译文**
 
-对于大多数面向服务的总体，跨区域候选出现频率较低。DNS 家族包含 945 个至少拥有 30 条有效 traceroute 的“国家—测量”单元，覆盖 77 个国家。按照有效轨迹数在每个国家内部汇集符合条件的根服务观测，得到 DNS 暴露率中位数 5.50%（四分位距 1.10%–23.04%；均值 17.80%）。中位数与均值之间的差异说明，各国分布存在明显的高值长尾。
+暴露率将上述条件分布比较放回全部有效轨迹总体中。多数面向服务总体很少出现跨区域候选。DNS 家族包含来自 77 个国家、至少具有 30 条有效 traceroute 的 945 个“国家—测量”单元。在每个国家内部按有效轨迹数汇集符合条件的根服务观测，得到 DNS 暴露率中位数 5.50%（IQR 1.10–23.04%；均值 17.80%）。中位数与均值之间的差异反映国家间明显的上尾。
 
 **原文 P061**
 
@@ -596,11 +596,11 @@ Conditional equal-share corridor breadth follows a different ordering. Island an
 
 **原文 P065**
 
-Family-level coefficients are substantially smaller than the island and archipelagic coefficient. Table VI reports Layer Agreement within each observed measurement family. Under projection-score weighting, the coefficient is 0.176 for 219 DNS units, 0.229 for 53 application units, and 0.012 for 95 topology-reference units. Equal-share and Top-1 allocation change all three coefficients, with the largest change occurring for DNS Roots. The equal-share audit contains 222 DNS units, whereas the family allocation comparison contains 219; the tables retain these allocation-specific counts.
+Measurement-family summaries provide another view of the concentration rankings. Table VI reports Layer Agreement within each observed family. Under projection-score weighting, the coefficient is 0.176 for 219 DNS units, 0.229 for 53 application units, and 0.012 for 95 topology-reference units, all smaller than the island and archipelagic coefficient. Equal-share and Top-1 allocation change all three coefficients, with the largest change occurring for DNS Roots. The equal-share audit contains 222 DNS units, whereas the family allocation comparison contains 219; the tables retain these allocation-specific counts.
 
 **译文**
 
-家族层面的系数明显小于岛屿与群岛组的系数。表 6 报告每一个观测测量家族内部的 Layer Agreement。在投影分数加权下，219 个 DNS 单元的系数为 0.176，53 个应用单元为 0.229，95 个拓扑参考单元为 0.012。均匀分配和 Top-1 分配会改变全部三个系数，其中 DNS 根的变化最大。均匀分配审计包含 222 个 DNS 单元，而家族分配比较包含 219 个；表格保留这些分配规则特定的单元数。
+测量家族汇总提供集中度排序的另一种视角。表 VI 报告各观测家族内部的 Layer Agreement。投影分数加权下，219 个 DNS 单元的系数为 0.176，53 个应用单元为 0.229，95 个拓扑参考单元为 0.012，均低于岛屿与群岛组的系数。均匀分配和 Top-1 分配改变三个系数，其中 DNS 根服务的变化最大。均匀分配审计包含 222 个 DNS 单元，而家族分配比较包含 219 个；表格保留这些分配口径对应的计数。
 
 **原文 P066**
 
@@ -630,11 +630,11 @@ Normalized entropy supplies a support-relative view. Median entropy reduction is
 
 **原文 P069**
 
-Section \mbox  {V-C reports the geographic ordering under three candidate-allocation rules and the country-clustered equal-share uncertainty check. This section examines the A-Root landing-region resolution sweep, states the measurement population, and discusses what within-unit differences and geographic rank associations imply for diversity audits.
+Interpreting the paired audit requires distinguishing measured cross-layer differences from the conditions under which they were obtained. Section \mbox  {V-C reports the allocation comparison and country-clustered equal-share uncertainty check. Here we examine landing-region resolution, identify the geographic and population scope, and explain what the two levels of comparison contribute to diversity measurement.
 
 **译文**
 
-第 5.3 节报告了三种候选分配规则下的地理排序，以及均匀分配下按国家聚类的不确定性检验。本节考察 A-Root 登陆区域分辨率扫描，说明测量总体，并讨论单元内部差异和地理分组秩关联对多样性审计的含义。
+解释配对审计，需要区分测得的跨层差异及其获得条件。第 V-C 节报告候选分配比较和按国家聚类的均匀分配不确定性检验。本节考察登陆区域分辨率，界定地理和总体范围，并解释两个比较层次对多样性测量的作用。
 
 ### 6.1 Landing-Region Resolution / 登陆区域分辨率
 
@@ -694,11 +694,11 @@ The service measurements retain their selected instances, while the dynamic mult
 
 **原文 P076**
 
-The audit separates within-unit diversity differences from the association between rankings across units. The first comparison locates populations where broad network support accompanies concentrated corridor support or where effective breadth narrows within a concentration class. Layer Agreement then measures how closely network and corridor concentration rankings track within a geographic population. Stronger rank association can coexist with substantial within-unit differences, so both measurements are needed to interpret a network-layer diversity summary.
+A network-layer diversity summary has two distinct interpretations: it can describe the breadth of a particular population, or rank that population against others. The within-unit comparison measures how the first description changes at the corridor layer; Layer Agreement measures the correspondence between the two rankings. Stronger rank association can coexist with substantial within-unit narrowing. Reporting both therefore identifies what is preserved across layers without treating ranking agreement as equality of physical breadth.
 
 **译文**
 
-审计区分单元内部的多样性差异与单元之间的排序关联。前一种比较定位宽广网络支撑伴随集中走廊支撑的总体，以及同一集中度类别内部有效宽度收窄的总体。Layer Agreement 随后测量同一个地理总体内网络集中度与走廊集中度排序的跟踪程度。较强的秩关联可以与明显的单元内部差异同时存在，因此需要结合两种测量解释网络层多样性汇总。
+网络层多样性汇总具有两种不同解释：描述某个总体的宽度，或将其与其他总体进行排序。单元内比较检查第一种描述在走廊层如何变化；Layer Agreement 测量两种排序的对应关系。更强的秩关联可以与明显的单元内收窄同时存在。因此，同时报告二者可以识别层间保留了什么，而不将排序一致理解为物理宽度相同。
 
 **原文 P077**
 
@@ -754,11 +754,11 @@ The released measurement IDs, configuration values, mapping-resolution states, p
 
 **原文 P083**
 
-CLASP compares network-transition and feasible-corridor distributions over the same traceroute segments. In the aligned one-hour RIPE Atlas snapshot, 81 of 275 service-facing units have broad network support and concentrated corridor support under equal-share allocation, while effective category count contracts in 204 units (74.2%). Across units, projection-score Layer Agreement is 0.632 for 67 island and archipelagic units and 0.001 for 202 coastal-mainland units. The geographic ordering persists under equal-share and Top-1 allocation, with between-group differences of 0.461, 0.631, and 0.715 across the three rules. Network-layer diversity audits therefore need to examine both within-unit physical-corridor concentration and the geographic variation in cross-layer rank association.
+CLASP measures how service-path diversity changes between network transitions and feasible physical corridors by comparing the same traceroute segments at both layers. In the aligned one-hour RIPE Atlas snapshot, 81 of 275 service-facing units have broad network support and concentrated corridor support under equal-share allocation, while effective category count contracts in 204 units (74.2%). Across units, projection-score Layer Agreement is 0.632 for 67 island and archipelagic units and 0.001 for 202 coastal-mainland units. The geographic ordering persists under equal-share and Top-1 allocation, with between-group differences of 0.461, 0.631, and 0.715 across the three rules. These results describe two distinct properties: changes within a population and correspondence between population rankings. A cross-layer diversity audit needs both, because similar ordering does not imply similar physical breadth.
 
 **译文**
 
-CLASP 在相同的 traceroute 线段上比较网络转换分布与可行走廊分布。在对齐的一小时 RIPE Atlas 快照中，均匀分配下，275 个面向服务单元中有 81 个具有宽广网络支撑和集中走廊支撑，204 个单元（74.2%）的有效类别数收缩。在单元之间，投影分数加权下的 Layer Agreement 在 67 个岛屿与群岛单元中为 0.632，在 202 个沿海大陆单元中为 0.001。均匀分配和 Top-1 分配下的地理排序保持不变，三种规则对应的组间差值分别为 0.461、0.631 和 0.715。因此，网络层多样性审计需要同时检查单元内部的物理走廊集中度，以及跨层秩关联的地理变化。
+CLASP 通过比较两个层次上相同的 traceroute 线段，测量服务路径多样性在网络转换与可行物理走廊之间如何变化。在对齐的一小时 RIPE Atlas 快照中，均匀分配下 275 个面向服务单元有 81 个表现为网络支撑宽广而走廊支撑集中；204 个单元（74.2%）的有效类别数收缩。在单元之间，投影分数加权的 Layer Agreement 在 67 个岛屿与群岛单元中为 0.632，在 202 个沿海大陆单元中为 0.001。均匀分配和 Top-1 分配下地理排序仍然保持，三种规则的组间差值分别为 0.461、0.631 和 0.715。这些结果描述两种不同属性：总体内部的变化，以及总体排序之间的对应关系。跨层多样性审计需要同时考察二者，因为排序相近并不意味着物理宽度相近。
 
 ## 8 Use of AI Disclosure / AI 使用披露
 
