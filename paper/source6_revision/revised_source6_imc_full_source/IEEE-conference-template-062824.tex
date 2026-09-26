@@ -23,17 +23,19 @@ A Cross-Layer Audit of Internet Service Paths}
 \maketitle
 
 \begin{abstract}
-Network-layer path diversity is often used as a proxy for the physical
-diversity supporting Internet services. We present CLASP, a Cross-Layer
-Audit of Service Paths that compares network-transition and feasible
-landing-region-corridor distributions over the same traceroute segments.
+Assessing whether network-layer path diversity reflects physical diversity
+requires comparing the two layers over the same observations. We present
+CLASP, a Cross-Layer Audit of Service Paths that compares network-transition
+and feasible landing-region-corridor distributions over the same traceroute
+segments, with each segment contributing equal total mass at both layers.
 We apply CLASP to 490,911 valid IPv4 traceroutes from 18 public RIPE Atlas
 measurements covering all 13 DNS Roots, three applications, and two
 dynamic multi-target topology references, yielding 370 auditable
-country--measurement units. Under equal-share allocation, 81 of 275
-service-facing units have broad network support and concentrated corridor
-support, while 158 remain broad at both layers; effective category count
-contracts in 204 units (74.2\%). Across units, the Spearman association
+country--measurement units. Within units, broad network support can
+coexist with concentrated corridor support: under equal-share allocation,
+81 of 275 service-facing units exhibit this combination, while 158 remain
+broad at both layers. Effective category count contracts in 204 units
+(74.2\%). Across units, the Spearman association
 between network and corridor concentration, termed Layer Agreement, varies
 by geography. Under projection-score weighting it is 0.632 for 67 island
 and archipelagic units and 0.001 for 202 coastal-mainland units. The

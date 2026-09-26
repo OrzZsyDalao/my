@@ -14,11 +14,11 @@ Anonymous Author(s) / 匿名作者
 
 **原文 P001**
 
-Network-layer path diversity is often used as a proxy for the physical diversity supporting Internet services. We present CLASP, a Cross-Layer Audit of Service Paths that compares network-transition and feasible landing-region-corridor distributions over the same traceroute segments. We apply CLASP to 490,911 valid IPv4 traceroutes from 18 public RIPE Atlas measurements covering all 13 DNS Roots, three applications, and two dynamic multi-target topology references, yielding 370 auditable country–measurement units. Under equal-share allocation, 81 of 275 service-facing units have broad network support and concentrated corridor support, while 158 remain broad at both layers; effective category count contracts in 204 units (74.2%). Across units, the Spearman association between network and corridor concentration, termed Layer Agreement, varies by geography. Under projection-score weighting it is 0.632 for 67 island and archipelagic units and 0.001 for 202 coastal-mainland units. The island–coastal difference remains positive under equal-share, projection-score, and Top-1 allocation, at 0.461, 0.631, and 0.715. These results show why auditing physical-corridor diversity requires both measuring within-unit cross-layer differences and examining how concentration rankings correspond across geographic populations.
+Assessing whether network-layer path diversity reflects physical diversity requires comparing the two layers over the same observations. We present CLASP, a Cross-Layer Audit of Service Paths that compares network-transition and feasible landing-region-corridor distributions over the same traceroute segments, with each segment contributing equal total mass at both layers. We apply CLASP to 490,911 valid IPv4 traceroutes from 18 public RIPE Atlas measurements covering all 13 DNS Roots, three applications, and two dynamic multi-target topology references, yielding 370 auditable country–measurement units. Within units, broad network support can coexist with concentrated corridor support: under equal-share allocation, 81 of 275 service-facing units exhibit this combination, while 158 remain broad at both layers. Effective category count contracts in 204 units (74.2%). Across units, the Spearman association between network and corridor concentration, termed Layer Agreement, varies by geography. Under projection-score weighting it is 0.632 for 67 island and archipelagic units and 0.001 for 202 coastal-mainland units. The island–coastal difference remains positive under equal-share, projection-score, and Top-1 allocation, at 0.461, 0.631, and 0.715. These results show why auditing physical-corridor diversity requires both measuring within-unit cross-layer differences and examining how concentration rankings correspond across geographic populations.
 
 **译文**
 
-网络层路径多样性经常被用作支撑互联网服务的物理多样性的代理指标。本文提出 CLASP，即服务路径跨层审计（Cross-Layer Audit of Service Paths），在相同的 traceroute 线段上比较网络转换分布与可行登陆区域走廊分布。我们将 CLASP 应用于来自 18 项公开 RIPE Atlas 测量的 490,911 条有效 IPv4 traceroute，覆盖全部 13 个 DNS 根服务、3 个应用和 2 个动态多目标拓扑参考测量，得到 370 个可审计的“国家—测量”单元。在均匀分配下，275 个面向服务单元中有 81 个具有宽广网络支撑和集中走廊支撑，158 个在两个层面都保持宽广；204 个单元（74.2%）的有效类别数收缩。在单元之间，网络集中度与走廊集中度之间的 Spearman 关联——称为 Layer Agreement——随地理分组而变化。投影分数加权下，该关联在 67 个岛屿与群岛单元中为 0.632，在 202 个沿海大陆单元中为 0.001。在均匀分配、投影分数加权和 Top-1 分配下，岛屿与沿海大陆的差值始终为正，分别为 0.461、0.631 和 0.715。这些结果说明，物理走廊多样性审计需要同时测量单元内部的跨层差异，并检查不同地理总体中集中度排序之间的对应关系。
+判断网络层路径多样性是否反映物理多样性，需要基于同一批观测比较两个层面。本文提出 CLASP，即服务路径跨层审计，在相同的 traceroute 线段上比较网络转换分布与可行登陆区域走廊分布，每条线段在两个层面贡献相同的总权重。我们将 CLASP 应用于来自 18 项公开 RIPE Atlas 测量的 490,911 条有效 IPv4 traceroute，覆盖全部 13 个 DNS Roots、三个应用和两项动态多目标拓扑参考测量，得到 370 个可审计的国家—测量单元。在单元内部，宽广的网络支撑可以与集中的走廊支撑并存：在均匀分配下，275 个面向服务单元中有 81 个呈现这一组合，158 个在两个层面都保持宽广。204 个单元（74.2%）的有效类别数发生收缩。在单元之间，网络集中度与走廊集中度的 Spearman 关联（称为 Layer Agreement）随地理分组而变化。在投影分数加权下，67 个岛屿与群岛单元的系数为 0.632，202 个沿海大陆单元的系数为 0.001。在均匀分配、投影分数和 Top-1 分配下，岛屿—沿海大陆差值均为正，分别为 0.461、0.631 和 0.715。这些结果说明，审计物理走廊多样性既需要测量单元内部的跨层差异，也需要考察不同地理总体中集中度排序的对应关系。
 
 **Keywords / 关键词**
 
@@ -54,11 +54,11 @@ Cross-layer mapping makes the physical support of network paths accessible to me
 
 **原文 P005**
 
-Three issues must be addressed to make this comparison meaningful. First, network transitions and corridors describe different categories: their counts do not reveal whether observation mass is dispersed or repeatedly concentrated in a few categories. Second, a segment may admit several physical candidates, so its contribution must be allocated without counting each candidate as another observed segment. Third, the two distributions must describe the same source–measurement population and the same candidate-bearing segments. Otherwise, differences in the sampled paths can be mistaken for differences between layers.
+Comparing network transitions with feasible corridors requires more than counting distinct categories. The two layers describe different categories, and their counts do not reveal whether observation mass is dispersed or repeatedly concentrated in a few categories. A segment may also admit several physical candidates, so its contribution must be allocated without counting each candidate as another observed segment. Finally, the two distributions must describe the same source–measurement population and the same candidate-bearing segments. Otherwise, differences in the sampled paths can be mistaken for differences between layers.
 
 **译文**
 
-要使这一比较有明确含义，需要处理三个问题。第一，网络转换与走廊描述不同类别：仅凭数量无法说明观测权重是分散分布，还是反复集中在少数类别。第二，一个线段可能对应多个物理候选，因此需要分配它的贡献，而不能把每个候选都计作另一个已观测线段。第三，两个分布必须描述相同的“来源—测量”总体，以及相同的候选承载线段。否则，采样路径的差异可能被误当作层间差异。
+比较网络转换与可行走廊，不能只统计不同类别的数量。两个层面描述的是不同类别，而类别数量不能说明观测权重是分散分布，还是反复集中在少数类别中。一条线段还可能对应多个物理候选，因此需要分配该线段的贡献，不能将每个候选都计为另一条观测线段。最后，两个分布必须描述相同的源—测量总体和相同的具有候选的线段。否则，采样路径的差异可能被误认为层间差异。
 
 **原文 P006**
 
@@ -86,11 +86,11 @@ We apply CLASP to 490,911 valid IPv4 traceroutes from 18 public RIPE Atlas measu
 
 **原文 P009**
 
-The measurements show broad network support alongside concentrated corridor support in some service-facing populations, with additional narrowing among populations classified as broad at both layers. They also show that concentration rankings track more closely among island and archipelagic units than among coastal-mainland units under all three allocation rules. These findings locate cross-layer differences within units and describe geographic variation in the correspondence between rankings. They support examining physical-corridor distributions alongside network-layer summaries rather than treating the two as interchangeable descriptions of service-path diversity.
+The measurements show broad network support alongside concentrated corridor support in some service-facing populations, with additional narrowing among populations classified as broad at both layers. They also show that concentration rankings track more closely among island and archipelagic units than among coastal-mainland units under all three allocation rules. These findings support examining physical-corridor distributions alongside network-layer summaries rather than treating the two as interchangeable descriptions of service-path diversity.
 
 **译文**
 
-测量显示，一些面向服务的总体具有宽广网络支撑和集中走廊支撑；两个层次均被归类为宽广的总体中也存在进一步收窄。测量还显示，三种分配规则下，岛屿与群岛单元的集中度排序均比沿海大陆单元更紧密地对应。这些发现定位单元内部的跨层差异，并描述排序对应关系的地理变化。它们支持结合网络层汇总指标检查物理走廊分布，而不将二者视为可互换的服务路径多样性描述。
+测量结果表明，在部分面向服务的总体中，宽广的网络支撑与集中的走廊支撑同时存在；在两个层面都被归类为宽广的总体中，也存在进一步收窄。测量还表明，在全部三种分配规则下，岛屿与群岛单元的集中度排序比沿海大陆单元对应得更紧密。这些发现支持在检查网络层汇总指标的同时考察物理走廊分布，而不将两者视为可以互换的服务路径多样性描述。
 
 **原文 P010**
 
@@ -158,11 +158,11 @@ These approaches already support analyses beyond individual mappings, including 
 
 **原文 P017**
 
-Moving from a candidate inventory to a distribution makes repeated dependence measurable. Two populations can admit the same number of corridors while differing in how much observation mass supports each one. If candidate sets repeatedly overlap, many network transitions may support the same few physical directions. Counting distinct transitions or corridors alone cannot distinguish that organization from more dispersed support. Aggregating the observations at each layer provides the concentration and breadth measures needed for the comparison.
+Aggregating observation mass across feasible corridors measures how repeatedly the observed segments support the same corridors. Two populations can admit the same number of corridors while differing in how much observation mass supports each one. If candidate sets repeatedly overlap, many network transitions may support the same few physical directions. Counting distinct transitions or corridors alone cannot distinguish that organization from more dispersed support. Aggregating the observations at each layer provides the concentration and breadth measures needed for the comparison.
 
 **译文**
 
-从候选清单转向分布，可以测量重复依赖。两个总体可以具有相同数量的可行走廊，但支持每条走廊的观测权重不同。如果候选集合反复重叠，许多网络转换就可能支持相同的少数物理方向。仅统计不同转换或走廊的数量，无法将这种组织方式与更分散的支撑区分开。分别在两个层次聚合观测，可得到比较所需的集中度与宽度度量。
+在可行走廊上聚合观测权重，可以测量观测线段反复支持相同走廊的程度。两个总体可能具有相同数量的可行走廊，但支持各条走廊的观测权重不同。如果候选集合反复重叠，许多网络转换可能支持相同的少数物理方向。仅统计不同网络转换或走廊的数量，无法区分这种组织方式与更分散的支撑。在每个层面聚合观测，可以得到比较所需的集中度和宽度指标。
 
 **原文 P018**
 
@@ -276,11 +276,11 @@ $$
 
 **原文 P030**
 
-The inequality asks whether the observed round-trip increment can accommodate the minimum round-trip propagation time between the landing points. When $\Delta RTT$ is non-positive or inconclusive, CLASP retains the geographic and lifecycle constraints and flags the segment. The 200 km/ms speed and 5 ms tolerance are fixed configuration values in the reported analysis.
+The inequality checks whether the observed round-trip increment can accommodate the minimum round-trip propagation time between the landing points. When $\Delta RTT$ is non-positive or inconclusive, CLASP retains the geographic and lifecycle constraints and flags the segment. The 200 km/ms speed and 5 ms tolerance are fixed configuration values in the reported analysis.
 
 **译文**
 
-该不等式检验观测到的往返时延增量能否容纳两个登陆点之间的最小往返传播时间。当 ΔRTT 为非正值或无法判定时，CLASP 保留地理约束和生命周期约束，并对该线段作出标记。200 km/ms 的速度和 5 ms 的容差是所报告分析中的固定配置值。
+该不等式检验观测到的往返时延增量能否容纳登陆点之间的最小往返传播时间。当 $\Delta RTT$ 非正或无法得出结论时，CLASP 保留地理与生命周期约束，并为该线段添加标记。200 km/ms 的传播速度和 5 ms 的容差是所报告分析中的固定配置值。
 
 ### 3.4 Candidate Allocation and Observation Mass / 候选分配与观测权重
 
@@ -490,11 +490,11 @@ The processing pipeline retains 490,911 valid traceroutes from 707,314 raw recor
 
 **原文 P053**
 
-Under equal-share allocation, the 80% Top-2 threshold identifies four service-facing cross-layer outcomes (Fig. 5). Among 275 service-facing units, 81 (29.5%) are network-broad/corridor-concentrated, 158 (57.5%) remain broad at both layers, 18 (6.5%) are concentrated at both, and 18 (6.5%) are network-concentrated/corridor-broad. Four of 95 topology-reference units (4.2%) enter the first class; the other 91 remain broad at both layers. The 81 units in the first class directly identify populations whose broad network support accompanies concentrated feasible-corridor support.
+Under equal-share allocation, 81 of 275 service-facing units (29.5%) have broad network support but concentrated feasible-corridor support. Using the 80% Top-2 threshold, this network-broad/corridor-concentrated class is one of four cross-layer outcomes (Fig. 5): 158 units (57.5%) remain broad at both layers, 18 (6.5%) are concentrated at both, and 18 (6.5%) are network-concentrated/corridor-broad. Four of 95 topology-reference units (4.2%) enter the first class; the other 91 remain broad at both layers.
 
 **译文**
 
-在均匀分配下，80% Top-2 阈值识别出四种面向服务的跨层结果（图 5）。275 个面向服务单元中，81 个（29.5%）属于“网络宽广、走廊集中”，158 个（57.5%）在两个层面都保持宽广，18 个（6.5%）在两个层面都集中，18 个（6.5%）属于“网络集中、走廊宽广”。95 个拓扑参考单元中有 4 个（4.2%）进入第一类，其余 91 个在两个层面都保持宽广。第一类中的 81 个单元直接识别出宽广网络支撑伴随集中可行走廊支撑的总体。
+在均匀分配下，275 个面向服务单元中有 81 个（29.5%）具有宽广的网络支撑，但可行走廊支撑集中。采用 80% 的 Top-2 阈值，这一“网络宽广／走廊集中”类别是四种跨层结果之一（图 5）：158 个单元（57.5%）在两个层面都保持宽广，18 个（6.5%）在两个层面都集中，另有 18 个（6.5%）属于“网络集中／走廊宽广”。95 个拓扑参考单元中有 4 个（4.2%）属于第一类，其余 91 个在两个层面都保持宽广。
 
 **原文 P054**
 
@@ -506,11 +506,11 @@ Continuous measures reveal narrowing within as well as across concentration clas
 
 **原文 P055**
 
-Three existing cases distinguish continuous narrowing, expansion, and changes in absolute breadth from support-relative evenness. Singapore–Netflix moves from 32.5% network Top-2 share to 65.0% corridor Top-2 share, while its effective count contracts from 19.86 to 3.41. The continuous measures capture this substantial narrowing within the broad–broad class. New Zealand–Netflix moves from 63.6% to 37.6%, with effective count expanding from 5.18 to 6.92. Singapore–H-Root moves from 39.6% to 50.1%, and its effective count contracts from 20.67 to 5.99 while normalized entropy changes only slightly.
+Singapore–Netflix remains in the broad–broad class, yet its corridor distribution is more concentrated: Top-2 share rises from 32.5% at the network layer to 65.0% at the corridor layer, while effective category count contracts from 19.86 to 3.41. By contrast, New Zealand–Netflix becomes less concentrated: Top-2 share falls from 63.6% to 37.6%, with effective count expanding from 5.18 to 6.92. Singapore–H-Root illustrates a different distinction, between absolute breadth and support-relative evenness: Top-2 share rises from 39.6% to 50.1%, and effective count contracts from 20.67 to 5.99 while normalized entropy changes only slightly.
 
 **译文**
 
-三个现有案例分别展示连续收窄、扩张，以及绝对宽度变化与相对支撑均匀度变化之间的区别。**Singapore–Netflix** 的网络 Top-2 占比从 32.5% 变为走廊 Top-2 占比 65.0%，有效类别数从 19.86 收缩到 3.41。连续指标捕捉到 broad–broad 类别内部的这一明显收窄。**New Zealand–Netflix** 从 63.6% 变为 37.6%，有效类别数从 5.18 扩张到 6.92。**Singapore–H-Root** 从 39.6% 变为 50.1%，有效类别数从 20.67 收缩到 5.99，而归一化熵只发生轻微变化。
+Singapore–Netflix 仍属于“两层都宽广”类别，但其走廊分布更加集中：Top-2 份额从网络层的 32.5% 升至走廊层的 65.0%，有效类别数从 19.86 收缩至 3.41。相比之下，New Zealand–Netflix 的集中度下降：Top-2 份额从 63.6% 降至 37.6%，有效类别数从 5.18 扩张至 6.92。Singapore–H-Root 展示了另一种区别，即绝对宽度与相对于支撑集合的均匀程度之间的区别：Top-2 份额从 39.6% 升至 50.1%，有效类别数从 20.67 收缩至 5.99，而归一化熵仅略有变化。
 
 **原文 P056**
 
@@ -524,11 +524,11 @@ Bounded multi-corridor segments account for 99.9%, 78.1%, and 98.2% of candidate
 
 **原文 P057**
 
-The second comparison examines concentration ordering rather than within-unit breadth. Under projection-score weighting, Layer Agreement is 0.632 across 67 island and archipelagic service-facing units and 0.001 across 202 coastal-mainland units (Table V). These units represent 10 and 28 countries, respectively, and the observed coefficient difference is 0.631. The island and archipelagic group exhibits a stronger positive concentration-rank association; the coastal-mainland group exhibits almost no monotonic rank association. Landlocked units form a separate geographic category.
+Under projection-score weighting, network and corridor concentration rankings correspond more closely among island and archipelagic service-facing units than among coastal-mainland units. Layer Agreement is 0.632 across 67 island and archipelagic units and 0.001 across 202 coastal-mainland units (Table V). These units represent 10 and 28 countries, respectively, and the observed coefficient difference is 0.631. The island and archipelagic group exhibits a stronger positive concentration-rank association; the coastal-mainland group exhibits almost no monotonic rank association. Landlocked units form a separate geographic category.
 
 **译文**
 
-第二类比较考察集中度排序，而不是单元内部的宽度。投影分数加权下，67 个岛屿与群岛面向服务单元的 Layer Agreement 为 0.632，202 个沿海大陆单元为 0.001（表 V）。这些单元分别来自 10 个和 28 个国家，观测系数差值为 0.631。岛屿与群岛组表现出更强的正集中度秩关联；沿海大陆组几乎没有单调秩关联。内陆国家形成独立地理类别。
+在投影分数加权下，岛屿与群岛面向服务单元的网络集中度排序与走廊集中度排序，比沿海大陆单元对应得更紧密。67 个岛屿与群岛单元的 Layer Agreement 为 0.632，202 个沿海大陆单元为 0.001（表 V）。这些单元分别代表 10 个和 28 个国家，观测到的系数差值为 0.631。岛屿与群岛组表现出更强的正向集中度秩关联；沿海大陆组几乎没有单调秩关联。内陆单元构成单独的地理类别。
 
 ### 5.3 Geographic Ordering across Candidate Allocations / 不同候选分配下的地理排序
 
@@ -552,11 +552,11 @@ The reproducible equal-share result supports a country-level uncertainty check. 
 
 **原文 P060**
 
-Exposure places these conditional distribution comparisons in the full valid-trace population. Inter-region candidates occur infrequently for most service-facing populations. The DNS family contains 945 country–measurement units with at least 30 valid traceroutes across 77 countries. Pooling eligible Root observations within each country by valid-trace count yields median DNS exposure of 5.50% (IQR 1.10–23.04%; mean 17.80%). The difference between the median and mean records a pronounced upper tail across countries.
+Inter-region candidates occur infrequently for most service-facing populations when measured over all valid traces. The DNS family contains 945 country–measurement units with at least 30 valid traceroutes across 77 countries. Pooling eligible Root observations within each country by valid-trace count yields median DNS exposure of 5.50% (IQR 1.10–23.04%; mean 17.80%). The difference between the median and mean records a pronounced upper tail across countries.
 
 **译文**
 
-暴露率将上述条件分布比较放回全部有效轨迹总体中。多数面向服务总体很少出现跨区域候选。DNS 家族包含来自 77 个国家、至少具有 30 条有效 traceroute 的 945 个“国家—测量”单元。在每个国家内部按有效轨迹数汇集符合条件的根服务观测，得到 DNS 暴露率中位数 5.50%（IQR 1.10–23.04%；均值 17.80%）。中位数与均值之间的差异反映国家间明显的上尾。
+以全部有效轨迹为总体测量时，跨区域候选在多数面向服务的总体中出现频率较低。DNS 家族包含来自 77 个国家的 945 个国家—测量单元，每个单元至少具有 30 条有效 traceroute。在每个国家内，按有效轨迹数汇总符合条件的 Root 观测，得到 DNS 暴露率中位数为 5.50%（IQR 1.10–23.04%；均值 17.80%）。中位数与均值的差异反映出国家之间存在明显的上尾。
 
 **原文 P061**
 
@@ -578,11 +578,11 @@ Country-matched comparisons describe exposure differences between service and to
 
 **原文 P063**
 
-The geographic groups also differ in how often DNS paths enter the candidate space. Giving each country equal weight, island and archipelagic countries have median country-pooled DNS exposure of 49.61% across 9 countries, compared with 7.88% for 54 other coastal countries and 1.70% for 14 landlocked countries. These values record how frequently each geographic group enters the feasible-corridor candidate space.
+The geographic groups also differ in how often DNS paths enter the candidate space. Giving each country equal weight, island and archipelagic countries have median country-pooled DNS exposure of 49.61% across 9 countries, compared with 7.88% for 54 other coastal countries and 1.70% for 14 landlocked countries.
 
 **译文**
 
-不同地理分组进入 DNS 候选空间的频率也不同。当每个国家获得相同权重时，9 个岛屿与群岛国家的国家汇总 DNS 暴露率中位数为 49.61%，54 个其他沿海国家为 7.88%，14 个内陆国家为 1.70%。这些数值记录每个地理组进入可行走廊候选空间的频率。
+各地理分组的 DNS 路径进入候选空间的频率也不同。赋予每个国家相同权重时，9 个岛屿与群岛国家的国家内汇总 DNS 暴露率中位数为 49.61%，相比之下，54 个其他沿海国家为 7.88%，14 个内陆国家为 1.70%。
 
 **原文 P064**
 
@@ -596,11 +596,11 @@ Conditional equal-share corridor breadth follows a different ordering. Island an
 
 **原文 P065**
 
-Measurement-family summaries provide another view of the concentration rankings. Table VI reports Layer Agreement within each observed family. Under projection-score weighting, the coefficient is 0.176 for 219 DNS units, 0.229 for 53 application units, and 0.012 for 95 topology-reference units, all smaller than the island and archipelagic coefficient. Equal-share and Top-1 allocation change all three coefficients, with the largest change occurring for DNS Roots. The equal-share audit contains 222 DNS units, whereas the family allocation comparison contains 219; the tables retain these allocation-specific counts.
+Within each measurement family, network and corridor concentration rankings show weak association (Table VI). Under projection-score weighting, Layer Agreement is 0.176 for 219 DNS units, 0.229 for 53 application units, and 0.012 for 95 topology-reference units, all smaller than the island and archipelagic coefficient. Equal-share and Top-1 allocation change all three coefficients, with the largest change occurring for DNS Roots. The equal-share audit contains 222 DNS units, whereas the family allocation comparison contains 219; the tables retain these allocation-specific counts.
 
 **译文**
 
-测量家族汇总提供集中度排序的另一种视角。表 VI 报告各观测家族内部的 Layer Agreement。投影分数加权下，219 个 DNS 单元的系数为 0.176，53 个应用单元为 0.229，95 个拓扑参考单元为 0.012，均低于岛屿与群岛组的系数。均匀分配和 Top-1 分配改变三个系数，其中 DNS 根服务的变化最大。均匀分配审计包含 222 个 DNS 单元，而家族分配比较包含 219 个；表格保留这些分配口径对应的计数。
+在每个测量家族内部，网络集中度排序与走廊集中度排序的关联较弱（表 VI）。在投影分数加权下，219 个 DNS 单元的 Layer Agreement 为 0.176，53 个应用单元为 0.229，95 个拓扑参考单元为 0.012，均小于岛屿与群岛组的系数。均匀分配和 Top-1 分配会改变全部三个系数，其中 DNS Roots 的变化最大。均匀分配审计包含 222 个 DNS 单元，而家族分配比较包含 219 个；表格保留各分配对应的计数。
 
 **原文 P066**
 
